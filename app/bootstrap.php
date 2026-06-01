@@ -6,6 +6,18 @@ use CuyZ\Valinor\Mapper\MappingError;
 use DI\ContainerBuilder;
 use Psr\Log\LoggerInterface;
 
+// Directorios
+define('BASE_DIR', rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\'));
+define('ASSETS_DIR', BASE_DIR . '/assets');
+
+// Timezones
+define("TIMEZONE", $_ENV["TIMEZONE"] ?? 'America/Caracas');
+define('TIMEZONE_OFFSET', (new DateTime('now', new DateTimeZone(TIMEZONE)))->format('P'));
+date_default_timezone_set(TIMEZONE);
+
+// Desarrollo
+define('DEBUG', $_ENV["DEBUG"] ?? true);
+
 // Constantes
 const CONTAINER_FILE = 'app/container.php';
 const CONTROLLERS_PATH = 'App\Controllers';
