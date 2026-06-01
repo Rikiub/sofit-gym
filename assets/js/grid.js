@@ -35,7 +35,9 @@ export function createGrid(options = {}) {
             error: "Un error ha ocurrido mientras se obtenian los datos",
         },
         sort: true,
-        search: true,
+        search: {
+            debounceTimeout: 1000,
+        },
         pagination: {
             limit: 25,
             summary: false,

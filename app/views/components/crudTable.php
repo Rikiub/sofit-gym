@@ -28,22 +28,30 @@ $this->pushJs('components/crudTable.js');
             display: flex;
             justify-content: space-between;
             flex-direction: row-reverse;
+            align-items: stretch;
+            min-height: 52px;
 
             &::after {
                 content: unset;
             }
 
+            >* {
+                margin: 0 5px;
+            }
+
             button {
                 background-color: var(--bs-btn-bg);
                 color: var(--bs-btn-color);
-                padding: var(--bs-btn-padding-y) var(--bs-btn-padding-x);
-                width: 50px;
-                height: 50px;
+                padding: var(--bs-btn-padding-y) 1rem;
 
                 &:hover {
                     background-color: var(--bs-btn-hover-bg);
                 }
             }
+        }
+
+        .gridjs-search {
+            width: 100%;
         }
 
         .gridjs-search-input {
@@ -52,6 +60,7 @@ $this->pushJs('components/crudTable.js');
             /* Box model */
             display: block;
             width: 100%;
+            height: 100%;
             padding: var(--bs-input-padding-y, 0.375rem) var(--bs-input-padding-x, 0.75rem);
             font-size: var(--bs-input-font-size, 1rem);
             font-family: inherit;

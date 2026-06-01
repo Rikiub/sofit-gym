@@ -6,6 +6,7 @@ $this->layout("layout", ["title" => $title]);
 ?>
 
 <?= $this->insert("card", [
+    "icon" => "fa-history",
     "title" => $title,
     "body" => <<<HTML
         <main>
