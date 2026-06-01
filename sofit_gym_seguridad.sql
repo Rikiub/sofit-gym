@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 29-05-2026 a las 03:29:59
+-- Tiempo de generación: 01-06-2026 a las 22:23:45
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -30,43 +30,24 @@ SET time_zone = "+00:00";
 CREATE TABLE `bitacora` (
   `id_bitacora` int(11) NOT NULL,
   `id_usuario` int(11) DEFAULT NULL,
-  `id_modulo` int(11) NOT NULL,
-  `accion` varchar(100) NOT NULL,
-  `es_exitoso` tinyint(1) NOT NULL,
-  `fecha` date NOT NULL DEFAULT current_timestamp()
+  `modulo` varchar(100) DEFAULT NULL,
+  `accion` varchar(100) DEFAULT NULL,
+  `mensaje` text DEFAULT NULL,
+  `nivel` varchar(100) NOT NULL,
+  `fecha` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `bitacora`
 --
 
-INSERT INTO `bitacora` (`id_bitacora`, `id_usuario`, `id_modulo`, `accion`, `es_exitoso`, `fecha`) VALUES
-(2, 2, 1, 'registrar_cliente', 1, '2026-05-25');
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `modulo`
---
-
-CREATE TABLE `modulo` (
-  `id_modulo` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `modulo`
---
-
-INSERT INTO `modulo` (`id_modulo`, `nombre`) VALUES
-(1, 'Clientes'),
-(2, 'Trabajadores'),
-(3, 'Horarios y clases'),
-(4, 'Facturación y pagos'),
-(5, 'Equipos'),
-(6, 'Historial de mantenimientos de equipos'),
-(7, 'Productos'),
-(8, 'Rutinas de entrenamiento');
+INSERT INTO `bitacora` (`id_bitacora`, `id_usuario`, `modulo`, `accion`, `mensaje`, `nivel`, `fecha`) VALUES
+(17, 2, 'clientes', 'insert', 'Cliente V-36236326 creado', 'INFO', '2026-06-01 13:52:43'),
+(22, 2, 'clientes', 'update', 'Cliente V-33333333 actualizado', 'INFO', '2026-06-01 14:40:34'),
+(24, 2, 'clientes', 'update', 'Cliente V-33333333 actualizado', 'INFO', '2026-06-01 15:14:12'),
+(25, 2, 'clientes', 'update', 'Cliente V-22222222 actualizado', 'INFO', '2026-06-01 15:51:21'),
+(32, NULL, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', '2026-06-01 16:18:36'),
+(33, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', '2026-06-01 16:18:39');
 
 -- --------------------------------------------------------
 
@@ -118,14 +99,7 @@ INSERT INTO `usuario` (`id_usuario`, `id_rol`, `nombre_usuario`, `contrasena_has
 --
 ALTER TABLE `bitacora`
   ADD PRIMARY KEY (`id_bitacora`),
-  ADD KEY `bitacora_modulo_FK` (`id_modulo`),
   ADD KEY `bitacora_usuario_FK` (`id_usuario`);
-
---
--- Indices de la tabla `modulo`
---
-ALTER TABLE `modulo`
-  ADD PRIMARY KEY (`id_modulo`);
 
 --
 -- Indices de la tabla `rol`
@@ -148,13 +122,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `bitacora`
 --
 ALTER TABLE `bitacora`
-  MODIFY `id_bitacora` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT de la tabla `modulo`
---
-ALTER TABLE `modulo`
-  MODIFY `id_modulo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_bitacora` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT de la tabla `rol`
@@ -176,7 +144,6 @@ ALTER TABLE `usuario`
 -- Filtros para la tabla `bitacora`
 --
 ALTER TABLE `bitacora`
-  ADD CONSTRAINT `bitacora_modulo_FK` FOREIGN KEY (`id_modulo`) REFERENCES `modulo` (`id_modulo`) ON UPDATE CASCADE,
   ADD CONSTRAINT `bitacora_usuario_FK` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
