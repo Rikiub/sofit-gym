@@ -4,6 +4,7 @@ use App\Helpers\Auth\UsuarioSession;
 use App\Helpers\Response;
 use CuyZ\Valinor\Mapper\MappingError;
 use DI\ContainerBuilder;
+use Psr\Log\LoggerInterface;
 
 // Constantes
 const CONTAINER_FILE = 'app/container.php';
@@ -35,6 +36,12 @@ try {
     $builder->addDefinitions(CONTAINER_FILE)->useAttributes(true);
     $container = $builder->build();
 
+    // Set contexto inicial del logger
+    $logger = $container->get(LoggerInterface::class);
+    if (method_exists($logger, 'setRouteContext')) {
+        $logger->setRouteContext($page, $action);
+    }
+
     if (!class_exists($classPath)) {
         if ($wantsJson) {
             // Si no se encuentra la pagina, devolver error como JSON
@@ -53,7 +60,9 @@ try {
         exit;
     }
 
-    // Instanciar controlador e inyectar sus dependencias automaticamente
+    /** Instanciar controlador e inyectar sus dependencias automaticamente
+     * @var \App\Controllers\BaseController
+     */
     $controller = $container->get($classPath);
 
     if (!method_exists($controller, $action)) {
@@ -66,11 +75,11 @@ try {
         exit;
     }
 
-    // Ejecutar controlador junto a su metodo.
+    // Ejecutar controlador junto a su metodo
     $respuesta = $controller->$action();
 
     // Mostrar respuesta como string
-    // Si es HTML, el navegador lo renderizara.
+    // Si es HTML, el navegador lo renderizara
     echo $respuesta;
 } catch (MappingError $error) {
     // Capturar errores de Valinor

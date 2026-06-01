@@ -71,10 +71,15 @@ class ClientesController extends BaseController
 
         // Verificar que el cliente no exista
         if ($this->clientesModelo->find($cliente->cedula)) {
-            return $this->response->json(['message' => 'El cliente ya existe'], 400);
+            return $this->conflict(true, 400);
         }
 
         $cliente = $this->clientesModelo->insert($cliente);
+        $this->logger->info(
+            "Cliente {cedula_cliente} creado",
+            ["cedula_cliente" => $cliente->cedula]
+        );
+
         return $this->response->json($cliente, 201);
     }
 
@@ -84,10 +89,15 @@ class ClientesController extends BaseController
         $cliente = $this->mapper->map(ClienteDTO::class, $body);
 
         if (!$this->clientesModelo->find($cliente->cedula)) {
-            return $this->response->json(['message' => 'El cliente no existe'], 400);
+            return $this->conflict(false, 400);
         }
 
         $cliente = $this->clientesModelo->update($cliente);
+        $this->logger->info(
+            "Cliente {cedula_cliente} actualizado",
+            ["cedula_cliente" => $cliente->cedula]
+        );
+
         return $this->response->json($cliente, 201);
     }
 
@@ -96,10 +106,27 @@ class ClientesController extends BaseController
         $cedula = $this->getCedulaParam();
 
         if (!$this->clientesModelo->find($cedula)) {
-            return $this->response->json(['message' => 'El cliente no existe'], 404);
+            $this->conflict(false, 404);
         }
 
         $this->clientesModelo->delete($cedula);
+        $this->logger->info(
+            "Cliente {cedula_cliente} eliminado",
+            ["cedula_cliente" => $cedula]
+        );
+
         return $this->response->empty(204);
+    }
+
+    private function conflict(bool $exists, int $id, ?int $code = 400): string
+    {
+        if ($exists) {
+            $message = "El cliente {cedula_cliente} ya existe";
+        } else {
+            $message = "El cliente {cedula_cliente} no existe";
+        }
+
+        $this->logger->error($message, ["cedula_cliente" => $id]);
+        return $this->response->json(['message' => $message], $code);
     }
 }

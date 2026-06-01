@@ -1,6 +1,7 @@
 <?php
 
-use App\Helpers\AssetExtension;
+use App\Helpers\Logger\BitacoraLogger;
+use App\Helpers\Plates\AssetExtension;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use CuyZ\Valinor\Normalizer\Format;
 use CuyZ\Valinor\Normalizer\Normalizer;
@@ -8,6 +9,9 @@ use CuyZ\Valinor\MapperBuilder;
 use CuyZ\Valinor\NormalizerBuilder;
 use League\Plates\Template\Theme;
 use League\Plates\Engine;
+use Psr\Log\LoggerInterface;
+
+use function DI\get;
 
 return [
     // Conexion PDO a la base de datos
@@ -38,6 +42,9 @@ return [
             throw new RuntimeException('Failed database connection: ' . $e->getMessage());
         }
     },
+    // Logger de la bitacora
+    LoggerInterface::class => get(BitacoraLogger::class),
+
     // Directorios donde cargar vistas/plantillas
     Engine::class => function () {
         return Engine::fromTheme(Theme::hierarchy([
@@ -47,6 +54,7 @@ return [
         ]))
             ->loadExtension(new AssetExtension(ASSETS_DIR));
     },
+
     // Valinor: Mapper
     // Utilizado para convertir arrays en DTOs
     // y validarlos en el proceso
