@@ -40,7 +40,6 @@ class BitacoraModel extends BaseModel
     private function dtoToArray(BitacoraDTO $dto): array
     {
         return [
-            'id_bitacora' => $dto->id_bitacora,
             'id_usuario' => $dto->id_usuario,
             'modulo' => $dto->modulo,
             'accion' => $dto->accion,
@@ -50,11 +49,12 @@ class BitacoraModel extends BaseModel
         ];
     }
 
-    private function sqlSelect(): string
+    private function sqlSelect(string $where = ""): string
     {
         return <<<SQL
                 SELECT *
                 FROM {$this->table}
+                {$where}
                 ORDER BY fecha DESC
             SQL;
     }
@@ -76,7 +76,7 @@ class BitacoraModel extends BaseModel
     public function find(int $id): ?BitacoraDTO
     {
         $row = $this->pdoQuery(
-            "{$this->sqlSelect()} WHERE {$this->primaryKey} = ?",
+            $this->sqlSelect("WHERE {$this->primaryKey} = ?"),
             [$id]
         )->fetch();
 
@@ -107,12 +107,9 @@ class BitacoraModel extends BaseModel
         $bitacora->validateUpdate();
         $this->pdo->beginTransaction();
 
-        $array = $this->dtoToArray($bitacora);
-        unset($array['id_bitacora']);
-
         $this->pdoUpdate(
             $this->table,
-            $array,
+            $this->dtoToArray($bitacora),
             [$this->primaryKey => $bitacora->id_bitacora],
         );
 
