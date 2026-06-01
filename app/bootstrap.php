@@ -20,7 +20,7 @@ define('DEBUG', $_ENV["DEBUG"] ?? true);
 
 // Constantes
 const CONTAINER_FILE = 'app/container.php';
-const CONTROLLERS_PATH = 'App\Controllers';
+const CONTROLLERS_NAMESPACE = 'App\Controllers';
 
 // Obtener query params
 $page = $_GET['page'] ?? 'inicio';
@@ -28,7 +28,7 @@ $action = $_GET['action'] ?? 'index';
 
 // Construir clase a partir de los query params
 $className = ucfirst($page) . 'Controller';
-$classPath = '\\' . CONTROLLERS_PATH . "\\$className";
+$classPath = '\\' . CONTROLLERS_NAMESPACE . "\\$className";
 
 // Response
 $response = new Response(normalizer: null);
