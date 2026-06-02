@@ -19,7 +19,7 @@ export function calendarComponent({
     popoverContent = () => ``,
     onPopoverHover = (el) => null,
     id = null,
-}) {
+} = {}) {
     return {
         calendar: null,
         popover: null,

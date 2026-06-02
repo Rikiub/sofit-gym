@@ -46,7 +46,7 @@ export function modalFormComponent({
     editDisableFields = [],
     afterSubmit = () => null,
     id: componentId = null,
-}) {
+} = {}) {
     return {
         currentDataId: null,
         mode: null,

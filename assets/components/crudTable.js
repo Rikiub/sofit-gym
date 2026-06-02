@@ -17,7 +17,7 @@ export function crudTableComponent({
     fieldMap = (item) => item,
     gridOptions = {},
     id: componentId = null,
-}) {
+} = {}) {
     return {
         grid: null,
 
