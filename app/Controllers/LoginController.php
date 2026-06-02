@@ -34,11 +34,11 @@ class LoginController extends BaseController
 
         $usuario = $this->usuariosModel->find($nombre_usuario);
         if (!$usuario) {
-            return $this->response->json(["message" => "El usuario no existe"], 404);
+            return $this->invalidInput();
         };
 
         if (!password_verify($contrasena, $usuario->contrasena_hash)) {
-            return $this->response->json(["message" => "Contraseña incorrecta"], 404);
+            return $this->invalidInput();
         }
 
         // Guardar la sesión utilizando un helper
@@ -71,5 +71,11 @@ class LoginController extends BaseController
 
         $this->response->redirect(["page" => "login"]);
         exit;
+    }
+
+    /** Mensaje de error generico en caso de ingresar datos incorrectos */
+    private function invalidInput(): string
+    {
+        return $this->response->json(["message" => "Usuario o contraseña incorrectos"], 401);
     }
 }
