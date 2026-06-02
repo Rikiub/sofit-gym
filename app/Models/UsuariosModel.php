@@ -61,14 +61,16 @@ class UsuariosModel extends BaseModel
         );
     }
 
-    public function find(string $nombre_usuario): ?UsuarioDTO
+    public function find(int|string $nombre_usuario): ?UsuarioDTO
     {
         $row = $this->pdoQuery(
             <<<SQL
                 {$this->sqlSelect()}
-                WHERE usuario.nombre_usuario = ?
+                WHERE
+                    usuario.id_usuario = ?
+                    OR usuario.nombre_usuario = ?
             SQL,
-            [$nombre_usuario]
+            [$nombre_usuario, $nombre_usuario]
         )->fetch();
 
         if (!$row)
@@ -85,10 +87,12 @@ class UsuariosModel extends BaseModel
             $this->table,
             $this->dtoToArray($usuario),
         );
-        $this->pdo->commit();
 
         $id = (int) $this->pdo->lastInsertId();
-        return $this->find($id);
+        $usuario = $this->find($id);
+
+        $this->pdo->commit();
+        return $usuario;
     }
 
     public function update(UsuarioDTO $usuario): UsuarioDTO
@@ -96,23 +100,28 @@ class UsuariosModel extends BaseModel
         $usuario->validateUpdate();
         $this->pdo->beginTransaction();
 
-        $array = $this->dtoToArray($usuario);
-        unset($array['id_usuario']);
-
         $this->pdoUpdate(
             $this->table,
-            $array,
+            $this->dtoToArray($usuario),
             [$this->primaryKey => $usuario->id_usuario],
         );
-        $this->pdo->commit();
+        $usuario = $this->find($usuario->nombre_usuario);
 
-        $id = (int) $this->pdo->lastInsertId();
-        return $this->find($id);
+        $this->pdo->commit();
+        return $usuario;
     }
 
-    public function delete(string $cedula): void
+    public function delete(int|string $id): void
     {
-        $this->pdoDelete($this->table, [$this->primaryKey => $cedula]);
+        $this->pdoQuery(
+            <<<SQL
+                DELETE FROM {$this->table}
+                WHERE
+                    id_usuario = ?
+                    OR nombre_usuario = ?
+            SQL,
+            [$id, $id],
+        );
     }
 
     private function dtoToArray(UsuarioDTO $dto): array
@@ -120,7 +129,6 @@ class UsuariosModel extends BaseModel
         $hashedPassword = password_hash($dto->contrasena_hash, PASSWORD_DEFAULT);
 
         return [
-            'id_usuario' => $dto->id_usuario,
             'id_rol' => $dto->id_rol,
             'nombre_usuario' => $dto->nombre_usuario,
             'contrasena_hash' => $hashedPassword,
