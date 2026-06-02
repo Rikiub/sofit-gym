@@ -53,6 +53,7 @@ class LoginController extends BaseController
             "Usuario {id_usuario} ha iniciado sesión",
             ["id_usuario" => $usuario->id_usuario]
         );
+
         // Devolver respuesta con la direccion donde deberia redireccionar
         return $this->response->json([
             "redirect" => "?" . $this->response->buildQueryParams(["page" => "inicio"])
@@ -62,12 +63,11 @@ class LoginController extends BaseController
     public function logout(): void
     {
         $usuario = UsuarioSession::getUsuario();
-        UsuarioSession::logout();
-
         $this->logger->info(
             "Usuario {id_usuario} ha cerrado sesión",
             ["id_usuario" => $usuario->id]
         );
+        UsuarioSession::logout();
 
         $this->response->redirect(["page" => "login"]);
         exit;
