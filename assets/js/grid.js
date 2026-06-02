@@ -44,7 +44,7 @@ export function createGrid(options = {}) {
         },
         className: {
             table: "table table-striped",
-            paginationButton: "btn-group",
+            paginationButton: "btn",
             paginationButtonNext: "btn",
             paginationButtonCurrent: "btn",
             paginationButtonPrev: "btn",
