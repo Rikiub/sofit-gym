@@ -57,7 +57,7 @@ class ClientesModel extends BaseModel
     /**
      * @return ClienteDTO[]
      */
-    public function query(?string $search = null): array
+    public function query(?string $search = null, array $filters = []): array
     {
         $sql = $this->sqlSelect();
         $params = [];
