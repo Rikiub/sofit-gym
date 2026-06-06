@@ -3,8 +3,8 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Helpers\LLM\Tools\ClientesTool;
 use App\Helpers\Response;
+use App\Models\AsistenteModel;
 use LLPhant\Chat\FunctionInfo\FunctionBuilder;
 use LLPhant\Chat\Message;
 use LLPhant\Chat\OpenAIChat;
@@ -17,8 +17,8 @@ class AsistenteController extends BaseController
 
     public function __construct(
         private Response $response,
-        private ClientesTool $clientesTool,
-        private GeminiOpenAIConfig $config
+        private GeminiOpenAIConfig $config,
+        private AsistenteModel $tools,
     ) {
         $this->chat = new OpenAIChat($config);
 
@@ -26,7 +26,7 @@ class AsistenteController extends BaseController
             FunctionBuilder::buildFunctionInfo(new HumanInTheLoopTool(), "askUser")
         );
         $this->chat->addTool(
-            FunctionBuilder::buildFunctionInfo($clientesTool, "query")
+            FunctionBuilder::buildFunctionInfo($tools, "queryClientes")
         );
 
         $this->chat->setSystemMessage(

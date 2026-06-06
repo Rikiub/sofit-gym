@@ -12,10 +12,12 @@ $this->layout('layout', ['title' => 'Asistente']);
             <div class="rounded-circle bg-white bg-opacity-25 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
                 <i class="fa-solid fa-robot fs-5"></i>
             </div>
+
             <div class="flex-grow-1">
                 <h6 class="mb-0 fw-semibold">Asistente Virtual</h6>
                 <small class="opacity-75"><span class="d-inline-block rounded-circle bg-success" style="width: 8px; height: 8px;"></span> En línea</small>
             </div>
+
             <button class="btn btn-sm text-white bg-white bg-opacity-10 border-0 rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px;" @click="resetChat()" title="Reiniciar chat">
                 <i class="fa-solid fa-arrows-rotate"></i>
             </button>
@@ -32,12 +34,13 @@ $this->layout('layout', ['title' => 'Asistente']);
                             style="width: 30px; height: 30px; font-size: 0.75rem;">
                             <i class="fa-solid" :class="msg.sender === 'user' ? 'fa-user' : 'fa-robot'" style="color: white;"></i>
                         </div>
+
                         <!-- Burbuja -->
                         <div>
                             <div class="p-2 px-3 rounded-4 shadow-sm"
                                 :class="msg.sender === 'user' ? 'bg-primary text-white rounded-bottom-end-0' : 'bg-white text-dark rounded-bottom-start-0'"
-                                style="max-width: 280px; word-break: break-word;">
-                                <span x-text="msg.text"></span>
+                                style="max-width: 600px; word-break: break-word;">
+                                <span x-html="msg.text"></span>
                             </div>
                             <small class="text-muted d-block mt-1" style="font-size: 0.7rem;" x-text="msg.time"></small>
                         </div>

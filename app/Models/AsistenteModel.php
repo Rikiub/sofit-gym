@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Helpers\LLM\Tools;
+namespace App\Models;
 
 use App\Models\Clientes\ClientesModel;
 use CuyZ\Valinor\Normalizer\Normalizer;
 
-class ClientesTool
+class AsistenteModel
 {
     public function __construct(
-        private Normalizer $normalizerJson,
-        private ClientesModel $clientesModel
+        private Normalizer $normalizer,
+        private ClientesModel $clientesModel,
     ) {}
 
     /** Retorna un listado de todos los clientes junto a su información personal y estado de membresia.
@@ -29,12 +29,13 @@ class ClientesTool
      *   'fecha_fin_desde'    -> membership end date >= value
      *   'fecha_fin_hasta'    -> membership end date <= value
      * 
-     * @param array $filters Filtros a aplicar. Si no se proporciona, entonces devolvera todos los resultados.
+     * @param string $search Filtro de busqueda general.
+     * @param array $filters Filtros especificos. Mantener vacio [] en caso de no necesitar filtrado.
      * @return string JSON array de todos los clientes.
      */
-    public function query(array $filters = []): string
+    public function queryClientes(?string $search = null, array $filters = []): string
     {
-        $result = $this->clientesModel->query(filters: $filters);
-        return $this->normalizerJson->normalize($result);
+        $result = $this->clientesModel->query(search: $search, filters: $filters);
+        return $this->normalizer->normalize($result);
     }
 }

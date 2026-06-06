@@ -60,10 +60,12 @@ class ClientesModel extends BaseModel
     public function query(?string $search = null, array $filters = []): array
     {
         $sql = $this->sqlSelect();
+        $whereClauses = [];
         $params = [];
 
+        // Busqueda global
         if ($search) {
-            $columns = [
+            $searchColumns = [
                 'persona.nombre',
                 'persona.apellido',
                 'persona.correo',
@@ -72,14 +74,51 @@ class ClientesModel extends BaseModel
                 'persona.fecha_registro',
             ];
 
-            // Transforma cada columna en "columna LIKE ?"
-            $clauses = array_map(fn($col) => "$col LIKE ?", $columns);
+            $searchClauses = array_map(fn($col) => "$col LIKE ?", $searchColumns);
 
-            // Une las cláusulas con un OR y las pega al SQL
-            $sql .= " WHERE " . implode(" OR ", $clauses);
+            $whereClauses[] = "(" . implode(" OR ", $searchClauses) . ")";
 
-            // Rellena el arreglo con el mismo término de búsqueda tantas veces como columnas haya
-            $params = array_fill(0, count($columns), "%" . $search . "%");
+            foreach ($searchColumns as $col) {
+                $params[] = "%" . $search . "%";
+            }
+        }
+
+        // 2. Handle specific filters (mapped and grouped with AND)
+        // Define how each allowed filter key maps to the SQL column and operator
+        $filterDefinitions = [
+            'cedula'             => ['column' => 'persona.cedula', 'op' => 'LIKE'],
+            'nombre'             => ['column' => 'persona.nombre', 'op' => 'LIKE'],
+            'apellido'           => ['column' => 'persona.apellido', 'op' => 'LIKE'],
+            'correo'             => ['column' => 'persona.correo', 'op' => 'LIKE'],
+            'telefono'           => ['column' => 'persona.telefono', 'op' => 'LIKE'],
+            'activo'             => ['column' => 'cliente.activo', 'op' => '='],
+            'id_tipo'            => ['column' => 'membresia.id_tipo', 'op' => '='],
+            'id_estado'          => ['column' => 'membresia.id_estado', 'op' => '='],
+            'fecha_inicio_desde' => ['column' => 'membresia.fecha_inicio', 'op' => '>='],
+            'fecha_inicio_hasta' => ['column' => 'membresia.fecha_inicio', 'op' => '<='],
+            'fecha_fin_desde'    => ['column' => 'membresia.fecha_fin', 'op' => '>='],
+            'fecha_fin_hasta'    => ['column' => 'membresia.fecha_fin', 'op' => '<='],
+        ];
+
+        foreach ($filters as $key => $value) {
+            // Solo procesar si el filtro esta permitido y el valor no es nulo
+            if (isset($filterDefinitions[$key]) && $value !== null && $value !== '') {
+                $column = $filterDefinitions[$key]['column'];
+                $op = $filterDefinitions[$key]['op'];
+
+                $whereClauses[] = "$column $op ?";
+
+                if ($op === 'LIKE') {
+                    $params[] = "%" . $value . "%";
+                } else {
+                    $params[] = is_bool($value) ? (int)$value : $value;
+                }
+            }
+        }
+
+        // Construir los WHERE en el SQL
+        if (!empty($whereClauses)) {
+            $sql .= " WHERE " . implode(" AND ", $whereClauses);
         }
 
         $rows = $this->pdoQuery($sql, $params)->fetchAll();

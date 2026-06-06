@@ -1,17 +1,15 @@
 import { fetchApi } from "@/js/api.js";
 import Alpine from "alpinejs";
+import snarkdown from 'sharkdown';
 
 Alpine.data('chatBot', () => ({
-    messages: [{
-        sender: 'bot',
-        text: '¡Hola! 👋 Soy tu asistente virtual. ¿En qué puedo ayudarte?',
-        time: new Date().toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit'
-        })
-    }],
+    messages: [],
     inputText: '',
     isTyping: false,
+
+    init() {
+        this.resetChat();
+    },
 
     getTime() {
         return new Date().toLocaleTimeString([], {
@@ -25,11 +23,7 @@ Alpine.data('chatBot', () => ({
         if (!text || this.isTyping) return;
 
         // Agregar mensaje del usuario
-        this.messages.push({
-            sender: 'user',
-            text,
-            time: this.getTime()
-        });
+        this.addMessage('user', text);
         this.inputText = '';
 
         // Scroll al final
@@ -41,7 +35,7 @@ Alpine.data('chatBot', () => ({
         this.isTyping = true;
 
         try {
-            // Conectar con tu backend (reemplaza la URL por la real)
+            // Conectar con backend
             const data = await fetchApi({
                 page: "asistente",
                 action: "generateText",
@@ -53,19 +47,10 @@ Alpine.data('chatBot', () => ({
             });
 
             const botReply = data.message || 'Lo siento, no obtuve una respuesta.';
-
-            this.messages.push({
-                sender: 'bot',
-                text: botReply,
-                time: this.getTime()
-            });
+            this.addMessage('bot', botReply);
         } catch (error) {
             console.error(error);
-            this.messages.push({
-                sender: 'bot',
-                text: '⚠️ Error al conectar con el asistente. Intenta de nuevo.',
-                time: this.getTime()
-            });
+            this.addMessage('bot', '⚠️ Error al conectar con el asistente. Intenta de nuevo.');
         } finally {
             this.isTyping = false;
             this.$nextTick(() => {
@@ -75,12 +60,24 @@ Alpine.data('chatBot', () => ({
     },
 
     resetChat() {
-        this.messages = [{
-            sender: 'bot',
-            text: '¡Hola! 👋 Soy tu asistente virtual. ¿En qué puedo ayudarte?',
-            time: this.getTime()
-        }];
+        this.messages = [];
+        this.addMessage("bot", '¡Hola! 👋 Soy tu **asistente virtual**. ¿En qué puedo ayudarte?');
+
         this.inputText = '';
         this.isTyping = false;
+    },
+
+    /** 
+     * @param {"user"|"bot"} sender
+     * @param {string} text
+     */
+    addMessage(sender, text) {
+        const markdown = snarkdown(text);
+
+        this.messages.push({
+            sender: sender,
+            text: markdown,
+            time: this.getTime()
+        });
     }
 }));

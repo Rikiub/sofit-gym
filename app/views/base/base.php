@@ -21,6 +21,7 @@
             "imports": {
                 "@/": "<?= ASSETS_DIR ?>/",
 
+                "sharkdown": "<?= ASSETS_DIR ?>/lib/snarkdown/snarkdown.es.js",
                 "form-data-json": "<?= ASSETS_DIR ?>/lib/form-data-json/form-data-json.es6.js",
                 "alpinejs": "<?= ASSETS_DIR ?>/lib/alpinejs/alpinejs.esm.min.js",
                 "gridjs": "<?= ASSETS_DIR ?>/lib/gridjs/gridjs.module.js",
