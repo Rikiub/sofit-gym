@@ -72,12 +72,11 @@ class AsistenteController extends BaseController
             FunctionBuilder::buildFunctionInfo(new HumanInTheLoopTool(), "askUser")
         );
 
-        if ($this->usuario->rol === Rol::Administrador) {
-            $this->addTool("queryClientes");
-            $this->addTool("queryTrabajadores");
-        }
+        // Herramientas accesibles por todos los roles
+        $this->addTool("queryClientes");
 
-        if (in_array($this->usuario->rol, [Rol::Entrenador, Rol::Recepcionista], true)) {
+        // Limitar herramientas segun rol
+        if ($this->usuario->rol === Rol::Administrador) {
             $this->addTool("queryTrabajadores");
         }
     }
