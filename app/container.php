@@ -9,6 +9,7 @@ use CuyZ\Valinor\MapperBuilder;
 use CuyZ\Valinor\NormalizerBuilder;
 use League\Plates\Template\Theme;
 use League\Plates\Engine;
+use LLPhant\GeminiOpenAIConfig;
 use Psr\Log\LoggerInterface;
 
 use function DI\get;
@@ -44,6 +45,14 @@ return [
     },
     // Logger de la bitacora
     LoggerInterface::class => get(BitacoraLogger::class),
+
+    // Configuración Gemini
+    GeminiOpenAIConfig::class => function () {
+        $config = new GeminiOpenAIConfig();
+        $config->apiKey = $_ENV["GEMINI_API_KEY"];
+        $config->model = "gemini-2.5-flash-lite";
+        return $config;
+    },
 
     // Directorios donde cargar vistas/plantillas
     Engine::class => function () {

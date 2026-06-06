@@ -13,6 +13,7 @@ class ComposerStaticInit40e15966626f8150d37f32748b0b834e
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '61ba3e92ef91a7a0f1cc260ebd9290e4' => __DIR__ . '/..' . '/openai-php/client/src/OpenAI.php',
+        '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         'b33e3d135e5d9e47d845c576147bda89' => __DIR__ . '/..' . '/php-di/php-di/src/functions.php',
         '99a770b7454cade45fcd313037b1941d' => __DIR__ . '/../..' . '/app/Helpers/functions.php',
     );
@@ -26,6 +27,7 @@ class ComposerStaticInit40e15966626f8150d37f32748b0b834e
         array (
             'Symfony\\Polyfill\\Php80\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
+            'Symfony\\Polyfill\\Ctype\\' => 23,
             'Symfony\\Contracts\\Service\\' => 26,
         ),
         'P' =>
@@ -34,6 +36,7 @@ class ComposerStaticInit40e15966626f8150d37f32748b0b834e
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Http\\Client\\' => 16,
             'Psr\\Container\\' => 14,
+            'PhpOption\\' => 10,
             'PhpOffice\\PhpWord\\' => 18,
             'PhpOffice\\Math\\' => 15,
         ),
@@ -61,9 +64,11 @@ class ComposerStaticInit40e15966626f8150d37f32748b0b834e
             'GuzzleHttp\\Psr7\\' => 16,
             'GuzzleHttp\\Promise\\' => 19,
             'GuzzleHttp\\' => 11,
+            'GrahamCampbell\\ResultType\\' => 26,
         ),
         'D' =>
         array (
+            'Dotenv\\' => 7,
             'DI\\' => 3,
         ),
         'C' =>
@@ -89,6 +94,10 @@ class ComposerStaticInit40e15966626f8150d37f32748b0b834e
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
+        'Symfony\\Polyfill\\Ctype\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
+        ),
         'Symfony\\Contracts\\Service\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/service-contracts',
@@ -109,6 +118,10 @@ class ComposerStaticInit40e15966626f8150d37f32748b0b834e
         'Psr\\Container\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
+        ),
+        'PhpOption\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption',
         ),
         'PhpOffice\\PhpWord\\' =>
         array (
@@ -157,6 +170,14 @@ class ComposerStaticInit40e15966626f8150d37f32748b0b834e
         'GuzzleHttp\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
+        ),
+        'GrahamCampbell\\ResultType\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/graham-campbell/result-type/src',
+        ),
+        'Dotenv\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/vlucas/phpdotenv/src',
         ),
         'DI\\' =>
         array (

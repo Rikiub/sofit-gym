@@ -29,10 +29,10 @@ class ClientesTool
      *   'fecha_fin_desde'    -> membership end date >= value
      *   'fecha_fin_hasta'    -> membership end date <= value
      * 
-     * @param ?array $filters JSON array de todos los clientes.
-     * @return string
+     * @param array $filters Filtros a aplicar. Si no se proporciona, entonces devolvera todos los resultados.
+     * @return string JSON array de todos los clientes.
      */
-    public function query(?array $filters = []): string
+    public function query(array $filters = []): string
     {
         $result = $this->clientesModel->query(filters: $filters);
         return $this->normalizerJson->normalize($result);
