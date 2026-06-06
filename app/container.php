@@ -2,6 +2,8 @@
 
 use App\Helpers\Logger\BitacoraLogger;
 use App\Helpers\Plates\AssetExtension;
+use CuyZ\Valinor\Cache\FileSystemCache;
+use CuyZ\Valinor\Cache\FileWatchingCache;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use CuyZ\Valinor\Normalizer\Format;
 use CuyZ\Valinor\Normalizer\Normalizer;
@@ -68,7 +70,13 @@ return [
     // Utilizado para convertir arrays en DTOs
     // y validarlos en el proceso
     TreeMapper::class => function () {
+        $cache = new FileSystemCache(CACHE_DIR . '/valinor');
+        if (DEBUG) {
+            $cache = new FileWatchingCache($cache);
+        }
+
         return (new MapperBuilder())
+            ->withCache($cache)
             ->allowScalarValueCasting()
             ->allowSuperfluousKeys()
             ->allowUndefinedValues()
@@ -84,7 +92,13 @@ return [
     // Utilizado para convertir arrays en JSON
     // y convertir tipos como DateTime en texto
     Normalizer::class => function () {
+        $cache = new FileSystemCache(CACHE_DIR . '/valinor');
+        if (DEBUG) {
+            $cache = new FileWatchingCache($cache);
+        }
+
         return (new NormalizerBuilder())
+            ->withCache($cache)
             ->registerTransformer(fn(DateTimeInterface $date) => $date->format(DateTimeInterface::ATOM))
             ->normalizer(Format::json());
     },

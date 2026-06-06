@@ -7,16 +7,17 @@ use DI\ContainerBuilder;
 use Psr\Log\LoggerInterface;
 
 // Directorios
+define("CACHE_DIR", dirname(__DIR__) . "/.cache");
 define('BASE_DIR', rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\'));
 define('ASSETS_DIR', BASE_DIR . '/assets');
+
+// Modo Desarrollo
+define('DEBUG', filter_var($_ENV["DEBUG"] ?? true, FILTER_VALIDATE_BOOLEAN));
 
 // Timezones
 define("TIMEZONE", $_ENV["TIMEZONE"] ?? 'America/Caracas');
 define('TIMEZONE_OFFSET', (new DateTime('now', new DateTimeZone(TIMEZONE)))->format('P'));
 date_default_timezone_set(TIMEZONE);
-
-// Desarrollo
-define('DEBUG', $_ENV["DEBUG"] ?? true);
 
 // Constantes
 const CONTAINER_FILE = 'app/container.php';
@@ -46,6 +47,10 @@ try {
     // en el archivo CONTAINER_FILE.
     $builder = new ContainerBuilder();
     $builder->addDefinitions(CONTAINER_FILE)->useAttributes(true);
+    if (!DEBUG) {
+        // Activar cache en producción
+        $builder->enableCompilation(CACHE_DIR . '/php-di');
+    }
     $container = $builder->build();
 
     // Set contexto inicial del logger

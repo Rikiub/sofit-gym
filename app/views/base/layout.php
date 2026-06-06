@@ -20,7 +20,7 @@ $backgroundImage = ASSETS_DIR . '/base/background.webp';
 
 <div
     class="layout-root <?= $sidebar ? 'layout-sidebar' : '' ?>"
-    style="background-image: url('<?= $backgroundImage ?>');">
+    style="background-image: url('<?= $backgroundImage ?>'); background-color: #021C26;">
 
     <?php if ($sidebar): ?>
         <?= $this->insert('sidebar') ?>
