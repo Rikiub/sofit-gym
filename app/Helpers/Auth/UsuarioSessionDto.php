@@ -7,8 +7,7 @@ readonly class UsuarioSessionDto
 {
     public function __construct(
         public int $id,
-        public int $id_rol,
-        public string $rol,
+        public Rol $rol,
         public string $nombre,
     ) {}
 }

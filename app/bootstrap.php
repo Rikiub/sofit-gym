@@ -7,7 +7,9 @@ use DI\ContainerBuilder;
 use Psr\Log\LoggerInterface;
 
 // Directorios
-define("CACHE_DIR", dirname(__DIR__) . "/.cache");
+define("ROOT_DIR", dirname(__DIR__));
+define("CACHE_DIR", ROOT_DIR . "/.cache");
+
 define('BASE_DIR', rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\'));
 define('ASSETS_DIR', BASE_DIR . '/assets');
 

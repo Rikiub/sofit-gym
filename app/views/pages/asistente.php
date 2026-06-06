@@ -18,38 +18,42 @@ $this->layout('layout', ['title' => 'Asistente']);
                 <small class="opacity-75"><span class="d-inline-block rounded-circle bg-success" style="width: 8px; height: 8px;"></span> En línea</small>
             </div>
 
-            <button class="btn btn-sm text-white bg-white bg-opacity-10 border-0 rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px;" @click="resetChat()" title="Reiniciar chat">
+            <button
+                class="btn btn-sm text-white bg-white bg-opacity-10 border-0 rounded-circle d-flex align-items-center justify-content-center"
+                style="width: 34px; height: 34px;"
+                @click="newChat()"
+                title="Reiniciar chat">
                 <i class="fa-solid fa-arrows-rotate"></i>
             </button>
         </div>
 
         <!-- Cuerpo de mensajes -->
         <div class="card-body overflow-auto p-3" style="background-color: #f8f9fa;" x-ref="chatBody">
-            <template x-for="(msg, index) in messages" :key="index">
-                <div class="d-flex mb-3" :class="msg.sender === 'user' ? 'justify-content-end' : 'justify-content-start'">
-                    <div class="d-flex gap-2" :class="msg.sender === 'user' ? 'flex-row-reverse' : ''">
+            <template x-for="(msg, index) in mensajes" :key="index">
+                <div class="d-flex mb-3" :class="msg.rol === 'usuario' ? 'justify-content-end' : 'justify-content-start'">
+                    <div class="d-flex gap-2" :class="msg.rol === 'usuario' ? 'flex-row-reverse' : ''">
                         <!-- Avatar pequeño -->
                         <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
-                            :class="msg.sender === 'user' ? 'bg-primary' : 'bg-secondary'"
+                            :class="msg.rol === 'usuario' ? 'bg-primary' : 'bg-secondary'"
                             style="width: 30px; height: 30px; font-size: 0.75rem;">
-                            <i class="fa-solid" :class="msg.sender === 'user' ? 'fa-user' : 'fa-robot'" style="color: white;"></i>
+                            <i class="fa-solid" :class="msg.rol === 'usuario' ? 'fa-user' : 'fa-robot'" style="color: white;"></i>
                         </div>
 
                         <!-- Burbuja -->
                         <div>
                             <div class="p-2 px-3 rounded-4 shadow-sm"
-                                :class="msg.sender === 'user' ? 'bg-primary text-white rounded-bottom-end-0' : 'bg-white text-dark rounded-bottom-start-0'"
+                                :class="msg.rol === 'usuario' ? 'bg-primary text-white rounded-bottom-end-0' : 'bg-white text-dark rounded-bottom-start-0'"
                                 style="max-width: 600px; word-break: break-word;">
-                                <span x-html="msg.text"></span>
+                                <span x-html="msg.contenido"></span>
                             </div>
-                            <small class="text-muted d-block mt-1" style="font-size: 0.7rem;" x-text="msg.time"></small>
+                            <small class="text-muted d-block mt-1" style="font-size: 0.7rem;" x-text="msg.tiempo"></small>
                         </div>
                     </div>
                 </div>
             </template>
 
             <!-- Indicador de escritura -->
-            <div x-show="isTyping" class="d-flex align-items-center gap-2 mb-3">
+            <div :class="isTyping ? 'd-flex' : 'd-none'" class="align-items-center gap-2 mb-3">
                 <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; font-size: 0.75rem; color: white;">
                     <i class="fa-solid fa-robot"></i>
                 </div>

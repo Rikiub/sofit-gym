@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Helpers\Auth\Rol;
 use App\Helpers\Auth\UsuarioSession;
 use App\Helpers\Auth\UsuarioSessionDto;
 use App\Helpers\Response;
@@ -44,8 +45,7 @@ class LoginController extends BaseController
         // Guardar la sesión utilizando un helper
         UsuarioSession::login(new UsuarioSessionDto(
             id: $usuario->id_usuario,
-            id_rol: $usuario->id_rol,
-            rol: $usuario->rol,
+            rol: Rol::from($usuario->id_rol),
             nombre: $usuario->nombre_usuario,
         ));
 

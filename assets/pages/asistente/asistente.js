@@ -1,21 +1,37 @@
 import { fetchApi } from "@/js/api.js";
 import Alpine from "alpinejs";
 import snarkdown from 'sharkdown';
+import dayjs from "dayjs";
+
+const PROMPTS = {
+    bienvenida: '¡Hola! 👋 Soy tu **asistente virtual**. ¿En qué puedo ayudarte?',
+    sinRespuesta: 'Lo siento, no obtuve una respuesta.',
+    error: '⚠️ Error al conectar con el asistente. Intenta de nuevo.',
+}
 
 Alpine.data('chatBot', () => ({
-    messages: [],
+    sesion: null,
+    mensajes: [],
     inputText: '',
     isTyping: false,
 
-    init() {
-        this.resetChat();
-    },
-
-    getTime() {
-        return new Date().toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit'
+    async init() {
+        const sesiones = await fetchApi({
+            page: "asistente",
+            action: "querySesiones",
         });
+
+        this.sesion = await fetchApi({
+            page: "asistente",
+            action: "findSesion",
+            id: sesiones.at(-1).id_sesion,
+        });
+        for (const msg of this.sesion.mensajes) {
+            if (msg.rol === "herramienta") return;
+            this.addMessage(msg.rol, msg.contenido, msg.fecha_creacion);
+        }
+
+        if (this.mensajes.length === 0) this.resetChat();
     },
 
     async sendMessage() {
@@ -23,7 +39,7 @@ Alpine.data('chatBot', () => ({
         if (!text || this.isTyping) return;
 
         // Agregar mensaje del usuario
-        this.addMessage('user', text);
+        this.addMessage('usuario', text);
         this.inputText = '';
 
         // Scroll al final
@@ -46,11 +62,11 @@ Alpine.data('chatBot', () => ({
                 }
             });
 
-            const botReply = data.message || 'Lo siento, no obtuve una respuesta.';
-            this.addMessage('bot', botReply);
+            const botReply = data.message || PROMPTS.sinRespuesta;
+            this.addMessage('asistente', botReply);
         } catch (error) {
             console.error(error);
-            this.addMessage('bot', '⚠️ Error al conectar con el asistente. Intenta de nuevo.');
+            this.addMessage('asistente', PROMPTS.error);
         } finally {
             this.isTyping = false;
             this.$nextTick(() => {
@@ -59,25 +75,35 @@ Alpine.data('chatBot', () => ({
         }
     },
 
+    async newChat() {
+        this.sesion = await fetchApi({
+            page: "asistente",
+            action: "newSesion",
+        });
+        this.resetChat();
+    },
+
     resetChat() {
-        this.messages = [];
-        this.addMessage("bot", '¡Hola! 👋 Soy tu **asistente virtual**. ¿En qué puedo ayudarte?');
+        this.mensajes = [];
+        this.addMessage('sistema', PROMPTS.bienvenida);
 
         this.inputText = '';
         this.isTyping = false;
     },
 
     /** 
-     * @param {"user"|"bot"} sender
-     * @param {string} text
+     * @param {"sistema"|"asistente"|"usuario"} rol
+     * @param {string} contenido
+     * @param {string} fecha_creacion
      */
-    addMessage(sender, text) {
-        const markdown = snarkdown(text);
+    addMessage(rol, contenido, fecha_creacion = new Date()) {
+        const markdown = snarkdown(contenido);
+        const tiempo = dayjs(fecha_creacion).format("HH:mm");
 
-        this.messages.push({
-            sender: sender,
-            text: markdown,
-            time: this.getTime()
+        this.mensajes.push({
+            rol: rol,
+            contenido: markdown,
+            tiempo: tiempo,
         });
-    }
+    },
 }));
