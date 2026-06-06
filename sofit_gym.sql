@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 01-06-2026 a las 01:42:45
+-- Tiempo de generación: 06-06-2026 a las 22:18:22
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -79,6 +79,70 @@ INSERT INTO `asistencia_gimnasio` (`id_asistencia`, `cedula_cliente`, `fecha`, `
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `asistente_mensaje`
+--
+
+CREATE TABLE `asistente_mensaje` (
+  `id_mensaje` int(11) NOT NULL,
+  `id_sesion` int(11) NOT NULL,
+  `rol` enum('sistema','asistente','usuario','herramienta') NOT NULL,
+  `contenido` text NOT NULL,
+  `fecha_creacion` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `asistente_mensaje`
+--
+
+INSERT INTO `asistente_mensaje` (`id_mensaje`, `id_sesion`, `rol`, `contenido`, `fecha_creacion`) VALUES
+(5, 1, 'usuario', 'hola!', '2026-06-06 15:01:07'),
+(6, 1, 'sistema', '¡Hola! ¿En qué puedo ayudarte hoy?', '2026-06-06 15:01:08'),
+(7, 1, 'usuario', 'Que dijistes despues del \"hola!\"?', '2026-06-06 15:13:33'),
+(8, 1, 'sistema', '¡Claro! Después de \"¡Hola!\", pregunté: \"¿En qué puedo ayudarte hoy?\".', '2026-06-06 15:13:34'),
+(9, 3, 'usuario', 'hola', '2026-06-06 15:18:48'),
+(10, 3, 'sistema', '¡Hola! Soy tu instructor de entrenamiento en Sofit Gym. ¿En qué puedo ayudarte hoy?', '2026-06-06 15:18:50'),
+(11, 4, 'usuario', 'podrias decirme cuantos clientes tengo en mi sistema?', '2026-06-06 15:23:09'),
+(12, 4, 'sistema', 'Claro, ¿te refieres a todos los clientes registrados en el sistema o solo a los que tienen membresía activa?', '2026-06-06 15:23:11'),
+(13, 4, 'usuario', 'todos!', '2026-06-06 15:23:17'),
+(14, 4, 'sistema', 'Existen 3 clientes en tu sistema.', '2026-06-06 15:23:19'),
+(15, 4, 'usuario', 'impresionante', '2026-06-06 15:23:34'),
+(16, 4, 'sistema', 'I have 3 clients in the system.', '2026-06-06 15:23:36'),
+(17, 4, 'usuario', 'quien eres?', '2026-06-06 15:25:41'),
+(18, 4, 'sistema', 'Soy un modelo de lenguaje de Google.', '2026-06-06 15:25:42'),
+(19, 5, 'usuario', 'hola!', '2026-06-06 15:42:47'),
+(20, 5, 'sistema', '¡Hola! Soy el Asistente Virtual Inteligente de Sofit Gym. ¿En qué puedo ayudarte hoy?', '2026-06-06 15:42:50'),
+(21, 5, 'usuario', 'quien eres?', '2026-06-06 16:07:29'),
+(22, 5, 'asistente', '¡Hola! Soy el Asistente Virtual Inteligente de Sofit Gym. ¿En qué puedo ayudarte hoy?', '2026-06-06 16:07:30'),
+(23, 5, 'usuario', 'Podrias decirme en que te especializas?', '2026-06-06 16:07:43'),
+(24, 5, 'usuario', 'hola!', '2026-06-06 16:08:49');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `asistente_sesion`
+--
+
+CREATE TABLE `asistente_sesion` (
+  `id_sesion` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `titulo` varchar(100) DEFAULT NULL,
+  `modelo_usado` varchar(100) DEFAULT NULL,
+  `fecha_creacion` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `asistente_sesion`
+--
+
+INSERT INTO `asistente_sesion` (`id_sesion`, `id_usuario`, `titulo`, `modelo_usado`, `fecha_creacion`) VALUES
+(1, 2, NULL, 'gemini-2.5-flash-lite', '2026-06-06 14:24:45'),
+(3, 2, NULL, 'gemini-2.5-flash-lite', '2026-06-06 15:18:25'),
+(4, 2, NULL, 'gemini-2.5-flash-lite', '2026-06-06 15:18:51'),
+(5, 2, NULL, 'gemini-2.5-flash-lite', '2026-06-06 15:25:49');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `clase`
 --
 
@@ -100,7 +164,7 @@ CREATE TABLE `clase` (
 
 INSERT INTO `clase` (`id_clase`, `cedula_trabajador`, `nombre`, `descripcion`, `cupos_ocupados`, `capacidad_maxima`, `estado`, `fecha_inicio`, `fecha_fin`) VALUES
 (2, 'V-00000002', 'Dia de pierna', '¡Hora de fortalecer esas piernas!', 3, 15, 'Programado', '2026-05-26 12:00:00', '2026-05-12 03:00:00'),
-(13, 'V-00000002', 'Hola', 'Adios', 2, 20, 'Programado', '2026-05-30 09:00:00', '2026-05-31 12:00:00');
+(13, 'V-00000002', 'Hola', 'Adios', 4, 20, 'Programado', '2026-05-29 11:00:00', '2026-05-29 02:00:00');
 
 -- --------------------------------------------------------
 
@@ -124,6 +188,31 @@ INSERT INTO `clase_cliente` (`id_clase`, `cedula_cliente`) VALUES
 (13, 'V-11111111'),
 (13, 'V-33333333');
 
+--
+-- Disparadores `clase_cliente`
+--
+DELIMITER $$
+CREATE TRIGGER `tg_control_cupos_clase` BEFORE INSERT ON `clase_cliente` FOR EACH ROW begin
+	declare ocupados int;
+	declare maximo int;
+
+	select cupos_ocupados, capacidad_maxima
+	into ocupados, maximo
+	from clase
+	where id_clase = new.id_clase;
+	
+	if ocupados >= maximo then
+		signal sqlstate "45000"
+		set message_text = "Error: La clase ha alcanzado su capacidad maxima de alumnos.";
+	else
+		update clase
+		set cupos_ocupados = cupos_ocupados + 1
+		where id_clase = new.id_clase;
+	end if;
+end
+$$
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 --
@@ -143,22 +232,6 @@ INSERT INTO `cliente` (`cedula_cliente`, `id_membresia`) VALUES
 ('V-22222222', 12),
 ('V-11111111', 19),
 ('V-33333333', 24);
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `consulta_asistente`
---
-
-CREATE TABLE `consulta_asistente` (
-  `id_consulta` int(11) NOT NULL,
-  `id_usuario` int(11) DEFAULT NULL,
-  `cedula_cliente` varchar(15) DEFAULT NULL,
-  `fecha` datetime DEFAULT current_timestamp(),
-  `tipo` text DEFAULT NULL,
-  `pregunta` text DEFAULT NULL,
-  `respuesta` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -316,7 +389,8 @@ INSERT INTO `membresia` (`id_membresia`, `id_tipo`, `id_estado`, `fecha_inicio`,
 (25, 1, 1, '2026-05-22', '2026-05-30'),
 (26, 1, 1, '2026-05-23', '2026-05-30'),
 (27, 1, 1, '2026-05-25', '2026-05-30'),
-(28, 1, 1, '2026-05-27', '2026-05-30');
+(28, 1, 1, '2026-05-27', '2026-05-30'),
+(29, 1, 1, '2026-06-01', '2026-06-27');
 
 -- --------------------------------------------------------
 
@@ -392,7 +466,7 @@ CREATE TABLE `persona` (
 
 INSERT INTO `persona` (`cedula_persona`, `nombre`, `apellido`, `correo`, `telefono`, `direccion`, `fecha_nacimiento`, `fecha_registro`, `activo`) VALUES
 ('325325', 'asfas', 'fas', 'hola@gmail.com', '2323632', 'fa', '2026-05-21', '2026-05-22 00:37:59', 1),
-('V-00000001', 'Carlos', 'Pérez', 'carlos@sofit.com', '0412-4471891', NULL, '2026-05-21', '2026-05-30 22:36:47', 1),
+('V-00000001', 'Carlos', 'Pérez', 'carlos@sofit.com', '0412-4471891', NULL, '2026-05-21', '2026-06-05 22:32:29', 1),
 ('V-00000002', 'Ana', 'Gómez', 'ana@sofit.com', '0426-2142141', NULL, '2026-05-21', '2026-05-22 01:29:17', 1),
 ('V-11111111', 'María', 'Torres', 'maria@example.com', '0412-1234567', NULL, '2026-05-17', '2026-05-18 18:14:28', 1),
 ('V-11111898', 'll', 'fsfas', 'hola@gmail.com', '0412-3253252', 'jk', '2026-05-17', '2026-05-17 23:52:14', 1),
@@ -400,7 +474,7 @@ INSERT INTO `persona` (`cedula_persona`, `nombre`, `apellido`, `correo`, `telefo
 ('V-12521555', 'SSS', 'ff', 'hola@gmail.com', '0412-4212512', 'asfas', '2026-05-19', '2026-05-17 04:51:33', 1),
 ('V-13131412', 'asasf', 'asgas', 'hola@gmail.com', '0424-2152151', 'asfasf', '2026-05-18', '2026-05-17 20:50:21', 1),
 ('V-21215215', 'Carlos', 'fasf', 'hola@gmail.com', '0412-2141241', 'asaf', '2026-05-23', '2026-05-23 20:42:12', 1),
-('V-22222222', 'Luis', 'Martínez', 'luis@example.com', '0412-7654321', NULL, '2026-05-17', '2026-05-30 23:04:04', 1),
+('V-22222222', 'Luis', 'Martínez', 'luis@example.com', '0412-7654321', NULL, '2026-05-17', '2026-06-05 22:55:20', 1),
 ('V-22222224', 'Paola', 'fasf', 'hola@gmail.com', '0412-1242142', 'asfasf', '2026-05-22', '2026-05-22 22:01:55', 1),
 ('V-25125152', 'afas', 'saf', 'gasgsaas@gmail.com', '0412-2152152', 'asfa', '2026-05-22', '2026-05-17 00:53:17', 1),
 ('V-31114255', 'asf', 'asf', 'hola@gmail.com', '0412-4471891', 'safasf', '2026-05-20', '2026-05-20 05:28:44', 1),
@@ -408,7 +482,8 @@ INSERT INTO `persona` (`cedula_persona`, `nombre`, `apellido`, `correo`, `telefo
 ('V-31251251', 'XD', 'fas', 'hola@gmail.com', '0412-2352352', 'asf', '2026-05-25', '2026-05-25 19:57:28', 1),
 ('V-31492771', 'LOL', 'faf', 'hola@gmail.com', '0412-1412453', 'asf', '2026-05-21', '2026-05-22 04:05:11', 1),
 ('V-32523523', 'saf', 'asf', 'hola@gmail.com', '0412-1421412', 'asfa', '2026-05-23', '2026-05-24 05:07:31', 1),
-('V-33333333', 'Juan', 'Garcia', 'moroso@test.com', '0412-4471891', NULL, '2026-05-15', '2026-05-17 04:45:03', 1),
+('V-33333333', 'Juan', 'Garcia', 'moroso@test.com', '0412-4471891', NULL, '2026-05-15', '2026-06-01 16:32:47', 1),
+('V-36236326', '6sfsaf', 'asf', 'hola@gmail.com', '0412-2353252', 'asf', '2026-06-02', '2026-06-01 14:30:58', 1),
 ('V-42142155', 'XD', 'fa', 'hola@gmail.com', '0412-2141241', 'asaf', '2026-05-22', '2026-05-24 05:07:46', 1),
 ('V-93682363', 'Pan', 'Waos', 'gasgsaas@gmail.com', '0412-2521512', 'asfas', '2026-05-17', '2026-05-17 00:52:10', 1);
 
@@ -663,6 +738,34 @@ CREATE TABLE `venta_producto` (
 INSERT INTO `venta_producto` (`id_venta`, `codigo_producto`, `cedula_cliente`, `cantidad_vendida`, `monto_total`, `metodo_pago`, `fecha`) VALUES
 (1, 'PROT001', 'V-11111111', 45.00, NULL, 'Efectivo', '2026-04-26 02:55:55');
 
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `vista_clientes`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `vista_clientes` (
+`cedula` varchar(15)
+,`nombre` varchar(50)
+,`apellido` varchar(50)
+,`correo` varchar(100)
+,`telefono` varchar(20)
+,`direccion` text
+,`fecha_nacimiento` date
+,`fecha_registro` datetime
+,`activo` tinyint(1)
+,`membresia` varchar(370)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `vista_clientes`
+--
+DROP TABLE IF EXISTS `vista_clientes`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vista_clientes`  AS SELECT `cliente`.`cedula_cliente` AS `cedula`, `persona`.`nombre` AS `nombre`, `persona`.`apellido` AS `apellido`, `persona`.`correo` AS `correo`, `persona`.`telefono` AS `telefono`, `persona`.`direccion` AS `direccion`, `persona`.`fecha_nacimiento` AS `fecha_nacimiento`, `persona`.`fecha_registro` AS `fecha_registro`, `persona`.`activo` AS `activo`, json_object('id_membresia',`m`.`id_membresia`,'id_tipo',`m`.`id_tipo`,'estado',`me`.`nombre`,'id_estado',`m`.`id_estado`,'tipo',`mt`.`nombre`,'fecha_inicio',`m`.`fecha_inicio`,'fecha_fin',`m`.`fecha_fin`) AS `membresia` FROM ((((`cliente` left join `persona` on(`persona`.`cedula_persona` = `cliente`.`cedula_cliente`)) left join `membresia` `m` on(`cliente`.`id_membresia` = `m`.`id_membresia`)) left join `tipo_membresia` `mt` on(`m`.`id_tipo` = `mt`.`id_tipo`)) left join `estado_membresia` `me` on(`m`.`id_estado` = `me`.`id_estado`)) ;
+
 --
 -- Índices para tablas volcadas
 --
@@ -691,6 +794,19 @@ ALTER TABLE `asistencia_gimnasio`
   ADD KEY `idx_asistencias_fecha` (`fecha`);
 
 --
+-- Indices de la tabla `asistente_mensaje`
+--
+ALTER TABLE `asistente_mensaje`
+  ADD PRIMARY KEY (`id_mensaje`),
+  ADD KEY `idx_consultas_fecha` (`fecha_creacion`);
+
+--
+-- Indices de la tabla `asistente_sesion`
+--
+ALTER TABLE `asistente_sesion`
+  ADD PRIMARY KEY (`id_sesion`);
+
+--
 -- Indices de la tabla `clase`
 --
 ALTER TABLE `clase`
@@ -710,14 +826,6 @@ ALTER TABLE `clase_cliente`
 ALTER TABLE `cliente`
   ADD PRIMARY KEY (`cedula_cliente`),
   ADD KEY `id_membresia` (`id_membresia`);
-
---
--- Indices de la tabla `consulta_asistente`
---
-ALTER TABLE `consulta_asistente`
-  ADD PRIMARY KEY (`id_consulta`),
-  ADD KEY `id_usuario` (`id_usuario`),
-  ADD KEY `idx_consultas_fecha` (`fecha`);
 
 --
 -- Indices de la tabla `ejercicio`
@@ -888,16 +996,22 @@ ALTER TABLE `asistencia_gimnasio`
   MODIFY `id_asistencia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
+-- AUTO_INCREMENT de la tabla `asistente_mensaje`
+--
+ALTER TABLE `asistente_mensaje`
+  MODIFY `id_mensaje` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+
+--
+-- AUTO_INCREMENT de la tabla `asistente_sesion`
+--
+ALTER TABLE `asistente_sesion`
+  MODIFY `id_sesion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT de la tabla `clase`
 --
 ALTER TABLE `clase`
   MODIFY `id_clase` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
-
---
--- AUTO_INCREMENT de la tabla `consulta_asistente`
---
-ALTER TABLE `consulta_asistente`
-  MODIFY `id_consulta` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `ejercicio`
@@ -921,7 +1035,7 @@ ALTER TABLE `mantenimiento_equipo`
 -- AUTO_INCREMENT de la tabla `membresia`
 --
 ALTER TABLE `membresia`
-  MODIFY `id_membresia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id_membresia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT de la tabla `notificacion`
