@@ -30,6 +30,7 @@ Alpine.data("crudTable", () => (
         },
         columns: [
             {
+                id: "fecha",
                 name: "Fecha y Hora",
                 formatter: (cell, row) => dayjs(cell).format("DD/MM/YYYY HH:MM"),
             },

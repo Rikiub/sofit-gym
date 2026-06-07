@@ -74,10 +74,19 @@ class AsistenteController extends BaseController
 
         // Herramientas accesibles por todos los roles
         $this->addTool("queryClientes");
+        $this->addTool("findCliente");
 
         // Limitar herramientas segun rol
         if ($this->usuario->rol === Rol::Administrador) {
             $this->addTool("queryTrabajadores");
+        } else if (
+            $this->usuario->rol === Rol::Administrador
+            || $this->usuario->rol === Rol::Entrenador
+        ) {
+            $this->addTool("querySegFisico");
+            $this->addTool("querySegNutricional");
+            $this->addTool("queryAsistencias");
+            $this->addTool("queryRutinas");
         }
     }
 

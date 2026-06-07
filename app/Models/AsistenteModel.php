@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Helpers\Validator;
 use App\Models\Clientes\ClientesModel;
+use App\Models\Clientes\SegumientoFisicoModel;
+use App\Models\Clientes\SegumientoNutricionalModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use CuyZ\Valinor\Normalizer\Normalizer;
 use DateTimeImmutable;
@@ -48,8 +50,12 @@ class AsistenteModel extends BaseModel
         PDO $pdo,
         private TreeMapper $mapper,
         private Normalizer $normalizer,
-        private ClientesModel $clientesModel,
+        private AsistenciaModel $asistenciaModel,
+        private RutinasModel $rutinasModel,
         private TrabajadoresModel $trabajadoresModel,
+        private ClientesModel $clientesModel,
+        private SegumientoFisicoModel $segFisicoModel,
+        private SegumientoNutricionalModel $segNutricionalModel,
     ) {
         parent::__construct($pdo);
     }
@@ -156,14 +162,67 @@ class AsistenteModel extends BaseModel
         return $this->normalizer->normalize($items);
     }
 
+    /** Busca un cliente segun su cedula y devuelve su información personal si es encontrado.
+     * 
+     * @param string $cedula_cliente 
+     * @return string JSON array de todos los clientes.
+     */
+    public function findCliente(string $cedula_cliente): string
+    {
+        $items = $this->clientesModel->find($cedula_cliente);
+        return $this->normalizer->normalize($items);
+    }
+
+    /** Retorna un listado de los seguimientos fisicos de un cliente ordenados por fecha.
+     * @param string $cedula_cliente Cedula a utilizar para encontrar los seguimientos.
+     * @return string JSON array.
+     */
+    public function querySegFisico(string $cedula_cliente): string
+    {
+        $items = $this->segFisicoModel->queryByCliente($cedula_cliente);
+        return $this->normalizer->normalize($items);
+    }
+
+    /** Retorna un listado de los seguimientos nutricionales de un cliente ordenados por fecha.
+     * @param string $cedula_cliente Cedula a utilizar para encontrar los seguimientos.
+     * @return string JSON array.
+     */
+    public function querySegNutricional(string $cedula_cliente): string
+    {
+        $items = $this->segNutricionalModel->queryByCliente($cedula_cliente);
+        return $this->normalizer->normalize($items);
+    }
+
     /** Retorna un listado de trabajadores.
      * 
      * @param string $search Filtro de busqueda.
-     * @return string JSON arary de todos los trabajadores.
+     * @return string JSON array de todos los trabajadores.
      */
     public function queryTrabajadores(?string $search = null): string
     {
         $items = $this->trabajadoresModel->query($search);
+        return $this->normalizer->normalize($items);
+    }
+
+    /** Retorna un listado de asistencias, es decir un historial de fechas en las que ingresaron los clientes al gimnasio.
+     * 
+     * @param string $search Filtro de busqueda. Puedes filtrar por cedula o nombre cliente, e incluso fecha.
+     * @return string JSON array.
+     */
+    public function queryAsistencias(?string $search = ""): string
+    {
+        $items = $this->asistenciaModel->buscarEntradas($search);
+        return $this->normalizer->normalize($items);
+    }
+
+    /** Retorna el historial de rutinas asignadas a un cliente específico.
+     * 
+     * @param string $cedula_cliente Cedula del cliente a buscar.
+     * @return string JSON array.
+     */
+    public function queryRutinas(string $cedula_cliente): string
+    {
+        $items = $this->rutinasModel->obtenerAsignacionesPorCliente($cedula_cliente);
         return $this->normalizer->normalize($items);
     }
 }

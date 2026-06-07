@@ -34,6 +34,7 @@ Alpine.data("modalForm", () => (
             onEditFind: "find",
             onDelete: "delete",
         },
+        elementName: "Usuario",
         editDisableFields: ["nombre_usuario", "fecha_registro"],
         prepareAddData: {
             fecha_registro: toIsoDate(new Date()),
