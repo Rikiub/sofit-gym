@@ -135,6 +135,7 @@ try {
         ];
 
         if (DEBUG) {
+            $res["exception"] = get_class($error);
             $res['file'] = $error->getFile();
             $res['line'] = $error->getLine();
             $res['trace'] = $error->getTrace();
