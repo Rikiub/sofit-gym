@@ -6,6 +6,10 @@ use CuyZ\Valinor\Mapper\MappingError;
 use DI\ContainerBuilder;
 use Psr\Log\LoggerInterface;
 
+// Constantes locales
+const CONTAINER_FILE = 'app/container.php';
+const CONTROLLERS_NAMESPACE = 'App\Controllers';
+
 // Obtener query params
 $page = $_GET['page'] ?? 'inicio';
 $action = $_GET['action'] ?? 'index';

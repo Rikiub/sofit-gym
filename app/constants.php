@@ -17,8 +17,3 @@ define('DEBUG', filter_var($_ENV["DEBUG"] ?? true, FILTER_VALIDATE_BOOLEAN));
 define("TIMEZONE", $_ENV["TIMEZONE"] ?? 'America/Caracas');
 define('TIMEZONE_OFFSET', (new DateTime('now', new DateTimeZone(TIMEZONE)))->format('P'));
 date_default_timezone_set(TIMEZONE);
-
-// Otros
-// Necesarios para el front-controller
-define("CONTAINER_FILE", 'app/container.php');
-define("CONTROLLERS_NAMESPACE", 'App\Controllers');
