@@ -60,10 +60,8 @@ class AsistenteController extends BaseController
 
         $this->messages = array_map(function (AsistenteMensajeDTO $mensaje) {
             return match ($mensaje->rol) {
-                RolAsistente::Sistema => Message::system($mensaje->contenido),
                 RolAsistente::Asistente => Message::assistant($mensaje->contenido),
                 RolAsistente::Usuario => Message::user($mensaje->contenido),
-                RolAsistente::Herramienta => Message::toolResult($mensaje->contenido),
             };
         }, $this->sesion->mensajes);
 
@@ -76,10 +74,13 @@ class AsistenteController extends BaseController
         $this->addTool("queryClientes");
         $this->addTool("findCliente");
 
+
         // Limitar herramientas segun rol
         if ($this->usuario->rol === Rol::Administrador) {
             $this->addTool("queryTrabajadores");
-        } else if (
+        }
+
+        if (
             $this->usuario->rol === Rol::Administrador
             || $this->usuario->rol === Rol::Entrenador
         ) {
@@ -95,6 +96,59 @@ class AsistenteController extends BaseController
         $this->chat->addTool(
             FunctionBuilder::buildFunctionInfo($this->asistenteModel, $method)
         );
+    }
+
+    public function generateText()
+    {
+        $this->initSesion();
+
+        // Obtener mensaje desde el parametro
+        $body = $this->response->getParsedBody();
+        $content = $body["message"];
+        if (!$content)
+            return $this->response->json(["message" => "Se debe proporcionar el parametro 'message'"], 400);
+
+        // Almacenar mensaje del usuario
+        $this->asistenteModel->insertMensaje(new AsistenteMensajeDTO(
+            id_sesion: $this->sesion->id_sesion,
+            rol: RolAsistente::Usuario,
+            contenido: $content,
+        ));
+        $this->messages[] = Message::user($content);
+
+        // Loopear hasta que el asistente devuelva la respuesta completa o exceda los intentos
+        $maxLoops = 5;
+        $loopCount = 0;
+
+        while ($loopCount < $maxLoops) {
+            $loopCount++;
+
+            // Llamar al modelo de AI
+            $result = $this->chat->generateChatOrReturnFunctionCalled($this->messages);
+
+            // El LLM produjo una respuesta final. Devolver resultado.
+            if (is_string($result)) {
+                $this->asistenteModel->insertMensaje(new AsistenteMensajeDTO(
+                    id_sesion: $this->sesion->id_sesion,
+                    rol: RolAsistente::Asistente,
+                    contenido: $result,
+                ));
+                return $this->response->json([
+                    "message" => $result,
+                ]);
+            }
+
+            // El LLM quiere llamar una o mas herramientas.
+            // Resolver la llamada a la herramienta y recolectar los mensajes devuelta.
+            foreach ($result as $functionInfo) {
+                $toolMessages = $functionInfo->callAndReturnAsOpenAIMessages();
+                foreach ($toolMessages as $msg) {
+                    $this->messages[] = $msg;
+                }
+            }
+        }
+
+        return $this->response->json(["message" => "Excedido el límite de vueltas."], 500);
     }
 
     public function querySesiones()
@@ -124,67 +178,5 @@ class AsistenteController extends BaseController
         $this->messages = [];
 
         return $this->response->json($this->sesion);
-    }
-
-    public function generateText()
-    {
-        $this->initSesion();
-
-        $body = $this->response->getParsedBody();
-        $content = $body["message"];
-        if (!$content)
-            return $this->response->json(["message" => "Se debe proporcionar el parametro 'message'"], 400);
-
-        // Precargar mensaje del usuario
-        $this->messages[] = Message::user($content);
-
-        // Loopear hasta que el asistente devuelva la respuesta completa o exceda los 5 intentos
-        $maxLoops = 5;
-        $loopCount = 0;
-
-        while ($loopCount < $maxLoops) {
-            $loopCount++;
-
-            // Llamar al modelo de AI
-            $result = $this->chat->generateChatOrReturnFunctionCalled($this->messages);
-
-            // Si hubo exito, entonces guardar mensaje del usuario en la base de datos
-            $this->asistenteModel->insertMensaje(new AsistenteMensajeDTO(
-                id_sesion: $this->sesion->id_sesion,
-                rol: RolAsistente::Usuario,
-                contenido: $content,
-            ));
-
-            // El LLM produjo una respuesta final. Devolver resultado.
-            if (is_string($result)) {
-                $this->asistenteModel->insertMensaje(new AsistenteMensajeDTO(
-                    id_sesion: $this->sesion->id_sesion,
-                    rol: RolAsistente::Asistente,
-                    contenido: $result,
-                ));
-                return $this->response->json([
-                    "message" => $result,
-                ]);
-            }
-
-            // El LLM quiere llamar una o mas herramientas.
-            foreach ($result as $functionInfo) {
-                // Resolver la llamada a la herramienta y recolectar los mensajes devuelta.
-                $toolMessages = $functionInfo->callAndReturnAsOpenAIMessages();
-
-                foreach ($toolMessages as $msg) {
-                    $realRol = ($msg->role === ChatRole::Assistant)
-                        ? RolAsistente::Asistente
-                        : RolAsistente::Herramienta;
-
-                    $this->asistenteModel->insertMensaje(new AsistenteMensajeDTO(
-                        id_sesion: $this->sesion->id_sesion,
-                        rol: $realRol,
-                        contenido: $msg->content,
-                    ));
-                    $this->messages[] = $msg;
-                }
-            }
-        }
     }
 }

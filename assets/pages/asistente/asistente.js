@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 const PROMPTS = {
     bienvenida: '¡Hola! 👋 Soy tu **asistente virtual**. ¿En qué puedo ayudarte?',
     sinRespuesta: 'Lo siento, no obtuve una respuesta.',
-    error: '⚠️ Error al conectar con el asistente. Intenta de nuevo.',
+    error: '⚠️ Error al conectar con el asistente. Intenta de nuevo más tarde.',
 }
 
 Alpine.data('chatBot', () => ({
@@ -16,18 +16,27 @@ Alpine.data('chatBot', () => ({
     isTyping: false,
 
     async init() {
-        const sesiones = await fetchApi({
-            page: "asistente",
-            action: "querySesiones",
-        });
+        const sesionId = new URLSearchParams(location.search).get("id_sesion");
 
-        this.sesion = await fetchApi({
-            page: "asistente",
-            action: "findSesion",
-            id: sesiones.at(-1).id_sesion,
-        });
+        if (sesionId) {
+            this.sesion = await fetchApi({
+                page: "asistente",
+                action: "findSesion",
+                id: sesionId,
+            });
+        } else {
+            const sesiones = await fetchApi({
+                page: "asistente",
+                action: "querySesiones",
+            });
+            this.sesion = await fetchApi({
+                page: "asistente",
+                action: "findSesion",
+                id: sesiones.at(-1).id_sesion,
+            });
+        }
+        
         for (const msg of this.sesion.mensajes) {
-            if (msg.rol === "herramienta") return;
             this.addMessage(msg.rol, msg.contenido, msg.fecha_creacion);
         }
 
@@ -85,14 +94,14 @@ Alpine.data('chatBot', () => ({
 
     resetChat() {
         this.mensajes = [];
-        this.addMessage('sistema', PROMPTS.bienvenida);
+        this.addMessage('asistente', PROMPTS.bienvenida);
 
         this.inputText = '';
         this.isTyping = false;
     },
 
     /** 
-     * @param {"sistema"|"asistente"|"usuario"} rol
+     * @param {"asistente"|"usuario"} rol
      * @param {string} contenido
      * @param {string} fecha_creacion
      */

@@ -87,9 +87,13 @@ class TrabajadoresModel extends BaseModel
 
         // Bloque de Búsqueda de Texto
         if ($search) {
+            $search = trim($search);
+
             $columns = [
                 'persona.nombre',
                 'persona.apellido',
+                "CONCAT(persona.nombre, ' ', persona.apellido)", // Permite buscar "Juan Perez"
+                "CONCAT(persona.apellido, ' ', persona.nombre)", // Permite buscar "Perez Juan"
                 'persona.correo',
                 'persona.telefono',
                 'persona.fecha_nacimiento',
@@ -98,9 +102,8 @@ class TrabajadoresModel extends BaseModel
             ];
 
             // Creamos las "columna LIKE ?"
+            // Y agrupamos TODOS los ORs dentro de un paréntesis para proteger la lógica
             $clauses = array_map(fn($col) => "$col LIKE ?", $columns);
-
-            // Agrupamos TODOS los ORs dentro de un paréntesis para proteger la lógica
             $whereClauses[] = "(" . implode(" OR ", $clauses) . ")";
 
             // Rellenamos los parámetros posicionales uno por uno

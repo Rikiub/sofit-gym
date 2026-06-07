@@ -65,26 +65,31 @@ class ClientesModel extends BaseModel
 
         // Busqueda global
         if ($search) {
-            $searchColumns = [
+            $search = trim($search);
+
+            $columns = [
                 'persona.nombre',
                 'persona.apellido',
+                "CONCAT(persona.nombre, ' ', persona.apellido)", // Permite buscar "Juan Perez"
+                "CONCAT(persona.apellido, ' ', persona.nombre)", // Permite buscar "Perez Juan"
                 'persona.correo',
                 'persona.telefono',
                 'persona.fecha_nacimiento',
                 'persona.fecha_registro',
             ];
 
-            $searchClauses = array_map(fn($col) => "$col LIKE ?", $searchColumns);
-
+            // Creamos las "columna LIKE ?"
+            // Y agrupamos TODOS los ORs dentro de un paréntesis para proteger la lógica
+            $searchClauses = array_map(fn($col) => "$col LIKE ?", $columns);
             $whereClauses[] = "(" . implode(" OR ", $searchClauses) . ")";
 
-            foreach ($searchColumns as $col) {
+            // Rellenamos los parámetros posicionales uno por uno
+            foreach ($columns as $col) {
                 $params[] = "%" . $search . "%";
             }
         }
 
         // 2. Handle specific filters (mapped and grouped with AND)
-        // Define how each allowed filter key maps to the SQL column and operator
         $filterDefinitions = [
             'cedula'             => ['column' => 'persona.cedula', 'op' => 'LIKE'],
             'nombre'             => ['column' => 'persona.nombre', 'op' => 'LIKE'],
@@ -106,11 +111,12 @@ class ClientesModel extends BaseModel
                 $column = $filterDefinitions[$key]['column'];
                 $op = $filterDefinitions[$key]['op'];
 
-                $whereClauses[] = "$column $op ?";
-
+                // Si el operador es LIKE, aplicamos la colación para ignorar acentos en los filtros individuales
                 if ($op === 'LIKE') {
+                    $whereClauses[] = "$column LIKE ? COLLATE utf8mb4_unicode_ci";
                     $params[] = "%" . $value . "%";
                 } else {
+                    $whereClauses[] = "$column $op ?";
                     $params[] = is_bool($value) ? (int)$value : $value;
                 }
             }
