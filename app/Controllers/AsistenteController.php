@@ -11,7 +11,6 @@ use App\Models\AsistenteMensajeDTO;
 use App\Models\AsistenteModel;
 use App\Models\AsistenteSesionDTO;
 use App\Models\RolAsistente;
-use LLPhant\Chat\Enums\ChatRole;
 use LLPhant\Chat\FunctionInfo\FunctionBuilder;
 use LLPhant\Chat\Message;
 use LLPhant\Chat\OpenAIChat;
