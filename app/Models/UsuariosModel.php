@@ -100,9 +100,12 @@ class UsuariosModel extends BaseModel
         $usuario->validateUpdate();
         $this->pdo->beginTransaction();
 
+        $array = $this->dtoToArray($usuario);
+        unset($array["contrasena_hash"]);
+
         $this->pdoUpdate(
             $this->table,
-            $this->dtoToArray($usuario),
+            $array,
             [$this->primaryKey => $usuario->id_usuario],
         );
         $usuario = $this->find($usuario->nombre_usuario);
