@@ -5,7 +5,7 @@ import { fetchApi } from "@/js/api.js";
 import { toIsoDateTime } from "@/js/dates.js";
 import dayjs from "dayjs";
 
-const PAGE = "clases";
+const PAGE = "clasesGrupales";
 
 Alpine.data("calendarClases", () => calendarComponent({
     urlParams: {

@@ -9,7 +9,7 @@ use App\Models\ClasesGrupalesModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use Exception;
 
-class ClasesController extends BaseController
+class ClasesGrupalesController extends BaseController
 {
     public function __construct(
         private Response $response,

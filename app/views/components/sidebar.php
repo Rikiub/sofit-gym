@@ -67,7 +67,7 @@
 			<i class="fas fa-fingerprint"></i> <span>Control de Asistencia</span>
 		</a>
 
-		<a href="?page=clases" class="nav-single">
+		<a href="?page=clasesGrupales" class="nav-single">
 			<i class="fas fa-calendar"></i> <span>Horarios de clases</span>
 		</a>
 
