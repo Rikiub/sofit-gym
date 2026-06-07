@@ -16,7 +16,7 @@ $this->pushJs('pages/clientes/clientes.js');
     </div>
 
     <!-- Membresía -->
-    <div class="col-md-6" style="margin-top: 61px;">
+    <div class="col-md-6" style="margin-top: 61px;" x-data="clienteInfo">
         <div class="card shadow-sm">
             <header class="card-header">
                 <h3 class="card-title mb-0">Membresia</h3>

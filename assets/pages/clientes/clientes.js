@@ -74,6 +74,27 @@ Alpine.data("modalClientes", () => ({
 // CLIENTES ITEM
 const clientesItemPage = "ClientesItem";
 
+Alpine.data("clienteInfo", () => ({
+    cliente: {},
+    
+    async init() {
+        this.cliente = await fetchApi({
+            page: "clientes",
+            action: "find",
+            id: new URLSearchParams(location.search).get("id"),
+        });
+    },
+
+    setText(value) {
+        return value ?? "Desconocido";
+    },
+
+    onlyDate(value) {
+        if (!value) return value;
+        return dayjs(value).format("DD/MM/YYYY");
+    }
+}));
+
 // SEGUIMIENTO FISICO
 const idSegFisico = "seg_fisico";
 
