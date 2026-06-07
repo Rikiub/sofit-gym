@@ -1,6 +1,5 @@
 import { crudTableComponent } from "@/components/crudTable.js";
 import { modalFormComponent } from "@/components/modalForm.js";
-import { toIsoDate } from "@/js/dates.js";
 import { fetchApi } from "@/js/api.js";
 import { h } from "gridjs";
 import Alpine from "alpinejs";
@@ -41,25 +40,11 @@ Alpine.data("modalClientes", (isSinglePage = false) => ({
     ...modalFormComponent({
         id: clientesId,
         page: CLIENTES_PAGE,
-        actions: {
-            onAdd: "insert",
-            onEditFind: "find",
-            onEdit: "update",
-            onDelete: "delete",
-        },
         elementName: "Cliente",
         prepareAddData: {
             membresia: {
-                fecha_inicio: toIsoDate(new Date())
+                fecha_inicio: new Date()
             },
-        },
-        transformEditData: (data) => {
-            data.fecha_nacimiento = toIsoDate(data.fecha_nacimiento);
-            data.membresia.fecha_inicio = toIsoDate(
-                data.membresia.fecha_inicio,
-            );
-            data.membresia.fecha_fin = toIsoDate(data.membresia.fecha_fin);
-            return data;
         },
         editDisableFields: ["cedula"],
         afterSubmit: (mode) => {
@@ -185,7 +170,7 @@ Alpine.data("modalSegFisico", () => modalFormComponent({
         onDelete: "deleteSegFisico",
     },
     prepareAddData: {
-        fecha: toIsoDate(new Date()),
+        fecha: new Date(),
     },
     extraPostBody: {
         cedula_cliente: new URLSearchParams(location.search).get("id"),
@@ -238,7 +223,7 @@ Alpine.data("modalSegNutricional", () => modalFormComponent({
         onDelete: "deleteSegNutricional",
     },
     prepareAddData: {
-        fecha: toIsoDate(new Date()),
+        fecha: new Date(),
     },
     extraPostBody: {
         cedula_cliente: new URLSearchParams(location.search).get("id"),

@@ -1,7 +1,6 @@
 import Alpine from "alpinejs";
 import { modalFormComponent } from "@/components/modalForm.js";
 import { crudTableComponent } from "@/components/crudTable.js";
-import { toIsoDate } from "@/js/dates.js";
 import dayjs from "dayjs";
 
 const PAGE = "usuarios";
@@ -28,19 +27,9 @@ Alpine.data("crudTableUsuarios", () => (
 Alpine.data("modalFormUsuarios", () => (
     modalFormComponent({
         page: PAGE,
-        actions: {
-            onAdd: "insert",
-            onEdit: "update",
-            onEditFind: "find",
-            onDelete: "delete",
-        },
         elementName: "Usuario",
         editDisableFields: ["nombre_usuario", "fecha_registro"],
         prepareAddData: {
-            fecha_registro: toIsoDate(new Date()),
+            fecha_registro: new Date(),
         },
-        transformEditData: (item) => {
-            item.fecha_registro = toIsoDate(item.fecha_registro);
-            return item;
-        }
     })));

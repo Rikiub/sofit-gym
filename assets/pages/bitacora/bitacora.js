@@ -1,7 +1,6 @@
 import Alpine from "alpinejs";
 import { modalFormComponent } from "@/components/modalForm.js";
 import { crudTableComponent } from "@/components/crudTable.js";
-import { toIsoDate } from "@/js/dates.js";
 import { html } from "gridjs";
 import dayjs from "dayjs";
 

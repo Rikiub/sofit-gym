@@ -1,8 +1,7 @@
 import { fetchApi } from "@/js/api.js";
-import { toIsoDate } from "@/js/dates.js";
+import { populateForm } from "@/js/form.js";
 import FormDataJson from "form-data-json";
 import Alpine from "alpinejs";
-import { populateFormRecursive } from "@/js/dates.js";
 
 /**
  * @param {Object} data
@@ -31,7 +30,6 @@ export function openModal(data, detail) {
  * extraPostBody: object?,
  * elementName: string?,
  * prepareAddData?: Object,
- * transformEditData?: (data: object) => object,
  * editDisableFields?: string[],
  * afterSubmit?: (mode: string) => void,
  * id?: string,
@@ -39,11 +37,15 @@ export function openModal(data, detail) {
  */
 export function modalFormComponent({
     page,
-    actions,
+    actions = {
+        onAdd: "insert",
+        onEdit: "update",
+        onEditFind: "find",
+        onDelete: "delete",
+    },
     extraPostBody = {},
     elementName = "",
     prepareAddData = {},
-    transformEditData = (data) => data,
     editDisableFields = [],
     afterSubmit = () => null,
     id: componentId = null,
@@ -201,11 +203,7 @@ export function modalFormComponent({
             this.resetForm();
             this.mode = "add";
 
-            FormDataJson.fromJson(this.$refs.form, prepareAddData, {
-                clearOthers: true,
-                includeDisabled: true,
-            });
-
+            populateForm(this.$refs.form, prepareAddData);
             this.openModal();
         },
         async onEdit(id) {
@@ -219,18 +217,13 @@ export function modalFormComponent({
                 action: this.actions.onEditFind,
                 id: this.currentDataId,
             });
-            data = transformEditData(data);
 
             // Alertar a otros componentes que preparen sus datos
             this.$dispatch("form-load", { id: this.currentId, data });
             await this.$nextTick();
 
             // Rellenar datos iniciales
-            FormDataJson.fromJson(this.$refs.form, data, {
-                clearOthers: true,
-                includeDisabled: true,
-            });
-            populateFormRecursive(data, this.$refs.form);
+            populateForm(this.$refs.form, data);
 
             // Reactivar inputs desactivados
             for (const inputName of editDisableFields) {

@@ -2,7 +2,6 @@ import Alpine from "alpinejs";
 import { fetchApi } from "@/js/api.js";
 import { crudTableComponent } from "@/components/crudTable.js";
 import { modalFormComponent } from "@/components/modalForm.js";
-import { toIsoDate } from "@/js/dates.js";
 
 const PAGE_EQUIPOS = "equipos";
 
@@ -42,18 +41,8 @@ Alpine.data("crudMantenimiento", () => (
 Alpine.data("modalMantenimiento", () => (
     modalFormComponent({
         page: PAGE_MANTENIMIENTO,
-        actions: {
-            onAdd: "insert",
-            onEdit: "update",
-            onEditFind: "find",
-            onDelete: "delete",
-        },
         elementName: "Mantenimiento",
         prepareAddData: {
-            fecha: toIsoDate(new Date()),
+            fecha: new Date(),
         },
-        transformEditData: (item) => {
-            item.fecha = toIsoDate(item.fecha);
-            return item;
-        }
     })))

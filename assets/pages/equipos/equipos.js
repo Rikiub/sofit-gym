@@ -21,12 +21,6 @@ Alpine.data("crudEquipos", () => (
 Alpine.data("modalEquipos", () => (
     modalFormComponent({
         page: "equipos",
-        actions: {
-            onAdd: "insert",
-            onEdit: "update",
-            onEditFind: "find",
-            onDelete: "delete",
-        },
         elementName: "Equipo",
         editDisableFields: ["codigo"],
     })))

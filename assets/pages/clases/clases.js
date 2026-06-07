@@ -2,7 +2,6 @@ import Alpine from "alpinejs";
 import { modalFormComponent, openModal } from "@/components/modalForm.js";
 import { calendarComponent } from "@/components/calendar.js";
 import { fetchApi } from "@/js/api.js";
-import { toIsoDateTime } from "@/js/dates.js";
 import dayjs from "dayjs";
 
 const PAGE = "clasesGrupales";
@@ -71,21 +70,10 @@ Alpine.data("calendarClases", () => calendarComponent({
 
 Alpine.data("modalForm", () => modalFormComponent({
     page: PAGE,
-    actions: {
-        onAdd: "insert",
-        onEdit: "update",
-        onEditFind: "find",
-        onDelete: "delete",
-    },
     elementName: "Clase",
     prepareAddData: {
-        fecha_inicio: toIsoDateTime(new Date()),
+        fecha_inicio: new Date(),
     },
-    transformEditData: (item) => {
-        item.fecha_inicio = toIsoDateTime(item.fecha_inicio);
-        item.fecha_fin = toIsoDateTime(item.fecha_fin);
-        return item;
-    }
 }));
 
 Alpine.data("listaClientes", () => ({
