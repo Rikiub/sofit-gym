@@ -122,7 +122,7 @@ class ProductosModel extends BaseModel
         try {
             if ($fisico) {
                 // Borrado físico usando pdoDelete de BaseModel
-                $filasAfectadas = $this->pdoDelete($this->tabla, 'codigo_producto', $codigo);
+                $filasAfectadas = $this->pdoDelete($this->tabla, ['codigo_producto' => $codigo]);
                 return $filasAfectadas > 0;
             } else {
                 // Borrado lógico (recomendado por claves foráneas en venta_producto)

@@ -28,7 +28,7 @@ readonly class ClaseGrupalDTO
         public ?array $clientes = [],
         public ?string $nombre = null,
         public ?string $descripcion = null,
-        public ?int $cupos_ocupados = 0,
+        public ?int $capacidad_actual = 0,
         public ?int $capacidad_maxima = null,
         public ?EstadoClase $estado = null,
         public ?DateTimeImmutable $fecha_inicio = null,
@@ -68,7 +68,7 @@ class ClasesGrupalesModel extends BaseModel
         return <<<SQL
             SELECT
                 clase.*,
-                COUNT(cc.id_clase) AS `cupos_ocupados`,
+                COUNT(cc.id_clase) AS `capacidad_actual`,
                 COALESCE(
                     CONCAT(
                         '[', 

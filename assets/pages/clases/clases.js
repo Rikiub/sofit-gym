@@ -92,7 +92,7 @@ Alpine.data("listaClientes", () => ({
     keyName: "clientes",
 
     clientes: [],
-    cupos_ocupados: 0,
+    capacidad_actual: 0,
 
     add(item) {
         // No agregar duplicados
@@ -100,15 +100,15 @@ Alpine.data("listaClientes", () => ({
         if (exists) return;
 
         this.clientes.push(item);
-        this.cupos_ocupados += 1;
+        this.capacidad_actual += 1;
     },
     remove(index) {
         this.clientes.splice(index, 1);
-        this.cupos_ocupados -= 1;
+        this.capacidad_actual -= 1;
     },
     reset() {
         this.clientes = [];
-        this.cupos_ocupados = 0;
+        this.capacidad_actual = 0;
     },
 
     // EVENTS
@@ -118,7 +118,7 @@ Alpine.data("listaClientes", () => ({
     load(item) {
         const clientes = item.data.clientes || [];
         this.clientes = clientes;
-        this.cupos_ocupados = clientes.length;
+        this.capacidad_actual = clientes.length;
     },
     validate(detail) {
         if (this.clientes.length === 0) {

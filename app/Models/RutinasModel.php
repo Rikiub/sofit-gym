@@ -115,7 +115,7 @@ class RutinasModel extends BaseModel
     public function eliminarRutina(int $id): bool
     {
         try {
-            $filasAfectadas = $this->pdoDelete('rutina', 'id_rutina', $id);
+            $filasAfectadas = $this->pdoDelete('rutina', ['id_rutina' => $id]);
             return $filasAfectadas > 0;
         } catch (\PDOException $e) {
             return false;
@@ -258,7 +258,7 @@ class RutinasModel extends BaseModel
     public function eliminarAsignacion(int $idAsignacion): bool
     {
         try {
-            $filasAfectadas = $this->pdoDelete('rutina_asignada', 'id_asignacion', $idAsignacion);
+            $filasAfectadas = $this->pdoDelete('rutina_asignada', ['id_asignacion' => $idAsignacion]);
             return $filasAfectadas > 0;
         } catch (\PDOException $e) {
             return false;

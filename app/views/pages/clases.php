@@ -84,8 +84,8 @@ $modalForm = $this->fetch('modalForm', [
             >
                 <fieldset class="row">
                     <label class="col">
-                        <span class="form-label">Cupos Ocupados</span>
-                        <input class="form-control" name="cupos_ocupados" :value="cupos_ocupados" placeholder="0" readonly>
+                        <span class="form-label">Capacidad Actual</span>
+                        <input class="form-control" name="capacidad_actual" :value="capacidad_actual" placeholder="0" readonly>
                     </label>
 
                     <label class="col">

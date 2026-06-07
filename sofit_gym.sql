@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 07-06-2026 a las 02:43:05
+-- Tiempo de generación: 07-06-2026 a las 03:28:43
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -186,7 +186,32 @@ INSERT INTO `clase_cliente` (`id_clase`, `cedula_cliente`) VALUES
 (2, 'V-33333333'),
 (13, 'V-11111111'),
 (13, 'V-33333333'),
-(20, 'V-22222222');
+(20, 'V-22222222'),
+(20, 'V-33333333');
+
+--
+-- Disparadores `clase_cliente`
+--
+DELIMITER $$
+CREATE TRIGGER `tg_control_capacidad_clase` BEFORE INSERT ON `clase_cliente` FOR EACH ROW begin
+	declare capacidad_actual int;
+	declare capacidad_maxima int;
+
+	select COUNT(*) into capacidad_actual
+	from clase_cliente
+	where cedula_cliente = new.cedula_cliente;
+	
+	select capacidad_maxima into capacidad_maxima
+	from clase
+	where id_clase = new.id_clase;
+	
+	if capacidad_actual > capacidad_maxima then
+		signal sqlstate "45000"
+		set MESSAGE_TEXT = "Error: La clase ha alcanzado su maxima capacidad. No se admiten mas clientes.";
+	end if;
+end
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -470,9 +495,10 @@ CREATE TABLE `producto` (
 --
 
 INSERT INTO `producto` (`codigo_producto`, `nombre`, `categoria`, `precio_venta`, `stock_minimo`, `stock_actual`, `unidad_medida`, `activo`) VALUES
-('1313131', 'asfasfasfas', 'Suplementos', 4444.00, 5, 10, 'unidad', 1),
+('1313131', 'asfasfasfas', 'Suplementos', 4444.00, 5, 10, 'unidad', 0),
 ('2352323', 'asfa', 'Suplementos', 5.00, 10, 5, 'unidad', 0),
-('PROT001', 'Proteína Whe', '', 45.00, 0, 19, 'unidad', 0);
+('PROT001', 'Proteína Whe', '', 45.00, 0, 19, 'unidad', 0),
+('xcbxb', 'sfsa', 'Snacks', 5.00, 5, 2, 'unidad', 1);
 
 -- --------------------------------------------------------
 
@@ -699,6 +725,18 @@ CREATE TABLE `venta_producto` (
 
 INSERT INTO `venta_producto` (`id_venta`, `codigo_producto`, `cedula_cliente`, `cantidad_vendida`, `monto_total`, `metodo_pago`, `fecha`) VALUES
 (1, 'PROT001', 'V-11111111', 45.00, NULL, 'Efectivo', '2026-04-26 02:55:55');
+
+--
+-- Disparadores `venta_producto`
+--
+DELIMITER $$
+CREATE TRIGGER `tg_actualizar_stock_venta` AFTER INSERT ON `venta_producto` FOR EACH ROW begin
+	update producto
+	set stock_actual = stock_actual - new.cantidad_vendida
+	where codigo_producto = new.codigo_producto;
+end
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
