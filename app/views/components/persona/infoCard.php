@@ -1,8 +1,8 @@
 <?php
 // Props
-$type ??= null;
-$cedula ??= null;
-$id ??= "persona";
+$type ??= "";
+$cedula ??= "";
+$id ??= "";
 $elementName ??= "";
 ?>
 

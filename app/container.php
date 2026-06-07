@@ -16,6 +16,9 @@ use Psr\Log\LoggerInterface;
 
 use function DI\get;
 
+/** Configuración de PHP-DI
+ * Aqui se definen los objetos a instanciar en los controladores automaticamente.
+ */
 return [
     // Conexion PDO a la base de datos
     PDO::class => function () {
