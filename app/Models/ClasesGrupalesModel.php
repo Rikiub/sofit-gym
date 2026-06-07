@@ -68,6 +68,7 @@ class ClasesGrupalesModel extends BaseModel
         return <<<SQL
             SELECT
                 clase.*,
+                COUNT(cc.id_clase) AS `cupos_ocupados`,
                 COALESCE(
                     CONCAT(
                         '[', 
@@ -78,11 +79,11 @@ class ClasesGrupalesModel extends BaseModel
                     ),
                     '[]'
                 ) AS clientes
-            FROM {$this->table} clase
-            LEFT JOIN clase_cliente as cc
+            FROM {$this->table} AS clase
+            LEFT JOIN clase_cliente AS cc
                 ON clase.id_clase = cc.id_clase
             {$where}
-            GROUP BY clase.id_clase;
+            GROUP BY clase.id_clase
         SQL;
     }
 
@@ -198,7 +199,6 @@ class ClasesGrupalesModel extends BaseModel
             'cedula_trabajador' => $dto->cedula_trabajador,
             'nombre'            => $dto->nombre,
             'descripcion'       => $dto->descripcion,
-            'cupos_ocupados'    => count($dto->clientes),
             'capacidad_maxima'  => $dto->capacidad_maxima,
             'estado'            => $dto->estado->value,
             'fecha_inicio'      => Validator::dateToString($dto->fecha_inicio),

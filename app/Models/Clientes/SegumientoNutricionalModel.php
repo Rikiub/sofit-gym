@@ -18,7 +18,6 @@ readonly class SeguimientoNutricionalDTO
         public ?float $proteinas_g = null,
         public ?float $carbohidratos_g = null,
         public ?float $grasas_g = null,
-        public ?float $calorias_diarias = null,
     ) {}
 
     public function validateInsert(): void

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 06-06-2026 a las 22:18:22
+-- Tiempo de generación: 07-06-2026 a las 02:43:05
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -33,7 +33,6 @@ CREATE TABLE `analisis_energetico` (
   `fecha` date NOT NULL,
   `calorias_consumidas` int(11) DEFAULT NULL,
   `calorias_gastadas_estimadas` int(11) DEFAULT NULL,
-  `balance` int(11) DEFAULT NULL,
   `diagnostico` text DEFAULT NULL,
   `recomendacion` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -151,7 +150,6 @@ CREATE TABLE `clase` (
   `cedula_trabajador` varchar(15) NOT NULL,
   `nombre` varchar(100) NOT NULL,
   `descripcion` text DEFAULT NULL,
-  `cupos_ocupados` int(11) DEFAULT 0,
   `capacidad_maxima` int(11) NOT NULL,
   `estado` enum('Programado','En curso','Finalizado','Cancelado') DEFAULT 'Programado',
   `fecha_inicio` datetime NOT NULL,
@@ -162,9 +160,10 @@ CREATE TABLE `clase` (
 -- Volcado de datos para la tabla `clase`
 --
 
-INSERT INTO `clase` (`id_clase`, `cedula_trabajador`, `nombre`, `descripcion`, `cupos_ocupados`, `capacidad_maxima`, `estado`, `fecha_inicio`, `fecha_fin`) VALUES
-(2, 'V-00000002', 'Dia de pierna', '¡Hora de fortalecer esas piernas!', 3, 15, 'Programado', '2026-05-26 12:00:00', '2026-05-12 03:00:00'),
-(13, 'V-00000002', 'Hola', 'Adios', 4, 20, 'Programado', '2026-05-29 11:00:00', '2026-05-29 02:00:00');
+INSERT INTO `clase` (`id_clase`, `cedula_trabajador`, `nombre`, `descripcion`, `capacidad_maxima`, `estado`, `fecha_inicio`, `fecha_fin`) VALUES
+(2, 'V-00000002', 'Dia de pierna', '¡Hora de fortalecer esas piernas!', 15, 'Programado', '2026-05-26 12:00:00', '2026-05-12 03:00:00'),
+(13, 'V-00000002', 'Hola', 'Adios', 20, 'Programado', '2026-05-29 11:00:00', '2026-05-29 02:00:00'),
+(20, 'V-00000002', 'asf', 'asfsa', 5, 'Programado', '2026-06-06 08:26:00', '2026-06-16 12:00:00');
 
 -- --------------------------------------------------------
 
@@ -186,32 +185,8 @@ INSERT INTO `clase_cliente` (`id_clase`, `cedula_cliente`) VALUES
 (2, 'V-22222222'),
 (2, 'V-33333333'),
 (13, 'V-11111111'),
-(13, 'V-33333333');
-
---
--- Disparadores `clase_cliente`
---
-DELIMITER $$
-CREATE TRIGGER `tg_control_cupos_clase` BEFORE INSERT ON `clase_cliente` FOR EACH ROW begin
-	declare ocupados int;
-	declare maximo int;
-
-	select cupos_ocupados, capacidad_maxima
-	into ocupados, maximo
-	from clase
-	where id_clase = new.id_clase;
-	
-	if ocupados >= maximo then
-		signal sqlstate "45000"
-		set message_text = "Error: La clase ha alcanzado su capacidad maxima de alumnos.";
-	else
-		update clase
-		set cupos_ocupados = cupos_ocupados + 1
-		where id_clase = new.id_clase;
-	end if;
-end
-$$
-DELIMITER ;
+(13, 'V-33333333'),
+(20, 'V-22222222');
 
 -- --------------------------------------------------------
 
@@ -303,20 +278,6 @@ CREATE TABLE `horario_trabajador` (
   `dia_semana` varchar(15) DEFAULT NULL,
   `hora_entrada` time DEFAULT NULL,
   `hora_salida` time DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `inscripcion_clase`
---
-
-CREATE TABLE `inscripcion_clase` (
-  `id_inscripcion` int(11) NOT NULL,
-  `id_clase` int(11) NOT NULL,
-  `cedula_cliente` varchar(15) NOT NULL,
-  `estado` enum('Activo','Cancelado') DEFAULT 'Activo',
-  `fecha` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -510,6 +471,7 @@ CREATE TABLE `producto` (
 
 INSERT INTO `producto` (`codigo_producto`, `nombre`, `categoria`, `precio_venta`, `stock_minimo`, `stock_actual`, `unidad_medida`, `activo`) VALUES
 ('1313131', 'asfasfasfas', 'Suplementos', 4444.00, 5, 10, 'unidad', 1),
+('2352323', 'asfa', 'Suplementos', 5.00, 10, 5, 'unidad', 0),
 ('PROT001', 'Proteína Whe', '', 45.00, 0, 19, 'unidad', 0);
 
 -- --------------------------------------------------------
@@ -600,17 +562,17 @@ CREATE TABLE `seguimiento_nutricional` (
   `fecha` date DEFAULT NULL,
   `proteinas_g` decimal(5,2) DEFAULT NULL,
   `carbohidratos_g` decimal(5,2) DEFAULT NULL,
-  `grasas_g` decimal(5,2) DEFAULT NULL,
-  `calorias_diarias` decimal(5,2) DEFAULT NULL
+  `grasas_g` decimal(5,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `seguimiento_nutricional`
 --
 
-INSERT INTO `seguimiento_nutricional` (`id_seguimiento`, `cedula_cliente`, `fecha`, `proteinas_g`, `carbohidratos_g`, `grasas_g`, `calorias_diarias`) VALUES
-(3, 'V-11111111', '2026-05-17', 112.40, 325.30, 326.60, 757.00),
-(5, 'V-22222222', '2026-05-30', 50.00, 50.00, 50.00, 50.00);
+INSERT INTO `seguimiento_nutricional` (`id_seguimiento`, `cedula_cliente`, `fecha`, `proteinas_g`, `carbohidratos_g`, `grasas_g`) VALUES
+(3, 'V-11111111', '2026-05-17', 112.40, 325.30, 326.60),
+(5, 'V-22222222', '2026-05-30', 50.00, 50.00, 50.00),
+(7, 'V-22222222', '2026-06-06', 50.00, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -726,7 +688,7 @@ CREATE TABLE `venta_producto` (
   `codigo_producto` varchar(20) NOT NULL,
   `cedula_cliente` varchar(15) DEFAULT NULL,
   `cantidad_vendida` decimal(10,2) DEFAULT NULL,
-  `monto_total` varchar(100) DEFAULT NULL,
+  `monto_total` decimal(10,2) DEFAULT NULL,
   `metodo_pago` varchar(50) DEFAULT NULL,
   `fecha` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -798,7 +760,8 @@ ALTER TABLE `asistencia_gimnasio`
 --
 ALTER TABLE `asistente_mensaje`
   ADD PRIMARY KEY (`id_mensaje`),
-  ADD KEY `idx_consultas_fecha` (`fecha_creacion`);
+  ADD KEY `idx_consultas_fecha` (`fecha_creacion`),
+  ADD KEY `asistente_mensaje_asistente_sesion_FK` (`id_sesion`);
 
 --
 -- Indices de la tabla `asistente_sesion`
@@ -852,14 +815,6 @@ ALTER TABLE `estado_membresia`
 ALTER TABLE `horario_trabajador`
   ADD PRIMARY KEY (`id_horario`),
   ADD KEY `cedula_trabajador` (`cedula_trabajador`);
-
---
--- Indices de la tabla `inscripcion_clase`
---
-ALTER TABLE `inscripcion_clase`
-  ADD PRIMARY KEY (`id_inscripcion`),
-  ADD UNIQUE KEY `uk_cliente_clase` (`cedula_cliente`,`id_clase`),
-  ADD KEY `id_clase` (`id_clase`);
 
 --
 -- Indices de la tabla `mantenimiento_equipo`
@@ -1011,19 +966,13 @@ ALTER TABLE `asistente_sesion`
 -- AUTO_INCREMENT de la tabla `clase`
 --
 ALTER TABLE `clase`
-  MODIFY `id_clase` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id_clase` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT de la tabla `ejercicio`
 --
 ALTER TABLE `ejercicio`
   MODIFY `id_ejercicio` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `inscripcion_clase`
---
-ALTER TABLE `inscripcion_clase`
-  MODIFY `id_inscripcion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `mantenimiento_equipo`
@@ -1065,13 +1014,13 @@ ALTER TABLE `rutina_asignada`
 -- AUTO_INCREMENT de la tabla `seguimiento_fisico`
 --
 ALTER TABLE `seguimiento_fisico`
-  MODIFY `id_seguimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id_seguimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT de la tabla `seguimiento_nutricional`
 --
 ALTER TABLE `seguimiento_nutricional`
-  MODIFY `id_seguimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_seguimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo_canal`
@@ -1115,6 +1064,12 @@ ALTER TABLE `asistencia_gimnasio`
   ADD CONSTRAINT `asistencia_gimnasio_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula_cliente`) ON UPDATE CASCADE;
 
 --
+-- Filtros para la tabla `asistente_mensaje`
+--
+ALTER TABLE `asistente_mensaje`
+  ADD CONSTRAINT `asistente_mensaje_asistente_sesion_FK` FOREIGN KEY (`id_sesion`) REFERENCES `asistente_sesion` (`id_sesion`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Filtros para la tabla `clase`
 --
 ALTER TABLE `clase`
@@ -1145,13 +1100,6 @@ ALTER TABLE `ejercicio`
 --
 ALTER TABLE `horario_trabajador`
   ADD CONSTRAINT `horario_trabajador_ibfk_1` FOREIGN KEY (`cedula_trabajador`) REFERENCES `trabajador` (`cedula_trabajador`) ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `inscripcion_clase`
---
-ALTER TABLE `inscripcion_clase`
-  ADD CONSTRAINT `inscripcion_clase_ibfk_1` FOREIGN KEY (`id_clase`) REFERENCES `clase` (`id_clase`) ON DELETE CASCADE,
-  ADD CONSTRAINT `inscripcion_clase_ibfk_2` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula_cliente`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `mantenimiento_equipo`

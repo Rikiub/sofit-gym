@@ -2,8 +2,9 @@ import { crudTableComponent } from "@/components/crudTable.js";
 import { modalFormComponent } from "@/components/modalForm.js";
 import { toIsoDate } from "@/js/dates.js";
 import { fetchApi } from "@/js/api.js";
-import Alpine from "alpinejs";
 import { h } from "gridjs";
+import Alpine from "alpinejs";
+import dayjs from "dayjs";
 
 // CLIENTES
 const CLIENTES_PAGE = "clientes";
@@ -131,9 +132,7 @@ Alpine.data("clienteInfo", () => ({
 
     onlyDate(value) {
         if (!value) return value;
-
-        const date = new Date(value);
-        return date.toLocaleDateString("en-US");
+        return dayjs(value).format("DD/MM/YYYY");
     }
 }));
 
@@ -150,16 +149,16 @@ Alpine.data("crudSegFisico", () =>
         },
         columns: [
             {
-                name: "ID Seguimiento",
+                id: "id_seguimiento",
                 hidden: true,
             },
             {
-                name: "Cedula Cliente",
+                id: "cedula_cliente",
                 hidden: true,
             },
             {
                 name: "Fecha",
-                formatter: (cell) => new Date(cell).toLocaleDateString("en-US")
+                formatter: (cell) => dayjs(cell).format("DD/MM/YYYY")
             },
             { name: "Altura", id: "altura_cm" },
             { name: "Peso", id: "peso_kg" },
@@ -206,16 +205,16 @@ Alpine.data("crudSegNutricional", () =>
         },
         columns: [
             {
-                name: "ID Seguimiento",
+                id: "id_seguimiento",
                 hidden: true,
             },
             {
-                name: "Cedula Cliente",
+                id: "cedula_cliente",
                 hidden: true,
             },
             {
                 name: "Fecha",
-                formatter: (cell) => new Date(cell).toLocaleDateString("en-US")
+                formatter: (cell) => dayjs(cell).format("DD/MM/YYYY")
             },
             { name: "Proteinas (g)", id: "proteinas_g" },
             { name: "Carbohidratos (g)", id: "carbohidratos_g" },
@@ -224,9 +223,9 @@ Alpine.data("crudSegNutricional", () =>
         ],
         gridOptions: {
             search: false,
-        },
-        crudButtons: {
-            onEdit: null
+            crudButtons: {
+                onEdit: null
+            },
         },
     }));
 

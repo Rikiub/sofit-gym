@@ -1,7 +1,8 @@
 <input name="id_seguimiento" hidden>
 
 <fieldset class="row">
-    <label class="form-label col">Fecha de seguimiento
+    <label class="col">
+        <span class="form-label">Fecha de seguimiento</span>
         <input class="form-control" type="date" name="fecha" required>
         <small x-text="errors.fecha"></small>
     </label>
@@ -10,48 +11,56 @@
 <hr>
 
 <fieldset class="row">
-    <label class="form-label col">Altura (cm)
+    <label class="col">
+        <span class="form-label">Altura (cm)</span>
         <input class="form-control" type="number" name="altura_cm" step="any" min="100" max="230" x-mask="999" placeholder="000">
         <small x-text="errors.altura_cm"></small>
     </label>
 
-    <label class="form-label col">Peso (kg)
+    <label class="col">
+        <span class="form-label">Peso (kg)</span>
         <input class="form-control" type="number" name="peso_kg" step="any" x-mask="99.9" placeholder="0.0">
         <small x-text="errors.peso_kg"></small>
     </label>
 </fieldset>
 
 <fieldset class="row">
-    <label class="form-label col">Cintura (cm)
+    <label class="col">
+        <span class="form-label">Cintura (cm)</span>
         <input class="form-control" type="number" name="cintura_cm" step="any" x-mask="99.9" placeholder="0.0">
         <small x-text="errors.cintura_cm"></small>
     </label>
 
-    <label class="form-label col">Cadera (cm)
+    <label class="col">
+        <span class="form-label">Cadera (cm)</span>
         <input class="form-control" type="number" name="cadera_cm" step="any" x-mask="99.9" placeholder="0.0">
         <small x-text="errors.cadera_cm"></small>
     </label>
 </fieldset>
 
 <fieldset class="row">
-    <label class="form-label col">Pecho (cm)
+    <label class="col">
+        <span class="form-label">Pecho (cm)</span>
         <input class="form-control" type="number" name="pecho_cm" step="any" x-mask="99.9" placeholder="0.0">
         <small x-text="errors.pecho_cm"></small>
     </label>
 
-    <label class="form-label col">Muslo (cm)
+    <label class="col">
+        <span class="form-label">Muslo (cm)</span>
         <input class="form-control" type="number" name="muslo_cm" step="any" x-mask="99.9" placeholder="0.0">
         <small x-text="errors.muslo_cm"></small>
     </label>
 </fieldset>
 
 <fieldset class="row">
-    <label class="form-label col">Hombros (cm)
+    <label class="col">
+        <span class="form-label">Hombros (cm)</span>
         <input class="form-control" type="number" name="hombros_cm" step="any" x-mask="99.9" placeholder="0.0">
         <small x-text="errors.hombros_cm"></small>
     </label>
 
-    <label class="form-label col">Pantorrilla (cm)
+    <label class="col">
+        <span class="form-label">Pantorrilla (cm)</span>
         <input class="form-control" type="number" name="pantorrilla_cm" step="any" x-mask="99.9" placeholder="0.0">
         <small x-text="errors.pantorrilla_cm"></small>
     </label>
