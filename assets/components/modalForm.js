@@ -2,6 +2,7 @@ import { fetchApi } from "@/js/api.js";
 import { toIsoDate } from "@/js/dates.js";
 import FormDataJson from "form-data-json";
 import Alpine from "alpinejs";
+import { populateFormRecursive } from "@/js/dates.js";
 
 /**
  * @param {Object} data
@@ -229,6 +230,7 @@ export function modalFormComponent({
                 clearOthers: true,
                 includeDisabled: true,
             });
+            populateFormRecursive(data, this.$refs.form);
 
             // Reactivar inputs desactivados
             for (const inputName of editDisableFields) {

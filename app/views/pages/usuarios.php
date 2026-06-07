@@ -4,7 +4,7 @@ $this->layout('layout', ['title' => $title]);
 $this->pushJs('pages/usuarios/usuarios.js');
 
 $modalForm = $this->fetch('modalForm', [
-    'xData' => 'modalForm',
+    'xData' => 'modalFormUsuarios',
     'form' => <<<HTML
             <input name="id_usuario" hidden>
             
@@ -41,7 +41,7 @@ $modalForm = $this->fetch('modalForm', [
     'title' => $title,
     'body' => <<<HTML
             <main>
-                {$this->fetch('crudTable', ['xData' => 'crudTable'])}
+                {$this->fetch('crudTable', ['xData' => 'crudTableUsuarios'])}
             </main>
             
             {$modalForm}

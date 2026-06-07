@@ -22,6 +22,21 @@ class UsuariosController extends BaseController
         return $this->templates->render('usuarios');
     }
 
+    public function indexDetails(): string
+    {
+        $id = $_GET['id'] ?? null;
+        $usuario = $this->usuariosModel->find($id);
+
+        if (!$usuario) {
+            $this->response->redirectToError(status: 404);
+        }
+
+        return $this->templates->render('usuario_perfil', [
+            "id_usuario" => $id,
+            "cedula" => $usuario->cedula_persona,
+        ]);
+    }
+
     private function getParamId(): string
     {
         $id = $_GET['id'] ?? null;

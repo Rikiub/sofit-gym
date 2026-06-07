@@ -31,3 +31,9 @@ function encodeToJson(mixed $js): string
 {
     return json_encode($js, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE);
 }
+
+/** Convierte una string JSON en texto seguro */
+function escapeJs(string $js): string
+{
+    return htmlspecialchars($js, ENT_QUOTES, 'UTF-8');
+}

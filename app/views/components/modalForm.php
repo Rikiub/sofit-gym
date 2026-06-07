@@ -1,4 +1,7 @@
 <?php
+
+use function App\Helpers\escapeJs;
+
 $form ??= null;
 $xData ??= 'modalForm';
 
@@ -9,7 +12,7 @@ $this->pushJs('components/modalForm.js');
     class="ModalComponent modal fade"
     tabindex="-1"
     x-ref="modal"
-    x-data="<?= $xData ?>"
+    x-data="<?= escapeJs($xData) ?>"
     x-id="['form']"
     :closedby="loading ? 'none' : 'any'"
     @open-modal.window="handleOpenModal($event.detail)">

@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 
 const PAGE = "usuarios";
 
-Alpine.data("crudTable", () => (
+Alpine.data("crudTableUsuarios", () => (
     crudTableComponent({
         params: {
             page: PAGE,
@@ -25,7 +25,7 @@ Alpine.data("crudTable", () => (
         ],
     })));
 
-Alpine.data("modalForm", () => (
+Alpine.data("modalFormUsuarios", () => (
     modalFormComponent({
         page: PAGE,
         actions: {
