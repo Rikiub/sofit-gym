@@ -5,7 +5,7 @@ $this->layout('layout', ['title' => 'Trabajadores']);
 $modalForm = $this->fetch('modalForm', [
     'xData' => 'modalForm',
     'form' => <<<HTML
-            {$this->fetch('personaForm')}
+            {$this->fetch('persona/form')}
 
             <hr>
 

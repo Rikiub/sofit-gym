@@ -36,7 +36,7 @@ Alpine.data("crudClientes", () =>
         ],
     }));
 
-Alpine.data("modalClientes", (isSinglePage = false) => ({
+Alpine.data("modalClientes", () => ({
     ...modalFormComponent({
         id: clientesId,
         page: CLIENTES_PAGE,
@@ -47,14 +47,6 @@ Alpine.data("modalClientes", (isSinglePage = false) => ({
             },
         },
         editDisableFields: ["cedula"],
-        afterSubmit: (mode) => {
-            if (isSinglePage) {
-                if (mode === "delete") {
-                    location.href = `?page=${CLIENTES_PAGE}`;
-                    return;
-                }
-            }
-        },
     }),
 
     /** @param {HTMLInputElement} input */
@@ -81,45 +73,6 @@ Alpine.data("modalClientes", (isSinglePage = false) => ({
 
 // CLIENTES ITEM
 const clientesItemPage = "ClientesItem";
-
-Alpine.data("clienteInfo", () => ({
-    id: clientesId,
-    cliente: {},
-
-    async init() {
-        await this.refresh();
-    },
-
-    async handleFormSuccess({ id }) {
-        if (id === this.id) {
-            await this.refresh();
-        }
-    },
-
-    async refresh() {
-        this.cliente = await fetchApi({
-            page: CLIENTES_PAGE,
-            action: "find",
-            id: new URLSearchParams(location.search).get("id"),
-        });
-    },
-
-    nombreCompleto() {
-        const isEmpty = Object.keys(this.cliente).length === 0;
-
-        if (isEmpty) return "Cargando...";
-        return `${this.cliente.nombre} ${this.cliente.apellido}`;
-    },
-
-    setText(value) {
-        return value ?? "Desconocido";
-    },
-
-    onlyDate(value) {
-        if (!value) return value;
-        return dayjs(value).format("DD/MM/YYYY");
-    }
-}));
 
 // SEGUIMIENTO FISICO
 const idSegFisico = "seg_fisico";

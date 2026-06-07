@@ -77,7 +77,7 @@ class PersonasModel extends BaseModel
 
     public function update(PersonaDTO $persona): PersonaDTO
     {
-        $persona->validateInsert();
+        $persona->validateUpdate();
 
         $array = $this->dtoToArray($persona);
         unset($array['cedula_persona']);

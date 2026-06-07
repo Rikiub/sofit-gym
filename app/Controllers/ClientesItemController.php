@@ -33,7 +33,9 @@ class ClientesItemController extends BaseController
         }
 
         $templates = $this->templates->addData(['formMeta' => $this->formMeta()]);
-        return $templates->render('clientes/item');
+        return $templates->render('clientes/item', [
+            "cedula" => $cedula,
+        ]);
     }
 
     private function formMeta(): array

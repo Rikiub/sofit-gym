@@ -3,7 +3,7 @@
 /** @var array $formMeta */
 ?>
 
-<?= $this->fetch("personaForm") ?>
+<?= $this->fetch("persona/form") ?>
 
 <hr>
 

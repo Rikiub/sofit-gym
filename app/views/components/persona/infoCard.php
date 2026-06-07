@@ -2,7 +2,8 @@
 // Props
 $type ??= null;
 $cedula ??= null;
-$id = "persona";
+$id ??= "persona";
+$elementName ??= "";
 ?>
 
 <script type="module">
@@ -13,6 +14,7 @@ $id = "persona";
     import dayjs from "dayjs";
 
     Alpine.data("personaInfo", () => ({
+        id: "<?= $id ?>",
         persona: {},
 
         async init() {
@@ -55,7 +57,6 @@ $id = "persona";
 
 <article
     x-data="personaInfo"
-    class="pagina-cliente"
     @form-success.window="handleFormSuccess($event.detail)">
 
     <header class="d-flex justify-content-between align-items-center mb-4">
@@ -133,13 +134,14 @@ $id = "persona";
             modalForm({
                 id: "{$id}",
                 page: "{$type}",
-                actions: {
-                    onAdd: "insert",
-                    onEditFind: "find",
-                    onEdit: "update",
-                    onDelete: "delete",
-                },
+                elementName: "{$elementName}",
                 editDisableFields: ["cedula"],
+                afterSubmit: (mode) => {
+                    if (mode === "delete") {
+                        location.href = `?page=inicio`;
+                        return;
+                    }  
+                },
             })
         JS,
     'form' => $this->fetch('persona/form'),

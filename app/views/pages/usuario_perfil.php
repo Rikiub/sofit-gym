@@ -7,7 +7,7 @@ $this->pushJs('pages/usuarios/usuarios.js');
 ?>
 
 <?php ob_start() ?>
-<?= $this->fetch("persona/info", [
+<?= $this->fetch("persona/infoCard", [
     "type" => "trabajadores",
     "cedula" => $cedula,
 ]) ?>
