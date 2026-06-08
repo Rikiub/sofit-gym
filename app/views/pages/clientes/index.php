@@ -4,7 +4,7 @@ $this->pushJs('pages/clientes/clientes.js');
 
 $modalForm = $this->fetch('modalForm', [
     'xData' => 'modalClientes',
-    'form' => $this->fetch('clientes/forms/cliente'),
+    'form' => $this->fetch("persona/form"),
 ]);
 ?>
 

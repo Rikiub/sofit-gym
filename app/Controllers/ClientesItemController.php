@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Helpers\Response;
 use App\Models\Clientes\ClientesModel;
+use App\Models\Clientes\MembresiasModel;
 use App\Models\Clientes\SeguimientoFisicoDTO;
 use App\Models\Clientes\SeguimientoNutricionalDTO;
 use App\Models\Clientes\SegumientoFisicoModel;
@@ -18,6 +19,7 @@ class ClientesItemController extends BaseController
         private Response $response,
         private TreeMapper $mapper,
         private ClientesModel $clientesModel,
+        private MembresiasModel $membresiasModel,
         private SegumientoFisicoModel $fisicoModel,
         private SegumientoNutricionalModel $nutricionalModel,
     ) {}
@@ -32,20 +34,12 @@ class ClientesItemController extends BaseController
             Response::redirectToError();
         }
 
-        $templates = $this->templates->addData(['formMeta' => $this->formMeta()]);
+        $templates = $this->templates->addData(
+            ['formMeta' => $this->membresiasModel->queryMetadata()]
+        );
         return $templates->render('clientes/item', [
             "cedula" => $cedula,
         ]);
-    }
-
-    private function formMeta(): array
-    {
-        $tipos = $this->clientesModel->getTiposMembresia();
-        $estados = $this->clientesModel->getEstadosMembresia();
-        return [
-            'tipos' => $tipos,
-            'estados' => $estados,
-        ];
     }
 
     private function getCedulaParam(): string

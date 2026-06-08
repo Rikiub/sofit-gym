@@ -83,13 +83,6 @@ $this->pushJs('pages/clientes/clientes.js');
 </details>
 <?php $body = ob_get_clean() ?>
 
-<?= $this->insert('modalForm', [
-    'xData' => <<<JS
-            modalClientes({ isSinglePage: true })
-        JS,
-    'form' => $this->fetch('clientes/forms/cliente'),
-]) ?>
-
 <?= $this->insert("card", [
     "icon" => "fa-info-circle",
     "title" => "Información del cliente",
