@@ -27,13 +27,6 @@ Alpine.data("crudTableUsuarios", () => (
             {
                 name: "Nombre de usuario",
                 id: "nombre_usuario",
-                formatter: (cell, row) => {
-                    return h(
-                        "a",
-                        { href: `?page=usuarios&action=indexDetails&id=${cell}` },
-                        cell,
-                    );
-                },
             },
             "Rol",
             {
