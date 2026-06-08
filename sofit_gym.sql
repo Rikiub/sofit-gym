@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 07-06-2026 a las 03:28:43
+-- Tiempo de generación: 08-06-2026 a las 08:41:43
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -84,7 +84,7 @@ INSERT INTO `asistencia_gimnasio` (`id_asistencia`, `cedula_cliente`, `fecha`, `
 CREATE TABLE `asistente_mensaje` (
   `id_mensaje` int(11) NOT NULL,
   `id_sesion` int(11) NOT NULL,
-  `rol` enum('sistema','asistente','usuario','herramienta') NOT NULL,
+  `rol` enum('asistente','usuario') NOT NULL,
   `contenido` text NOT NULL,
   `fecha_creacion` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -94,26 +94,27 @@ CREATE TABLE `asistente_mensaje` (
 --
 
 INSERT INTO `asistente_mensaje` (`id_mensaje`, `id_sesion`, `rol`, `contenido`, `fecha_creacion`) VALUES
-(5, 1, 'usuario', 'hola!', '2026-06-06 15:01:07'),
-(6, 1, 'sistema', '¡Hola! ¿En qué puedo ayudarte hoy?', '2026-06-06 15:01:08'),
-(7, 1, 'usuario', 'Que dijistes despues del \"hola!\"?', '2026-06-06 15:13:33'),
-(8, 1, 'sistema', '¡Claro! Después de \"¡Hola!\", pregunté: \"¿En qué puedo ayudarte hoy?\".', '2026-06-06 15:13:34'),
-(9, 3, 'usuario', 'hola', '2026-06-06 15:18:48'),
-(10, 3, 'sistema', '¡Hola! Soy tu instructor de entrenamiento en Sofit Gym. ¿En qué puedo ayudarte hoy?', '2026-06-06 15:18:50'),
-(11, 4, 'usuario', 'podrias decirme cuantos clientes tengo en mi sistema?', '2026-06-06 15:23:09'),
-(12, 4, 'sistema', 'Claro, ¿te refieres a todos los clientes registrados en el sistema o solo a los que tienen membresía activa?', '2026-06-06 15:23:11'),
-(13, 4, 'usuario', 'todos!', '2026-06-06 15:23:17'),
-(14, 4, 'sistema', 'Existen 3 clientes en tu sistema.', '2026-06-06 15:23:19'),
-(15, 4, 'usuario', 'impresionante', '2026-06-06 15:23:34'),
-(16, 4, 'sistema', 'I have 3 clients in the system.', '2026-06-06 15:23:36'),
-(17, 4, 'usuario', 'quien eres?', '2026-06-06 15:25:41'),
-(18, 4, 'sistema', 'Soy un modelo de lenguaje de Google.', '2026-06-06 15:25:42'),
-(19, 5, 'usuario', 'hola!', '2026-06-06 15:42:47'),
-(20, 5, 'sistema', '¡Hola! Soy el Asistente Virtual Inteligente de Sofit Gym. ¿En qué puedo ayudarte hoy?', '2026-06-06 15:42:50'),
-(21, 5, 'usuario', 'quien eres?', '2026-06-06 16:07:29'),
-(22, 5, 'asistente', '¡Hola! Soy el Asistente Virtual Inteligente de Sofit Gym. ¿En qué puedo ayudarte hoy?', '2026-06-06 16:07:30'),
-(23, 5, 'usuario', 'Podrias decirme en que te especializas?', '2026-06-06 16:07:43'),
-(24, 5, 'usuario', 'hola!', '2026-06-06 16:08:49');
+(46, 9, 'usuario', 'hola!', '2026-06-07 14:03:14'),
+(47, 9, 'asistente', '¡Hola! ¿En qué puedo ayudarte hoy?', '2026-06-07 14:03:16'),
+(48, 9, 'usuario', 'Podrias decirme cual es la cedula del cliente: Luis	Martínez', '2026-06-07 14:03:35'),
+(49, 9, 'asistente', 'No se encontró ningún cliente con el nombre \"Luis Martínez\". ¿Podrías verificar el nombre o proporcionarme algún otro dato como su número de cédula o correo electrónico para poder ayudarte mejor?', '2026-06-07 14:03:37'),
+(50, 9, 'usuario', 'Podrias intentar buscar a Luis Martínez nuevamente?', '2026-06-07 14:15:51'),
+(51, 9, 'asistente', 'La cédula del cliente Luis Martínez es V-22222222. ¿Necesitas algo más?', '2026-06-07 14:15:54'),
+(52, 9, 'usuario', 'Podrias darme un seguimiento de como va su seguimiento fisico?', '2026-06-07 14:16:17'),
+(53, 9, 'asistente', 'No puedo darte un seguimiento de su progreso físico, ya que no tengo acceso a esa información. Mi función es ayudarte con la gestión del gimnasio, como información de clientes, trabajadores, finanzas, clases, equipos y rutinas de entrenamiento.\n\n¿Te gustaría que te ayude a revisar su historial de asistencia, estado de membresía o si tiene alguna rutina de entrenamiento asignada?', '2026-06-07 14:16:18'),
+(54, 9, 'usuario', 'Podrias darme un seguimiento de como va su seguimiento fisico?', '2026-06-07 14:17:43'),
+(55, 9, 'asistente', 'Lamento informarte que no tengo la capacidad de acceder o proporcionar seguimientos físicos de los clientes. Mi funcionalidad se limita a la gestión de la información del gimnasio, como datos de clientes, membresías, finanzas, clases, equipos y rutinas de entrenamiento.\n\nSi necesitas información sobre el progreso físico de Luis Martínez, te sugiero que consultes directamente con el entrenador o el personal encargado de su seguimiento.\n\n¿Puedo ayudarte con alguna otra consulta relacionada con la gestión del gimnasio? Por ejemplo, ¿quieres revisar su historial de asistencia, estado de membresía, o asignarle una nueva rutina de entrenamiento?', '2026-06-07 14:17:45'),
+(56, 9, 'usuario', 'Podrias darme un seguimiento de como va su seguimiento fisico?', '2026-06-07 14:18:01'),
+(57, 9, 'asistente', 'Como te mencioné anteriormente, no tengo acceso a la información de seguimiento físico de los clientes. Mi rol es facilitar la gestión administrativa y operativa del gimnasio.\n\nPara obtener información sobre el progreso físico de Luis Martínez, por favor, contacta directamente a su entrenador o al personal responsable de su seguimiento.\n\n¿Hay algo más en lo que pueda asistirte con respecto a las funcionalidades del sistema de gestión del gimnasio?', '2026-06-07 14:18:03'),
+(58, 10, 'usuario', 'Podrias decirme', '2026-06-07 14:18:24'),
+(59, 10, 'asistente', 'Claro, ¿qué necesitas consultar o qué acción deseas realizar?', '2026-06-07 14:18:25'),
+(60, 10, 'usuario', 'Podrias decirme como va el seguimiento fisico del cliente Luis Martínez?', '2026-06-07 14:21:09'),
+(61, 10, 'asistente', 'Lo siento, no se ha encontrado información sobre el seguimiento físico del cliente Luis Martínez. ¿Podrías verificar si el nombre y/o la cédula son correctos? Si deseas, puedo buscarlo en la base de datos para confirmar su existencia.', '2026-06-07 14:21:12'),
+(62, 10, 'usuario', 'Buscalo!', '2026-06-07 14:21:30'),
+(63, 10, 'asistente', 'Perfecto. Para poder buscar a Luis Martínez en la base de datos, necesitaría que me proporciones su número de cédula.', '2026-06-07 14:21:32'),
+(64, 11, 'usuario', 'Podrias decirme como va el seguimiento fisico del cliente Luis Martínez?', '2026-06-07 14:26:13'),
+(65, 11, 'usuario', 'Podrias decirme como va el seguimiento fisico del cliente Luis Martínez?', '2026-06-07 14:32:26'),
+(66, 11, 'usuario', 'hola!', '2026-06-07 18:54:58');
 
 -- --------------------------------------------------------
 
@@ -134,10 +135,9 @@ CREATE TABLE `asistente_sesion` (
 --
 
 INSERT INTO `asistente_sesion` (`id_sesion`, `id_usuario`, `titulo`, `modelo_usado`, `fecha_creacion`) VALUES
-(1, 2, NULL, 'gemini-2.5-flash-lite', '2026-06-06 14:24:45'),
-(3, 2, NULL, 'gemini-2.5-flash-lite', '2026-06-06 15:18:25'),
-(4, 2, NULL, 'gemini-2.5-flash-lite', '2026-06-06 15:18:51'),
-(5, 2, NULL, 'gemini-2.5-flash-lite', '2026-06-06 15:25:49');
+(9, 2, NULL, 'gemini-2.5-flash-lite', '2026-06-07 14:02:34'),
+(10, 2, NULL, 'gemini-2.5-flash-lite', '2026-06-07 14:18:17'),
+(11, 2, NULL, 'gemini-2.5-flash-lite', '2026-06-07 14:26:11');
 
 -- --------------------------------------------------------
 
@@ -163,7 +163,7 @@ CREATE TABLE `clase` (
 INSERT INTO `clase` (`id_clase`, `cedula_trabajador`, `nombre`, `descripcion`, `capacidad_maxima`, `estado`, `fecha_inicio`, `fecha_fin`) VALUES
 (2, 'V-00000002', 'Dia de pierna', '¡Hora de fortalecer esas piernas!', 15, 'Programado', '2026-05-26 12:00:00', '2026-05-12 03:00:00'),
 (13, 'V-00000002', 'Hola', 'Adios', 20, 'Programado', '2026-05-29 11:00:00', '2026-05-29 02:00:00'),
-(20, 'V-00000002', 'asf', 'asfsa', 5, 'Programado', '2026-06-06 08:26:00', '2026-06-16 12:00:00');
+(20, 'V-00000002', 'asf', 'asfsa', 5, 'Programado', '2026-06-06 08:26:00', '2026-06-07 12:00:00');
 
 -- --------------------------------------------------------
 
@@ -221,7 +221,7 @@ DELIMITER ;
 
 CREATE TABLE `cliente` (
   `cedula_cliente` varchar(15) NOT NULL,
-  `id_membresia` int(11) NOT NULL
+  `id_membresia` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -231,7 +231,7 @@ CREATE TABLE `cliente` (
 INSERT INTO `cliente` (`cedula_cliente`, `id_membresia`) VALUES
 ('V-22222222', 12),
 ('V-11111111', 19),
-('V-33333333', 24);
+('V-33333333', 37);
 
 -- --------------------------------------------------------
 
@@ -327,7 +327,7 @@ CREATE TABLE `mantenimiento_equipo` (
 
 INSERT INTO `mantenimiento_equipo` (`id_mantenimiento`, `codigo_equipo`, `fecha`, `tipo`, `descripcion`, `costo`, `tecnico`) VALUES
 (1, 'EQ-001', '2026-03-15', 'Preventivo', 'Lubricación y calibración', NULL, NULL),
-(6, 'EQ-001', '2026-05-22', 'Preventivo', 'asf', 120.00, 'asf');
+(6, 'OOM-3285', '2026-05-22', 'Preventivo', 'asf', 120.00, 'asf');
 
 -- --------------------------------------------------------
 
@@ -371,12 +371,15 @@ INSERT INTO `membresia` (`id_membresia`, `id_tipo`, `id_estado`, `fecha_inicio`,
 (21, 1, 1, '2026-05-19', '2026-05-30'),
 (22, 1, 2, '2026-05-22', '2026-06-21'),
 (23, 1, 1, '2026-05-21', '2026-05-30'),
-(24, 1, 1, '2026-05-22', '2026-06-21'),
+(24, 1, 2, '2026-05-22', '2026-06-21'),
 (25, 1, 1, '2026-05-22', '2026-05-30'),
 (26, 1, 1, '2026-05-23', '2026-05-30'),
 (27, 1, 1, '2026-05-25', '2026-05-30'),
 (28, 1, 1, '2026-05-27', '2026-05-30'),
-(29, 1, 1, '2026-06-01', '2026-06-27');
+(29, 1, 1, '2026-06-01', '2026-06-27'),
+(30, 1, 1, '2026-06-07', '2026-06-27'),
+(31, 1, 1, '2026-06-07', '2026-06-26'),
+(37, 1, 1, '2026-06-07', '2026-07-07');
 
 -- --------------------------------------------------------
 
@@ -426,7 +429,8 @@ INSERT INTO `pago` (`id_pago`, `cedula_cliente`, `monto`, `metodo_pago`, `compro
 (13, 'V-33333333', 5.00, 'Efectivo', '', 'Pagado', '2026-05-18', '2026-06-17'),
 (14, 'V-11111111', 5.00, 'Efectivo', '', 'Pagado', '2026-05-18', '2026-06-17'),
 (15, 'V-33333333', 5.00, 'Efectivo', '', 'Pagado', '2026-05-22', '2026-06-21'),
-(16, 'V-33333333', 6.00, 'Efectivo', '', 'Pagado', '2026-05-22', '2026-06-21');
+(16, 'V-33333333', 6.00, 'Efectivo', '', 'Pagado', '2026-05-22', '2026-06-21'),
+(17, 'V-33333333', 5.00, 'Efectivo', '', 'Pagado', '2026-06-07', '2026-07-07');
 
 -- --------------------------------------------------------
 
@@ -441,6 +445,7 @@ CREATE TABLE `persona` (
   `correo` varchar(100) DEFAULT NULL,
   `telefono` varchar(20) DEFAULT NULL,
   `direccion` text DEFAULT NULL,
+  `foto_perfil` varchar(255) DEFAULT NULL,
   `fecha_nacimiento` date DEFAULT NULL,
   `fecha_registro` datetime DEFAULT NULL,
   `activo` tinyint(1) NOT NULL DEFAULT 1
@@ -450,28 +455,30 @@ CREATE TABLE `persona` (
 -- Volcado de datos para la tabla `persona`
 --
 
-INSERT INTO `persona` (`cedula_persona`, `nombre`, `apellido`, `correo`, `telefono`, `direccion`, `fecha_nacimiento`, `fecha_registro`, `activo`) VALUES
-('325325', 'asfas', 'fas', 'hola@gmail.com', '2323632', 'fa', '2026-05-21', '2026-05-22 00:37:59', 1),
-('V-00000001', 'Carlos', 'Pérez', 'carlos@sofit.com', '0412-4471891', NULL, '2026-05-21', '2026-06-05 22:32:29', 1),
-('V-00000002', 'Ana', 'Gómez', 'ana@sofit.com', '0426-2142141', NULL, '2026-05-21', '2026-05-22 01:29:17', 1),
-('V-11111111', 'María', 'Torres', 'maria@example.com', '0412-1234567', NULL, '2026-05-17', '2026-05-18 18:14:28', 1),
-('V-11111898', 'll', 'fsfas', 'hola@gmail.com', '0412-3253252', 'jk', '2026-05-17', '2026-05-17 23:52:14', 1),
-('V-12421421', 'asfsafXXD', 'f', 'hola@gmail.com', '0412-2421412', 'asf', '2026-05-18', '2026-05-19 01:40:57', 1),
-('V-12521555', 'SSS', 'ff', 'hola@gmail.com', '0412-4212512', 'asfas', '2026-05-19', '2026-05-17 04:51:33', 1),
-('V-13131412', 'asasf', 'asgas', 'hola@gmail.com', '0424-2152151', 'asfasf', '2026-05-18', '2026-05-17 20:50:21', 1),
-('V-21215215', 'Carlos', 'fasf', 'hola@gmail.com', '0412-2141241', 'asaf', '2026-05-23', '2026-05-23 20:42:12', 1),
-('V-22222222', 'Luis', 'Martínez', 'luis@example.com', '0412-7654321', NULL, '2026-05-17', '2026-06-05 22:55:20', 1),
-('V-22222224', 'Paola', 'fasf', 'hola@gmail.com', '0412-1242142', 'asfasf', '2026-05-22', '2026-05-22 22:01:55', 1),
-('V-25125152', 'afas', 'saf', 'gasgsaas@gmail.com', '0412-2152152', 'asfa', '2026-05-22', '2026-05-17 00:53:17', 1),
-('V-31114255', 'asf', 'asf', 'hola@gmail.com', '0412-4471891', 'safasf', '2026-05-20', '2026-05-20 05:28:44', 1),
-('V-31215125', 'asf', 'asf', 'hola@gmail.com', '0412-1325325', 'asfasf', '2026-05-27', '2026-05-27 21:08:52', 1),
-('V-31251251', 'XD', 'fas', 'hola@gmail.com', '0412-2352352', 'asf', '2026-05-25', '2026-05-25 19:57:28', 1),
-('V-31492771', 'LOL', 'faf', 'hola@gmail.com', '0412-1412453', 'asf', '2026-05-21', '2026-05-22 04:05:11', 1),
-('V-32523523', 'saf', 'asf', 'hola@gmail.com', '0412-1421412', 'asfa', '2026-05-23', '2026-05-24 05:07:31', 1),
-('V-33333333', 'Juan', 'Garcia', 'moroso@test.com', '0412-4471891', NULL, '2026-05-15', '2026-06-01 16:32:47', 1),
-('V-36236326', '6sfsaf', 'asf', 'hola@gmail.com', '0412-2353252', 'asf', '2026-06-02', '2026-06-01 14:30:58', 1),
-('V-42142155', 'XD', 'fa', 'hola@gmail.com', '0412-2141241', 'asaf', '2026-05-22', '2026-05-24 05:07:46', 1),
-('V-93682363', 'Pan', 'Waos', 'gasgsaas@gmail.com', '0412-2521512', 'asfas', '2026-05-17', '2026-05-17 00:52:10', 1);
+INSERT INTO `persona` (`cedula_persona`, `nombre`, `apellido`, `correo`, `telefono`, `direccion`, `foto_perfil`, `fecha_nacimiento`, `fecha_registro`, `activo`) VALUES
+('325325', 'asfas', 'fas', 'hola@gmail.com', '2323632', 'fa', NULL, '2026-05-21', '2026-05-22 00:37:59', 1),
+('V-00000001', 'Carlos', 'Pérez', 'carlos@sofit.com', '0412-4471891', NULL, NULL, '2026-05-21', '2026-06-07 14:36:07', 1),
+('V-00000002', 'Ana', 'Gómez', 'ana@sofit.com', '0426-2142141', NULL, NULL, '2026-05-21', '2026-06-07 14:36:07', 1),
+('V-11111111', 'María', 'Torres', 'maria@example.com', '0412-1234567', NULL, NULL, '2026-05-17', '2026-06-07 20:12:40', 1),
+('V-11111898', 'll', 'fsfas', 'hola@gmail.com', '0412-3253252', 'jk', NULL, '2026-05-17', '2026-05-17 23:52:14', 1),
+('V-12421421', 'asfsafXXD', 'f', 'hola@gmail.com', '0412-2421412', 'asf', NULL, '2026-05-18', '2026-05-19 01:40:57', 1),
+('V-12521555', 'SSS', 'ff', 'hola@gmail.com', '0412-4212512', 'asfas', NULL, '2026-05-19', '2026-05-17 04:51:33', 1),
+('V-13131412', 'asasf', 'asgas', 'hola@gmail.com', '0424-2152151', 'asfasf', NULL, '2026-05-18', '2026-05-17 20:50:21', 1),
+('V-21215215', 'Carlos', 'fasf', 'hola@gmail.com', '0412-2141241', 'asaf', NULL, '2026-05-23', '2026-05-23 20:42:12', 1),
+('V-22222222', 'Luis', 'Martínez', 'luis@example.com', '0412-7654321', NULL, NULL, '2026-05-17', '2026-06-07 21:23:07', 1),
+('V-22222224', 'Paola', 'fasf', 'hola@gmail.com', '0412-1242142', 'asfasf', NULL, '2026-05-22', '2026-05-22 22:01:55', 1),
+('V-23523523', 'asfa', 'asfa', 'hola@gmail.com', '0412-1442421', 'asfasf', NULL, '2026-06-08', '2026-06-05 22:55:20', 1),
+('V-25125152', 'afas', 'saf', 'gasgsaas@gmail.com', '0412-2152152', 'asfa', NULL, '2026-05-22', '2026-05-17 00:53:17', 1),
+('V-31114255', 'asf', 'asf', 'hola@gmail.com', '0412-4471891', 'safasf', NULL, '2026-05-20', '2026-05-20 05:28:44', 1),
+('V-31215125', 'asf', 'asf', 'hola@gmail.com', '0412-1325325', 'asfasf', NULL, '2026-05-27', '2026-05-27 21:08:52', 1),
+('V-31251251', 'XD', 'fas', 'hola@gmail.com', '0412-2352352', 'asf', NULL, '2026-05-25', '2026-05-25 19:57:28', 1),
+('V-31492771', 'LOL', 'faf', 'hola@gmail.com', '0412-1412453', 'asf', NULL, '2026-05-21', '2026-05-22 04:05:11', 1),
+('V-32523523', 'saf', 'asf', 'hola@gmail.com', '0412-1421412', 'asfa', NULL, '2026-05-23', '2026-05-24 05:07:31', 1),
+('V-32532523', 'aFAS', 'FASF', 'hola@gmail.com', '0412-2421251', 'asfa', NULL, '2026-06-08', '2026-06-05 22:55:20', 1),
+('V-33333333', 'Juan', 'Garcia', 'moroso@test.com', '0412-4471891', NULL, NULL, '2026-05-15', '2026-06-01 16:32:47', 1),
+('V-36236326', '6sfsaf', 'asf', 'hola@gmail.com', '0412-2353252', 'asf', NULL, '2026-06-02', '2026-06-01 14:30:58', 1),
+('V-42142155', 'XD', 'fa', 'hola@gmail.com', '0412-2141241', 'asaf', NULL, '2026-05-22', '2026-05-24 05:07:46', 1),
+('V-93682363', 'Pan', 'Waos', 'gasgsaas@gmail.com', '0412-2521512', 'asfas', NULL, '2026-05-17', '2026-05-17 00:52:10', 1);
 
 -- --------------------------------------------------------
 
@@ -700,7 +707,7 @@ CREATE TABLE `trabajador` (
 --
 
 INSERT INTO `trabajador` (`cedula_trabajador`, `id_rol`, `salario`, `fecha_contratacion`) VALUES
-('V-00000001', 1, 50.00, '2026-05-21'),
+('V-00000001', 1, 5.00, '2026-06-07'),
 ('V-00000002', 2, 5.00, '2026-05-22');
 
 -- --------------------------------------------------------
@@ -826,7 +833,7 @@ ALTER TABLE `clase_cliente`
 --
 ALTER TABLE `cliente`
   ADD PRIMARY KEY (`cedula_cliente`),
-  ADD KEY `id_membresia` (`id_membresia`);
+  ADD KEY `cliente_membresia_FK` (`id_membresia`);
 
 --
 -- Indices de la tabla `ejercicio`
@@ -992,13 +999,13 @@ ALTER TABLE `asistencia_gimnasio`
 -- AUTO_INCREMENT de la tabla `asistente_mensaje`
 --
 ALTER TABLE `asistente_mensaje`
-  MODIFY `id_mensaje` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id_mensaje` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
 
 --
 -- AUTO_INCREMENT de la tabla `asistente_sesion`
 --
 ALTER TABLE `asistente_sesion`
-  MODIFY `id_sesion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_sesion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `clase`
@@ -1022,7 +1029,7 @@ ALTER TABLE `mantenimiento_equipo`
 -- AUTO_INCREMENT de la tabla `membresia`
 --
 ALTER TABLE `membresia`
-  MODIFY `id_membresia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id_membresia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT de la tabla `notificacion`
@@ -1034,7 +1041,7 @@ ALTER TABLE `notificacion`
 -- AUTO_INCREMENT de la tabla `pago`
 --
 ALTER TABLE `pago`
-  MODIFY `id_pago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id_pago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `rutina`
@@ -1125,7 +1132,7 @@ ALTER TABLE `clase_cliente`
 --
 ALTER TABLE `cliente`
   ADD CONSTRAINT `cliente_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `persona` (`cedula_persona`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `cliente_ibfk_2` FOREIGN KEY (`id_membresia`) REFERENCES `membresia` (`id_membresia`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `cliente_membresia_FK` FOREIGN KEY (`id_membresia`) REFERENCES `membresia` (`id_membresia`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `ejercicio`
