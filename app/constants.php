@@ -5,10 +5,11 @@
 // Directorios
 define("ROOT_DIR", dirname(__DIR__));
 define("CACHE_DIR", ROOT_DIR . "/.cache");
+define("UPLOADS_DIR", ROOT_DIR . "/uploads");
+define("UPLOADS_TEMP_DIR", UPLOADS_DIR . "/tmp");
 
 define('BASE_DIR', rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\'));
 define('ASSETS_DIR', BASE_DIR . '/assets');
-define("UPLOADS_DIR", BASE_DIR . "/uploads");
 
 // Modo Desarrollo
 define('DEBUG', filter_var($_ENV["DEBUG"] ?? true, FILTER_VALIDATE_BOOLEAN));

@@ -14,14 +14,24 @@ Alpine.data("crudTableUsuarios", () => (
         },
         columns: [
             {
+                id: "id_usuario",
+                hidden: true,
+            },
+            {
+                id: "imagen_url",
+                nombre: "Imagen",
+                formatter: (cell, row) => {
+                    return h("img", { src: cell, class: "img-fluid rounded", width: 100 });
+                },
+            },
+            {
                 name: "Nombre de usuario",
                 id: "nombre_usuario",
                 formatter: (cell, row) => {
-                    const id = row.cells[0].data;
                     return h(
                         "a",
-                        { href: `?page=usuarios&action=indexDetails&id=${id}` },
-                        id,
+                        { href: `?page=usuarios&action=indexDetails&id=${cell}` },
+                        cell,
                     );
                 },
             },

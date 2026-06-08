@@ -16,7 +16,7 @@ readonly class UsuarioDTO
         public ?string $rol = null,
         public ?string $nombre_usuario = null,
         public ?string $contrasena_hash = null,
-        public ?string $cedula_persona = null,
+        public ?string $imagen_url = null,
         public ?DateTimeImmutable $fecha_registro = new DateTimeImmutable(),
     ) {}
 
@@ -135,7 +135,7 @@ class UsuariosModel extends BaseModel
             'id_rol' => $dto->id_rol,
             'nombre_usuario' => $dto->nombre_usuario,
             'contrasena_hash' => $hashedPassword,
-            'cedula_persona' => $dto->cedula_persona,
+            'imagen_url' => $dto->imagen_url,
             'fecha_registro' => Validator::dateToString($dto->fecha_registro),
         ];
     }
