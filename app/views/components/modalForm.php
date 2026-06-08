@@ -22,7 +22,7 @@ $this->pushJs('components/modalForm.js');
                 <template x-if="mode == 'add'">
                     <h4 class="modal-title fw-semibold">
                         <i class="fa-solid fa-square-plus"></i>
-                        Crear
+                        Registrar
                         <span x-text="elementName"></span>
                     </h4>
                 </template>
@@ -69,7 +69,7 @@ $this->pushJs('components/modalForm.js');
                     x-show="mode == 'add'"
                     :form="$id('form')"
                     :aria-busy="loading"
-                    :disabled="loading">Crear</button>
+                    :disabled="loading">Registrar</button>
 
                 <button
                     class="btn btn-primary"
