@@ -41,24 +41,36 @@ $this->pushJs('pages/inicio/inicio.js');
                             </div>
                             <a href="#"><i class="fas fa-user"></i> Perfil</a>
                             <a href="#"><i class="fas fa-calendar-alt"></i> Calendario</a>
-                            <a href="#"><i class="fas fa-folder"></i> Archivos privados</a>
-                            <a href="#"><i class="fas fa-chart-line"></i> Informes</a>
-                            <a href="#"><i class="fas fa-sliders-h"></i> Preferencias</a>
                             <a href="#"><i class="fas fa-language"></i> Idioma</a>
                             <div class="divider"></div>
-                            <a href="#"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
+                            <div class="sidebar-actions p-2">
+                                <a class="btn btn-secondary w-100" href="?page=login&action=logout">
+                                    <i class="fa-solid fa-right-from-bracket"></i> <span>Cerrar sesión</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
             </nav>
 
-            <h2 class="panel-title"><i class="fas fa-chalkboard"></i> Panel de Control</h2>
+            <h2 class="panel-title"><i class="fas fa-chalkboard"></i> Dashboard </h2>
 
             <div class="stats-row">
-                <div class="stat-card panel-card"><h4>Progreso general</h4><div class="big-number">74%</div><span>+12% esta semana</span></div>
-                <div class="stat-card panel-card"><h4>Atletas activos</h4><div class="big-number">187</div><span>+12 este mes</span></div>
-                <div class="stat-card panel-card"><h4>Ingresos mensuales</h4><div class="big-number">$280</div><span>Meta $5k</span></div>
-                <div class="stat-card panel-card"><h4>Asistencias hoy</h4><div class="big-number">102</div><span>Registradas</span></div>
+                <div class="stat-card panel-card">
+                    <h4>Progreso general</h4>
+                    <div class="big-number">74%</div><span>+12% esta semana</span>
+                </div>
+                <div class="stat-card panel-card">
+                    <h4>Atletas activos</h4>
+                    <div class="big-number">187</div><span>+12 este mes</span>
+                </div>
+                <div class="stat-card panel-card">
+                    <h4>Ingresos mensuales</h4>
+                    <div class="big-number">$280</div><span>Meta $5k</span>
+                </div>
+                <div class="stat-card panel-card">
+                    <h4>Asistencias hoy</h4>
+                    <div class="big-number">102</div><span>Registradas</span>
+                </div>
             </div>
 
             <div class="two-columns">

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-06-2026 a las 08:41:52
+-- Tiempo de generación: 08-06-2026 a las 21:08:31
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -1205,7 +1205,24 @@ INSERT INTO `bitacora` (`id_bitacora`, `id_usuario`, `modulo`, `accion`, `mensaj
 (1186, 2, 'clientes', 'update', 'Cliente V-22222222 actualizado', 'INFO', '2026-06-07 21:28:40'),
 (1187, 2, 'clientes', 'update', 'Cliente V-22222222 actualizado', 'INFO', '2026-06-07 21:28:42'),
 (1188, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', '2026-06-07 21:58:40'),
-(1189, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', '2026-06-07 21:58:46');
+(1189, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', '2026-06-07 21:58:46'),
+(1190, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', '2026-06-08 14:44:52'),
+(1191, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', '2026-06-08 14:45:01'),
+(1192, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', '2026-06-08 14:45:12'),
+(1193, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', '2026-06-08 14:47:02'),
+(1194, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', '2026-06-08 14:48:02'),
+(1195, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', '2026-06-08 14:48:20'),
+(1196, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', '2026-06-08 14:48:24'),
+(1197, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', '2026-06-08 14:49:44'),
+(1198, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', '2026-06-08 14:49:48'),
+(1199, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', '2026-06-08 14:50:31'),
+(1200, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', '2026-06-08 14:50:39'),
+(1201, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', '2026-06-08 14:52:14'),
+(1202, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', '2026-06-08 14:52:21'),
+(1203, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', '2026-06-08 14:59:39'),
+(1204, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', '2026-06-08 15:03:30'),
+(1205, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', '2026-06-08 15:06:52'),
+(1206, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', '2026-06-08 15:07:41');
 
 -- --------------------------------------------------------
 
@@ -1235,9 +1252,12 @@ INSERT INTO `rol` (`id_rol`, `nombre`) VALUES
 CREATE TABLE `usuario` (
   `id_usuario` int(11) NOT NULL,
   `id_rol` int(11) NOT NULL,
+  `imagen_url` varchar(255) DEFAULT NULL,
   `nombre_usuario` varchar(100) NOT NULL,
   `contrasena_hash` varchar(255) NOT NULL,
-  `imagen_url` varchar(255) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `codigo_recuperacion` varchar(100) DEFAULT NULL,
+  `expiracion_codigo` varchar(100) DEFAULT NULL,
   `fecha_registro` date DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -1245,10 +1265,10 @@ CREATE TABLE `usuario` (
 -- Volcado de datos para la tabla `usuario`
 --
 
-INSERT INTO `usuario` (`id_usuario`, `id_rol`, `nombre_usuario`, `contrasena_hash`, `imagen_url`, `fecha_registro`) VALUES
-(2, 1, 'admin', '$2a$12$E..h9JtSt32ahpG0GciZuOhw6JaBBCznHr6XdnIoWVRKVkFQrJEUG', '/sofit-gym/uploads/usuarios/7353dec39db726a018d5.jpg', '2026-05-25'),
-(7, 2, 'lol', '$2y$10$CIS9qW...9Yl2bJ.ooTONuyk5X8.ovRFMduGdY8zuZx1ZFk8mqkAK', '/sofit-gym/uploads/usuarios/09446e19dd5b5d7c4666.jpg', '2026-06-07'),
-(9, 1, 'mm', '$2y$10$QkAt8qM.x6K9Qws/LYVINejGC7tdzm4piWF3ZdvZdi7uK3VbDVETu', NULL, '2026-06-08');
+INSERT INTO `usuario` (`id_usuario`, `id_rol`, `imagen_url`, `nombre_usuario`, `contrasena_hash`, `email`, `codigo_recuperacion`, `expiracion_codigo`, `fecha_registro`) VALUES
+(2, 1, '/sofit-gym/uploads/usuarios/7353dec39db726a018d5.jpg', 'admin', '$2y$10$xQkzzGoqqQzcEeQYH07EhedJq2BSdusJHmw43/x.kHDRdWCVzO9Au', 'jesusviloriaolivar@gmail.com', NULL, NULL, '2026-05-25'),
+(7, 2, '/sofit-gym/uploads/usuarios/09446e19dd5b5d7c4666.jpg', 'lol', '$2y$10$CIS9qW...9Yl2bJ.ooTONuyk5X8.ovRFMduGdY8zuZx1ZFk8mqkAK', NULL, NULL, NULL, '2026-06-07'),
+(9, 1, NULL, 'mm', '$2y$10$QkAt8qM.x6K9Qws/LYVINejGC7tdzm4piWF3ZdvZdi7uK3VbDVETu', NULL, NULL, NULL, '2026-06-08');
 
 --
 -- Índices para tablas volcadas
@@ -1282,7 +1302,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `bitacora`
 --
 ALTER TABLE `bitacora`
-  MODIFY `id_bitacora` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1190;
+  MODIFY `id_bitacora` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1207;
 
 --
 -- AUTO_INCREMENT de la tabla `rol`

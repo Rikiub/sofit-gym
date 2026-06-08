@@ -1,4 +1,5 @@
 @scope (.Inicio) {
+
     /* ========== MAIN CONTENT ========== */
     .content-wrapper {
         padding: 1.5rem 2rem;
@@ -16,7 +17,9 @@
         align-items: center;
     }
 
-    .top-links a, .top-links i, #reporteTrigger {
+    .top-links a,
+    .top-links i,
+    #reporteTrigger {
         transition: transform 0.2s ease;
         text-decoration: none;
         color: white;
@@ -30,15 +33,19 @@
         font-size: 1.2rem;
     }
 
-    .top-links a:hover, .top-links i:hover, #reporteTrigger:hover {
+    .top-links a:hover,
+    .top-links i:hover,
+    #reporteTrigger:hover {
         transform: translateY(-2px);
     }
 
-    .reporte-dropdown, .profile-dropdown {
+    .reporte-dropdown,
+    .profile-dropdown {
         position: relative;
     }
 
-    .reporte-menu, .profile-menu {
+    .reporte-menu,
+    .profile-menu {
         position: absolute;
         top: 120%;
         right: 0;
@@ -53,12 +60,14 @@
         color: #1e293b;
     }
 
-    .reporte-menu.show, .profile-menu.show {
+    .reporte-menu.show,
+    .profile-menu.show {
         opacity: 1;
         visibility: visible;
     }
 
-    .reporte-menu a, .profile-menu a {
+    .reporte-menu a,
+    .profile-menu a {
         display: flex;
         align-items: center;
         gap: 10px;
@@ -68,12 +77,14 @@
         font-size: 0.8rem;
     }
 
-    .reporte-menu a i, .profile-menu a i {
+    .reporte-menu a i,
+    .profile-menu a i {
         width: 24px;
         color: #dc2626;
     }
 
-    .reporte-menu a:hover, .profile-menu a:hover {
+    .reporte-menu a:hover,
+    .profile-menu a:hover {
         background: #fef2f2;
     }
 

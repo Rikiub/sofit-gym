@@ -39,6 +39,7 @@ class ComposerStaticInit40e15966626f8150d37f32748b0b834e
             'PhpOption\\' => 10,
             'PhpOffice\\PhpWord\\' => 18,
             'PhpOffice\\Math\\' => 15,
+            'PHPMailer\\PHPMailer\\' => 20,
         ),
         'O' =>
         array (
@@ -130,6 +131,10 @@ class ComposerStaticInit40e15966626f8150d37f32748b0b834e
         'PhpOffice\\Math\\' =>
         array (
             0 => __DIR__ . '/..' . '/phpoffice/math/src/Math',
+        ),
+        'PHPMailer\\PHPMailer\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
         'OpenAI\\' =>
         array (

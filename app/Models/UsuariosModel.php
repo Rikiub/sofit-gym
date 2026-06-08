@@ -18,10 +18,13 @@ readonly class UsuarioDTO
         public ?string $contrasena_hash = null,
         public ?string $imagen_url = null,
         public ?DateTimeImmutable $fecha_registro = new DateTimeImmutable(),
+        // Campos de recuperacion
+        public ?string $email = null,
+        public ?string $codigo_recuperacion = null,
+        public ?DateTimeImmutable $expiracion_codigo = null,
     ) {}
 
     public function validateInsert() {}
-
     public function validateUpdate() {}
 }
 
@@ -45,7 +48,7 @@ class UsuariosModel extends BaseModel
                     rol.nombre AS `rol`
                 FROM {$this->table} usuario
                 LEFT JOIN sofit_gym_seguridad.rol rol
-                    ON rol.id_rol =  usuario.id_rol
+                    ON rol.id_rol = usuario.id_rol
             SQL;
     }
 
@@ -75,6 +78,20 @@ class UsuariosModel extends BaseModel
 
         if (!$row)
             return null;
+        return $this->mapper->map(UsuarioDTO::class, $row);
+    }
+
+    public function findByEmail(string $email): ?UsuarioDTO
+    {
+        $row = $this->pdoQuery(
+            <<<SQL
+                {$this->sqlSelect()}
+                WHERE usuario.email = ?
+            SQL,
+            [$email]
+        )->fetch();
+
+        if (!$row) return null;
         return $this->mapper->map(UsuarioDTO::class, $row);
     }
 
@@ -137,6 +154,50 @@ class UsuariosModel extends BaseModel
             'contrasena_hash' => $hashedPassword,
             'imagen_url' => $dto->imagen_url,
             'fecha_registro' => Validator::dateToString($dto->fecha_registro),
+            'email' => $dto->email,
         ];
+    }
+
+    // ====================================================================
+    // MÉTODOS AÑADIDOS PARA LA RECUPERACIÓN DE CONTRASEÑA
+    // ====================================================================
+
+    public function saveRecoveryCode(int $id_usuario, string $codigo, string $expiracion): void
+    {
+        $this->pdoQuery(
+            <<<SQL
+                UPDATE {$this->table}
+                SET codigo_recuperacion = ?, expiracion_codigo = ?
+                WHERE id_usuario = ?
+            SQL,
+            [$codigo, $expiracion, $id_usuario]
+        );
+    }
+
+    public function verifyRecoveryCode(string $codigo): ?UsuarioDTO
+    {
+        $row = $this->pdoQuery(
+            <<<SQL
+                {$this->sqlSelect()}
+                WHERE usuario.codigo_recuperacion = ? 
+                AND usuario.expiracion_codigo > NOW()
+            SQL,
+            [$codigo]
+        )->fetch();
+
+        if (!$row) return null;
+        return $this->mapper->map(UsuarioDTO::class, $row);
+    }
+
+    public function updatePasswordAndClearCode(int $id_usuario, string $new_password_hash): void
+    {
+        $this->pdoQuery(
+            <<<SQL
+                UPDATE {$this->table}
+                SET contrasena_hash = ?, codigo_recuperacion = NULL, expiracion_codigo = NULL
+                WHERE id_usuario = ?
+            SQL,
+            [$new_password_hash, $id_usuario]
+        );
     }
 }
