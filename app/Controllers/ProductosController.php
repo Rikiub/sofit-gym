@@ -12,7 +12,7 @@ class ProductosController extends BaseController
     ) {}
 
     /**
-     * Muestra la vista principal de productos (Catálogo e Inventario)
+     * Muestra la vista principal de productos (Catálogo, Inventario y Ventas)
      */
     public function index()
     {
@@ -22,6 +22,7 @@ class ProductosController extends BaseController
         // Obtener productos activos y aquellos que se encuentran bajo el stock de alerta mínimo
         $productos = $this->model->obtenerTodos($termino);
         $bajoStock = $this->model->obtenerBajoStock();
+        $clientes = $this->model->obtenerClientes();
 
         // Obtener mensajes de sesión temporales (Toasts/Alertas)
         $mensaje = $_SESSION['mensaje'] ?? '';
@@ -32,6 +33,7 @@ class ProductosController extends BaseController
         echo $this->templates->render('productos', [
             'productos' => $productos,
             'bajoStock' => $bajoStock,
+            'clientes'  => $clientes,
             'mensaje' => $mensaje,
             'tipoMensaje' => $tipoMensaje,
             'termino' => $termino
@@ -58,6 +60,17 @@ class ProductosController extends BaseController
     }
 
     /**
+     * Endpoint API AJAX para obtener clientes activos
+     */
+    public function obtenerClientesAjax()
+    {
+        $clientes = $this->model->obtenerClientes();
+        header('Content-Type: application/json');
+        echo json_encode($clientes);
+        exit;
+    }
+
+    /**
      * Registra un nuevo producto en el gimnasio
      */
     public function crear()
@@ -77,7 +90,6 @@ class ProductosController extends BaseController
             return;
         }
 
-        // Construir arreglo mapeando con el modelo y sanitizando entradas
         $datos = [
             'codigo_producto' => strip_tags(trim($codigo)),
             'nombre' => strip_tags(trim($nombre)),
@@ -117,7 +129,6 @@ class ProductosController extends BaseController
             return;
         }
 
-        // Filtro y recolección de campos editables
         $datosNuevos = [];
         if (isset($_POST['nombre']))
             $datosNuevos['nombre'] = strip_tags(trim($_POST['nombre']));
@@ -155,7 +166,6 @@ class ProductosController extends BaseController
         }
 
         $codigo = $_POST['codigo_producto'] ?? '';
-        // Admite parámetro opcional para realizar borrado físico
         $borradoFisico = isset($_POST['fisico']) && filter_var($_POST['fisico'], FILTER_VALIDATE_BOOLEAN);
 
         if (empty($codigo)) {
@@ -201,6 +211,38 @@ class ProductosController extends BaseController
         } else {
             echo json_encode(['success' => false, 'message' => '❌ El stock resultante no puede ser menor que cero.']);
         }
+        exit;
+    }
+
+    /**
+     * Registra una nueva transacción de venta de uno o más productos
+     */
+    public function registrarVenta()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['success' => false, 'message' => 'Método no permitido']);
+            return;
+        }
+
+        // Obtener el cuerpo de la petición (JSON)
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        $cedulaCliente = !empty($input['cedula_cliente']) ? strip_tags(trim($input['cedula_cliente'])) : null;
+        $metodoPago = !empty($input['metodo_pago']) ? strip_tags(trim($input['metodo_pago'])) : 'Efectivo';
+        $items = $input['productos'] ?? [];
+
+        if (empty($items)) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => '⚠️ Debe agregar al menos un producto a la lista de venta.']);
+            return;
+        }
+
+        // Procesar en el modelo bajo una sola transacción segura
+        $resultado = $this->model->registrarVentaMultiplesProductos($cedulaCliente, $metodoPago, $items);
+
+        header('Content-Type: application/json');
+        echo json_encode($resultado);
         exit;
     }
 }
