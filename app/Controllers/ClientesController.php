@@ -6,7 +6,6 @@ use App\Controllers\BaseController;
 use App\Helpers\Response;
 use App\Models\Clientes\ClienteDTO;
 use App\Models\Clientes\ClientesModel;
-use App\Models\Clientes\MembresiasModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use Exception;
 
@@ -16,7 +15,6 @@ class ClientesController extends BaseController
         private Response $response,
         private TreeMapper $mapper,
         private ClientesModel $clientesModelo,
-        private MembresiasModel $membresiasModel,
     ) {}
 
     // CLIENTES
@@ -25,7 +23,7 @@ class ClientesController extends BaseController
     {
         // Cargar vista app/views/clientes/index.php
         $templates = $this->templates->addData(
-            ['formMeta' => $this->membresiasModel->queryMetadata()]
+            ['formMeta' => $this->clientesModelo->queryMembresiaMetadata()]
         );
         return $templates->render('clientes/index');
     }

@@ -5,7 +5,6 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Helpers\Response;
 use App\Models\Clientes\ClientesModel;
-use App\Models\Clientes\MembresiasModel;
 use App\Models\Clientes\SeguimientoFisicoDTO;
 use App\Models\Clientes\SeguimientoNutricionalDTO;
 use App\Models\Clientes\SegumientoFisicoModel;
@@ -19,7 +18,6 @@ class ClientesItemController extends BaseController
         private Response $response,
         private TreeMapper $mapper,
         private ClientesModel $clientesModel,
-        private MembresiasModel $membresiasModel,
         private SegumientoFisicoModel $fisicoModel,
         private SegumientoNutricionalModel $nutricionalModel,
     ) {}
@@ -35,7 +33,7 @@ class ClientesItemController extends BaseController
         }
 
         $templates = $this->templates->addData(
-            ['formMeta' => $this->membresiasModel->queryMetadata()]
+            ['formMeta' => $this->clientesModel->queryMembresiaMetadata()]
         );
         return $templates->render('clientes/item', [
             "cedula" => $cedula,

@@ -2,8 +2,9 @@
 
 namespace App\Models\Clientes;
 
-use App\Models\Personas\PersonasModel;
+use App\Helpers\Validator;
 use App\Models\BaseModel;
+use App\Models\Personas\PersonasModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use PDO;
 
@@ -21,11 +22,47 @@ class ClientesModel extends BaseModel
     {
         return <<<SQL
                 SELECT
-                    persona.*,
-                    cliente.cedula_cliente AS `cedula`
+                    cliente.cedula_cliente AS `cedula`,
+                    persona.nombre,
+                    persona.apellido,
+                    persona.correo,
+                    persona.telefono,
+                    persona.direccion,
+                    persona.fecha_nacimiento,
+                    persona.fecha_registro,
+                    persona.activo,
+                    JSON_OBJECT(
+                        "id_membresia", m.id_membresia,
+                        "id_tipo", m.id_tipo,
+                        "estado", me.nombre,
+                        "id_estado", m.id_estado,
+                        "tipo", mt.nombre,
+                        "fecha_inicio", m.fecha_inicio,
+                        "fecha_fin", m.fecha_fin
+                    ) AS membresia
                 FROM cliente
                 LEFT JOIN persona ON persona.cedula_persona = cliente.cedula_cliente
+                LEFT JOIN membresia m ON cliente.id_membresia = m.id_membresia
+                LEFT JOIN tipo_membresia mt ON m.id_tipo = mt.id_tipo
+                LEFT JOIN estado_membresia me ON m.id_estado = me.id_estado
             SQL;
+    }
+
+    public function queryMembresiaMetadata(): array
+    {
+        $tipos = $this->pdoQuery('SELECT * FROM tipo_membresia')->fetchAll();
+        $estados = $this->pdoQuery('SELECT * FROM estado_membresia')->fetchAll();
+
+        return [
+            "tipos" => $tipos,
+            "estados" => $estados,
+        ];
+    }
+
+    private function mapToCliente(array $row): ClienteDTO
+    {
+        $row['membresia'] = json_decode($row['membresia'], true);
+        return $this->mapper->map(ClienteDTO::class, $row);
     }
 
     /**
@@ -103,7 +140,7 @@ class ClientesModel extends BaseModel
 
         $rows = $this->pdoQuery($sql, $params)->fetchAll();
         return array_map(
-            fn($row) => $this->mapper->map(ClienteDTO::class, $row),
+            $this->mapToCliente(...),
             $rows
         );
     }
@@ -116,7 +153,7 @@ class ClientesModel extends BaseModel
         )->fetch();
 
         return $row
-            ? $this->mapper->map(ClienteDTO::class, $row)
+            ? $this->mapToCliente($row)
             : null;
     }
 
@@ -141,6 +178,21 @@ class ClientesModel extends BaseModel
         $this->pdo->beginTransaction();
 
         $this->personasModel->update($cliente);
+
+        if ($cliente->membresia) {
+            // Obtener ID de la membresia desde el cliente
+            $membresiaId = $this->pdoQuery(
+                'SELECT id_membresia FROM cliente WHERE cedula_cliente = ?',
+                [$cliente->cedula]
+            )->fetchColumn();
+
+            $this->pdoUpdate(
+                'membresia',
+                $this->membresiaToArray($cliente->membresia),
+                ['id_membresia' => $membresiaId],
+            );
+        }
+
         $cliente = $this->find($cliente->cedula);
 
         $this->pdo->commit();
@@ -150,5 +202,15 @@ class ClientesModel extends BaseModel
     public function delete(string $cedula): void
     {
         $this->pdoDelete('cliente', ['cedula_cliente' => $cedula]);
+    }
+
+    private function membresiaToArray(MembresiaDTO $membresia): array
+    {
+        return [
+            'id_tipo' => $membresia->id_tipo,
+            'id_estado' => $membresia->id_estado,
+            'fecha_inicio' => Validator::dateToString($membresia->fecha_inicio),
+            'fecha_fin' => Validator::dateToString($membresia->fecha_fin),
+        ];
     }
 }
