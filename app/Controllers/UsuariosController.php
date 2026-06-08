@@ -9,7 +9,6 @@ use App\Models\UsuarioDTO;
 use App\Models\UsuariosModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use Exception;
-use RuntimeException;
 
 class UsuariosController extends BaseController
 {
