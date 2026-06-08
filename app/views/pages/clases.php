@@ -4,32 +4,14 @@ $title = "Horarios de Clases";
 $this->layout("layout", ["title" => $title]);
 $this->pushJs("pages/clases/clases.js");
 
-$selectTrabajadores = $this->fetch("querySelect", [
-    "input" => ["name" => "cedula_trabajador", "required" => true],
-    "columns" => [
-        ["name" => "Cédula", "id" => 'cedula'],
-        ["name" => "Nombre", "id" => "nombre_completo", "computed" => '`${item.nombre} ${item.apellido}`'],
-        ["name" => "Rol", "id" => 'rol']
+$selectTrabajadores = $this->fetch("select/trabajadores", [
+    "input" => [
+        "name" => "cedula_trabajador",
+        "required" => true,
     ],
-    "params" => [
-        "page" => "trabajadores",
-        "action" => "query",
-        "id_rol" => 2,
-    ],
-    "itemKey" => "cedula",
+    "id_rol" => 2,
 ]);
-
-$selectClientes = $this->fetch("querySelect", [
-    "columns" => [
-        ["name" => "Cédula", "id" => 'cedula'],
-        ["name" => "Nombre", "id" => "nombre_completo", "computed" => '`${item.nombre} ${item.apellido}`'],
-    ],
-    "params" => [
-        "page" => "clientes",
-        "action" => "query",
-    ],
-    "itemKey" => "cedula",
-]);
+$selectClientes = $this->fetch("select/clientes");
 
 $modalForm = $this->fetch('modalForm', [
     'xData' => 'modalForm',

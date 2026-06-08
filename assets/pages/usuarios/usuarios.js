@@ -24,7 +24,7 @@ Alpine.data("crudTableUsuarios", () => (
                         id,
                     );
                 },
-             },
+            },
             "Rol",
             {
                 name: "Fecha de registro",

@@ -59,35 +59,29 @@ $elementName ??= "";
     x-data="personaInfo"
     @form-success.window="handleFormSuccess($event.detail)">
 
-    <header class="d-flex justify-content-between align-items-center mb-4">
-        <div class="d-flex align-items-center gap-3">
-            <h3 class="mb-0" x-text="nombreCompleto"></h3>
-        </div>
-
-        <div class="d-flex gap-2">
-            <button
-                class="btn btn-warning"
-                title="Editar"
-                data-bs-toggle="tooltip"
-                data-bs-placement="bottom"
-                @click="$dispatch('open-modal', { mode: 'edit', dataId: persona.cedula, id: '<?= $id ?>' })">
-                <i class="fa-solid fa-pen-to-square"></i>
-            </button>
-
-            <button
-                class="btn btn-danger"
-                title="Eliminar"
-                data-bs-toggle="tooltip"
-                data-bs-placement="bottom"
-                @click="$dispatch('open-modal', { mode: 'delete', dataId: persona.cedula, id: '<?= $id ?>' })">
-                <i class="fa-solid fa-trash-can"></i>
-            </button>
-        </div>
-    </header>
-
     <div class="card shadow-sm">
-        <header class="card-header">
-            <h3 class="card-title mb-0">Información</h3>
+        <header class="card-header d-flex justify-content-between">
+            <h3 class="card-title mb-0" x-text="nombreCompleto"></h3>
+
+            <div class="d-flex gap-2">
+                <button
+                    class="btn btn-warning"
+                    title="Editar"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="bottom"
+                    @click="$dispatch('open-modal', { mode: 'edit', dataId: persona.cedula, id: '<?= $id ?>' })">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+
+                <button
+                    class="btn btn-danger"
+                    title="Eliminar"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="bottom"
+                    @click="$dispatch('open-modal', { mode: 'delete', dataId: persona.cedula, id: '<?= $id ?>' })">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            </div>
         </header>
 
         <div class="card-body">

@@ -3,16 +3,23 @@ $title = "Usuarios";
 $this->layout('layout', ['title' => $title]);
 $this->pushJs('pages/usuarios/usuarios.js');
 
+$selectTrabajadores = $this->fetch("select/trabajadores", [
+    "input" => [
+        "name" => "cedula_persona",
+        "required" => true
+    ]
+]);
+
 $modalForm = $this->fetch('modalForm', [
     'xData' => 'modalFormUsuarios',
     'form' => <<<HTML
             <input name="id_usuario" hidden>
-            
+
             <fieldset class="row">
                 <label class="col">
-                    <span class="form-label">Nombre de usuario
-                    <input class="form-control" type="text" name="nombre_usuario" required @input.debounce="checkValidity(\$el)">
-                    <small class="form-text" x-text="errors.nombre_usuario"></small>
+                    <span class="form-label">Trabajador
+                    {$selectTrabajadores}
+                    <small class="form-text" x-text="errors.cedula_persona"></small>
                 </label>
 
                 <label class="col form-label">Rol
@@ -23,6 +30,16 @@ $modalForm = $this->fetch('modalForm', [
                         <option value="3">Recepcionista</option>
                     </select>
                     <small class="form-text" x-text="errors.id_rol"></small>
+                </label>
+            </fieldset>
+
+            <hr>
+            
+            <fieldset class="row">
+                <label class="col">
+                    <span class="form-label">Nombre de usuario
+                    <input class="form-control" type="text" name="nombre_usuario" required @input.debounce="checkValidity(\$el)">
+                    <small class="form-text" x-text="errors.nombre_usuario"></small>
                 </label>
             </fieldset>
 

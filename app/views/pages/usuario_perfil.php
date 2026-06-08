@@ -1,6 +1,8 @@
 <?php
+// Props
+$cedula ??= "";
+
 $title = "Usuarios";
-$cedula ??= null;
 
 $this->layout('layout', ['title' => $title]);
 $this->pushJs('pages/usuarios/usuarios.js');
