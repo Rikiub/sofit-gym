@@ -57,7 +57,7 @@ $input ??= [];
             <img :src="image" class="w-100 h-100" style="object-fit: cover;" alt="Seleccionar imagen">
         </div>
         <div x-show="!image">
-            <img src="<?= BASE_DIR ?>/assets/default-profile.png" class="w-100 h-100" style="object-fit: cover;" alt="Seleccionar imagen">
+            <img src="<?= ASSETS_DIR ?>/default-profile.png" class="w-100 h-100" style="object-fit: cover;" alt="Seleccionar imagen">
         </div>
 
         <div class="hover-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-25 opacity-0">
