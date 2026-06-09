@@ -78,17 +78,20 @@ return [
         $mail->Host = $_ENV["MAIL_HOST"] ?? 'smtp.gmail.com';
         $mail->SMTPAuth = true;
 
-        // Datos
-        $mail->Username = $_ENV["MAIL_USERNAME"];
-        $mail->Password = $_ENV["MAIL_PASSWORD"];
-
         // Configuracion compatible con Gmail
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
         $mail->CharSet = 'UTF-8';
 
+        // Credenciales
+        $mail->Username = $_ENV["MAIL_USERNAME"];
+        $mail->Password = $_ENV["MAIL_PASSWORD"];
+
         // Remitente
-        $mail->setFrom('sofitgympower@gmail.com', 'Soporte Sofit GYM');
+        $mail->setFrom(
+            $_ENV["MAIL_USERNAME"],
+            $_ENV["MAIL_FROM_NAME"] ?? 'Soporte Sofit GYM'
+        );
 
         return $mail;
     },
