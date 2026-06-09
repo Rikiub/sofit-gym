@@ -32,7 +32,7 @@ Alpine.data("calendarClases", () => calendarComponent({
 
                     <span class="badge bg-light text-dark border px-2 py-1" style="font-size: 0.75rem;">
                         <i class="fa-solid fa-users text-primary me-1"></i> 
-                        <strong>${data.cupos_ocupados || 0}</strong>/${data.capacidad_maxima || '∞'}
+                        <strong>${data.capacidad_actual || 0}</strong>/${data.capacidad_maxima || '∞'}
                     </span>
                 </div>
 
