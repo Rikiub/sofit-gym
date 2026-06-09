@@ -12,6 +12,7 @@ use CuyZ\Valinor\NormalizerBuilder;
 use League\Plates\Template\Theme;
 use League\Plates\Engine;
 use LLPhant\GeminiOpenAIConfig;
+use PHPMailer\PHPMailer\PHPMailer;
 use Psr\Log\LoggerInterface;
 
 use function DI\get;
@@ -67,6 +68,29 @@ return [
             Theme::new('app/views/pages', 'Page'),
         ]))
             ->loadExtension(new AssetExtension(ASSETS_DIR));
+    },
+
+    PHPMailer::class => function () {
+        $mail = new PHPMailer(true);
+
+        // Configuración SMTP
+        $mail->isSMTP();
+        $mail->Host = $_ENV["MAIL_HOST"] ?? 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+
+        // Datos
+        $mail->Username = $_ENV["MAIL_USERNAME"];
+        $mail->Password = $_ENV["MAIL_PASSWORD"];
+
+        // Configuracion compatible con Gmail
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+        $mail->CharSet = 'UTF-8';
+
+        // Remitente
+        $mail->setFrom('sofitgympower@gmail.com', 'Soporte Sofit GYM');
+
+        return $mail;
     },
 
     // Valinor: Mapper

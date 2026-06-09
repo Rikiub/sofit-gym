@@ -14,6 +14,7 @@ class LoginModel extends BaseModel
     public function __construct(
         PDO $pdo,
         private UsuariosModel $usuariosModel,
+        private PHPMailer $mailer,
     ) {
         parent::__construct($pdo);
     }
@@ -51,25 +52,9 @@ class LoginModel extends BaseModel
      */
     public function enviarCorreo(string $email, string $codigo)
     {
-        $mail = new PHPMailer(true);
+        $mail = $this->mailer;
 
         try {
-            // Configuración SMTP
-            $mail->isSMTP();
-            $mail->Host       = 'smtp.gmail.com';
-            $mail->SMTPAuth   = true;
-
-            // --- TUS DATOS ---
-            // Asegúrate de poner TU correo real aquí
-            $mail->Username   = 'sofitgympower@gmail.com';
-            // Tu contraseña de aplicación SIN ESPACIOS
-            $mail->Password   = 'amsx zhni ofiy nuob';
-
-            // CONFIGURACIÓN MÁS COMPATIBLE PARA GMAIL
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port       = 587;
-            $mail->CharSet    = 'UTF-8';
-
             // Remitente (debe ser igual al Username)
             $mail->setFrom('sofitgympower@gmail.com', 'Soporte Sofit GYM');
             $mail->addAddress($email);
