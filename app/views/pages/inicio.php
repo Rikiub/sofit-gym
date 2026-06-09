@@ -40,11 +40,8 @@ $this->pushJs('pages/inicio/inicio.js');
                                 </div>
                             </div>
                             <a href="#"><i class="fas fa-user"></i> Perfil</a>
-                            <a href="#"><i class="fas fa-calendar-alt"></i> Calendario</a>
-                            <a href="#"><i class="fas fa-language"></i> Idioma</a>
-                            <div class="divider"></div>
-                            <div class="sidebar-actions p-2">
-                                <a class="btn btn-secondary w-100" href="?page=login&action=logout">
+                            <div class="pb-3">
+                                <a href="?page=login&action=logout">
                                     <i class="fa-solid fa-right-from-bracket"></i> <span>Cerrar sesión</span>
                                 </a>
                             </div>
