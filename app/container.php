@@ -89,7 +89,7 @@ return [
 
         // Remitente
         $mail->setFrom(
-            $_ENV["MAIL_USERNAME"],
+            $_ENV["MAIL_FROM_ADDRESS"],
             $_ENV["MAIL_FROM_NAME"] ?? 'Soporte Sofit GYM'
         );
 
