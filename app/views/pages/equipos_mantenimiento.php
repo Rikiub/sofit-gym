@@ -65,7 +65,7 @@ $modalForm = $this->fetch('modalForm', [
         <fieldset class="row">
             <label class="col">
                 <span class="form-label">Trabajador asignado</span>
-                {$this->fetch("select/trabajadores", ["input" => ["required" => true, "name" => "cedula_trabajador"]])}
+                {$this->fetch("select/trabajadores", ["input" => ["name" => "cedula_trabajador"]])}
                 <small x-text="errors.cedula_trabajador"></small>
             </label>
         </fieldset>
