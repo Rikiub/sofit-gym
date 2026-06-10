@@ -116,7 +116,7 @@ $elementName ??= "";
 
                 <div class="col-6">
                     <h5>Fecha de registro</h5>
-                    <p x-text="setText(onlyDate(persona.fecha_registro))"></p>
+                    <p x-text="setText(onlyDate(persona.fecha_creacion))"></p>
                 </div>
             </div>
         </div>

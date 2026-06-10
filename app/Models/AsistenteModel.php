@@ -24,7 +24,7 @@ readonly class AsistenteMensajeDTO
         public ?int $id_sesion = null,
         public ?RolAsistente $rol = null,
         public ?string $contenido = null,
-        public ?DateTimeImmutable $fecha_creacion = new DateTimeImmutable(),
+        public ?DateTimeImmutable $fecha_creacion = null,
     ) {}
 }
 

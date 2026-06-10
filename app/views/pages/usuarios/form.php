@@ -29,9 +29,9 @@
             </div>
 
             <div class="col-12 col-md-6">
-                <label class="form-label">Fecha de registro</label>
-                <input class="form-control" type="date" name="fecha_registro" required @input.debounce="checkValidity(\$el)">
-                <small class="form-text" x-text="errors.fecha_registro"></small>
+                <label class="form-label">Fecha de creación</label>
+                <input class="form-control" type="date" name="fecha_creacion" disabled @input.debounce="checkValidity(\$el)">
+                <small class="form-text" x-text="errors.fecha_creacion"></small>
             </div>
         </fieldset>
     </div>

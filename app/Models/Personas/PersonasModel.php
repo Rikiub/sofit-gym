@@ -26,16 +26,9 @@ class PersonasModel extends BaseModel
     {
         return <<<SQL
                 SELECT
-                    cedula_persona AS `cedula`,
-                    nombre,
-                    apellido,
-                    correo,
-                    telefono,
-                    direccion,
-                    fecha_nacimiento,
-                    fecha_registro,
-                    activo
-                FROM {$this->table}
+                    persona.*,
+                    cedula_persona AS `cedula`
+                FROM {$this->table} persona
             SQL;
     }
 
@@ -106,7 +99,6 @@ class PersonasModel extends BaseModel
             'telefono' => $persona->telefono,
             'direccion' => $persona->direccion,
             'fecha_nacimiento' => Validator::dateToString($persona->fecha_nacimiento),
-            'fecha_registro' => Validator::dateToString($persona->fecha_registro),
             'activo' => $persona->activo,
         ];
     }

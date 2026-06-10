@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Helpers\Validator;
 use App\Models\BaseModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
@@ -17,11 +16,13 @@ readonly class BitacoraDTO
         public ?string $accion = null,
         public ?string $mensaje = null,
         public ?string $nivel = null,
-        public ?DateTimeImmutable $fecha = new DateTimeImmutable(),
+        public ?string $id_registro = null,
+        public ?string $datos_previos = null,
+        public ?string $datos_nuevos = null,
+        public ?DateTimeImmutable $fecha = null,
     ) {}
 
     public function validateInsert() {}
-
     public function validateUpdate() {}
 }
 
@@ -45,7 +46,6 @@ class BitacoraModel extends BaseModel
             'accion' => $dto->accion,
             'mensaje' => $dto->mensaje,
             'nivel' => $dto->nivel,
-            'fecha' => Validator::dateToString($dto->fecha),
         ];
     }
 
@@ -89,6 +89,8 @@ class BitacoraModel extends BaseModel
     {
         $bitacora->validateInsert();
         $this->pdo->beginTransaction();
+
+        $data = $this->dtoToArray($bitacora);
 
         $this->pdoInsert(
             $this->table,

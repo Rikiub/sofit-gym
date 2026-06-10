@@ -22,12 +22,12 @@ readonly class TrabajadorDTO extends PersonaDTO
         ?string $direccion = null,
         ?bool $activo = true,
         ?DateTimeImmutable $fecha_nacimiento = null,
-        ?DateTimeImmutable $fecha_registro = new DateTimeImmutable(),
+        ?DateTimeImmutable $fecha_creacion = null,
         public ?int $id_rol = null,
         public ?string $rol = null,
         public ?float $salario = null,
         // Nuevos atributos
-        public ?DateTimeImmutable $fecha_contratacion = new DateTimeImmutable(),
+        public ?DateTimeImmutable $fecha_contratacion = null,
     ) {
         parent::__construct(
             cedula: $cedula,
@@ -38,7 +38,7 @@ readonly class TrabajadorDTO extends PersonaDTO
             direccion: $direccion,
             activo: $activo,
             fecha_nacimiento: $fecha_nacimiento,
-            fecha_registro: $fecha_registro,
+            fecha_creacion: $fecha_creacion,
         );
     }
 }
@@ -97,7 +97,7 @@ class TrabajadoresModel extends BaseModel
                 'persona.correo',
                 'persona.telefono',
                 'persona.fecha_nacimiento',
-                'persona.fecha_registro',
+                'persona.fecha_creacion',
                 'rol.nombre',
             ];
 

@@ -25,5 +25,8 @@ Alpine.data("crudTable", () => (
 Alpine.data("modalForm", () => (
     modalFormComponent({
         page: PAGE,
+        prepareAddData: {
+            fecha_contratacion: new Date(),
+        },
         editDisableFields: ["cedula", "fecha_contratacion"],
     })));

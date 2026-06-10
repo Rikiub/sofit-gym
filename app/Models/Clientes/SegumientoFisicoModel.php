@@ -14,7 +14,7 @@ readonly class SeguimientoFisicoDTO
     public function __construct(
         public ?int $id_seguimiento = null,
         public ?string $cedula_cliente = null,
-        public ?DateTimeImmutable $fecha = new DateTimeImmutable(),
+        public ?DateTimeImmutable $fecha = null,
         public ?float $altura_cm = null,
         public ?float $peso_kg = null,
         public ?float $cintura_cm = null,

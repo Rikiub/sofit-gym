@@ -31,7 +31,7 @@ Alpine.data("crudTableUsuarios", () => (
             "Rol",
             {
                 name: "Fecha de registro",
-                id: "fecha_registro",
+                id: "fecha_creacion",
                 formatter: (cell, row) => {
                     return dayjs(cell).format("DD/MM/YYYY");
                 }
@@ -43,8 +43,8 @@ Alpine.data("modalFormUsuarios", () => (
     modalFormComponent({
         page: PAGE,
         elementName: "Usuario",
-        editDisableFields: ["nombre_usuario", "fecha_registro"],
         prepareAddData: {
-            fecha_registro: new Date(),
+            fecha_creacion: new Date(),
         },
+        editDisableFields: ["nombre_usuario"],
     })));

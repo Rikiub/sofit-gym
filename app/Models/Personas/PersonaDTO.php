@@ -19,7 +19,7 @@ readonly class PersonaDTO
         public ?string $direccion = null,
         public ?bool $activo = true,
         public ?DateTimeImmutable $fecha_nacimiento = null,
-        public ?DateTimeImmutable $fecha_registro = new DateTimeImmutable(),
+        public ?DateTimeImmutable $fecha_creacion = null,
     ) {}
 
     public function validateInsert()
@@ -31,6 +31,5 @@ readonly class PersonaDTO
             throw new InvalidArgumentException('Debe tener nombre y apellido');
         }
     }
-
     public function validateUpdate() {}
 }

@@ -3,7 +3,8 @@
 ?>
 
 <fieldset class="row">
-    <label class="col form-label">Cédula
+    <label class="col">
+        <span class="form-label">Cédula</span>
         <input
             class="form-control"
             required
@@ -15,19 +16,22 @@
         <small class="form-text" x-text="errors.cedula"></small>
     </label>
 
-    <label class="col form-label">Nombre
+    <label class="col">
+        <span class="form-label">Nombre</span>
         <input class="form-control" required name="nombre" type="text" @input.debounce="checkValidity($el)">
         <small class="form-text" x-text="errors.nombre"></small>
     </label>
 
-    <label class="col form-label">Apellido
+    <label class="col">
+        <span class="form-label">Apellido</span>
         <input class="form-control" required name="apellido" type="text" @input.debounce="checkValidity($el)">
         <small class="form-text" x-text="errors.apellido"></small>
     </label>
 </fieldset>
 
 <fieldset class="row">
-    <label class="col form-label">Teléfono
+    <label class="col">
+        <span class="form-label">Teléfono</span>
         <input
             class="form-control"
             required
@@ -39,19 +43,22 @@
         <small class="form-text" x-text="errors.telefono"></small>
     </label>
 
-    <label class="col form-label">Correo
+    <label class="col">
+        <span class="form-label">Correo</span>
         <input class="form-control" required name="correo" type="email" @input.debounce="checkValidity($el)">
         <small class="form-text" x-text="errors.correo"></small>
     </label>
 
-    <label class="col form-label">Dirección
+    <label class="col">
+        <span class="form-label">Dirección</span>
         <input class="form-control" name="direccion" type="text" @input.debounce="checkValidity($el)">
         <small class="form-text" x-text="errors.direccion"></small>
     </label>
 </fieldset>
 
 <fieldset class="row">
-    <label class="col form-label">Fecha de nacimiento
+    <label class="col">
+        <span class="form-label">Fecha de nacimiento</span>
         <input class="form-control" required name="fecha_nacimiento" type="date" @input.debounce="checkValidity($el)">
         <small class="form-text" x-text="errors.fecha_nacimiento"></small>
     </label>

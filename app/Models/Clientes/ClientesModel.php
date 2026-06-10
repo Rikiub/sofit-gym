@@ -29,7 +29,7 @@ class ClientesModel extends BaseModel
                     persona.telefono,
                     persona.direccion,
                     persona.fecha_nacimiento,
-                    persona.fecha_registro,
+                    persona.fecha_creacion,
                     persona.activo,
                     JSON_OBJECT(
                         "id_membresia", m.id_membresia,
@@ -86,7 +86,7 @@ class ClientesModel extends BaseModel
                 'persona.correo',
                 'persona.telefono',
                 'persona.fecha_nacimiento',
-                'persona.fecha_registro',
+                'persona.fecha_creacion',
             ];
 
             // Creamos las "columna LIKE ?"

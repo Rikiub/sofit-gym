@@ -30,7 +30,7 @@ readonly class ClienteDTO extends PersonaDTO
         ?string $direccion = null,
         ?bool $activo = true,
         ?DateTimeImmutable $fecha_nacimiento = null,
-        ?DateTimeImmutable $fecha_registro = new DateTimeImmutable(),
+        ?DateTimeImmutable $fecha_creacion = null,
         // Atributos nuevos
         public ?MembresiaDTO $membresia = null,
     ) {
@@ -43,7 +43,7 @@ readonly class ClienteDTO extends PersonaDTO
             direccion: $direccion,
             activo: $activo,
             fecha_nacimiento: $fecha_nacimiento,
-            fecha_registro: $fecha_registro,
+            fecha_creacion: $fecha_creacion,
         );
     }
 }
