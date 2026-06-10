@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-06-2026 a las 08:41:43
+-- Tiempo de generación: 10-06-2026 a las 05:18:09
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,22 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `sofit_gym`
 --
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `analisis_energetico`
---
-
-CREATE TABLE `analisis_energetico` (
-  `id_analisis` int(11) NOT NULL,
-  `cedula_cliente` varchar(15) NOT NULL,
-  `fecha` date NOT NULL,
-  `calorias_consumidas` int(11) DEFAULT NULL,
-  `calorias_gastadas_estimadas` int(11) DEFAULT NULL,
-  `diagnostico` text DEFAULT NULL,
-  `recomendacion` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -59,21 +43,23 @@ CREATE TABLE `asistencia_clase` (
 
 CREATE TABLE `asistencia_gimnasio` (
   `id_asistencia` int(11) NOT NULL,
-  `cedula_cliente` varchar(15) NOT NULL,
-  `fecha` datetime NOT NULL,
-  `tipo` enum('Entrada','Salida') NOT NULL
+  `cedula_persona` varchar(15) NOT NULL,
+  `tipo` enum('Entrada','Salida') NOT NULL,
+  `fecha` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `asistencia_gimnasio`
 --
 
-INSERT INTO `asistencia_gimnasio` (`id_asistencia`, `cedula_cliente`, `fecha`, `tipo`) VALUES
-(4, 'V-11111111', '2026-05-17 12:12:12', 'Entrada'),
-(6, 'V-22222222', '2026-05-18 12:12:12', 'Entrada'),
-(9, 'V-33333333', '2026-05-21 12:12:12', 'Entrada'),
-(10, 'V-33333333', '2026-05-23 12:12:12', 'Entrada'),
-(11, 'V-11111111', '2026-05-24 12:12:12', 'Entrada');
+INSERT INTO `asistencia_gimnasio` (`id_asistencia`, `cedula_persona`, `tipo`, `fecha`) VALUES
+(4, 'V-11111111', 'Entrada', '2026-05-17 12:12:12'),
+(6, 'V-22222222', 'Entrada', '2026-05-18 12:12:12'),
+(9, 'V-33333333', 'Entrada', '2026-05-21 12:12:12'),
+(10, 'V-33333333', 'Entrada', '2026-05-23 12:12:12'),
+(11, 'V-11111111', 'Entrada', '2026-06-09 20:00:00'),
+(12, 'V-11111111', 'Entrada', '2026-05-09 12:12:12'),
+(13, 'V-33333333', 'Entrada', '2026-06-09 12:00:00');
 
 -- --------------------------------------------------------
 
@@ -114,7 +100,9 @@ INSERT INTO `asistente_mensaje` (`id_mensaje`, `id_sesion`, `rol`, `contenido`, 
 (63, 10, 'asistente', 'Perfecto. Para poder buscar a Luis Martínez en la base de datos, necesitaría que me proporciones su número de cédula.', '2026-06-07 14:21:32'),
 (64, 11, 'usuario', 'Podrias decirme como va el seguimiento fisico del cliente Luis Martínez?', '2026-06-07 14:26:13'),
 (65, 11, 'usuario', 'Podrias decirme como va el seguimiento fisico del cliente Luis Martínez?', '2026-06-07 14:32:26'),
-(66, 11, 'usuario', 'hola!', '2026-06-07 18:54:58');
+(66, 11, 'usuario', 'hola!', '2026-06-07 18:54:58'),
+(67, 12, 'usuario', 'Podrias decirme como va el seguimiento fisico del cliente Luis Martínez?', '2026-06-08 21:36:30'),
+(68, 12, 'asistente', 'Aquí tienes el historial de seguimientos físicos de **Luis Martínez** (C.I. V-22222222):\n\n**Seguimiento del 24 de Mayo de 2026:**\n*   Altura: 210 cm\n*   Peso: No registrado\n*   Cintura: No registrada\n*   Cadera: No registrada\n*   Pecho: No registrado\n*   Muslo: No registrado\n*   Hombros: No registrado\n*   Pantorrilla: No registrado\n\n**Seguimiento del 20 de Mayo de 2026:**\n*   Altura: 111 cm\n*   Peso: No registrado\n*   Cintura: No registrada\n*   Cadera: No registrada\n*   Pecho: No registrado\n*   Muslo: No registrado\n*   Hombros: No registrado\n*   Pantorrilla: No registrado\n\n**Seguimiento del 30 de Mayo de 2026:**\n*   Altura: 200 cm\n*   Peso: 50 kg\n*   Cintura: 50 cm\n*   Cadera: 50 cm\n*   Pecho: 50 cm\n*   Muslo: 50 cm\n*   Hombros: 50 cm\n*   Pantorrilla: 50 cm', '2026-06-08 21:36:36');
 
 -- --------------------------------------------------------
 
@@ -137,7 +125,8 @@ CREATE TABLE `asistente_sesion` (
 INSERT INTO `asistente_sesion` (`id_sesion`, `id_usuario`, `titulo`, `modelo_usado`, `fecha_creacion`) VALUES
 (9, 2, NULL, 'gemini-2.5-flash-lite', '2026-06-07 14:02:34'),
 (10, 2, NULL, 'gemini-2.5-flash-lite', '2026-06-07 14:18:17'),
-(11, 2, NULL, 'gemini-2.5-flash-lite', '2026-06-07 14:26:11');
+(11, 2, NULL, 'gemini-2.5-flash-lite', '2026-06-07 14:26:11'),
+(12, 2, NULL, 'gemini-2.5-flash-lite', '2026-06-08 21:36:28');
 
 -- --------------------------------------------------------
 
@@ -236,21 +225,6 @@ INSERT INTO `cliente` (`cedula_cliente`, `id_membresia`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `ejercicio`
---
-
-CREATE TABLE `ejercicio` (
-  `id_ejercicio` int(11) NOT NULL,
-  `id_dificultad` int(11) DEFAULT NULL,
-  `nombre` varchar(100) DEFAULT NULL,
-  `descripcion` text DEFAULT NULL,
-  `grupo_muscular` varchar(100) DEFAULT NULL,
-  `equipo_requerido` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `equipo`
 --
 
@@ -294,26 +268,13 @@ INSERT INTO `estado_membresia` (`id_estado`, `nombre`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `horario_trabajador`
---
-
-CREATE TABLE `horario_trabajador` (
-  `id_horario` int(11) NOT NULL,
-  `cedula_trabajador` varchar(15) NOT NULL,
-  `dia_semana` varchar(15) DEFAULT NULL,
-  `hora_entrada` time DEFAULT NULL,
-  `hora_salida` time DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `mantenimiento_equipo`
 --
 
 CREATE TABLE `mantenimiento_equipo` (
   `id_mantenimiento` int(11) NOT NULL,
   `codigo_equipo` varchar(20) NOT NULL,
+  `cedula_trabajador` varchar(15) DEFAULT NULL,
   `fecha` date NOT NULL,
   `tipo` enum('Preventivo','Correctivo') NOT NULL,
   `descripcion` text DEFAULT NULL,
@@ -325,9 +286,9 @@ CREATE TABLE `mantenimiento_equipo` (
 -- Volcado de datos para la tabla `mantenimiento_equipo`
 --
 
-INSERT INTO `mantenimiento_equipo` (`id_mantenimiento`, `codigo_equipo`, `fecha`, `tipo`, `descripcion`, `costo`, `tecnico`) VALUES
-(1, 'EQ-001', '2026-03-15', 'Preventivo', 'Lubricación y calibración', NULL, NULL),
-(6, 'OOM-3285', '2026-05-22', 'Preventivo', 'asf', 120.00, 'asf');
+INSERT INTO `mantenimiento_equipo` (`id_mantenimiento`, `codigo_equipo`, `cedula_trabajador`, `fecha`, `tipo`, `descripcion`, `costo`, `tecnico`) VALUES
+(1, 'EQ-001', NULL, '2026-03-15', 'Preventivo', 'Lubricación y calibración', NULL, NULL),
+(6, 'OOM-3285', NULL, '2026-05-22', 'Preventivo', 'asf', 120.00, 'asf');
 
 -- --------------------------------------------------------
 
@@ -457,7 +418,7 @@ CREATE TABLE `persona` (
 
 INSERT INTO `persona` (`cedula_persona`, `nombre`, `apellido`, `correo`, `telefono`, `direccion`, `foto_perfil`, `fecha_nacimiento`, `fecha_registro`, `activo`) VALUES
 ('325325', 'asfas', 'fas', 'hola@gmail.com', '2323632', 'fa', NULL, '2026-05-21', '2026-05-22 00:37:59', 1),
-('V-00000001', 'Carlos', 'Pérez', 'carlos@sofit.com', '0412-4471891', NULL, NULL, '2026-05-21', '2026-06-07 14:36:07', 1),
+('V-00000001', 'Carlos', 'Pérez', 'carlos@sofit.com', '0412-4471891', NULL, NULL, '2026-05-21', '2026-06-08 15:19:56', 1),
 ('V-00000002', 'Ana', 'Gómez', 'ana@sofit.com', '0426-2142141', NULL, NULL, '2026-05-21', '2026-06-07 14:36:07', 1),
 ('V-11111111', 'María', 'Torres', 'maria@example.com', '0412-1234567', NULL, NULL, '2026-05-17', '2026-06-07 20:12:40', 1),
 ('V-11111898', 'll', 'fsfas', 'hola@gmail.com', '0412-3253252', 'jk', NULL, '2026-05-17', '2026-05-17 23:52:14', 1),
@@ -465,7 +426,7 @@ INSERT INTO `persona` (`cedula_persona`, `nombre`, `apellido`, `correo`, `telefo
 ('V-12521555', 'SSS', 'ff', 'hola@gmail.com', '0412-4212512', 'asfas', NULL, '2026-05-19', '2026-05-17 04:51:33', 1),
 ('V-13131412', 'asasf', 'asgas', 'hola@gmail.com', '0424-2152151', 'asfasf', NULL, '2026-05-18', '2026-05-17 20:50:21', 1),
 ('V-21215215', 'Carlos', 'fasf', 'hola@gmail.com', '0412-2141241', 'asaf', NULL, '2026-05-23', '2026-05-23 20:42:12', 1),
-('V-22222222', 'Luis', 'Martínez', 'luis@example.com', '0412-7654321', NULL, NULL, '2026-05-17', '2026-06-07 21:23:07', 1),
+('V-22222222', 'Luis', 'Martínez', 'luis@example.com', '0412-7654321', NULL, NULL, '2026-05-17', '2026-06-08 15:11:54', 1),
 ('V-22222224', 'Paola', 'fasf', 'hola@gmail.com', '0412-1242142', 'asfasf', NULL, '2026-05-22', '2026-05-22 22:01:55', 1),
 ('V-23523523', 'asfa', 'asfa', 'hola@gmail.com', '0412-1442421', 'asfasf', NULL, '2026-06-08', '2026-06-05 22:55:20', 1),
 ('V-25125152', 'afas', 'saf', 'gasgsaas@gmail.com', '0412-2152152', 'asfa', NULL, '2026-05-22', '2026-05-17 00:53:17', 1),
@@ -505,7 +466,7 @@ INSERT INTO `producto` (`codigo_producto`, `nombre`, `categoria`, `precio_venta`
 ('1313131', 'asfasfasfas', 'Suplementos', 4444.00, 5, 10, 'unidad', 0),
 ('2352323', 'asfa', 'Suplementos', 5.00, 10, 5, 'unidad', 0),
 ('PROT001', 'Proteína Whe', '', 45.00, 0, 19, 'unidad', 0),
-('xcbxb', 'sfsa', 'Snacks', 5.00, 5, 2, 'unidad', 1);
+('xcbxb', 'sfsa', 'Snacks', 5.00, 5, 0, 'unidad', 1);
 
 -- --------------------------------------------------------
 
@@ -537,8 +498,9 @@ INSERT INTO `rutina` (`id_rutina`, `id_dificultad`, `nombre`, `descripcion`, `ob
 
 CREATE TABLE `rutina_asignada` (
   `id_asignacion` int(11) NOT NULL,
-  `cedula_cliente` varchar(15) NOT NULL,
   `id_rutina` int(11) NOT NULL,
+  `cedula_cliente` varchar(15) NOT NULL,
+  `asignado_por` varchar(15) DEFAULT NULL,
   `fecha_asignacion` date NOT NULL,
   `fecha_inicio` date DEFAULT NULL,
   `fecha_fin` date DEFAULT NULL,
@@ -550,8 +512,8 @@ CREATE TABLE `rutina_asignada` (
 -- Volcado de datos para la tabla `rutina_asignada`
 --
 
-INSERT INTO `rutina_asignada` (`id_asignacion`, `cedula_cliente`, `id_rutina`, `fecha_asignacion`, `fecha_inicio`, `fecha_fin`, `estado`, `progreso`) VALUES
-(1, 'V-33333333', 1, '2026-05-21', '2026-05-20', '2026-05-31', 'Activa', 0.00);
+INSERT INTO `rutina_asignada` (`id_asignacion`, `id_rutina`, `cedula_cliente`, `asignado_por`, `fecha_asignacion`, `fecha_inicio`, `fecha_fin`, `estado`, `progreso`) VALUES
+(1, 1, 'V-33333333', NULL, '2026-05-21', '2026-05-20', '2026-05-31', 'Activa', 0.00);
 
 -- --------------------------------------------------------
 
@@ -562,6 +524,7 @@ INSERT INTO `rutina_asignada` (`id_asignacion`, `cedula_cliente`, `id_rutina`, `
 CREATE TABLE `seguimiento_fisico` (
   `id_seguimiento` int(11) NOT NULL,
   `cedula_cliente` varchar(15) NOT NULL,
+  `registrado_por` varchar(15) DEFAULT NULL,
   `fecha` date DEFAULT NULL,
   `altura_cm` decimal(5,2) DEFAULT NULL,
   `peso_kg` decimal(5,2) DEFAULT NULL,
@@ -577,11 +540,11 @@ CREATE TABLE `seguimiento_fisico` (
 -- Volcado de datos para la tabla `seguimiento_fisico`
 --
 
-INSERT INTO `seguimiento_fisico` (`id_seguimiento`, `cedula_cliente`, `fecha`, `altura_cm`, `peso_kg`, `cintura_cm`, `cadera_cm`, `pecho_cm`, `muslo_cm`, `hombros_cm`, `pantorrilla_cm`) VALUES
-(3, 'V-11111111', '2026-05-17', 2.00, 4.00, NULL, NULL, NULL, NULL, NULL, NULL),
-(14, 'V-22222222', '2026-05-20', 111.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(17, 'V-22222222', '2026-05-24', 210.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(20, 'V-22222222', '2026-05-30', 200.00, 50.00, 50.00, 50.00, 50.00, 50.00, 50.00, 50.00);
+INSERT INTO `seguimiento_fisico` (`id_seguimiento`, `cedula_cliente`, `registrado_por`, `fecha`, `altura_cm`, `peso_kg`, `cintura_cm`, `cadera_cm`, `pecho_cm`, `muslo_cm`, `hombros_cm`, `pantorrilla_cm`) VALUES
+(3, 'V-11111111', NULL, '2026-05-17', 2.00, 4.00, NULL, NULL, NULL, NULL, NULL, NULL),
+(14, 'V-22222222', NULL, '2026-05-20', 111.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(17, 'V-22222222', NULL, '2026-05-24', 210.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(20, 'V-22222222', NULL, '2026-05-30', 200.00, 50.00, 50.00, 50.00, 50.00, 50.00, 50.00, 50.00);
 
 -- --------------------------------------------------------
 
@@ -592,6 +555,7 @@ INSERT INTO `seguimiento_fisico` (`id_seguimiento`, `cedula_cliente`, `fecha`, `
 CREATE TABLE `seguimiento_nutricional` (
   `id_seguimiento` int(11) NOT NULL,
   `cedula_cliente` varchar(15) NOT NULL,
+  `registrado_por` varchar(15) DEFAULT NULL,
   `fecha` date DEFAULT NULL,
   `proteinas_g` decimal(5,2) DEFAULT NULL,
   `carbohidratos_g` decimal(5,2) DEFAULT NULL,
@@ -602,10 +566,10 @@ CREATE TABLE `seguimiento_nutricional` (
 -- Volcado de datos para la tabla `seguimiento_nutricional`
 --
 
-INSERT INTO `seguimiento_nutricional` (`id_seguimiento`, `cedula_cliente`, `fecha`, `proteinas_g`, `carbohidratos_g`, `grasas_g`) VALUES
-(3, 'V-11111111', '2026-05-17', 112.40, 325.30, 326.60),
-(5, 'V-22222222', '2026-05-30', 50.00, 50.00, 50.00),
-(7, 'V-22222222', '2026-06-06', 50.00, NULL, NULL);
+INSERT INTO `seguimiento_nutricional` (`id_seguimiento`, `cedula_cliente`, `registrado_por`, `fecha`, `proteinas_g`, `carbohidratos_g`, `grasas_g`) VALUES
+(3, 'V-11111111', NULL, '2026-05-17', 112.40, 325.30, 326.60),
+(5, 'V-22222222', NULL, '2026-05-30', 50.00, 50.00, 50.00),
+(7, 'V-22222222', NULL, '2026-06-06', 50.00, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -731,7 +695,9 @@ CREATE TABLE `venta_producto` (
 --
 
 INSERT INTO `venta_producto` (`id_venta`, `codigo_producto`, `cedula_cliente`, `cantidad_vendida`, `monto_total`, `metodo_pago`, `fecha`) VALUES
-(1, 'PROT001', 'V-11111111', 45.00, NULL, 'Efectivo', '2026-04-26 02:55:55');
+(1, 'PROT001', 'V-11111111', 45.00, NULL, 'Efectivo', '2026-04-26 02:55:55'),
+(2, 'xcbxb', 'V-22222222', 2.00, 10.00, 'Efectivo', '2026-06-08 15:12:25'),
+(3, 'xcbxb', NULL, 3.00, 15.00, 'Efectivo', '2026-06-08 15:15:04');
 
 --
 -- Disparadores `venta_producto`
@@ -778,13 +744,6 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 
 --
--- Indices de la tabla `analisis_energetico`
---
-ALTER TABLE `analisis_energetico`
-  ADD PRIMARY KEY (`id_analisis`),
-  ADD KEY `cedula_cliente` (`cedula_cliente`);
-
---
 -- Indices de la tabla `asistencia_clase`
 --
 ALTER TABLE `asistencia_clase`
@@ -797,7 +756,7 @@ ALTER TABLE `asistencia_clase`
 --
 ALTER TABLE `asistencia_gimnasio`
   ADD PRIMARY KEY (`id_asistencia`),
-  ADD KEY `cedula_cliente` (`cedula_cliente`),
+  ADD KEY `cedula_cliente` (`cedula_persona`),
   ADD KEY `idx_asistencias_fecha` (`fecha`);
 
 --
@@ -836,13 +795,6 @@ ALTER TABLE `cliente`
   ADD KEY `cliente_membresia_FK` (`id_membresia`);
 
 --
--- Indices de la tabla `ejercicio`
---
-ALTER TABLE `ejercicio`
-  ADD PRIMARY KEY (`id_ejercicio`),
-  ADD KEY `id_dificultad` (`id_dificultad`);
-
---
 -- Indices de la tabla `equipo`
 --
 ALTER TABLE `equipo`
@@ -855,18 +807,12 @@ ALTER TABLE `estado_membresia`
   ADD PRIMARY KEY (`id_estado`);
 
 --
--- Indices de la tabla `horario_trabajador`
---
-ALTER TABLE `horario_trabajador`
-  ADD PRIMARY KEY (`id_horario`),
-  ADD KEY `cedula_trabajador` (`cedula_trabajador`);
-
---
 -- Indices de la tabla `mantenimiento_equipo`
 --
 ALTER TABLE `mantenimiento_equipo`
   ADD PRIMARY KEY (`id_mantenimiento`),
-  ADD KEY `codigo_equipo` (`codigo_equipo`);
+  ADD KEY `codigo_equipo` (`codigo_equipo`),
+  ADD KEY `mantenimiento_equipo_trabajador_FK` (`cedula_trabajador`);
 
 --
 -- Indices de la tabla `membresia`
@@ -917,21 +863,24 @@ ALTER TABLE `rutina`
 ALTER TABLE `rutina_asignada`
   ADD PRIMARY KEY (`id_asignacion`),
   ADD KEY `cedula_cliente` (`cedula_cliente`),
-  ADD KEY `id_rutina` (`id_rutina`);
+  ADD KEY `id_rutina` (`id_rutina`),
+  ADD KEY `rutina_asignada_trabajador_FK` (`asignado_por`);
 
 --
 -- Indices de la tabla `seguimiento_fisico`
 --
 ALTER TABLE `seguimiento_fisico`
   ADD PRIMARY KEY (`id_seguimiento`),
-  ADD KEY `cedula_cliente` (`cedula_cliente`);
+  ADD KEY `cedula_cliente` (`cedula_cliente`),
+  ADD KEY `seguimiento_fisico_trabajador_FK` (`registrado_por`);
 
 --
 -- Indices de la tabla `seguimiento_nutricional`
 --
 ALTER TABLE `seguimiento_nutricional`
   ADD PRIMARY KEY (`id_seguimiento`),
-  ADD KEY `cedula_cliente` (`cedula_cliente`);
+  ADD KEY `cedula_cliente` (`cedula_cliente`),
+  ADD KEY `seguimiento_nutricional_trabajador_FK` (`registrado_por`);
 
 --
 -- Indices de la tabla `tipo_canal`
@@ -978,12 +927,6 @@ ALTER TABLE `venta_producto`
 --
 
 --
--- AUTO_INCREMENT de la tabla `analisis_energetico`
---
-ALTER TABLE `analisis_energetico`
-  MODIFY `id_analisis` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT de la tabla `asistencia_clase`
 --
 ALTER TABLE `asistencia_clase`
@@ -993,31 +936,25 @@ ALTER TABLE `asistencia_clase`
 -- AUTO_INCREMENT de la tabla `asistencia_gimnasio`
 --
 ALTER TABLE `asistencia_gimnasio`
-  MODIFY `id_asistencia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id_asistencia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de la tabla `asistente_mensaje`
 --
 ALTER TABLE `asistente_mensaje`
-  MODIFY `id_mensaje` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
+  MODIFY `id_mensaje` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
 
 --
 -- AUTO_INCREMENT de la tabla `asistente_sesion`
 --
 ALTER TABLE `asistente_sesion`
-  MODIFY `id_sesion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id_sesion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `clase`
 --
 ALTER TABLE `clase`
   MODIFY `id_clase` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
-
---
--- AUTO_INCREMENT de la tabla `ejercicio`
---
-ALTER TABLE `ejercicio`
-  MODIFY `id_ejercicio` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `mantenimiento_equipo`
@@ -1083,17 +1020,11 @@ ALTER TABLE `tipo_dificultad`
 -- AUTO_INCREMENT de la tabla `venta_producto`
 --
 ALTER TABLE `venta_producto`
-  MODIFY `id_venta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_venta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Restricciones para tablas volcadas
 --
-
---
--- Filtros para la tabla `analisis_energetico`
---
-ALTER TABLE `analisis_energetico`
-  ADD CONSTRAINT `analisis_energetico_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula_cliente`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `asistencia_clase`
@@ -1106,7 +1037,7 @@ ALTER TABLE `asistencia_clase`
 -- Filtros para la tabla `asistencia_gimnasio`
 --
 ALTER TABLE `asistencia_gimnasio`
-  ADD CONSTRAINT `asistencia_gimnasio_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula_cliente`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `asistencia_gimnasio_ibfk_1` FOREIGN KEY (`cedula_persona`) REFERENCES `cliente` (`cedula_cliente`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `asistente_mensaje`
@@ -1135,22 +1066,11 @@ ALTER TABLE `cliente`
   ADD CONSTRAINT `cliente_membresia_FK` FOREIGN KEY (`id_membresia`) REFERENCES `membresia` (`id_membresia`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Filtros para la tabla `ejercicio`
---
-ALTER TABLE `ejercicio`
-  ADD CONSTRAINT `ejercicio_ibfk_1` FOREIGN KEY (`id_dificultad`) REFERENCES `tipo_dificultad` (`id_dificultad`) ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `horario_trabajador`
---
-ALTER TABLE `horario_trabajador`
-  ADD CONSTRAINT `horario_trabajador_ibfk_1` FOREIGN KEY (`cedula_trabajador`) REFERENCES `trabajador` (`cedula_trabajador`) ON UPDATE CASCADE;
-
---
 -- Filtros para la tabla `mantenimiento_equipo`
 --
 ALTER TABLE `mantenimiento_equipo`
-  ADD CONSTRAINT `mantenimiento_equipo_ibfk_1` FOREIGN KEY (`codigo_equipo`) REFERENCES `equipo` (`codigo_equipo`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `mantenimiento_equipo_ibfk_1` FOREIGN KEY (`codigo_equipo`) REFERENCES `equipo` (`codigo_equipo`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `mantenimiento_equipo_trabajador_FK` FOREIGN KEY (`cedula_trabajador`) REFERENCES `trabajador` (`cedula_trabajador`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `membresia`
@@ -1184,19 +1104,22 @@ ALTER TABLE `rutina`
 --
 ALTER TABLE `rutina_asignada`
   ADD CONSTRAINT `rutina_asignada_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula_cliente`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `rutina_asignada_ibfk_2` FOREIGN KEY (`id_rutina`) REFERENCES `rutina` (`id_rutina`) ON DELETE CASCADE;
+  ADD CONSTRAINT `rutina_asignada_ibfk_2` FOREIGN KEY (`id_rutina`) REFERENCES `rutina` (`id_rutina`) ON DELETE CASCADE,
+  ADD CONSTRAINT `rutina_asignada_trabajador_FK` FOREIGN KEY (`asignado_por`) REFERENCES `trabajador` (`cedula_trabajador`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `seguimiento_fisico`
 --
 ALTER TABLE `seguimiento_fisico`
-  ADD CONSTRAINT `seguimiento_fisico_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula_cliente`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `seguimiento_fisico_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula_cliente`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `seguimiento_fisico_trabajador_FK` FOREIGN KEY (`registrado_por`) REFERENCES `trabajador` (`cedula_trabajador`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `seguimiento_nutricional`
 --
 ALTER TABLE `seguimiento_nutricional`
-  ADD CONSTRAINT `seguimiento_nutricional_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula_cliente`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `seguimiento_nutricional_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula_cliente`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `seguimiento_nutricional_trabajador_FK` FOREIGN KEY (`registrado_por`) REFERENCES `trabajador` (`cedula_trabajador`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `trabajador`

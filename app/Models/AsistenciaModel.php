@@ -48,14 +48,14 @@ class AsistenciaModel extends BaseModel
 
         if ($hora) {
             // Hora personalizada: se combina con la fecha actual de MySQL
-            $sql = "INSERT INTO asistencia_gimnasio (cedula_cliente, fecha, tipo) 
+            $sql = "INSERT INTO asistencia_gimnasio (cedula_persona, fecha, tipo) 
                     VALUES (?, CONCAT(CURDATE(), ' ', ?), 'Entrada')";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$cedula, $hora]);
             $fechaHora = date('Y-m-d') . ' ' . $hora; // solo para respuesta
         } else {
             // Usar NOW() de MySQL
-            $sql = "INSERT INTO asistencia_gimnasio (cedula_cliente, fecha, tipo) 
+            $sql = "INSERT INTO asistencia_gimnasio (cedula_persona, fecha, tipo) 
                     VALUES (?, NOW(), 'Entrada')";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$cedula]);
@@ -78,10 +78,10 @@ class AsistenciaModel extends BaseModel
      */
     public function obtenerEntradasHoy(): array
     {
-        $sql = "SELECT a.id_asistencia, a.cedula_cliente, a.fecha,
+        $sql = "SELECT a.id_asistencia, a.cedula_persona AS `cedula_cliente`, a.fecha,
                        CONCAT(p.nombre, ' ', p.apellido) AS nombre_cliente
                 FROM asistencia_gimnasio a
-                JOIN cliente c ON a.cedula_cliente = c.cedula_cliente
+                JOIN cliente c ON a.cedula_persona = c.cedula_cliente
                 JOIN persona p ON c.cedula_cliente = p.cedula_persona
                 WHERE DATE(a.fecha) = CURDATE() AND a.tipo = 'Entrada'
                 ORDER BY a.fecha DESC";
@@ -96,13 +96,13 @@ class AsistenciaModel extends BaseModel
     public function buscarEntradas(string $termino): array
     {
         $termino = "%{$termino}%";
-        $sql = "SELECT a.id_asistencia, a.cedula_cliente, a.fecha,
+        $sql = "SELECT a.id_asistencia, a.cedula_persona AS `cedula_cliente`, a.fecha,
                        CONCAT(p.nombre, ' ', p.apellido) AS nombre_cliente
                 FROM asistencia_gimnasio a
-                JOIN cliente c ON a.cedula_cliente = c.cedula_cliente
+                JOIN cliente c ON a.cedula_persona = c.cedula_cliente
                 JOIN persona p ON c.cedula_cliente = p.cedula_persona
                 WHERE DATE(a.fecha) = CURDATE() AND a.tipo = 'Entrada'
-                  AND (TIME(a.fecha) LIKE ? OR a.cedula_cliente LIKE ? OR p.nombre LIKE ? OR p.apellido LIKE ?)
+                  AND (TIME(a.fecha) LIKE ? OR a.cedula_persona LIKE ? OR p.nombre LIKE ? OR p.apellido LIKE ?)
                 ORDER BY a.fecha DESC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$termino, $termino, $termino, $termino]);
@@ -160,10 +160,10 @@ class AsistenciaModel extends BaseModel
 
     public function obtenerEntradasPorFecha(string $fecha): array
     {
-        $sql = "SELECT a.id_asistencia, a.cedula_cliente, a.fecha,
+        $sql = "SELECT a.id_asistencia, a.cedula_persona AS `cedula_cliente`, a.fecha,
                        CONCAT(p.nombre, ' ', p.apellido) AS nombre_cliente
                 FROM asistencia_gimnasio a
-                JOIN cliente c ON a.cedula_cliente = c.cedula_cliente
+                JOIN cliente c ON a.cedula_persona = c.cedula_cliente
                 JOIN persona p ON c.cedula_cliente = p.cedula_persona
                 WHERE DATE(a.fecha) = ? AND a.tipo = 'Entrada'
                 ORDER BY a.fecha ASC";

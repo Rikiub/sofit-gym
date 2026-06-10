@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 10-06-2026 a las 04:02:34
+-- Tiempo de generación: 10-06-2026 a las 05:18:19
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -1765,7 +1765,29 @@ INSERT INTO `bitacora` (`id_bitacora`, `id_usuario`, `modulo`, `accion`, `mensaj
 (1742, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:58'),
 (1743, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-09 18:57:58'),
 (1744, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', NULL, NULL, NULL, '2026-06-09 20:59:34'),
-(1745, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-09 21:20:45');
+(1745, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-09 21:20:45'),
+(1746, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', NULL, NULL, NULL, '2026-06-09 22:31:27'),
+(1747, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-09 22:42:09'),
+(1748, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', NULL, NULL, NULL, '2026-06-09 22:42:13'),
+(1749, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-09 22:52:25');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `estado_usuario`
+--
+
+CREATE TABLE `estado_usuario` (
+  `id_estado` int(11) NOT NULL,
+  `nombre` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `estado_usuario`
+--
+
+INSERT INTO `estado_usuario` (`id_estado`, `nombre`) VALUES
+(1, 'Activo');
 
 -- --------------------------------------------------------
 
@@ -1780,6 +1802,15 @@ CREATE TABLE `recuperacion_contrasena` (
   `creado_en` datetime NOT NULL,
   `expira_en` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `recuperacion_contrasena`
+--
+
+INSERT INTO `recuperacion_contrasena` (`id_recuperacion`, `id_usuario`, `codigo`, `creado_en`, `expira_en`) VALUES
+(4, 2, '619939', '2026-06-09 22:31:43', '2026-06-09 22:46:43'),
+(5, 2, '862501', '2026-06-09 22:42:24', '2026-06-09 22:57:24'),
+(6, 2, '566355', '2026-06-09 22:48:39', '2026-06-09 23:03:39');
 
 -- --------------------------------------------------------
 
@@ -1810,6 +1841,7 @@ INSERT INTO `rol` (`id_rol`, `nombre`, `descripcion`) VALUES
 CREATE TABLE `usuario` (
   `id_usuario` int(11) NOT NULL,
   `id_rol` int(11) NOT NULL,
+  `id_estado` int(11) NOT NULL DEFAULT 1,
   `nombre_usuario` varchar(100) NOT NULL,
   `contrasena_hash` varchar(255) NOT NULL,
   `imagen_url` varchar(255) DEFAULT NULL,
@@ -1822,10 +1854,10 @@ CREATE TABLE `usuario` (
 -- Volcado de datos para la tabla `usuario`
 --
 
-INSERT INTO `usuario` (`id_usuario`, `id_rol`, `nombre_usuario`, `contrasena_hash`, `imagen_url`, `email`, `fecha_creacion`, `ultimo_acceso`) VALUES
-(2, 1, 'admin', '$2y$10$a5l6lQoyNh12TxAxB0TH5eFajCwaS9bYwsHv.rY2ge7AYa8GQ.kh2', '/sofit-gym/uploads/usuarios/7353dec39db726a018d5.jpg', 'jesusviloriaolivar@gmail.com', '2026-05-25', NULL),
-(7, 2, 'lol', '$2y$10$CIS9qW...9Yl2bJ.ooTONuyk5X8.ovRFMduGdY8zuZx1ZFk8mqkAK', '/sofit-gym/uploads/usuarios/09446e19dd5b5d7c4666.jpg', NULL, '2026-06-07', NULL),
-(9, 2, 'mm', '$2y$10$QkAt8qM.x6K9Qws/LYVINejGC7tdzm4piWF3ZdvZdi7uK3VbDVETu', NULL, NULL, '2026-06-08', NULL);
+INSERT INTO `usuario` (`id_usuario`, `id_rol`, `id_estado`, `nombre_usuario`, `contrasena_hash`, `imagen_url`, `email`, `fecha_creacion`, `ultimo_acceso`) VALUES
+(2, 1, 1, 'admin', '$2y$10$a5l6lQoyNh12TxAxB0TH5eFajCwaS9bYwsHv.rY2ge7AYa8GQ.kh2', '/sofit-gym/uploads/usuarios/7353dec39db726a018d5.jpg', 'jesusviloriaolivar@gmail.com', '2026-05-25', NULL),
+(7, 2, 1, 'lol', '$2y$10$CIS9qW...9Yl2bJ.ooTONuyk5X8.ovRFMduGdY8zuZx1ZFk8mqkAK', '/sofit-gym/uploads/usuarios/09446e19dd5b5d7c4666.jpg', NULL, '2026-06-07', NULL),
+(9, 2, 1, 'mm', '$2y$10$QkAt8qM.x6K9Qws/LYVINejGC7tdzm4piWF3ZdvZdi7uK3VbDVETu', NULL, NULL, '2026-06-08', NULL);
 
 --
 -- Índices para tablas volcadas
@@ -1837,6 +1869,12 @@ INSERT INTO `usuario` (`id_usuario`, `id_rol`, `nombre_usuario`, `contrasena_has
 ALTER TABLE `bitacora`
   ADD PRIMARY KEY (`id_bitacora`),
   ADD KEY `bitacora_usuario_FK` (`id_usuario`);
+
+--
+-- Indices de la tabla `estado_usuario`
+--
+ALTER TABLE `estado_usuario`
+  ADD PRIMARY KEY (`id_estado`);
 
 --
 -- Indices de la tabla `recuperacion_contrasena`
@@ -1856,7 +1894,8 @@ ALTER TABLE `rol`
 --
 ALTER TABLE `usuario`
   ADD PRIMARY KEY (`id_usuario`),
-  ADD KEY `usuario_rol_FK` (`id_rol`);
+  ADD KEY `usuario_rol_FK` (`id_rol`),
+  ADD KEY `usuario_estado_usuario_FK` (`id_estado`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -1866,13 +1905,19 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `bitacora`
 --
 ALTER TABLE `bitacora`
-  MODIFY `id_bitacora` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1746;
+  MODIFY `id_bitacora` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1750;
+
+--
+-- AUTO_INCREMENT de la tabla `estado_usuario`
+--
+ALTER TABLE `estado_usuario`
+  MODIFY `id_estado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `recuperacion_contrasena`
 --
 ALTER TABLE `recuperacion_contrasena`
-  MODIFY `id_recuperacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_recuperacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `rol`
@@ -1906,6 +1951,7 @@ ALTER TABLE `recuperacion_contrasena`
 -- Filtros para la tabla `usuario`
 --
 ALTER TABLE `usuario`
+  ADD CONSTRAINT `usuario_estado_usuario_FK` FOREIGN KEY (`id_estado`) REFERENCES `estado_usuario` (`id_estado`) ON UPDATE CASCADE,
   ADD CONSTRAINT `usuario_rol_FK` FOREIGN KEY (`id_rol`) REFERENCES `rol` (`id_rol`) ON UPDATE CASCADE;
 COMMIT;
 
