@@ -9,42 +9,11 @@ use PDO;
 
 class LoginModel extends BaseModel
 {
-    private string $table = 'sofit_gym_seguridad.usuario';
-
     public function __construct(
         PDO $pdo,
-        private UsuariosModel $usuariosModel,
         private PHPMailer $mailer,
     ) {
         parent::__construct($pdo);
-    }
-
-    public function findByUsername(string $username): ?UsuarioDTO
-    {
-        return $this->usuariosModel->find($username);
-    }
-
-    public function findByEmail(string $email): ?UsuarioDTO
-    {
-        return $this->usuariosModel->findByEmail($email);
-    }
-
-    public function saveRecoveryCode(int $id_usuario, string $codigo, string $expiracion): void
-    {
-        $this->pdoQuery(
-            "UPDATE {$this->table} SET codigo_recuperacion = ?, expiracion_codigo = ? WHERE id_usuario = ?",
-            [$codigo, $expiracion, $id_usuario]
-        );
-    }
-
-    public function verifyRecoveryCode(string $codigo): ?UsuarioDTO
-    {
-        return $this->usuariosModel->verifyRecoveryCode($codigo);
-    }
-
-    public function updatePasswordAndClearCode(int $id_usuario, string $password_hash): void
-    {
-        $this->usuariosModel->updatePasswordAndClearCode($id_usuario, $password_hash);
     }
 
     /**
@@ -58,7 +27,7 @@ class LoginModel extends BaseModel
         // Contenido
         $mail->isHTML(true);
         $mail->Subject = 'Recuperación de cuenta - Sofit Gym';
-        $mail->Body    = <<<HTML
+        $mail->Body = <<<HTML
             <div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 10px;'>
                 <div style='text-align: center; margin-bottom: 20px;'>
                     

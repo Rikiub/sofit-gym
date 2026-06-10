@@ -6,6 +6,8 @@ use App\Helpers\Validator;
 use App\Models\BaseModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
+use DateTimeInterface;
+use Exception;
 use PDO;
 
 readonly class UsuarioDTO
@@ -17,11 +19,9 @@ readonly class UsuarioDTO
         public ?string $nombre_usuario = null,
         public ?string $contrasena_hash = null,
         public ?string $imagen_url = null,
-        public ?DateTimeImmutable $fecha_registro = new DateTimeImmutable(),
-        // Campos de recuperacion
         public ?string $email = null,
-        public ?string $codigo_recuperacion = null,
-        public ?DateTimeImmutable $expiracion_codigo = null,
+        public ?DateTimeImmutable $fecha_creacion = null,
+        public ?DateTimeImmutable $ultimo_acceso = null,
     ) {}
 
     public function validateInsert() {}
@@ -31,6 +31,7 @@ readonly class UsuarioDTO
 class UsuariosModel extends BaseModel
 {
     private string $table = 'sofit_gym_seguridad.usuario';
+    private string $tableRecuperacion = 'sofit_gym_seguridad.recuperacion_contrasena';
     private string $primaryKey = 'id_usuario';
 
     public function __construct(
@@ -153,8 +154,8 @@ class UsuariosModel extends BaseModel
             'nombre_usuario' => $dto->nombre_usuario,
             'contrasena_hash' => $hashedPassword,
             'imagen_url' => $dto->imagen_url,
-            'fecha_registro' => Validator::dateToString($dto->fecha_registro),
             'email' => $dto->email,
+            'ultimo_acceso' => $dto->ultimo_acceso,
         ];
     }
 
@@ -162,42 +163,59 @@ class UsuariosModel extends BaseModel
     // MÉTODOS AÑADIDOS PARA LA RECUPERACIÓN DE CONTRASEÑA
     // ====================================================================
 
-    public function saveRecoveryCode(int $id_usuario, string $codigo, string $expiracion): void
+    public function saveRecoveryCode(int $id_usuario, string $codigo, DateTimeInterface $expiracion): void
     {
-        $this->pdoQuery(
-            <<<SQL
-                UPDATE {$this->table}
-                SET codigo_recuperacion = ?, expiracion_codigo = ?
-                WHERE id_usuario = ?
-            SQL,
-            [$codigo, $expiracion, $id_usuario]
-        );
+        $this->pdoInsert($this->tableRecuperacion, [
+            "id_usuario" => $id_usuario,
+            "codigo" => $codigo,
+            "creado_en" => Validator::dateToString(new DateTimeImmutable()),
+            "expira_en" => Validator::dateToString($expiracion),
+        ]);
     }
 
     public function verifyRecoveryCode(string $codigo): ?UsuarioDTO
     {
         $row = $this->pdoQuery(
             <<<SQL
-                {$this->sqlSelect()}
-                WHERE usuario.codigo_recuperacion = ? 
-                AND usuario.expiracion_codigo > NOW()
+                SELECT id_usuario
+                FROM {$this->tableRecuperacion}
+                WHERE
+                    codigo = ? 
+                    AND expira_en > creado_en
             SQL,
             [$codigo]
         )->fetch();
 
         if (!$row) return null;
-        return $this->mapper->map(UsuarioDTO::class, $row);
+        return $this->find($row["id_usuario"]);
     }
 
-    public function updatePasswordAndClearCode(int $id_usuario, string $new_password_hash): void
+    public function updatePasswordAndClearCode(int $id_usuario, string $new_password): void
     {
+        $hashedPassword = password_hash($new_password, PASSWORD_DEFAULT);
+
+        $this->pdo->beginTransaction();
+
+        if (!$this->find($id_usuario)) {
+            throw new Exception("Usuario no encontrado");
+        }
+
         $this->pdoQuery(
             <<<SQL
                 UPDATE {$this->table}
-                SET contrasena_hash = ?, codigo_recuperacion = NULL, expiracion_codigo = NULL
+                SET contrasena_hash = ?
                 WHERE id_usuario = ?
             SQL,
-            [$new_password_hash, $id_usuario]
+            [$hashedPassword, $id_usuario]
         );
+        $this->pdoQuery(
+            <<<SQL
+                DELETE FROM {$this->tableRecuperacion}
+                WHERE id_usuario = ?
+            SQL,
+            [$id_usuario]
+        );
+
+        $this->pdo->commit();
     }
 }

@@ -9,6 +9,7 @@ use App\Helpers\Auth\UsuarioSessionDto;
 use App\Helpers\Response;
 use App\Models\LoginModel;
 use App\Models\UsuariosModel;
+use DateTimeImmutable;
 
 class LoginController extends BaseController
 {
@@ -88,16 +89,16 @@ class LoginController extends BaseController
         $body = $this->response->getParsedBody();
         $email = $body["email"] ?? null;
 
-        $usuario = $this->loginModel->findByEmail($email);
+        $usuario = $this->usuariosModel->findByEmail($email);
 
         if (!$usuario) {
             return $this->response->json(["message" => "Correo no registrado"], 404);
         }
 
         $codigo = sprintf("%06d", mt_rand(100000, 999999));
-        $expiracion = date('Y-m-d H:i:s', strtotime('+15 minutes'));
+        $expiracion = new DateTimeImmutable('+15 minutes');
 
-        $this->loginModel->saveRecoveryCode($usuario->id_usuario, $codigo, $expiracion);
+        $this->usuariosModel->saveRecoveryCode($usuario->id_usuario, $codigo, $expiracion);
 
         // AQUÍ LLAMAMOS AL MODELO, NO CONFIGURAMOS EL CORREO AQUÍ
         if ($this->loginModel->enviarCorreo($email, $codigo)) {
@@ -111,7 +112,7 @@ class LoginController extends BaseController
     {
         $body = $this->response->getParsedBody();
         $codigo = $body["codigo"] ?? '';
-        $usuario = $this->loginModel->verifyRecoveryCode($codigo);
+        $usuario = $this->usuariosModel->verifyRecoveryCode($codigo);
 
         if (!$usuario) {
             return $this->response->json(["message" => "Código inválido o expirado"], 401);
@@ -130,9 +131,9 @@ class LoginController extends BaseController
             return $this->response->json(["message" => "Sesión expirada"], 401);
         }
 
-        $this->loginModel->updatePasswordAndClearCode(
+        $this->usuariosModel->updatePasswordAndClearCode(
             $_SESSION['recover_user_id'],
-            password_hash($new_pass, PASSWORD_DEFAULT)
+            $new_pass,
         );
 
         unset($_SESSION['recover_user_id']);
