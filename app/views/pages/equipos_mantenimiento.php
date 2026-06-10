@@ -19,22 +19,25 @@ $querySelect = $this->fetch("querySelect", [
 $modalForm = $this->fetch('modalForm', [
     'xData' => 'modalMantenimiento',
     'form' => <<<HTML
-        <input name="id" hidden>
+        <input name="id_mantenimiento" hidden>
 
         <fieldset class="row">
-            <label class="text-label col">Equipo
+            <label class="col">
+                <span class="form-label">Equipo</span>
                 {$querySelect}
                 <small x-text="errors.codigo_equipo"></small>
             </label>
 
-            <label class="text-label col">Fecha
+            <label class="col">
+                <span class="form-label">Fecha</span>
                 <input class="form-control" type="date" name="fecha" required @input.debounce="checkValidity(\$el)">
                 <small x-text="errors.fecha"></small>
             </label>
         </fieldset>
 
         <fieldset class="row">
-            <label class="text-label col">Tipo de Mantenimiento
+            <label class="col">
+                <span class="form-label">Tipo de Mantenimiento</span>
                 <select class="form-select" name="tipo" required @input.debounce="checkValidity(\$el)">
                     <option value="">Seleccione un tipo…</option>
                     <option value="Preventivo">Preventivo</option>
@@ -45,7 +48,8 @@ $modalForm = $this->fetch('modalForm', [
                 <small x-text="errors.tipo"></small>
             </label>
 
-            <label class="text-label col">Costo
+            <label class="col">
+                <span class="form-label">Costo</span>
                 <input
                     class="form-control"
                     name="costo"
@@ -59,22 +63,18 @@ $modalForm = $this->fetch('modalForm', [
         </fieldset>
 
         <fieldset class="row">
-            <label class="text-label col">Técnico
-                <input
-                    class="form-control"
-                    type="text"
-                    name="tecnico"
-                    placeholder="Nombre del técnico responsable" 
-                    @input.debounce="checkValidity(\$el)"
-                >
-                <small x-text="errors.tecnico"></small>
+            <label class="col">
+                <span class="form-label">Trabajador asignado</span>
+                {$this->fetch("select/trabajadores", ["input" => ["required" => true, "name" => "cedula_trabajador"]])}
+                <small x-text="errors.cedula_trabajador"></small>
             </label>
         </fieldset>
 
         <hr>
 
         <fieldset class="row">
-            <label class="text-label col">Descripción
+            <label class="col">
+                <span class="form-label">Descripción</span>
                 <textarea
                     class="form-control"
                     name="descripcion"

@@ -4,6 +4,7 @@ namespace App\Models\Equipos;
 
 use App\Models\BaseModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
+use DateTimeImmutable;
 use InvalidArgumentException;
 use PDO;
 
@@ -23,6 +24,7 @@ readonly class EquipoDTO
         public ?EstadoEquipo $estado = null,
         public ?string $ubicacion = null,
         public ?bool $activo = true,
+        public ?DateTimeImmutable $fecha_creacion = null,
     ) {}
 
     public function validateInsert(): void
@@ -58,17 +60,15 @@ class EquiposModel extends BaseModel
         return parent::__construct($pdo);
     }
 
-    private function sqlSelect(): string
+    private function sqlSelect(string $where = ""): string
     {
         return <<<SQL
                 SELECT
                     codigo_equipo AS `codigo`,
-                    nombre,
-                    tipo,
-                    estado,
-                    ubicacion,
-                    activo
-                FROM {$this->table}
+                    equipo.*
+                FROM {$this->table} equipo
+                {$where}
+                ORDER BY fecha_creacion DESC
             SQL;
     }
 
@@ -87,7 +87,7 @@ class EquiposModel extends BaseModel
     public function find(string $codigo): ?EquipoDTO
     {
         $row = $this->pdoQuery(
-            "{$this->sqlSelect()} WHERE {$this->primaryKey} = ?",
+            $this->sqlSelect("WHERE {$this->primaryKey} = ?"),
             [$codigo]
         )->fetch();
 

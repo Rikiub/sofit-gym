@@ -25,7 +25,7 @@ Alpine.data("crudMantenimiento", () => (
             action: "query",
         },
         columns: [
-            { name: "id", hidden: true },
+            { id: "id_mantenimiento", hidden: true },
             { name: "Codigo Equipo",  id: "codigo_equipo" },
             {
                 name: "Fecha",
@@ -34,7 +34,6 @@ Alpine.data("crudMantenimiento", () => (
             "Tipo",
             { name: "Descripción", id: "descripcion" },
             { name: "Costo", formatter: (cell) => cell ? `\$${cell}` : ""},
-            "Tecnico",
         ],
     })))
 

@@ -18,13 +18,13 @@ enum TipoMantenimiento: string
 readonly class MantenimientoEquipoDTO
 {
     public function __construct(
-        public ?int $id = null,
+        public ?int $id_mantenimiento = null,
         public ?string $codigo_equipo = null,
+        public ?string $cedula_trabajador = null,
         public ?DateTimeImmutable $fecha = null,
         public ?TipoMantenimiento $tipo = null,
         public ?string $descripcion = null,
         public ?float $costo = null,
-        public ?string $tecnico = null,
         public ?EquipoDTO $equipo = null,
     ) {}
 
@@ -47,7 +47,7 @@ readonly class MantenimientoEquipoDTO
     {
         $this->validateShared();
 
-        if (!$this->id) {
+        if (!$this->id_mantenimiento) {
             throw new InvalidArgumentException('El ID de mantenimiento es necesario para actualizar');
         }
     }
@@ -73,18 +73,12 @@ class MantenimientoEquipoModel extends BaseModel
         return parent::__construct($pdo);
     }
 
-    private function sqlSelect(): string
+    private function sqlSelect(string $where = ""): string
     {
         return <<<SQL
-                SELECT
-                    id_mantenimiento AS `id`,
-                    codigo_equipo,
-                    fecha,
-                    tipo,
-                    descripcion,
-                    costo,
-                    tecnico
-                FROM {$this->table}
+                SELECT * FROM {$this->table}
+                {$where}
+                ORDER BY fecha DESC
             SQL;
     }
 
@@ -110,7 +104,7 @@ class MantenimientoEquipoModel extends BaseModel
     public function find(int $id): ?MantenimientoEquipoDTO
     {
         $row = $this->pdoQuery(
-            "{$this->sqlSelect()} WHERE {$this->primaryKey} = ?",
+            $this->sqlSelect("WHERE {$this->primaryKey} = ?"),
             [$id]
         )->fetch();
 
@@ -152,10 +146,10 @@ class MantenimientoEquipoModel extends BaseModel
         $this->pdoUpdate(
             $this->table,
             $array,
-            [$this->primaryKey => $mantenimiento->id],
+            [$this->primaryKey => $mantenimiento->id_mantenimiento],
         );
 
-        return $this->find($mantenimiento->id);
+        return $this->find($mantenimiento->id_mantenimiento);
     }
 
     public function delete(int $id): void
@@ -167,11 +161,11 @@ class MantenimientoEquipoModel extends BaseModel
     {
         return [
             'codigo_equipo' => $dto->codigo_equipo,
+            'cedula_trabajador' => $dto->cedula_trabajador,
             'fecha' => Validator::dateToString($dto->fecha),
             'tipo' => $dto->tipo->value,
             'descripcion' => $dto->descripcion,
             'costo' => $dto->costo,
-            'tecnico' => $dto->tecnico,
         ];
     }
 }

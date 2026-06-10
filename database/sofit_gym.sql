@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 10-06-2026 a las 05:18:09
+-- Tiempo de generación: 10-06-2026 a las 21:00:48
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -175,8 +175,8 @@ INSERT INTO `clase_cliente` (`id_clase`, `cedula_cliente`) VALUES
 (2, 'V-33333333'),
 (13, 'V-11111111'),
 (13, 'V-33333333'),
-(20, 'V-22222222'),
-(20, 'V-33333333');
+(20, 'V-11111111'),
+(20, 'V-22222222');
 
 --
 -- Disparadores `clase_cliente`
@@ -220,7 +220,18 @@ CREATE TABLE `cliente` (
 INSERT INTO `cliente` (`cedula_cliente`, `id_membresia`) VALUES
 ('V-22222222', 12),
 ('V-11111111', 19),
-('V-33333333', 37);
+('V-33333333', 38);
+
+--
+-- Disparadores `cliente`
+--
+DELIMITER $$
+CREATE TRIGGER `tg_delete_person` AFTER DELETE ON `cliente` FOR EACH ROW begin
+	delete from persona
+	where persona.cedula_persona = old.cedula_cliente;
+end
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -232,18 +243,19 @@ CREATE TABLE `equipo` (
   `codigo_equipo` varchar(20) NOT NULL,
   `nombre` varchar(100) NOT NULL,
   `tipo` varchar(50) DEFAULT NULL,
-  `estado` enum('Operativo','Mantenimiento','Fuera de Servicio') DEFAULT 'Operativo',
+  `estado` enum('Operativo','Mantenimiento','Fuera de Servicio') NOT NULL DEFAULT 'Operativo',
   `ubicacion` varchar(100) DEFAULT NULL,
-  `activo` tinyint(1) DEFAULT 1
+  `activo` tinyint(1) NOT NULL DEFAULT 1,
+  `fecha_creacion` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `equipo`
 --
 
-INSERT INTO `equipo` (`codigo_equipo`, `nombre`, `tipo`, `estado`, `ubicacion`, `activo`) VALUES
-('EQ-001', 'Cinta de correr', 'Cardio', 'Operativo', NULL, 1),
-('OOM-3285', 'Plancha', 'Diagnostico', 'Mantenimiento', 'Salon', 1);
+INSERT INTO `equipo` (`codigo_equipo`, `nombre`, `tipo`, `estado`, `ubicacion`, `activo`, `fecha_creacion`) VALUES
+('EQ-001', 'Cinta de correr', 'Cardio', 'Operativo', NULL, 1, '2026-06-10 14:52:35'),
+('OOM-3285', 'Plancha', 'Diagnostico', 'Mantenimiento', 'Salon', 1, '2026-06-10 14:52:35');
 
 -- --------------------------------------------------------
 
@@ -275,20 +287,19 @@ CREATE TABLE `mantenimiento_equipo` (
   `id_mantenimiento` int(11) NOT NULL,
   `codigo_equipo` varchar(20) NOT NULL,
   `cedula_trabajador` varchar(15) DEFAULT NULL,
-  `fecha` date NOT NULL,
+  `fecha` date NOT NULL DEFAULT current_timestamp(),
   `tipo` enum('Preventivo','Correctivo') NOT NULL,
   `descripcion` text DEFAULT NULL,
-  `costo` decimal(10,2) DEFAULT NULL,
-  `tecnico` varchar(100) DEFAULT NULL
+  `costo` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `mantenimiento_equipo`
 --
 
-INSERT INTO `mantenimiento_equipo` (`id_mantenimiento`, `codigo_equipo`, `cedula_trabajador`, `fecha`, `tipo`, `descripcion`, `costo`, `tecnico`) VALUES
-(1, 'EQ-001', NULL, '2026-03-15', 'Preventivo', 'Lubricación y calibración', NULL, NULL),
-(6, 'OOM-3285', NULL, '2026-05-22', 'Preventivo', 'asf', 120.00, 'asf');
+INSERT INTO `mantenimiento_equipo` (`id_mantenimiento`, `codigo_equipo`, `cedula_trabajador`, `fecha`, `tipo`, `descripcion`, `costo`) VALUES
+(1, 'EQ-001', 'V-00000001', '2026-03-15', 'Preventivo', 'Lubricación y calibración', NULL),
+(6, 'OOM-3285', 'V-00000001', '2026-05-22', 'Preventivo', 'Edicion', 120.00);
 
 -- --------------------------------------------------------
 
@@ -340,7 +351,8 @@ INSERT INTO `membresia` (`id_membresia`, `id_tipo`, `id_estado`, `fecha_inicio`,
 (29, 1, 1, '2026-06-01', '2026-06-27'),
 (30, 1, 1, '2026-06-07', '2026-06-27'),
 (31, 1, 1, '2026-06-07', '2026-06-26'),
-(37, 1, 1, '2026-06-07', '2026-07-07');
+(37, 1, 2, '2026-06-07', '2026-07-07'),
+(38, 1, 1, '2026-06-09', '2026-07-09');
 
 -- --------------------------------------------------------
 
@@ -391,7 +403,8 @@ INSERT INTO `pago` (`id_pago`, `cedula_cliente`, `monto`, `metodo_pago`, `compro
 (14, 'V-11111111', 5.00, 'Efectivo', '', 'Pagado', '2026-05-18', '2026-06-17'),
 (15, 'V-33333333', 5.00, 'Efectivo', '', 'Pagado', '2026-05-22', '2026-06-21'),
 (16, 'V-33333333', 6.00, 'Efectivo', '', 'Pagado', '2026-05-22', '2026-06-21'),
-(17, 'V-33333333', 5.00, 'Efectivo', '', 'Pagado', '2026-06-07', '2026-07-07');
+(17, 'V-33333333', 5.00, 'Efectivo', '', 'Pagado', '2026-06-07', '2026-07-07'),
+(18, 'V-33333333', 5.00, 'Efectivo', '', 'Pagado', '2026-06-09', '2026-07-09');
 
 -- --------------------------------------------------------
 
@@ -406,9 +419,9 @@ CREATE TABLE `persona` (
   `correo` varchar(100) DEFAULT NULL,
   `telefono` varchar(20) DEFAULT NULL,
   `direccion` text DEFAULT NULL,
-  `foto_perfil` varchar(255) DEFAULT NULL,
+  `imagen_url` varchar(255) DEFAULT NULL,
   `fecha_nacimiento` date DEFAULT NULL,
-  `fecha_registro` datetime DEFAULT NULL,
+  `fecha_creacion` datetime NOT NULL DEFAULT current_timestamp(),
   `activo` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -416,30 +429,12 @@ CREATE TABLE `persona` (
 -- Volcado de datos para la tabla `persona`
 --
 
-INSERT INTO `persona` (`cedula_persona`, `nombre`, `apellido`, `correo`, `telefono`, `direccion`, `foto_perfil`, `fecha_nacimiento`, `fecha_registro`, `activo`) VALUES
-('325325', 'asfas', 'fas', 'hola@gmail.com', '2323632', 'fa', NULL, '2026-05-21', '2026-05-22 00:37:59', 1),
+INSERT INTO `persona` (`cedula_persona`, `nombre`, `apellido`, `correo`, `telefono`, `direccion`, `imagen_url`, `fecha_nacimiento`, `fecha_creacion`, `activo`) VALUES
 ('V-00000001', 'Carlos', 'Pérez', 'carlos@sofit.com', '0412-4471891', NULL, NULL, '2026-05-21', '2026-06-08 15:19:56', 1),
 ('V-00000002', 'Ana', 'Gómez', 'ana@sofit.com', '0426-2142141', NULL, NULL, '2026-05-21', '2026-06-07 14:36:07', 1),
 ('V-11111111', 'María', 'Torres', 'maria@example.com', '0412-1234567', NULL, NULL, '2026-05-17', '2026-06-07 20:12:40', 1),
-('V-11111898', 'll', 'fsfas', 'hola@gmail.com', '0412-3253252', 'jk', NULL, '2026-05-17', '2026-05-17 23:52:14', 1),
-('V-12421421', 'asfsafXXD', 'f', 'hola@gmail.com', '0412-2421412', 'asf', NULL, '2026-05-18', '2026-05-19 01:40:57', 1),
-('V-12521555', 'SSS', 'ff', 'hola@gmail.com', '0412-4212512', 'asfas', NULL, '2026-05-19', '2026-05-17 04:51:33', 1),
-('V-13131412', 'asasf', 'asgas', 'hola@gmail.com', '0424-2152151', 'asfasf', NULL, '2026-05-18', '2026-05-17 20:50:21', 1),
-('V-21215215', 'Carlos', 'fasf', 'hola@gmail.com', '0412-2141241', 'asaf', NULL, '2026-05-23', '2026-05-23 20:42:12', 1),
-('V-22222222', 'Luis', 'Martínez', 'luis@example.com', '0412-7654321', NULL, NULL, '2026-05-17', '2026-06-08 15:11:54', 1),
-('V-22222224', 'Paola', 'fasf', 'hola@gmail.com', '0412-1242142', 'asfasf', NULL, '2026-05-22', '2026-05-22 22:01:55', 1),
-('V-23523523', 'asfa', 'asfa', 'hola@gmail.com', '0412-1442421', 'asfasf', NULL, '2026-06-08', '2026-06-05 22:55:20', 1),
-('V-25125152', 'afas', 'saf', 'gasgsaas@gmail.com', '0412-2152152', 'asfa', NULL, '2026-05-22', '2026-05-17 00:53:17', 1),
-('V-31114255', 'asf', 'asf', 'hola@gmail.com', '0412-4471891', 'safasf', NULL, '2026-05-20', '2026-05-20 05:28:44', 1),
-('V-31215125', 'asf', 'asf', 'hola@gmail.com', '0412-1325325', 'asfasf', NULL, '2026-05-27', '2026-05-27 21:08:52', 1),
-('V-31251251', 'XD', 'fas', 'hola@gmail.com', '0412-2352352', 'asf', NULL, '2026-05-25', '2026-05-25 19:57:28', 1),
-('V-31492771', 'LOL', 'faf', 'hola@gmail.com', '0412-1412453', 'asf', NULL, '2026-05-21', '2026-05-22 04:05:11', 1),
-('V-32523523', 'saf', 'asf', 'hola@gmail.com', '0412-1421412', 'asfa', NULL, '2026-05-23', '2026-05-24 05:07:31', 1),
-('V-32532523', 'aFAS', 'FASF', 'hola@gmail.com', '0412-2421251', 'asfa', NULL, '2026-06-08', '2026-06-05 22:55:20', 1),
-('V-33333333', 'Juan', 'Garcia', 'moroso@test.com', '0412-4471891', NULL, NULL, '2026-05-15', '2026-06-01 16:32:47', 1),
-('V-36236326', '6sfsaf', 'asf', 'hola@gmail.com', '0412-2353252', 'asf', NULL, '2026-06-02', '2026-06-01 14:30:58', 1),
-('V-42142155', 'XD', 'fa', 'hola@gmail.com', '0412-2141241', 'asaf', NULL, '2026-05-22', '2026-05-24 05:07:46', 1),
-('V-93682363', 'Pan', 'Waos', 'gasgsaas@gmail.com', '0412-2521512', 'asfas', NULL, '2026-05-17', '2026-05-17 00:52:10', 1);
+('V-22222222', 'Luis', 'Martínez', 'luis@example.com', '0412-7654321', NULL, NULL, '2026-05-17', '2026-06-07 14:36:07', 1),
+('V-33333333', 'Juan', 'Garcia', 'moroso@test.com', '0412-4471891', NULL, NULL, '2026-05-15', '2026-06-01 16:32:47', 1);
 
 -- --------------------------------------------------------
 
@@ -674,6 +669,17 @@ INSERT INTO `trabajador` (`cedula_trabajador`, `id_rol`, `salario`, `fecha_contr
 ('V-00000001', 1, 5.00, '2026-06-07'),
 ('V-00000002', 2, 5.00, '2026-05-22');
 
+--
+-- Disparadores `trabajador`
+--
+DELIMITER $$
+CREATE TRIGGER `tg_delete_trabajador` AFTER DELETE ON `trabajador` FOR EACH ROW begin
+	delete from persona
+	where cedula_persona = old.cedula_trabajador;
+end
+$$
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 --
@@ -718,16 +724,6 @@ DELIMITER ;
 -- (Véase abajo para la vista actual)
 --
 CREATE TABLE `vista_clientes` (
-`cedula` varchar(15)
-,`nombre` varchar(50)
-,`apellido` varchar(50)
-,`correo` varchar(100)
-,`telefono` varchar(20)
-,`direccion` text
-,`fecha_nacimiento` date
-,`fecha_registro` datetime
-,`activo` tinyint(1)
-,`membresia` varchar(370)
 );
 
 -- --------------------------------------------------------
@@ -960,13 +956,13 @@ ALTER TABLE `clase`
 -- AUTO_INCREMENT de la tabla `mantenimiento_equipo`
 --
 ALTER TABLE `mantenimiento_equipo`
-  MODIFY `id_mantenimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id_mantenimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `membresia`
 --
 ALTER TABLE `membresia`
-  MODIFY `id_membresia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id_membresia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT de la tabla `notificacion`
@@ -978,7 +974,7 @@ ALTER TABLE `notificacion`
 -- AUTO_INCREMENT de la tabla `pago`
 --
 ALTER TABLE `pago`
-  MODIFY `id_pago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id_pago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT de la tabla `rutina`
@@ -996,7 +992,7 @@ ALTER TABLE `rutina_asignada`
 -- AUTO_INCREMENT de la tabla `seguimiento_fisico`
 --
 ALTER TABLE `seguimiento_fisico`
-  MODIFY `id_seguimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id_seguimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT de la tabla `seguimiento_nutricional`
