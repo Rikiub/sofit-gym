@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 10-06-2026 a las 21:00:48
+-- Tiempo de generación: 11-06-2026 a las 06:47:42
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -127,6 +127,28 @@ INSERT INTO `asistente_sesion` (`id_sesion`, `id_usuario`, `titulo`, `modelo_usa
 (10, 2, NULL, 'gemini-2.5-flash-lite', '2026-06-07 14:18:17'),
 (11, 2, NULL, 'gemini-2.5-flash-lite', '2026-06-07 14:26:11'),
 (12, 2, NULL, 'gemini-2.5-flash-lite', '2026-06-08 21:36:28');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `categoria_producto`
+--
+
+CREATE TABLE `categoria_producto` (
+  `id_categoria` int(11) NOT NULL,
+  `nombre` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `categoria_producto`
+--
+
+INSERT INTO `categoria_producto` (`id_categoria`, `nombre`) VALUES
+(1, 'Suplementos'),
+(2, 'Bebidas'),
+(3, 'Snacks'),
+(4, 'Accesorios'),
+(5, 'Otros');
 
 -- --------------------------------------------------------
 
@@ -357,6 +379,27 @@ INSERT INTO `membresia` (`id_membresia`, `id_tipo`, `id_estado`, `fecha_inicio`,
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `metodo_pago`
+--
+
+CREATE TABLE `metodo_pago` (
+  `id_metodo` int(11) NOT NULL,
+  `nombre` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `metodo_pago`
+--
+
+INSERT INTO `metodo_pago` (`id_metodo`, `nombre`) VALUES
+(1, 'Efectivo'),
+(2, 'Tarjeta de crédito'),
+(3, 'Pago móvil'),
+(4, 'Transferencia');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `notificacion`
 --
 
@@ -379,6 +422,8 @@ CREATE TABLE `notificacion` (
 
 CREATE TABLE `pago` (
   `id_pago` int(11) NOT NULL,
+  `id_membresia` int(11) DEFAULT NULL,
+  `id_metodo` int(11) DEFAULT NULL,
   `cedula_cliente` varchar(15) NOT NULL,
   `monto` decimal(10,2) NOT NULL,
   `metodo_pago` varchar(50) DEFAULT NULL,
@@ -392,19 +437,19 @@ CREATE TABLE `pago` (
 -- Volcado de datos para la tabla `pago`
 --
 
-INSERT INTO `pago` (`id_pago`, `cedula_cliente`, `monto`, `metodo_pago`, `comprobante_url`, `estado`, `fecha_pago`, `fecha_vencimiento`) VALUES
-(1, 'V-11111111', 30.00, 'Efectivo', NULL, 'Pagado', '2026-05-01', '2026-05-31'),
-(2, 'V-22222222', 80.00, 'Transferencia', NULL, 'Atrasado', '2026-03-01', '2026-05-30'),
-(3, 'V-33333333', 30.00, 'Efectivo', NULL, 'Atrasado', '2026-04-01', '2026-04-30'),
-(4, 'V-33333333', 5.00, 'Efectivo', '', 'Pagado', '2026-05-18', '2026-06-17'),
-(5, 'V-22222222', 5.00, 'Efectivo', '', 'Pagado', '2026-05-18', '2026-08-16'),
-(7, 'V-22222222', 4.00, 'Efectivo', '', 'Pagado', '2026-05-17', '2026-08-15'),
-(13, 'V-33333333', 5.00, 'Efectivo', '', 'Pagado', '2026-05-18', '2026-06-17'),
-(14, 'V-11111111', 5.00, 'Efectivo', '', 'Pagado', '2026-05-18', '2026-06-17'),
-(15, 'V-33333333', 5.00, 'Efectivo', '', 'Pagado', '2026-05-22', '2026-06-21'),
-(16, 'V-33333333', 6.00, 'Efectivo', '', 'Pagado', '2026-05-22', '2026-06-21'),
-(17, 'V-33333333', 5.00, 'Efectivo', '', 'Pagado', '2026-06-07', '2026-07-07'),
-(18, 'V-33333333', 5.00, 'Efectivo', '', 'Pagado', '2026-06-09', '2026-07-09');
+INSERT INTO `pago` (`id_pago`, `id_membresia`, `id_metodo`, `cedula_cliente`, `monto`, `metodo_pago`, `comprobante_url`, `estado`, `fecha_pago`, `fecha_vencimiento`) VALUES
+(1, NULL, NULL, 'V-11111111', 30.00, 'Efectivo', NULL, 'Pagado', '2026-05-01', '2026-05-31'),
+(2, NULL, NULL, 'V-22222222', 80.00, 'Transferencia', NULL, 'Atrasado', '2026-03-01', '2026-05-30'),
+(3, NULL, NULL, 'V-33333333', 30.00, 'Efectivo', NULL, 'Atrasado', '2026-04-01', '2026-04-30'),
+(4, NULL, NULL, 'V-33333333', 5.00, 'Efectivo', '', 'Pagado', '2026-05-18', '2026-06-17'),
+(5, NULL, NULL, 'V-22222222', 5.00, 'Efectivo', '', 'Pagado', '2026-05-18', '2026-08-16'),
+(7, NULL, NULL, 'V-22222222', 4.00, 'Efectivo', '', 'Pagado', '2026-05-17', '2026-08-15'),
+(13, NULL, NULL, 'V-33333333', 5.00, 'Efectivo', '', 'Pagado', '2026-05-18', '2026-06-17'),
+(14, NULL, NULL, 'V-11111111', 5.00, 'Efectivo', '', 'Pagado', '2026-05-18', '2026-06-17'),
+(15, NULL, NULL, 'V-33333333', 5.00, 'Efectivo', '', 'Pagado', '2026-05-22', '2026-06-21'),
+(16, NULL, NULL, 'V-33333333', 6.00, 'Efectivo', '', 'Pagado', '2026-05-22', '2026-06-21'),
+(17, NULL, NULL, 'V-33333333', 5.00, 'Efectivo', '', 'Pagado', '2026-06-07', '2026-07-07'),
+(18, NULL, NULL, 'V-33333333', 5.00, 'Efectivo', '', 'Pagado', '2026-06-09', '2026-07-09');
 
 -- --------------------------------------------------------
 
@@ -444,12 +489,14 @@ INSERT INTO `persona` (`cedula_persona`, `nombre`, `apellido`, `correo`, `telefo
 
 CREATE TABLE `producto` (
   `codigo_producto` varchar(20) NOT NULL,
+  `id_categoria` int(11) DEFAULT NULL,
+  `id_unidad` int(11) DEFAULT NULL,
+  `unidad_medida` varchar(20) DEFAULT 'unidad',
   `nombre` varchar(100) NOT NULL,
   `categoria` varchar(50) DEFAULT NULL,
   `precio_venta` decimal(10,2) NOT NULL,
   `stock_minimo` int(11) DEFAULT 0,
   `stock_actual` int(11) NOT NULL DEFAULT 0,
-  `unidad_medida` varchar(20) DEFAULT 'unidad',
   `activo` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -457,11 +504,11 @@ CREATE TABLE `producto` (
 -- Volcado de datos para la tabla `producto`
 --
 
-INSERT INTO `producto` (`codigo_producto`, `nombre`, `categoria`, `precio_venta`, `stock_minimo`, `stock_actual`, `unidad_medida`, `activo`) VALUES
-('1313131', 'asfasfasfas', 'Suplementos', 4444.00, 5, 10, 'unidad', 0),
-('2352323', 'asfa', 'Suplementos', 5.00, 10, 5, 'unidad', 0),
-('PROT001', 'Proteína Whe', '', 45.00, 0, 19, 'unidad', 0),
-('xcbxb', 'sfsa', 'Snacks', 5.00, 5, 0, 'unidad', 1);
+INSERT INTO `producto` (`codigo_producto`, `id_categoria`, `id_unidad`, `unidad_medida`, `nombre`, `categoria`, `precio_venta`, `stock_minimo`, `stock_actual`, `activo`) VALUES
+('1313131', NULL, NULL, 'unidad', 'asfasfasfas', 'Suplementos', 4444.00, 5, 10, 0),
+('2352323', NULL, NULL, 'unidad', 'asfa', 'Suplementos', 5.00, 10, 5, 0),
+('PROT001', NULL, NULL, 'unidad', 'Proteína Whe', '', 45.00, 0, 19, 0),
+('xcbxb', NULL, NULL, 'unidad', 'Proteinas', 'Snacks', 5.00, 5, 3, 1);
 
 -- --------------------------------------------------------
 
@@ -683,16 +730,29 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `unidad_medida`
+--
+
+CREATE TABLE `unidad_medida` (
+  `id_unidad` int(11) NOT NULL,
+  `nombre` varchar(100) DEFAULT NULL,
+  `abreviatura` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `venta_producto`
 --
 
 CREATE TABLE `venta_producto` (
   `id_venta` int(11) NOT NULL,
+  `id_metodo` int(11) DEFAULT NULL,
+  `metodo_pago` varchar(50) DEFAULT NULL,
   `codigo_producto` varchar(20) NOT NULL,
   `cedula_cliente` varchar(15) DEFAULT NULL,
   `cantidad_vendida` decimal(10,2) DEFAULT NULL,
   `monto_total` decimal(10,2) DEFAULT NULL,
-  `metodo_pago` varchar(50) DEFAULT NULL,
   `fecha` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -700,10 +760,11 @@ CREATE TABLE `venta_producto` (
 -- Volcado de datos para la tabla `venta_producto`
 --
 
-INSERT INTO `venta_producto` (`id_venta`, `codigo_producto`, `cedula_cliente`, `cantidad_vendida`, `monto_total`, `metodo_pago`, `fecha`) VALUES
-(1, 'PROT001', 'V-11111111', 45.00, NULL, 'Efectivo', '2026-04-26 02:55:55'),
-(2, 'xcbxb', 'V-22222222', 2.00, 10.00, 'Efectivo', '2026-06-08 15:12:25'),
-(3, 'xcbxb', NULL, 3.00, 15.00, 'Efectivo', '2026-06-08 15:15:04');
+INSERT INTO `venta_producto` (`id_venta`, `id_metodo`, `metodo_pago`, `codigo_producto`, `cedula_cliente`, `cantidad_vendida`, `monto_total`, `fecha`) VALUES
+(1, NULL, 'Efectivo', 'PROT001', 'V-11111111', 45.00, NULL, '2026-04-26 02:55:55'),
+(2, NULL, 'Efectivo', 'xcbxb', 'V-22222222', 2.00, 10.00, '2026-06-08 15:12:25'),
+(3, NULL, 'Efectivo', 'xcbxb', NULL, 3.00, 15.00, '2026-06-08 15:15:04'),
+(4, NULL, 'Efectivo', 'xcbxb', 'V-33333333', 1.00, 5.00, '2026-06-11 00:46:56');
 
 --
 -- Disparadores `venta_producto`
@@ -770,6 +831,12 @@ ALTER TABLE `asistente_sesion`
   ADD PRIMARY KEY (`id_sesion`);
 
 --
+-- Indices de la tabla `categoria_producto`
+--
+ALTER TABLE `categoria_producto`
+  ADD PRIMARY KEY (`id_categoria`);
+
+--
 -- Indices de la tabla `clase`
 --
 ALTER TABLE `clase`
@@ -819,6 +886,12 @@ ALTER TABLE `membresia`
   ADD KEY `id_estado` (`id_estado`);
 
 --
+-- Indices de la tabla `metodo_pago`
+--
+ALTER TABLE `metodo_pago`
+  ADD PRIMARY KEY (`id_metodo`);
+
+--
 -- Indices de la tabla `notificacion`
 --
 ALTER TABLE `notificacion`
@@ -832,7 +905,9 @@ ALTER TABLE `notificacion`
 --
 ALTER TABLE `pago`
   ADD PRIMARY KEY (`id_pago`),
-  ADD KEY `cedula_cliente` (`cedula_cliente`);
+  ADD KEY `pago_membresia_FK` (`id_membresia`),
+  ADD KEY `pago_metodo_pago_FK` (`id_metodo`),
+  ADD KEY `pago_ibfk_1` (`cedula_cliente`);
 
 --
 -- Indices de la tabla `persona`
@@ -844,7 +919,9 @@ ALTER TABLE `persona`
 -- Indices de la tabla `producto`
 --
 ALTER TABLE `producto`
-  ADD PRIMARY KEY (`codigo_producto`);
+  ADD PRIMARY KEY (`codigo_producto`),
+  ADD KEY `producto_categoria_producto_FK` (`id_categoria`),
+  ADD KEY `producto_unidad_medida_FK` (`id_unidad`);
 
 --
 -- Indices de la tabla `rutina`
@@ -910,13 +987,20 @@ ALTER TABLE `trabajador`
   ADD KEY `id_rol` (`id_rol`);
 
 --
+-- Indices de la tabla `unidad_medida`
+--
+ALTER TABLE `unidad_medida`
+  ADD PRIMARY KEY (`id_unidad`);
+
+--
 -- Indices de la tabla `venta_producto`
 --
 ALTER TABLE `venta_producto`
   ADD PRIMARY KEY (`id_venta`),
   ADD KEY `codigo_producto` (`codigo_producto`),
   ADD KEY `cedula_cliente` (`cedula_cliente`),
-  ADD KEY `idx_ventas_fecha` (`fecha`);
+  ADD KEY `idx_ventas_fecha` (`fecha`),
+  ADD KEY `venta_producto_metodo_pago_FK` (`id_metodo`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -947,6 +1031,12 @@ ALTER TABLE `asistente_sesion`
   MODIFY `id_sesion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
+-- AUTO_INCREMENT de la tabla `categoria_producto`
+--
+ALTER TABLE `categoria_producto`
+  MODIFY `id_categoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT de la tabla `clase`
 --
 ALTER TABLE `clase`
@@ -956,13 +1046,19 @@ ALTER TABLE `clase`
 -- AUTO_INCREMENT de la tabla `mantenimiento_equipo`
 --
 ALTER TABLE `mantenimiento_equipo`
-  MODIFY `id_mantenimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id_mantenimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `membresia`
 --
 ALTER TABLE `membresia`
   MODIFY `id_membresia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+
+--
+-- AUTO_INCREMENT de la tabla `metodo_pago`
+--
+ALTER TABLE `metodo_pago`
+  MODIFY `id_metodo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `notificacion`
@@ -1016,7 +1112,7 @@ ALTER TABLE `tipo_dificultad`
 -- AUTO_INCREMENT de la tabla `venta_producto`
 --
 ALTER TABLE `venta_producto`
-  MODIFY `id_venta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_venta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Restricciones para tablas volcadas
@@ -1087,7 +1183,16 @@ ALTER TABLE `notificacion`
 -- Filtros para la tabla `pago`
 --
 ALTER TABLE `pago`
-  ADD CONSTRAINT `pago_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula_cliente`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `pago_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula_cliente`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `pago_membresia_FK` FOREIGN KEY (`id_membresia`) REFERENCES `membresia` (`id_membresia`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `pago_metodo_pago_FK` FOREIGN KEY (`id_metodo`) REFERENCES `metodo_pago` (`id_metodo`) ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `producto`
+--
+ALTER TABLE `producto`
+  ADD CONSTRAINT `producto_categoria_producto_FK` FOREIGN KEY (`id_categoria`) REFERENCES `categoria_producto` (`id_categoria`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `producto_unidad_medida_FK` FOREIGN KEY (`id_unidad`) REFERENCES `unidad_medida` (`id_unidad`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `rutina`
@@ -1128,7 +1233,8 @@ ALTER TABLE `trabajador`
 --
 ALTER TABLE `venta_producto`
   ADD CONSTRAINT `venta_producto_ibfk_1` FOREIGN KEY (`codigo_producto`) REFERENCES `producto` (`codigo_producto`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `venta_producto_ibfk_2` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula_cliente`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `venta_producto_ibfk_2` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula_cliente`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `venta_producto_metodo_pago_FK` FOREIGN KEY (`id_metodo`) REFERENCES `metodo_pago` (`id_metodo`) ON DELETE SET NULL ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

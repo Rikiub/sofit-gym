@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 10-06-2026 a las 21:04:26
+-- Tiempo de generación: 11-06-2026 a las 06:47:50
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -589,7 +589,17 @@ INSERT INTO `bitacora` (`id_bitacora`, `id_usuario`, `modulo`, `accion`, `mensaj
 (1755, 2, 'clientes', 'delete', 'Cliente V-32236236 eliminado', 'INFO', NULL, NULL, NULL, '2026-06-10 14:03:45'),
 (1756, 2, 'clientes', 'insert', 'Cliente V-23623632 creado', 'INFO', NULL, NULL, NULL, '2026-06-10 14:05:49'),
 (1757, 2, 'clientes', 'insert', 'Cliente V-33623623 creado', 'INFO', NULL, NULL, NULL, '2026-06-10 14:09:57'),
-(1758, 2, 'clientes', 'delete', 'Cliente V-33623623 eliminado', 'INFO', NULL, NULL, NULL, '2026-06-10 14:10:03');
+(1758, 2, 'clientes', 'delete', 'Cliente V-33623623 eliminado', 'INFO', NULL, NULL, NULL, '2026-06-10 14:10:03'),
+(1759, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', NULL, NULL, NULL, '2026-06-10 22:33:03'),
+(1760, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-10 22:33:08'),
+(1761, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', NULL, NULL, NULL, '2026-06-10 22:36:08'),
+(1762, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-10 22:36:29'),
+(1763, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', NULL, NULL, NULL, '2026-06-10 23:16:45'),
+(1764, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-10 23:18:01'),
+(1765, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', NULL, NULL, NULL, '2026-06-10 23:18:03'),
+(1766, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-10 23:23:13'),
+(1767, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', NULL, NULL, NULL, '2026-06-11 00:06:12'),
+(1768, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-11 00:22:36');
 
 -- --------------------------------------------------------
 
@@ -628,9 +638,9 @@ CREATE TABLE `recuperacion_contrasena` (
 --
 
 INSERT INTO `recuperacion_contrasena` (`id_recuperacion`, `id_usuario`, `codigo`, `creado_en`, `expira_en`) VALUES
-(4, 2, '619939', '2026-06-09 22:31:43', '2026-06-09 22:46:43'),
-(5, 2, '862501', '2026-06-09 22:42:24', '2026-06-09 22:57:24'),
-(6, 2, '566355', '2026-06-09 22:48:39', '2026-06-09 23:03:39');
+(9, 2, '783023', '2026-06-11 00:09:19', '2026-06-11 00:24:19'),
+(10, 2, '682972', '2026-06-11 00:11:48', '2026-06-11 00:26:48'),
+(11, 2, '249135', '2026-06-11 00:22:03', '2026-06-11 00:37:03');
 
 -- --------------------------------------------------------
 
@@ -675,8 +685,8 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`id_usuario`, `id_rol`, `id_estado`, `nombre_usuario`, `contrasena_hash`, `imagen_url`, `email`, `fecha_creacion`, `ultimo_acceso`) VALUES
-(2, 1, 1, 'admin', '$2y$10$a5l6lQoyNh12TxAxB0TH5eFajCwaS9bYwsHv.rY2ge7AYa8GQ.kh2', '/sofit-gym/uploads/usuarios/7353dec39db726a018d5.jpg', 'jesusviloriaolivar@gmail.com', '2026-05-25', NULL),
-(7, 2, 1, 'lol', '$2y$10$CIS9qW...9Yl2bJ.ooTONuyk5X8.ovRFMduGdY8zuZx1ZFk8mqkAK', '/sofit-gym/uploads/usuarios/09446e19dd5b5d7c4666.jpg', NULL, '2026-06-07', NULL),
+(2, 1, 1, 'admin', '$2y$10$iXdTuhzpsJTIoXU3nOGP0.IBOv3ijmZfwNBF54mHrP/Ian67aIr3C', '/sofit-gym/uploads/usuarios/41f2f9d5712438de10e3.jpg', 'jesusviloriaolivar@gmail.com', '2026-05-25', NULL),
+(7, 2, 1, 'lol', '$2y$10$CIS9qW...9Yl2bJ.ooTONuyk5X8.ovRFMduGdY8zuZx1ZFk8mqkAK', '/sofit-gym/uploads/usuarios/26a6ddd5092a3e45da52.jpg', NULL, '2026-06-07', NULL),
 (9, 2, 1, 'mm', '$2y$10$QkAt8qM.x6K9Qws/LYVINejGC7tdzm4piWF3ZdvZdi7uK3VbDVETu', NULL, NULL, '2026-06-08', NULL);
 
 --
@@ -725,7 +735,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `bitacora`
 --
 ALTER TABLE `bitacora`
-  MODIFY `id_bitacora` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1759;
+  MODIFY `id_bitacora` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1769;
 
 --
 -- AUTO_INCREMENT de la tabla `estado_usuario`
@@ -737,7 +747,7 @@ ALTER TABLE `estado_usuario`
 -- AUTO_INCREMENT de la tabla `recuperacion_contrasena`
 --
 ALTER TABLE `recuperacion_contrasena`
-  MODIFY `id_recuperacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_recuperacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `rol`
