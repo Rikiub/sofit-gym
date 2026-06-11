@@ -91,7 +91,7 @@ return [
         $from = $_ENV["MAIL_FROM_ADDRESS"] ?? null;
         $name = $_ENV["MAIL_FROM_NAME"] ?? null;
 
-        if ($from && $name) {
+        if ($from) {
             $mail->setFrom(
                 $from,
                 $name ?? 'Soporte Sofit GYM'
