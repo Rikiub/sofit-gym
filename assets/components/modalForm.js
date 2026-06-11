@@ -3,6 +3,13 @@ import { populateForm } from "@/js/form.js";
 import FormDataJson from "form-data-json";
 import Alpine from "alpinejs";
 
+/** Remover keys vacias de un objeto
+ * @return {Object}
+ */
+function clearAsArray(obj) {
+    return Object.entries(obj).filter(([_, value]) => value !== "" && value !== null && value !== undefined);
+}
+
 /**
  * @param {Object} data
  * @param {{
@@ -122,7 +129,7 @@ export function modalFormComponent({
             /** @type {HTMLFormElement} */
             const form = this.$refs.form;
 
-            /** Validar formulario */
+            // Validar formulario
             for (const input of form.elements) {
                 if (input.checkValidity()) {
                     this.setInputValidity(input, true);
@@ -132,7 +139,7 @@ export function modalFormComponent({
                 }
             }
 
-            /** Validar Eventos de Validación */
+            // Validar Eventos de Validación
             this.$dispatch("form-validate", {
                 id: componentId,
                 setValid: (errorKey) => {
@@ -143,6 +150,9 @@ export function modalFormComponent({
                     valid = false;
                 },
             });
+
+            // Comprobrar que la lista de errores tambien este vacia
+            if (clearAsArray(this.errors).some(value => value !== "")) valid = false;
 
             if (this.mode === "delete" || valid) {
                 this.loading = true;
@@ -202,11 +212,7 @@ export function modalFormComponent({
                 afterSubmit(this.mode);
             } else {
                 if (self.DEBUG) {
-                    // Remover keys vacias
-                    const cleanObject = (obj) => Object.fromEntries(
-                        Object.entries(obj).filter(([_, value]) => value !== "" && value !== null && value !== undefined)
-                    );
-                    console.log("Inputs invalidos: ", cleanObject(this.errors));
+                    console.log("Inputs invalidos: ", clearAsArray(this.errors));
                 }
             }
         },
