@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Helpers\Auth\Rol;
 use App\Helpers\Auth\UsuarioSession;
 use App\Helpers\ImagesManager;
 use App\Helpers\Response;
@@ -51,6 +52,16 @@ class UsuariosController extends BaseController
             return $this->response->empty(404);
         }
 
+        // Si no es administrador y trata de buscar otro perfil que no sea el suyo
+        // entonces pararlo
+        $usuarioSesion = UsuarioSession::getUsuario();
+        if (
+            $usuarioSesion->rol !== Rol::Administrador
+            && $usuarioSesion->id !== $usuario->id_usuario
+        ) {
+            return $this->response->json(["message" => "No esta autorizado"], 403);
+        }
+
         return $this->response->json($usuario);
     }
 
@@ -87,6 +98,16 @@ class UsuariosController extends BaseController
         $oldUsuario = $this->usuariosModel->find($nombre_usuario);
         if (!$oldUsuario) {
             return $this->response->json(['message' => 'El usuario no existe'], 400);
+        }
+
+        // Si no es administrador y trata de editar otro perfil que no sea el suyo
+        // entonces pararlo
+        $usuarioSesion = UsuarioSession::getUsuario();
+        if (
+            $usuarioSesion->rol !== Rol::Administrador
+            && $usuarioSesion->id !== $oldUsuario->id_usuario
+        ) {
+            return $this->response->json(["message" => "No esta autorizado"], 403);
         }
 
         // Actualizar foto de perfil

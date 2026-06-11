@@ -13,7 +13,7 @@ class AuthMiddleware
 {
     public function __construct(private array $routes) {}
 
-    public function checkAccess(string $page): void
+    public function checkAccess(string $page, string $action): void
     {
         $usuario = UsuarioSession::getUsuario();
 
@@ -29,8 +29,14 @@ class AuthMiddleware
             // Por razones de compatibilidad.
             return;
         }
-        $rolesPermitidos = $route["roles"];
+        $rolesPermitidos = $route["roles"] ?? [];
 
+        // Si se solicita una acción específica y está configurada, sobrescribimos los roles
+        if (isset($route["actions"][$action])) {
+            $rolesPermitidos = $route["actions"][$action];
+        }
+
+        // Validar autorización
         if (!in_array($usuario->rol, $rolesPermitidos, true)) {
             Response::redirectToError(403);
             exit;

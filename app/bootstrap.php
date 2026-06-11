@@ -74,7 +74,7 @@ try {
 
     // Verificar permisos
     $auth = new AuthMiddleware(require "config/routes.php");
-    $auth->checkAccess($page);
+    $auth->checkAccess($page, $action);
 
     // Ejecutar controlador junto a su metodo
     $respuesta = $controller->$action();
