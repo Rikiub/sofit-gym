@@ -8,38 +8,43 @@ $modalForm = $this->fetch('modalForm', [
     'xData' => 'modalEquipos',
     'form' => <<<HTML
             <fieldset class="row">
-                <label class="form-label col">Código
+                <label class="col">
+                    <span class="form-label">Código</span>
                     <input class="form-control" type="text" name="codigo" required placeholder="Código del equipo">
-                    <small x-text="errors.codigo"></small>
+                    <small class="text-danger" x-text="errors.codigo"></small>
                 </label>
 
-                <label class="form-label col">Nombre
+                <label class="col">
+                    <span class="form-label">Nombre</span>
                     <input class="form-control" type="text" name="nombre" required placeholder="Nombre del equipo">
-                    <small x-text="errors.nombre"></small>
+                    <small class="text-danger" x-text="errors.nombre"></small>
                 </label>
             </fieldset>
 
             <fieldset class="row">
-                <label class="form-label col">Tipo
+                <label class="col">
+                    <span class="form-label">Tipo</span>
                     <input class="form-control" type="text" name="tipo" placeholder="Ej. Diagnóstico, Soporte vital">
-                    <small x-text="errors.tipo"></small>
+                    <small class="text-danger" x-text="errors.tipo"></small>
                 </label>
 
-                <label class="form-label col">Ubicación
+                <label class="col">
+                    <span class="form-label">Ubicación</span>
                     <input class="form-control" type="text" name="ubicacion" placeholder="Área o sala">
-                    <small x-text="errors.ubicacion"></small>
+                    <small class="text-danger" x-text="errors.ubicacion"></small>
                 </label>
             </fieldset>
 
             <fieldset class="row">
-                <label class="form-label col">Estado
+                <label class="col">
+                    <span class="form-label">Estado</span>
                     <select class="form-select" name="estado" required>
                         <option value="">Seleccione un estado…</option>
                         <option value="Operativo">Operativo</option>
                         <option value="Mantenimiento">Mantenimiento</option>
                         <option value="Fuera de Servicio">Fuera de Servicio</option>
                     </select>
-                    <small x-text="errors.estado"></small>
+                    <small class="text-danger" x-text="errors.estado"></small>
                 </label>
             </fieldset>
         HTML,

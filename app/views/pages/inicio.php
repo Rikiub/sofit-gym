@@ -55,7 +55,7 @@ $this->pushJs('pages/inicio/inicio.js');
                     <div class="profile-dropdown" x-data="menu" @form-success="refresh()">
                         <?= $this->insert("usuarios/modalForm", ["id" => "usuarios"]) ?>
 
-                        <div class="ratio ratio-1x1" style="width: 50px; height: 50px;" id="profileIcon">
+                        <div class="ratio ratio-1x1 rounded-circle" style="width: 50px; height: 50px; background-color: black;" id="profileIcon">
                             <img class="img-fluid rounded-circle" :src="usuario.imagen_url">
                         </div>
 

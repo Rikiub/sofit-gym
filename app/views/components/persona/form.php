@@ -13,19 +13,19 @@
             pattern="^[V]-\d{8}$"
             x-mask="V-99999999"
             @input.debounce.500ms="validateCedula($el)">
-        <small class="form-text" x-text="errors.cedula"></small>
+        <small class="text-danger" x-text="errors.cedula"></small>
     </label>
 
     <label class="col">
         <span class="form-label">Nombre</span>
-        <input class="form-control" required name="nombre" type="text" @input.debounce="checkValidity($el)">
-        <small class="form-text" x-text="errors.nombre"></small>
+        <input class="form-control" required name="nombre" type="text">
+        <small class="text-danger" x-text="errors.nombre"></small>
     </label>
 
     <label class="col">
         <span class="form-label">Apellido</span>
-        <input class="form-control" required name="apellido" type="text" @input.debounce="checkValidity($el)">
-        <small class="form-text" x-text="errors.apellido"></small>
+        <input class="form-control" required name="apellido" type="text">
+        <small class="text-danger" x-text="errors.apellido"></small>
     </label>
 </fieldset>
 
@@ -38,28 +38,29 @@
             name="telefono"
             type="tel"
             x-mask="9999-9999999"
-            pattern="04(12|14|16|24|26)-\d{7}"
-            @input.debounce="checkValidity($el)">
-        <small class="form-text" x-text="errors.telefono"></small>
+            pattern="04(12|14|16|24|26)-\d{7}">
+        <small class="text-danger" x-text="errors.telefono"></small>
     </label>
 
     <label class="col">
         <span class="form-label">Correo</span>
-        <input class="form-control" required name="correo" type="email" @input.debounce="checkValidity($el)">
-        <small class="form-text" x-text="errors.correo"></small>
-    </label>
-
-    <label class="col">
-        <span class="form-label">Dirección</span>
-        <input class="form-control" name="direccion" type="text" @input.debounce="checkValidity($el)">
-        <small class="form-text" x-text="errors.direccion"></small>
+        <input class="form-control" required name="correo" type="email">
+        <small class="text-danger" x-text="errors.correo"></small>
     </label>
 </fieldset>
 
 <fieldset class="row">
     <label class="col">
         <span class="form-label">Fecha de nacimiento</span>
-        <input class="form-control" required name="fecha_nacimiento" type="date" @input.debounce="checkValidity($el)">
-        <small class="form-text" x-text="errors.fecha_nacimiento"></small>
+        <input class="form-control" required name="fecha_nacimiento" type="date">
+        <small class="text-danger" x-text="errors.fecha_nacimiento"></small>
+    </label>
+</fieldset>
+
+<fieldset class="row">
+    <label class="col">
+        <span class="form-label">Dirección</span>
+        <textarea class="form-control" name="direccion"></textarea>
+        <small class="text-danger" x-text="errors.direccion"></small>
     </label>
 </fieldset>

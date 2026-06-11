@@ -64,7 +64,7 @@ export function modalFormComponent({
         init() {
             this.modal = bootstrap.Modal.getOrCreateInstance(this.$refs.modal);
 
-            window.addEventListener("form-error", (event) => {
+            self.addEventListener("form-error", (event) => {
                 const { id = null, key = "", message = null } = event.detail;
                 if (id !== componentId) return;
 

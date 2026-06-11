@@ -10,26 +10,29 @@ $modalForm = $this->fetch('modalForm', [
             <hr>
 
             <fieldset class="row">
-                <label class="col form-label">Rol
-                    <select class="form-select" name="id_rol" required @input.debounce="checkValidity(\$el)">
+                <label class="col">
+                    <span class="form-label">Rol</span>
+                    <select class="form-select" name="id_rol" required>
                         <option value="">Seleccione un rol</option>
                         <option value="1">Administrador</option>
                         <option value="2">Entrenador</option>
                         <option value="3">Recepcionista</option>
                     </select>
-                    <small class="form-text" x-text="errors.id_rol"></small>
+                    <small class="text-danger" x-text="errors.id_rol"></small>
                 </label>
 
-                <label class="col form-label">Salario
-                    <input class="form-control" type="number" name="salario" step="any" required @input.debounce="checkValidity(\$el)">
-                    <small class="form-text" x-text="errors.salario"></small>
+                <label class="col">
+                    <span class="form-label">Salario</span>
+                    <input class="form-control" type="number" name="salario" step="any" required>
+                    <small class="text-danger" x-text="errors.salario"></small>
                 </label>
             </fieldset>
 
             <fieldset class="row">
-                <label class="col form-label">Fecha de contratación
-                    <input class="form-control" type="date" name="fecha_contratacion" required @input.debounce="checkValidity(\$el)">
-                    <small class="form-text" x-text="errors.fecha_contratacion"></small>
+                <label class="col">
+                    <span class="form-label">Fecha de contratación</span>
+                    <input class="form-control" type="date" name="fecha_contratacion" required>
+                    <small class="text-danger" x-text="errors.fecha_contratacion"></small>
                 </label>
             </fieldset>
         HTML,

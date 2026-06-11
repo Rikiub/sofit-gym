@@ -22,13 +22,12 @@ $modalForm = $this->fetch('modalForm', [
                 <label class="col">
                     <span class="form-label">Nombre de la clase</span>
                     <input
-                        @input.debounce="checkValidity(\$el)"
                         class="form-control"
                         name="nombre"
                         type="text" 
                         required
                     >
-                    <small class="form-text" x-text="errors.nombre"></small>
+                    <small class="text-danger" x-text="errors.nombre"></small>
                 </label>
             </fieldset>
 
@@ -36,12 +35,11 @@ $modalForm = $this->fetch('modalForm', [
                 <label class="col">
                     <span class="form-label">Descripción</span>
                     <textarea
-                        @input.debounce="checkValidity(\$el)"
                         class="form-control"
                         name="descripcion"
                         rows="2" 
                     ></textarea>
-                    <small class="form-text" x-text="errors.descripcion"></small>
+                    <small class="text-danger" x-text="errors.descripcion"></small>
                 </label>
             </fieldset>
 
@@ -51,7 +49,7 @@ $modalForm = $this->fetch('modalForm', [
                 <label class="col">
                     <span class="form-label">Entrenador</span>
                     {$selectTrabajadores}
-                    <small class="form-text" x-text="errors.cedula_trabajador"></small>
+                    <small class="text-danger" x-text="errors.cedula_trabajador"></small>
                 </label>
             </fieldset>
 
@@ -72,8 +70,8 @@ $modalForm = $this->fetch('modalForm', [
 
                     <label class="col">
                         <span class="form-label">Capacidad Maxima</span>
-                        <input class="form-control" name="capacidad_maxima" required type="number" placeholder="1" min="1" @input="checkValidity(\$el)">
-                        <small class="form-text" x-text="errors.capacidad_maxima"></small>
+                        <input class="form-control" name="capacidad_maxima" required type="number" placeholder="1" min="1">
+                        <small class="text-danger" x-text="errors.capacidad_maxima"></small>
                     </label>
                 </fieldset>
 
@@ -105,7 +103,7 @@ $modalForm = $this->fetch('modalForm', [
                         </template>
                     </ul>
 
-                    <small class="form-text" x-text="errors.clientes"></small>
+                    <small class="text-danger" x-text="errors.clientes"></small>
                 </div>
             </div>
 
@@ -115,38 +113,36 @@ $modalForm = $this->fetch('modalForm', [
                 <label class="col">
                     <span class="form-label">Fecha y hora de inicio</span>
                     <input
-                        @input.debounce="checkValidity(\$el)"
                         class="form-control"
                         type="datetime-local" 
                         name="fecha_inicio"
                         required
                     >
-                    <small class="form-text" x-text="errors.fecha_inicio"></small>
+                    <small class="text-danger" x-text="errors.fecha_inicio"></small>
                 </label>
 
                 <label class="col">
                     <span class="form-label">Fecha y hora de fin</span>
                     <input
-                        @input.debounce="checkValidity(\$el)"
                         class="form-control"
                         name="fecha_fin"
                         type="datetime-local" 
                         required
                     >
-                    <small class="form-text" x-text="errors.fecha_fin"></small>
+                    <small class="text-danger" x-text="errors.fecha_fin"></small>
                 </label>
             </fieldset>
 
             <fieldset class="row">
                 <label class="col">
                     <span class="form-label">Estado</span>
-                    <select class="form-control" name="estado" required @change="checkValidity(\$el)">
+                    <select class="form-control" name="estado" required>
                         <option value="Programado">Programado</option>
                         <option value="En curso">En curso</option>
                         <option value="Finalizado">Finalizado</option>
                         <option value="Cancelado">Cancelado</option>
                     </select>
-                    <small class="form-text" x-text="errors.estado"></small>
+                    <small class="text-danger" x-text="errors.estado"></small>
                 </label>
             </fieldset>
         HTML,

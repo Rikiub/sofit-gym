@@ -19,20 +19,20 @@ $isAdmin ??= false;
         <div class="row g-2">
             <label class="col-12 col-md-6">
                 <span class="form-label">Nombre de usuario</span>
-                <input class="form-control" type="text" name="nombre_usuario" required @input.debounce="checkValidity($el)">
+                <input class="form-control" type="text" name="nombre_usuario" required>
                 <small class="text-danger mt-1 d-block" x-text="errors.nombre_usuario"></small>
             </label>
 
             <label class="col-12 col-md-6">
                 <span class="form-label">Email</span>
-                <input class="form-control" type="email" name="email" @input.debounce="checkValidity($el)">
+                <input class="form-control" type="email" name="email">
                 <small class="text-danger mt-1 d-block" x-text="errors.email"></small>
             </label>
 
             <template x-if="mode !== 'edit'">
                 <label class="col-12 col-md-6">
                     <span class="form-label">Contraseña</span>
-                    <input class="form-control" type="text" name="contrasena_hash" required @input.debounce="checkValidity($el)">
+                    <input class="form-control" type="text" name="contrasena_hash" required>
                     <small class="text-danger mt-1 d-block" x-text="errors.contrasena_hash"></small>
                 </label>
             </template>
@@ -40,7 +40,7 @@ $isAdmin ??= false;
             <?php if ($isAdmin): ?>
                 <label class="col-12 col-md-6">
                     <span class="form-label">Rol</span>
-                    <select class="form-select" name="id_rol" required @input.debounce="checkValidity($el)">
+                    <select class="form-select" name="id_rol" required>
                         <option value="">Seleccione un rol</option>
                         <option value="1">Administrador</option>
                         <option value="2">Entrenador</option>
@@ -52,7 +52,7 @@ $isAdmin ??= false;
 
             <label class="col-12 col-md-6">
                 <span class="form-label">Fecha de creación</span>
-                <input class="form-control" type="date" name="fecha_creacion" disabled @input.debounce="checkValidity(\$el)">
+                <input class="form-control" type="date" name="fecha_creacion" disabled>
                 <small class="form-text" x-text="errors.fecha_creacion"></small>
             </label>
         </div>

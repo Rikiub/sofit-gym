@@ -34,7 +34,7 @@ $this->pushJs("components/querySelect.js");
 ?>
 
 <div x-data="querySelect(<?= $this->e($configJson) ?>)">
-    <input x-model="selected" hidden <?= stringifyAttributes($input) ?>>
+    <input x-ref="input" x-model="selected" hidden <?= stringifyAttributes($input) ?>>
 
     <button
         type="button"

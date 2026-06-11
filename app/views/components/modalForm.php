@@ -57,6 +57,8 @@ $this->pushJs('components/modalForm.js');
                 <form
                     x-show="mode !== 'delete'" x-ref="form"
                     @submit.prevent="handleSubmit"
+                    @input.debounce="checkValidity($event.target)"
+                    @change.debounce="checkValidity($event.target)"
                     :id="$id('form')"
                     novalidate>
                     <?= $form ?>

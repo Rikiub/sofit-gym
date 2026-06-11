@@ -30,7 +30,7 @@ $modalForm = $this->fetch('modalForm', [
 
             <label class="col">
                 <span class="form-label">Fecha</span>
-                <input class="form-control" type="date" name="fecha" required @input.debounce="checkValidity(\$el)">
+                <input class="form-control" type="date" name="fecha" required>
                 <small x-text="errors.fecha"></small>
             </label>
         </fieldset>
@@ -38,7 +38,7 @@ $modalForm = $this->fetch('modalForm', [
         <fieldset class="row">
             <label class="col">
                 <span class="form-label">Tipo de Mantenimiento</span>
-                <select class="form-select" name="tipo" required @input.debounce="checkValidity(\$el)">
+                <select class="form-select" name="tipo" required>
                     <option value="">Seleccione un tipo…</option>
                     <option value="Preventivo">Preventivo</option>
                     <option value="Correctivo">Correctivo</option>
@@ -56,7 +56,6 @@ $modalForm = $this->fetch('modalForm', [
                     type="number"
                     step="any"
                     placeholder="0.00"
-                    @input.debounce="checkValidity(\$el)"
                 >
                 <small x-text="errors.costo"></small>
             </label>
@@ -80,7 +79,6 @@ $modalForm = $this->fetch('modalForm', [
                     name="descripcion"
                     placeholder="Detalles del mantenimiento realizado"
                     rows="3"
-                    @input.debounce="checkValidity(\$el)"
                 ></textarea>
                 <small x-text="errors.descripcion"></small>
             </label>

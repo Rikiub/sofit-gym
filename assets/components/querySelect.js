@@ -24,6 +24,10 @@ Alpine.data("querySelect", ({
                 }
             });
 
+            this.$watch('selected', () => {
+                this.$refs.input.dispatchEvent(new Event('change', { bubbles: true }));
+            })
+
             await this.handleSearch(); 
         },
 
@@ -62,7 +66,7 @@ Alpine.data("querySelect", ({
 
         setSelected(item) {
             this.search = null;
-            this.selected = item[itemKey];
+            this.selected = item[this.itemKey];
             this.$dispatch("item-selected", item);
             this.hidePopover();
         },
