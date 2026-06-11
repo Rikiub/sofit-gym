@@ -63,7 +63,7 @@ class AsistenteModel extends BaseModel
         $table = "asistente_sesion";
 
         $array = (array) $sesion;
-        $array["fecha_creacion"] = Validator::dateToString($sesion->fecha_creacion);
+        unset($array["fecha_creacion"]);
         unset($array["mensajes"]);
 
         $this->pdoInsert($table, $array);
@@ -77,8 +77,8 @@ class AsistenteModel extends BaseModel
         $table = "asistente_mensaje";
 
         $array = (array) $mensaje;
+        unset($array["fecha_creacion"]);
         $array["rol"] = $mensaje->rol ? $mensaje->rol->value : null;
-        $array["fecha_creacion"] = Validator::dateToString($mensaje->fecha_creacion);
 
         $this->pdoInsert($table, $array);
     }
