@@ -1,34 +1,29 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
+-- MySQL dump 10.13  Distrib 8.0.19, for Win64 (x86_64)
 --
--- Servidor: 127.0.0.1
--- Tiempo de generación: 11-06-2026 a las 06:47:50
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
-
+-- Host: localhost    Database: sofit_gym_seguridad
+-- ------------------------------------------------------
+-- Server version	5.5.5-10.4.32-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Base de datos: `sofit_gym_seguridad`
+-- Table structure for table `bitacora`
 --
 
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `bitacora`
---
-
+DROP TABLE IF EXISTS `bitacora`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `bitacora` (
-  `id_bitacora` int(11) NOT NULL,
+  `id_bitacora` int(11) NOT NULL AUTO_INCREMENT,
   `id_usuario` int(11) DEFAULT NULL,
   `modulo` varchar(100) DEFAULT NULL,
   `accion` varchar(100) DEFAULT NULL,
@@ -37,639 +32,110 @@ CREATE TABLE `bitacora` (
   `id_registro` varchar(100) DEFAULT NULL,
   `datos_previos` longtext DEFAULT NULL,
   `datos_nuevos` longtext DEFAULT NULL,
-  `fecha` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `fecha` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id_bitacora`),
+  KEY `bitacora_usuario_FK` (`id_usuario`),
+  CONSTRAINT `bitacora_usuario_FK` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1769 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Volcado de datos para la tabla `bitacora`
+-- Dumping data for table `bitacora`
 --
 
-INSERT INTO `bitacora` (`id_bitacora`, `id_usuario`, `modulo`, `accion`, `mensaje`, `nivel`, `id_registro`, `datos_previos`, `datos_nuevos`, `fecha`) VALUES
-(1215, 2, 'clientes', 'update', 'Cliente V-22222222 actualizado', 'INFO', NULL, NULL, NULL, '2026-06-08 21:53:53'),
-(1216, 2, 'clientes', 'update', 'Cliente V-22222222 actualizado', 'INFO', NULL, NULL, NULL, '2026-06-08 21:53:57'),
-(1217, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:40'),
-(1218, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:40'),
-(1219, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:40'),
-(1220, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:40'),
-(1221, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:40'),
-(1222, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:41'),
-(1223, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:41'),
-(1224, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:41'),
-(1225, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:41'),
-(1226, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:41'),
-(1227, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:41'),
-(1228, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:42'),
-(1229, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:42'),
-(1230, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:42'),
-(1231, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:42'),
-(1232, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:43'),
-(1233, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:43'),
-(1234, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:43'),
-(1235, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:43'),
-(1236, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:43'),
-(1237, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:43'),
-(1238, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:43'),
-(1239, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:44'),
-(1240, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:44'),
-(1241, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:44'),
-(1242, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:44'),
-(1243, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:44'),
-(1244, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:44'),
-(1245, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:44'),
-(1246, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:52:44'),
-(1247, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:26'),
-(1248, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:26'),
-(1249, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:26'),
-(1250, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:26'),
-(1251, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:27'),
-(1252, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:27'),
-(1253, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:27'),
-(1254, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:27'),
-(1255, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:27'),
-(1256, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:27'),
-(1257, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:27'),
-(1258, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:27'),
-(1259, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:28'),
-(1260, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:28'),
-(1261, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:28'),
-(1262, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:28'),
-(1263, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:28'),
-(1264, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:28'),
-(1265, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:29'),
-(1266, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:29'),
-(1267, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:29'),
-(1268, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:29'),
-(1269, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:29'),
-(1270, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:30'),
-(1271, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:30'),
-(1272, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:30'),
-(1273, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:30'),
-(1274, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:30'),
-(1275, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:30'),
-(1276, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:30'),
-(1277, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:38'),
-(1278, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:38'),
-(1279, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:38'),
-(1280, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:39'),
-(1281, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:39'),
-(1282, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:39'),
-(1283, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:39'),
-(1284, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:39'),
-(1285, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:39'),
-(1286, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:40'),
-(1287, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:40'),
-(1288, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:40'),
-(1289, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:40'),
-(1290, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:40'),
-(1291, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:40'),
-(1292, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:41'),
-(1293, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:41'),
-(1294, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:41'),
-(1295, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:42'),
-(1296, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:42'),
-(1297, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:42'),
-(1298, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:42'),
-(1299, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:42'),
-(1300, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:42'),
-(1301, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:42'),
-(1302, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:42'),
-(1303, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:42'),
-(1304, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:42'),
-(1305, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:42'),
-(1306, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:43'),
-(1307, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:56'),
-(1308, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:56'),
-(1309, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:56'),
-(1310, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:56'),
-(1311, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:57'),
-(1312, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:57'),
-(1313, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:57'),
-(1314, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:57'),
-(1315, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:57'),
-(1316, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:57'),
-(1317, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:57'),
-(1318, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:57'),
-(1319, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:57'),
-(1320, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:59'),
-(1321, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:59'),
-(1322, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:59'),
-(1323, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:59'),
-(1324, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:58'),
-(1325, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:59'),
-(1326, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:59'),
-(1327, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:59'),
-(1328, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:59'),
-(1329, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:59'),
-(1330, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:59'),
-(1331, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:59'),
-(1332, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:59'),
-(1333, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:59'),
-(1334, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:59'),
-(1335, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:59'),
-(1336, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:53:59'),
-(1337, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:03'),
-(1338, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:03'),
-(1339, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:03'),
-(1340, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:03'),
-(1341, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:03'),
-(1342, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:03'),
-(1343, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:04'),
-(1344, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:04'),
-(1345, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:04'),
-(1346, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:04'),
-(1347, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:04'),
-(1348, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:04'),
-(1349, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:05'),
-(1350, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:05'),
-(1351, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:05'),
-(1352, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:05'),
-(1353, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:05'),
-(1354, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:04'),
-(1355, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:05'),
-(1356, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:05'),
-(1357, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:05'),
-(1358, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:05'),
-(1359, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:05'),
-(1360, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:05'),
-(1361, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:06'),
-(1362, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:06'),
-(1363, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:06'),
-(1364, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:06'),
-(1365, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:06'),
-(1366, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 22:54:06'),
-(1367, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:24'),
-(1368, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:24'),
-(1369, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:24'),
-(1370, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:25'),
-(1371, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:26'),
-(1372, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:26'),
-(1373, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:26'),
-(1374, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:26'),
-(1375, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:26'),
-(1376, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:26'),
-(1377, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:26'),
-(1378, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:27'),
-(1379, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:29'),
-(1380, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:29'),
-(1381, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:29'),
-(1382, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:29'),
-(1383, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:30'),
-(1384, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:30'),
-(1385, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:30'),
-(1386, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:30'),
-(1387, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:30'),
-(1388, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:30'),
-(1389, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:30'),
-(1390, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:30'),
-(1391, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:30'),
-(1392, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:30'),
-(1393, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:30'),
-(1394, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:30'),
-(1395, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:30'),
-(1396, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:00:30'),
-(1397, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:12'),
-(1398, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:12'),
-(1399, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:12'),
-(1400, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:12'),
-(1401, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:13'),
-(1402, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:13'),
-(1403, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:13'),
-(1404, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:13'),
-(1405, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:14'),
-(1406, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:14'),
-(1407, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:14'),
-(1408, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:16'),
-(1409, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:16'),
-(1410, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:16'),
-(1411, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:16'),
-(1412, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:17'),
-(1413, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:17'),
-(1414, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:17'),
-(1415, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:17'),
-(1416, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:17'),
-(1417, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:18'),
-(1418, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:19'),
-(1419, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:19'),
-(1420, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:19'),
-(1421, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:19'),
-(1422, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:20'),
-(1423, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:21'),
-(1424, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:20'),
-(1425, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:21'),
-(1426, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:02:21'),
-(1427, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:11'),
-(1428, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:11'),
-(1429, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:11'),
-(1430, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:11'),
-(1431, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:11'),
-(1432, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:11'),
-(1433, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:12'),
-(1434, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:12'),
-(1435, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:12'),
-(1436, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:13'),
-(1437, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:13'),
-(1438, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:13'),
-(1439, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:13'),
-(1440, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:13'),
-(1441, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:13'),
-(1442, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:14'),
-(1443, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:14'),
-(1444, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:14'),
-(1445, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:15'),
-(1446, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:15'),
-(1447, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:15'),
-(1448, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:15'),
-(1449, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:16'),
-(1450, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:16'),
-(1451, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:16'),
-(1452, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:17'),
-(1453, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:17'),
-(1454, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:17'),
-(1455, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:18'),
-(1456, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:11:18'),
-(1457, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:15'),
-(1458, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:15'),
-(1459, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:16'),
-(1460, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:16'),
-(1461, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:16'),
-(1462, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:16'),
-(1463, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:17'),
-(1464, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:17'),
-(1465, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:17'),
-(1466, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:17'),
-(1467, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:17'),
-(1468, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:17'),
-(1469, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:18'),
-(1470, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:18'),
-(1471, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:18'),
-(1472, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:18'),
-(1473, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:18'),
-(1474, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:19'),
-(1475, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:19'),
-(1476, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:19'),
-(1477, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:19'),
-(1478, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:19'),
-(1479, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:19'),
-(1480, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:19'),
-(1481, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:21'),
-(1482, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:21'),
-(1483, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:20'),
-(1484, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:21'),
-(1485, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:21'),
-(1486, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:21'),
-(1487, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:21'),
-(1488, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:21'),
-(1489, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:22'),
-(1490, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:22'),
-(1491, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:22'),
-(1492, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:22'),
-(1493, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:22'),
-(1494, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:23'),
-(1495, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:22'),
-(1496, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:23'),
-(1497, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:23'),
-(1498, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:23'),
-(1499, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:23'),
-(1500, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:23'),
-(1501, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:23'),
-(1502, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:23'),
-(1503, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:23'),
-(1504, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:24'),
-(1505, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:24'),
-(1506, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:24'),
-(1507, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:24'),
-(1508, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:24'),
-(1509, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:24'),
-(1510, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:24'),
-(1511, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:24'),
-(1512, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:24'),
-(1513, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:26'),
-(1514, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:26'),
-(1515, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:26'),
-(1516, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:26'),
-(1517, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:26'),
-(1518, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:26'),
-(1519, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:26'),
-(1520, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:26'),
-(1521, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:26'),
-(1522, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:26'),
-(1523, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:26'),
-(1524, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:28'),
-(1525, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:28'),
-(1526, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:28'),
-(1527, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:28'),
-(1528, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:27'),
-(1529, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:28'),
-(1530, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:28'),
-(1531, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:28'),
-(1532, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:28'),
-(1533, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:27'),
-(1534, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:28'),
-(1535, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:28'),
-(1536, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:29'),
-(1537, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:29'),
-(1538, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:29'),
-(1539, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:29'),
-(1540, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:30'),
-(1541, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:30'),
-(1542, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:30'),
-(1543, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:30'),
-(1544, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:30'),
-(1545, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:30'),
-(1546, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:30'),
-(1547, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:30'),
-(1548, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:30'),
-(1549, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:30'),
-(1550, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:30'),
-(1551, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:31'),
-(1552, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:31'),
-(1553, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:31'),
-(1554, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:31'),
-(1555, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:32'),
-(1556, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:31'),
-(1557, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:32'),
-(1558, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:32'),
-(1559, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:32'),
-(1560, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:32'),
-(1561, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:32'),
-(1562, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:32'),
-(1563, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:32'),
-(1564, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:32'),
-(1565, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:32'),
-(1566, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:32'),
-(1567, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:32'),
-(1568, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:32'),
-(1569, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:34'),
-(1570, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:34'),
-(1571, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:34'),
-(1572, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:34'),
-(1573, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:34'),
-(1574, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:34'),
-(1575, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:34'),
-(1576, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:34'),
-(1577, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:35'),
-(1578, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:34'),
-(1579, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:35'),
-(1580, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:35'),
-(1581, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:35'),
-(1582, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:35'),
-(1583, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:34'),
-(1584, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:35'),
-(1585, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:35'),
-(1586, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:34'),
-(1587, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:36'),
-(1588, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:38'),
-(1589, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:38'),
-(1590, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:38'),
-(1591, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:38'),
-(1592, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:38'),
-(1593, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:38'),
-(1594, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:38'),
-(1595, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:38'),
-(1596, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:38'),
-(1597, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:38'),
-(1598, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:38'),
-(1599, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:38'),
-(1600, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:38'),
-(1601, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:38'),
-(1602, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:38'),
-(1603, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:38'),
-(1604, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:38'),
-(1605, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:38'),
-(1606, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:38'),
-(1607, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:38'),
-(1608, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:39'),
-(1609, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:39'),
-(1610, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:41'),
-(1611, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:41'),
-(1612, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:41'),
-(1613, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:41'),
-(1614, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:41'),
-(1615, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:41'),
-(1616, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:41'),
-(1617, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:41'),
-(1618, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:41'),
-(1619, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:41'),
-(1620, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:42'),
-(1621, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:41'),
-(1622, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:41'),
-(1623, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:42'),
-(1624, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:42'),
-(1625, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:42'),
-(1626, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:42'),
-(1627, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:42'),
-(1628, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:42'),
-(1629, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:42'),
-(1630, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:42'),
-(1631, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:42'),
-(1632, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:42'),
-(1633, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:43'),
-(1634, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:45'),
-(1635, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:45'),
-(1636, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:46'),
-(1637, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:46'),
-(1638, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:46'),
-(1639, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:46'),
-(1640, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:46'),
-(1641, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:46'),
-(1642, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:46'),
-(1643, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:46'),
-(1644, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:46'),
-(1645, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:46'),
-(1646, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:46'),
-(1647, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:46'),
-(1648, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:45'),
-(1649, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:45'),
-(1650, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:45'),
-(1651, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:45'),
-(1652, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:46'),
-(1653, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:46'),
-(1654, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:45'),
-(1655, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:46'),
-(1656, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:46'),
-(1657, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:45'),
-(1658, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:46'),
-(1659, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:46'),
-(1660, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:47'),
-(1661, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:47'),
-(1662, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:48'),
-(1663, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:48'),
-(1664, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:48'),
-(1665, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:48'),
-(1666, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:48'),
-(1667, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:49'),
-(1668, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:49'),
-(1669, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:49'),
-(1670, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:49'),
-(1671, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:49'),
-(1672, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:49'),
-(1673, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:49'),
-(1674, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:49'),
-(1675, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:49');
-INSERT INTO `bitacora` (`id_bitacora`, `id_usuario`, `modulo`, `accion`, `mensaje`, `nivel`, `id_registro`, `datos_previos`, `datos_nuevos`, `fecha`) VALUES
-(1676, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:49'),
-(1677, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:48'),
-(1678, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:49'),
-(1679, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:49'),
-(1680, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:49'),
-(1681, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:49'),
-(1682, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:49'),
-(1683, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:50'),
-(1684, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:49'),
-(1685, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:50'),
-(1686, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:50'),
-(1687, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:50'),
-(1688, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:50'),
-(1689, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:50'),
-(1690, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:50'),
-(1691, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:50'),
-(1692, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:51'),
-(1693, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:51'),
-(1694, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:51'),
-(1695, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:51'),
-(1696, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:52'),
-(1697, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:52'),
-(1698, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:52'),
-(1699, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:52'),
-(1700, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:52'),
-(1701, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:52'),
-(1702, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:52'),
-(1703, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:53'),
-(1704, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:53'),
-(1705, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:53'),
-(1706, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:53'),
-(1707, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:53'),
-(1708, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:53'),
-(1709, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:53'),
-(1710, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:53'),
-(1711, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:54'),
-(1712, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:54'),
-(1713, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:54'),
-(1714, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:55'),
-(1715, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:54'),
-(1716, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:55'),
-(1717, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:54'),
-(1718, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:55'),
-(1719, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:55'),
-(1720, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:55'),
-(1721, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:55'),
-(1722, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:55'),
-(1723, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:55'),
-(1724, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:55'),
-(1725, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:56'),
-(1726, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:56'),
-(1727, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:56'),
-(1728, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:56'),
-(1729, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:57'),
-(1730, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:57'),
-(1731, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:57'),
-(1732, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:56'),
-(1733, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:57'),
-(1734, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:57'),
-(1735, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:57'),
-(1736, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:57'),
-(1737, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:57'),
-(1738, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:58'),
-(1739, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:58'),
-(1740, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:57'),
-(1741, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:58'),
-(1742, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-08 23:28:58'),
-(1743, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-09 18:57:58'),
-(1744, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', NULL, NULL, NULL, '2026-06-09 20:59:34'),
-(1745, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-09 21:20:45'),
-(1746, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', NULL, NULL, NULL, '2026-06-09 22:31:27'),
-(1747, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-09 22:42:09'),
-(1748, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', NULL, NULL, NULL, '2026-06-09 22:42:13'),
-(1749, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-09 22:52:25'),
-(1750, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-10 13:21:14'),
-(1751, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-10 13:21:15'),
-(1752, 2, 'clientes', 'insert', 'Cliente V-31452152 creado', 'INFO', NULL, NULL, NULL, '2026-06-10 13:52:08'),
-(1753, 2, 'clientes', 'delete', 'Cliente V-31452152 eliminado', 'INFO', NULL, NULL, NULL, '2026-06-10 13:52:27'),
-(1754, 2, 'clientes', 'insert', 'Cliente V-32236236 creado', 'INFO', NULL, NULL, NULL, '2026-06-10 14:03:10'),
-(1755, 2, 'clientes', 'delete', 'Cliente V-32236236 eliminado', 'INFO', NULL, NULL, NULL, '2026-06-10 14:03:45'),
-(1756, 2, 'clientes', 'insert', 'Cliente V-23623632 creado', 'INFO', NULL, NULL, NULL, '2026-06-10 14:05:49'),
-(1757, 2, 'clientes', 'insert', 'Cliente V-33623623 creado', 'INFO', NULL, NULL, NULL, '2026-06-10 14:09:57'),
-(1758, 2, 'clientes', 'delete', 'Cliente V-33623623 eliminado', 'INFO', NULL, NULL, NULL, '2026-06-10 14:10:03'),
-(1759, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', NULL, NULL, NULL, '2026-06-10 22:33:03'),
-(1760, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-10 22:33:08'),
-(1761, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', NULL, NULL, NULL, '2026-06-10 22:36:08'),
-(1762, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-10 22:36:29'),
-(1763, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', NULL, NULL, NULL, '2026-06-10 23:16:45'),
-(1764, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-10 23:18:01'),
-(1765, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', NULL, NULL, NULL, '2026-06-10 23:18:03'),
-(1766, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-10 23:23:13'),
-(1767, 2, 'login', 'logout', 'Usuario 2 ha cerrado sesión', 'INFO', NULL, NULL, NULL, '2026-06-11 00:06:12'),
-(1768, 2, 'login', 'login', 'Usuario 2 ha iniciado sesión', 'INFO', NULL, NULL, NULL, '2026-06-11 00:22:36');
-
--- --------------------------------------------------------
+LOCK TABLES `bitacora` WRITE;
+/*!40000 ALTER TABLE `bitacora` DISABLE KEYS */;
+INSERT INTO `bitacora` VALUES (1215,2,'clientes','update','Cliente V-22222222 actualizado','INFO',NULL,NULL,NULL,'2026-06-08 21:53:53'),(1216,2,'clientes','update','Cliente V-22222222 actualizado','INFO',NULL,NULL,NULL,'2026-06-08 21:53:57'),(1217,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:40'),(1218,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:40'),(1219,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:40'),(1220,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:40'),(1221,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:40'),(1222,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:41'),(1223,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:41'),(1224,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:41'),(1225,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:41'),(1226,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:41'),(1227,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:41'),(1228,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:42'),(1229,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:42'),(1230,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:42'),(1231,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:42'),(1232,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:43'),(1233,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:43'),(1234,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:43'),(1235,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:43'),(1236,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:43'),(1237,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:43'),(1238,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:43'),(1239,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:44'),(1240,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:44'),(1241,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:44'),(1242,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:44'),(1243,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:44'),(1244,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:44'),(1245,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:44'),(1246,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:52:44'),(1247,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:26'),(1248,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:26'),(1249,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:26'),(1250,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:26'),(1251,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:27'),(1252,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:27'),(1253,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:27'),(1254,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:27'),(1255,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:27'),(1256,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:27'),(1257,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:27'),(1258,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:27'),(1259,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:28'),(1260,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:28'),(1261,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:28'),(1262,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:28'),(1263,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:28'),(1264,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:28'),(1265,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:29'),(1266,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:29'),(1267,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:29'),(1268,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:29'),(1269,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:29'),(1270,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:30'),(1271,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:30'),(1272,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:30'),(1273,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:30'),(1274,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:30'),(1275,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:30'),(1276,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:30'),(1277,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:38'),(1278,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:38'),(1279,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:38'),(1280,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:39'),(1281,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:39'),(1282,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:39'),(1283,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:39'),(1284,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:39'),(1285,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:39'),(1286,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:40'),(1287,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:40'),(1288,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:40'),(1289,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:40'),(1290,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:40'),(1291,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:40'),(1292,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:41'),(1293,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:41'),(1294,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:41'),(1295,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:42'),(1296,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:42'),(1297,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:42'),(1298,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:42'),(1299,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:42'),(1300,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:42'),(1301,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:42'),(1302,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:42'),(1303,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:42'),(1304,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:42'),(1305,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:42'),(1306,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:43'),(1307,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:56'),(1308,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:56'),(1309,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:56'),(1310,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:56'),(1311,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:57'),(1312,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:57'),(1313,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:57'),(1314,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:57'),(1315,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:57'),(1316,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:57'),(1317,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:57'),(1318,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:57'),(1319,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:57'),(1320,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:59'),(1321,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:59'),(1322,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:59'),(1323,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:59'),(1324,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:58'),(1325,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:59'),(1326,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:59'),(1327,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:59'),(1328,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:59'),(1329,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:59'),(1330,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:59'),(1331,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:59'),(1332,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:59'),(1333,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:59'),(1334,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:59'),(1335,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:59'),(1336,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:53:59'),(1337,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:03'),(1338,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:03'),(1339,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:03'),(1340,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:03'),(1341,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:03'),(1342,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:03'),(1343,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:04'),(1344,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:04'),(1345,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:04'),(1346,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:04'),(1347,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:04'),(1348,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:04'),(1349,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:05'),(1350,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:05'),(1351,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:05'),(1352,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:05'),(1353,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:05'),(1354,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:04'),(1355,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:05'),(1356,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:05'),(1357,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:05'),(1358,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:05'),(1359,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:05'),(1360,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:05'),(1361,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:06'),(1362,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:06'),(1363,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:06'),(1364,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:06'),(1365,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:06'),(1366,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 22:54:06'),(1367,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:24'),(1368,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:24'),(1369,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:24'),(1370,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:25'),(1371,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:26'),(1372,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:26'),(1373,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:26'),(1374,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:26'),(1375,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:26'),(1376,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:26'),(1377,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:26'),(1378,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:27'),(1379,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:29'),(1380,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:29'),(1381,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:29'),(1382,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:29'),(1383,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:30'),(1384,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:30'),(1385,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:30'),(1386,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:30'),(1387,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:30'),(1388,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:30'),(1389,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:30'),(1390,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:30'),(1391,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:30'),(1392,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:30'),(1393,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:30'),(1394,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:30'),(1395,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:30'),(1396,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:00:30'),(1397,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:12'),(1398,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:12'),(1399,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:12'),(1400,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:12'),(1401,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:13'),(1402,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:13'),(1403,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:13'),(1404,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:13'),(1405,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:14'),(1406,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:14'),(1407,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:14'),(1408,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:16'),(1409,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:16'),(1410,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:16'),(1411,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:16'),(1412,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:17'),(1413,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:17'),(1414,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:17'),(1415,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:17'),(1416,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:17'),(1417,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:18'),(1418,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:19'),(1419,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:19'),(1420,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:19'),(1421,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:19'),(1422,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:20'),(1423,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:21'),(1424,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:20'),(1425,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:21'),(1426,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:02:21'),(1427,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:11'),(1428,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:11'),(1429,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:11'),(1430,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:11'),(1431,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:11'),(1432,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:11'),(1433,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:12'),(1434,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:12'),(1435,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:12'),(1436,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:13'),(1437,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:13'),(1438,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:13'),(1439,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:13'),(1440,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:13'),(1441,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:13'),(1442,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:14'),(1443,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:14'),(1444,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:14'),(1445,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:15'),(1446,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:15'),(1447,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:15'),(1448,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:15'),(1449,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:16'),(1450,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:16'),(1451,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:16'),(1452,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:17'),(1453,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:17'),(1454,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:17'),(1455,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:18'),(1456,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:11:18'),(1457,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:15'),(1458,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:15'),(1459,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:16'),(1460,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:16'),(1461,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:16'),(1462,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:16'),(1463,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:17'),(1464,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:17'),(1465,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:17'),(1466,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:17'),(1467,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:17'),(1468,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:17'),(1469,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:18'),(1470,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:18'),(1471,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:18'),(1472,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:18'),(1473,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:18'),(1474,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:19'),(1475,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:19'),(1476,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:19'),(1477,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:19'),(1478,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:19'),(1479,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:19'),(1480,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:19'),(1481,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:21'),(1482,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:21'),(1483,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:20'),(1484,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:21'),(1485,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:21'),(1486,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:21'),(1487,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:21'),(1488,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:21'),(1489,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:22'),(1490,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:22'),(1491,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:22'),(1492,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:22'),(1493,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:22'),(1494,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:23'),(1495,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:22'),(1496,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:23'),(1497,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:23'),(1498,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:23'),(1499,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:23'),(1500,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:23'),(1501,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:23'),(1502,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:23'),(1503,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:23'),(1504,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:24'),(1505,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:24'),(1506,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:24'),(1507,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:24'),(1508,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:24'),(1509,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:24'),(1510,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:24'),(1511,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:24'),(1512,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:24'),(1513,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:26'),(1514,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:26'),(1515,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:26'),(1516,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:26'),(1517,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:26'),(1518,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:26'),(1519,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:26'),(1520,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:26'),(1521,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:26'),(1522,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:26'),(1523,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:26'),(1524,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:28'),(1525,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:28'),(1526,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:28'),(1527,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:28'),(1528,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:27'),(1529,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:28'),(1530,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:28'),(1531,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:28'),(1532,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:28'),(1533,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:27'),(1534,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:28'),(1535,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:28'),(1536,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:29'),(1537,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:29'),(1538,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:29'),(1539,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:29'),(1540,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:30'),(1541,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:30'),(1542,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:30'),(1543,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:30'),(1544,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:30'),(1545,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:30'),(1546,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:30'),(1547,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:30'),(1548,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:30'),(1549,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:30'),(1550,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:30'),(1551,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:31'),(1552,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:31'),(1553,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:31'),(1554,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:31'),(1555,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:32'),(1556,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:31'),(1557,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:32'),(1558,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:32'),(1559,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:32'),(1560,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:32'),(1561,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:32'),(1562,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:32'),(1563,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:32'),(1564,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:32'),(1565,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:32'),(1566,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:32'),(1567,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:32'),(1568,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:32'),(1569,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:34'),(1570,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:34'),(1571,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:34'),(1572,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:34'),(1573,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:34'),(1574,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:34'),(1575,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:34'),(1576,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:34'),(1577,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:35'),(1578,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:34'),(1579,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:35'),(1580,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:35'),(1581,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:35'),(1582,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:35'),(1583,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:34'),(1584,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:35'),(1585,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:35'),(1586,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:34'),(1587,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:36'),(1588,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:38'),(1589,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:38'),(1590,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:38'),(1591,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:38'),(1592,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:38'),(1593,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:38'),(1594,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:38'),(1595,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:38'),(1596,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:38'),(1597,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:38'),(1598,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:38'),(1599,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:38'),(1600,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:38'),(1601,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:38'),(1602,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:38'),(1603,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:38'),(1604,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:38'),(1605,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:38'),(1606,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:38'),(1607,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:38'),(1608,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:39'),(1609,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:39'),(1610,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:41'),(1611,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:41'),(1612,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:41'),(1613,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:41'),(1614,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:41'),(1615,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:41'),(1616,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:41'),(1617,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:41'),(1618,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:41'),(1619,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:41'),(1620,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:42'),(1621,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:41'),(1622,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:41'),(1623,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:42'),(1624,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:42'),(1625,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:42'),(1626,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:42'),(1627,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:42'),(1628,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:42'),(1629,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:42'),(1630,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:42'),(1631,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:42'),(1632,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:42'),(1633,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:43'),(1634,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:45'),(1635,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:45'),(1636,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:46'),(1637,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:46'),(1638,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:46'),(1639,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:46'),(1640,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:46'),(1641,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:46'),(1642,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:46'),(1643,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:46'),(1644,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:46'),(1645,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:46'),(1646,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:46'),(1647,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:46'),(1648,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:45'),(1649,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:45'),(1650,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:45'),(1651,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:45'),(1652,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:46'),(1653,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:46'),(1654,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:45'),(1655,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:46'),(1656,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:46'),(1657,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:45'),(1658,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:46'),(1659,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:46'),(1660,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:47'),(1661,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:47'),(1662,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:48'),(1663,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:48'),(1664,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:48'),(1665,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:48'),(1666,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:48'),(1667,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:49'),(1668,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:49'),(1669,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:49'),(1670,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:49'),(1671,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:49'),(1672,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:49'),(1673,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:49'),(1674,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:49'),(1675,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:49'),(1676,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:49'),(1677,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:48'),(1678,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:49'),(1679,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:49'),(1680,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:49'),(1681,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:49'),(1682,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:49'),(1683,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:50'),(1684,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:49'),(1685,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:50'),(1686,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:50'),(1687,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:50'),(1688,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:50'),(1689,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:50'),(1690,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:50'),(1691,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:50'),(1692,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:51'),(1693,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:51'),(1694,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:51'),(1695,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:51'),(1696,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:52'),(1697,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:52'),(1698,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:52'),(1699,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:52'),(1700,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:52'),(1701,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:52'),(1702,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:52'),(1703,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:53'),(1704,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:53'),(1705,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:53'),(1706,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:53'),(1707,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:53'),(1708,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:53'),(1709,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:53'),(1710,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:53'),(1711,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:54'),(1712,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:54'),(1713,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:54'),(1714,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:55'),(1715,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:54'),(1716,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:55'),(1717,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:54'),(1718,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:55'),(1719,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:55'),(1720,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:55'),(1721,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:55'),(1722,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:55'),(1723,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:55'),(1724,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:55'),(1725,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:56'),(1726,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:56'),(1727,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:56'),(1728,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:56'),(1729,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:57'),(1730,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:57'),(1731,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:57'),(1732,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:56'),(1733,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:57'),(1734,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:57'),(1735,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:57'),(1736,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:57'),(1737,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:57'),(1738,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:58'),(1739,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:58'),(1740,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:57'),(1741,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:58'),(1742,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-08 23:28:58'),(1743,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-09 18:57:58'),(1744,2,'login','logout','Usuario 2 ha cerrado sesión','INFO',NULL,NULL,NULL,'2026-06-09 20:59:34'),(1745,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-09 21:20:45'),(1746,2,'login','logout','Usuario 2 ha cerrado sesión','INFO',NULL,NULL,NULL,'2026-06-09 22:31:27'),(1747,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-09 22:42:09'),(1748,2,'login','logout','Usuario 2 ha cerrado sesión','INFO',NULL,NULL,NULL,'2026-06-09 22:42:13'),(1749,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-09 22:52:25'),(1750,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-10 13:21:14'),(1751,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-10 13:21:15'),(1752,2,'clientes','insert','Cliente V-31452152 creado','INFO',NULL,NULL,NULL,'2026-06-10 13:52:08'),(1753,2,'clientes','delete','Cliente V-31452152 eliminado','INFO',NULL,NULL,NULL,'2026-06-10 13:52:27'),(1754,2,'clientes','insert','Cliente V-32236236 creado','INFO',NULL,NULL,NULL,'2026-06-10 14:03:10'),(1755,2,'clientes','delete','Cliente V-32236236 eliminado','INFO',NULL,NULL,NULL,'2026-06-10 14:03:45'),(1756,2,'clientes','insert','Cliente V-23623632 creado','INFO',NULL,NULL,NULL,'2026-06-10 14:05:49'),(1757,2,'clientes','insert','Cliente V-33623623 creado','INFO',NULL,NULL,NULL,'2026-06-10 14:09:57'),(1758,2,'clientes','delete','Cliente V-33623623 eliminado','INFO',NULL,NULL,NULL,'2026-06-10 14:10:03'),(1759,2,'login','logout','Usuario 2 ha cerrado sesión','INFO',NULL,NULL,NULL,'2026-06-10 22:33:03'),(1760,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-10 22:33:08'),(1761,2,'login','logout','Usuario 2 ha cerrado sesión','INFO',NULL,NULL,NULL,'2026-06-10 22:36:08'),(1762,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-10 22:36:29'),(1763,2,'login','logout','Usuario 2 ha cerrado sesión','INFO',NULL,NULL,NULL,'2026-06-10 23:16:45'),(1764,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-10 23:18:01'),(1765,2,'login','logout','Usuario 2 ha cerrado sesión','INFO',NULL,NULL,NULL,'2026-06-10 23:18:03'),(1766,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-10 23:23:13'),(1767,2,'login','logout','Usuario 2 ha cerrado sesión','INFO',NULL,NULL,NULL,'2026-06-11 00:06:12'),(1768,2,'login','login','Usuario 2 ha iniciado sesión','INFO',NULL,NULL,NULL,'2026-06-11 00:22:36');
+/*!40000 ALTER TABLE `bitacora` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
--- Estructura de tabla para la tabla `estado_usuario`
+-- Table structure for table `estado_usuario`
 --
 
+DROP TABLE IF EXISTS `estado_usuario`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `estado_usuario` (
-  `id_estado` int(11) NOT NULL,
-  `nombre` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `id_estado` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id_estado`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Volcado de datos para la tabla `estado_usuario`
+-- Dumping data for table `estado_usuario`
 --
 
-INSERT INTO `estado_usuario` (`id_estado`, `nombre`) VALUES
-(1, 'Activo');
-
--- --------------------------------------------------------
+LOCK TABLES `estado_usuario` WRITE;
+/*!40000 ALTER TABLE `estado_usuario` DISABLE KEYS */;
+INSERT INTO `estado_usuario` VALUES (1,'Activo');
+/*!40000 ALTER TABLE `estado_usuario` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
--- Estructura de tabla para la tabla `recuperacion_contrasena`
+-- Table structure for table `recuperacion_contrasena`
 --
 
+DROP TABLE IF EXISTS `recuperacion_contrasena`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `recuperacion_contrasena` (
-  `id_recuperacion` int(11) NOT NULL,
+  `id_recuperacion` int(11) NOT NULL AUTO_INCREMENT,
   `id_usuario` int(11) NOT NULL,
   `codigo` varchar(100) NOT NULL,
   `creado_en` datetime NOT NULL,
-  `expira_en` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `expira_en` datetime NOT NULL,
+  PRIMARY KEY (`id_recuperacion`),
+  KEY `recuperacion_contrasena_usuario_FK` (`id_usuario`),
+  CONSTRAINT `recuperacion_contrasena_usuario_FK` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Volcado de datos para la tabla `recuperacion_contrasena`
+-- Dumping data for table `recuperacion_contrasena`
 --
 
-INSERT INTO `recuperacion_contrasena` (`id_recuperacion`, `id_usuario`, `codigo`, `creado_en`, `expira_en`) VALUES
-(9, 2, '783023', '2026-06-11 00:09:19', '2026-06-11 00:24:19'),
-(10, 2, '682972', '2026-06-11 00:11:48', '2026-06-11 00:26:48'),
-(11, 2, '249135', '2026-06-11 00:22:03', '2026-06-11 00:37:03');
-
--- --------------------------------------------------------
+LOCK TABLES `recuperacion_contrasena` WRITE;
+/*!40000 ALTER TABLE `recuperacion_contrasena` DISABLE KEYS */;
+INSERT INTO `recuperacion_contrasena` VALUES (9,2,'783023','2026-06-11 00:09:19','2026-06-11 00:24:19'),(10,2,'682972','2026-06-11 00:11:48','2026-06-11 00:26:48'),(11,2,'249135','2026-06-11 00:22:03','2026-06-11 00:37:03');
+/*!40000 ALTER TABLE `recuperacion_contrasena` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
--- Estructura de tabla para la tabla `rol`
+-- Table structure for table `rol`
 --
 
+DROP TABLE IF EXISTS `rol`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `rol` (
-  `id_rol` int(11) NOT NULL,
+  `id_rol` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(100) NOT NULL,
-  `descripcion` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `descripcion` text DEFAULT NULL,
+  PRIMARY KEY (`id_rol`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Volcado de datos para la tabla `rol`
+-- Dumping data for table `rol`
 --
 
-INSERT INTO `rol` (`id_rol`, `nombre`, `descripcion`) VALUES
-(1, 'Administrador', NULL),
-(2, 'Entrenador', NULL);
-
--- --------------------------------------------------------
+LOCK TABLES `rol` WRITE;
+/*!40000 ALTER TABLE `rol` DISABLE KEYS */;
+INSERT INTO `rol` VALUES (1,'Administrador',NULL),(2,'Entrenador',NULL);
+/*!40000 ALTER TABLE `rol` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
--- Estructura de tabla para la tabla `usuario`
+-- Table structure for table `usuario`
 --
 
+DROP TABLE IF EXISTS `usuario`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `usuario` (
-  `id_usuario` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL AUTO_INCREMENT,
   `id_rol` int(11) NOT NULL,
   `id_estado` int(11) NOT NULL DEFAULT 1,
   `nombre_usuario` varchar(100) NOT NULL,
@@ -677,114 +143,36 @@ CREATE TABLE `usuario` (
   `imagen_url` varchar(255) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
   `fecha_creacion` date DEFAULT current_timestamp(),
-  `ultimo_acceso` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `ultimo_acceso` datetime DEFAULT NULL,
+  PRIMARY KEY (`id_usuario`),
+  KEY `usuario_rol_FK` (`id_rol`),
+  KEY `usuario_estado_usuario_FK` (`id_estado`),
+  CONSTRAINT `usuario_estado_usuario_FK` FOREIGN KEY (`id_estado`) REFERENCES `estado_usuario` (`id_estado`) ON UPDATE CASCADE,
+  CONSTRAINT `usuario_rol_FK` FOREIGN KEY (`id_rol`) REFERENCES `rol` (`id_rol`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Volcado de datos para la tabla `usuario`
+-- Dumping data for table `usuario`
 --
 
-INSERT INTO `usuario` (`id_usuario`, `id_rol`, `id_estado`, `nombre_usuario`, `contrasena_hash`, `imagen_url`, `email`, `fecha_creacion`, `ultimo_acceso`) VALUES
-(2, 1, 1, 'admin', '$2y$10$iXdTuhzpsJTIoXU3nOGP0.IBOv3ijmZfwNBF54mHrP/Ian67aIr3C', '/sofit-gym/uploads/usuarios/41f2f9d5712438de10e3.jpg', 'jesusviloriaolivar@gmail.com', '2026-05-25', NULL),
-(7, 2, 1, 'lol', '$2y$10$CIS9qW...9Yl2bJ.ooTONuyk5X8.ovRFMduGdY8zuZx1ZFk8mqkAK', '/sofit-gym/uploads/usuarios/26a6ddd5092a3e45da52.jpg', NULL, '2026-06-07', NULL),
-(9, 2, 1, 'mm', '$2y$10$QkAt8qM.x6K9Qws/LYVINejGC7tdzm4piWF3ZdvZdi7uK3VbDVETu', NULL, NULL, '2026-06-08', NULL);
+LOCK TABLES `usuario` WRITE;
+/*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
+INSERT INTO `usuario` VALUES (2,1,1,'admin','$2y$10$iXdTuhzpsJTIoXU3nOGP0.IBOv3ijmZfwNBF54mHrP/Ian67aIr3C','/sofit-gym/uploads/usuarios/41f2f9d5712438de10e3.jpg','jesusviloriaolivar@gmail.com','2026-05-25',NULL),(7,2,1,'lol','$2y$10$CIS9qW...9Yl2bJ.ooTONuyk5X8.ovRFMduGdY8zuZx1ZFk8mqkAK','/sofit-gym/uploads/usuarios/26a6ddd5092a3e45da52.jpg',NULL,'2026-06-07',NULL),(9,2,1,'mm','$2y$10$QkAt8qM.x6K9Qws/LYVINejGC7tdzm4piWF3ZdvZdi7uK3VbDVETu',NULL,NULL,'2026-06-08',NULL);
+/*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
--- Índices para tablas volcadas
+-- Dumping routines for database 'sofit_gym_seguridad'
 --
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
---
--- Indices de la tabla `bitacora`
---
-ALTER TABLE `bitacora`
-  ADD PRIMARY KEY (`id_bitacora`),
-  ADD KEY `bitacora_usuario_FK` (`id_usuario`);
-
---
--- Indices de la tabla `estado_usuario`
---
-ALTER TABLE `estado_usuario`
-  ADD PRIMARY KEY (`id_estado`);
-
---
--- Indices de la tabla `recuperacion_contrasena`
---
-ALTER TABLE `recuperacion_contrasena`
-  ADD PRIMARY KEY (`id_recuperacion`),
-  ADD KEY `recuperacion_contrasena_usuario_FK` (`id_usuario`);
-
---
--- Indices de la tabla `rol`
---
-ALTER TABLE `rol`
-  ADD PRIMARY KEY (`id_rol`);
-
---
--- Indices de la tabla `usuario`
---
-ALTER TABLE `usuario`
-  ADD PRIMARY KEY (`id_usuario`),
-  ADD KEY `usuario_rol_FK` (`id_rol`),
-  ADD KEY `usuario_estado_usuario_FK` (`id_estado`);
-
---
--- AUTO_INCREMENT de las tablas volcadas
---
-
---
--- AUTO_INCREMENT de la tabla `bitacora`
---
-ALTER TABLE `bitacora`
-  MODIFY `id_bitacora` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1769;
-
---
--- AUTO_INCREMENT de la tabla `estado_usuario`
---
-ALTER TABLE `estado_usuario`
-  MODIFY `id_estado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT de la tabla `recuperacion_contrasena`
---
-ALTER TABLE `recuperacion_contrasena`
-  MODIFY `id_recuperacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
-
---
--- AUTO_INCREMENT de la tabla `rol`
---
-ALTER TABLE `rol`
-  MODIFY `id_rol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT de la tabla `usuario`
---
-ALTER TABLE `usuario`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
-
---
--- Restricciones para tablas volcadas
---
-
---
--- Filtros para la tabla `bitacora`
---
-ALTER TABLE `bitacora`
-  ADD CONSTRAINT `bitacora_usuario_FK` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `recuperacion_contrasena`
---
-ALTER TABLE `recuperacion_contrasena`
-  ADD CONSTRAINT `recuperacion_contrasena_usuario_FK` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `usuario`
---
-ALTER TABLE `usuario`
-  ADD CONSTRAINT `usuario_estado_usuario_FK` FOREIGN KEY (`id_estado`) REFERENCES `estado_usuario` (`id_estado`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `usuario_rol_FK` FOREIGN KEY (`id_rol`) REFERENCES `rol` (`id_rol`) ON UPDATE CASCADE;
-COMMIT;
-
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2026-06-11 15:37:11
