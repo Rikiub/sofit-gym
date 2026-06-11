@@ -1,19 +1,17 @@
 <?php
+
+/** @var \App\Helpers\Auth\UsuarioSessionDTO $usuario */
+
+use App\Helpers\Auth\Rol;
+
 $title = "Usuarios";
 $this->layout('layout', ['title' => $title]);
 $this->pushJs('pages/usuarios/usuarios.js');
 
-$selectTrabajadores = $this->fetch("select/trabajadores", [
-    "input" => [
-        "name" => "cedula_persona",
-        "required" => true
-    ]
-]);
-
-$modalForm = $this->fetch('modalForm', [
-    'xData' => 'modalFormUsuarios',
-    'form' => $this->fetch("usuarios/form"),
-]);
+$modalForm = $this->fetch("usuarios/modalForm", [
+    "id" => "usuarios",
+    "isAdmin" => $usuario->rol === Rol::Administrador
+])
 ?>
 
 <?= $this->insert('card', [

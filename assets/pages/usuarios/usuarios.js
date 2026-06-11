@@ -8,6 +8,7 @@ const PAGE = "usuarios";
 
 Alpine.data("crudTableUsuarios", () => (
     crudTableComponent({
+        id: "usuarios",
         params: {
             page: PAGE,
             action: "query",
@@ -37,14 +38,4 @@ Alpine.data("crudTableUsuarios", () => (
                 }
             },
         ],
-    })));
-
-Alpine.data("modalFormUsuarios", () => (
-    modalFormComponent({
-        page: PAGE,
-        elementName: "Usuario",
-        prepareAddData: {
-            fecha_creacion: new Date(),
-        },
-        editDisableFields: ["nombre_usuario"],
     })));

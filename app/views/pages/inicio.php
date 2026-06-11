@@ -1,16 +1,33 @@
 <?php
-// Cada vista debe empezar con esto:
+
 $this->layout('layout', ['title' => 'Inicio']);
-// Esto ya incluye las dependencias y la barra lateral.
 
-// TODO: Esto deberia guardarse como archivos en la carpeta "lib"
 $this->pushJs('https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js', false);
-
-// Las dependencias se resuelven automaticamente como:
-// /assets/pages/inicio/inicio.css
 $this->pushCss('pages/inicio/inicio.css');
 $this->pushJs('pages/inicio/inicio.js');
+
+// Props
+/** @var \App\Helpers\Auth\UsuarioSessionDTO $usuario */
 ?>
+
+<script type="module">
+    import Alpine from "alpinejs";
+    import {
+        fetchApi
+    } from "@/js/api.js";
+
+    Alpine.data("menu", () => ({
+        usuario: null,
+
+        async init() {
+            this.usuario = await fetchApi({
+                page: "usuarios",
+                action: "find",
+                id: "<?= $usuario->id ?>"
+            })
+        }
+    }));
+</script>
 
 <div class="Inicio">
     <main class="main-content">
@@ -28,18 +45,32 @@ $this->pushJs('pages/inicio/inicio.js');
                             <a href="#" data-reporte="personalizado"><i class="fas fa-calendar-alt"></i> Reporte personalizado</a>
                         </div>
                     </div>
+
                     <i class="fas fa-bell"></i>
-                    <div class="profile-dropdown">
-                        <i class="fas fa-user-circle" id="profileIcon"></i>
+
+                    <?= $this->insert("usuarios/modalForm", ["id" => "usuarios"]) ?>
+
+                    <div class="profile-dropdown" x-data="menu">
+                        <div style="width: 50px; height: 50px;" id="profileIcon">
+                            <img class="img-fluid rounded-circle" :src="usuario.imagen_url">
+                        </div>
+
                         <div class="profile-menu" id="profileMenu">
                             <div class="profile-header">
-                                <i class="fas fa-user-circle"></i>
+                                <div style="width: 75px; height: 75px;">
+                                    <img class="img-fluid rounded-circle" :src="usuario.imagen_url">
+                                </div>
+
                                 <div>
-                                    <strong>Carlo Williams</strong>
-                                    <small>Administrador</small>
+                                    <strong x-text="usuario.nombre_usuario"></strong>
+                                    <span x-text="usuario.rol"></span>
                                 </div>
                             </div>
-                            <a href="#"><i class="fas fa-user"></i> Perfil</a>
+
+                            <button @click="$dispatch('open-modal', { id: 'usuarios', dataId: '<?= $usuario->id ?>', mode: 'edit' })">
+                                <i class="fas fa-user"></i> Perfil
+                            </button>
+
                             <div class="pb-3">
                                 <a href="?page=login&action=logout">
                                     <i class="fa-solid fa-right-from-bracket"></i> <span>Cerrar sesión</span>
@@ -47,6 +78,7 @@ $this->pushJs('pages/inicio/inicio.js');
                             </div>
                         </div>
                     </div>
+                </div>
             </nav>
 
             <h2 class="panel-title"><i class="fas fa-chalkboard"></i> Dashboard </h2>

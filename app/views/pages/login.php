@@ -376,7 +376,7 @@ $this->layout("layout", ["title" => $title, "sidebar" => false]);
         min-height: 100vh;
         width: 100%;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') no-repeat center center/cover;
+        background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6)), url('<?= ASSETS_DIR ?>/pages/login/background.jpg') no-repeat center center/cover;
         margin: -1rem;
         width: calc(100% + 2rem);
     }

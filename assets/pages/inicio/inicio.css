@@ -17,9 +17,9 @@
         align-items: center;
     }
 
-    .top-links a,
-    .top-links i,
-    #reporteTrigger {
+    .top-links>a,
+    .top-links>i,
+    .top-links>div>a {
         transition: transform 0.2s ease;
         text-decoration: none;
         color: white;
@@ -66,27 +66,43 @@
         visibility: visible;
     }
 
-    .reporte-menu a,
-    .profile-menu a {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 0.7rem 1rem;
-        color: #1e293b;
-        text-decoration: none;
-        font-size: 0.8rem;
+    .reporte-menu,
+    .profile-menu {
+
+        /* Agregamos el selector de button junto al de a */
+        a,
+        button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.7rem 1rem;
+            color: #1e293b;
+            text-decoration: none;
+            font-size: 0.9rem;
+
+            /* Reseteos críticos para que el <button> se comporte como un enlace */
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+            font-weight: inherit;
+            cursor: pointer;
+
+            &:hover {
+                background-color: #fef2f2;
+                transform: none;
+            }
+        }
+
+        /* Aseguramos que el icono cambie tanto en enlaces como en botones */
+        a i,
+        button i {
+            width: 24px;
+            color: #dc2626;
+        }
     }
 
-    .reporte-menu a i,
-    .profile-menu a i {
-        width: 24px;
-        color: #dc2626;
-    }
-
-    .reporte-menu a:hover,
-    .profile-menu a:hover {
-        background: #fef2f2;
-    }
 
     .divider {
         height: 1px;

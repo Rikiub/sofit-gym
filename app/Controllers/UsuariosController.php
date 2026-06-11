@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Helpers\Auth\UsuarioSession;
 use App\Helpers\ImagesManager;
 use App\Helpers\Response;
 use App\Models\UsuarioDTO;
@@ -20,20 +21,9 @@ class UsuariosController extends BaseController
 
     public function index(): string
     {
-        return $this->templates->render('usuarios/gestion');
-    }
-
-    public function indexDetails(): string
-    {
-        $id = $_GET['id'] ?? null;
-        $usuario = $this->usuariosModel->find($id);
-
-        if (!$usuario) {
-            $this->response->redirectToError(status: 404);
-        }
-
-        return $this->templates->render('usuarios/perfil', [
-            "id_usuario" => $id,
+        $usuario = UsuarioSession::getUsuario();
+        return $this->templates->render('usuarios/index', [
+            "usuario" => $usuario,
         ]);
     }
 
@@ -101,7 +91,7 @@ class UsuariosController extends BaseController
 
         // Actualizar foto de perfil
         $imagen_url = $body["imagen_url"] ?? null;
-        if ($imagen_url) {
+        if ($imagen_url !== $oldUsuario->imagen_url) {
             ImagesManager::delete($oldUsuario->imagen_url ?? "");
             $body["imagen_url"] = ImagesManager::moveFromTemp($imagen_url, "/usuarios");
         }

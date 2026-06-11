@@ -149,14 +149,17 @@ class UsuariosModel extends BaseModel
     {
         $hashedPassword = password_hash($dto->contrasena_hash, PASSWORD_DEFAULT);
 
-        return [
-            'id_rol' => $dto->id_rol,
+        $data = [
             'nombre_usuario' => $dto->nombre_usuario,
             'contrasena_hash' => $hashedPassword,
             'imagen_url' => $dto->imagen_url,
             'email' => $dto->email,
-            'ultimo_acceso' => $dto->ultimo_acceso,
         ];
+        if ($dto->id_rol) {
+            $data["id_rol"] = $dto->id_rol;
+        }
+
+        return $data;
     }
 
     // ====================================================================
