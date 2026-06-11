@@ -20,6 +20,10 @@ $this->pushJs('pages/inicio/inicio.js');
         usuario: null,
 
         async init() {
+            this.refresh();
+        },
+
+        async refresh() {
             this.usuario = await fetchApi({
                 page: "usuarios",
                 action: "find",
@@ -48,16 +52,16 @@ $this->pushJs('pages/inicio/inicio.js');
 
                     <i class="fas fa-bell"></i>
 
-                    <?= $this->insert("usuarios/modalForm", ["id" => "usuarios"]) ?>
+                    <div class="profile-dropdown" x-data="menu" @form-success="refresh()">
+                        <?= $this->insert("usuarios/modalForm", ["id" => "usuarios"]) ?>
 
-                    <div class="profile-dropdown" x-data="menu">
-                        <div style="width: 50px; height: 50px;" id="profileIcon">
+                        <div class="ratio ratio-1x1" style="width: 50px; height: 50px;" id="profileIcon">
                             <img class="img-fluid rounded-circle" :src="usuario.imagen_url">
                         </div>
 
                         <div class="profile-menu" id="profileMenu">
                             <div class="profile-header">
-                                <div style="width: 75px; height: 75px;">
+                                <div class="ratio ratio-1x1" style="width: 60px; height: 60px;">
                                     <img class="img-fluid rounded-circle" :src="usuario.imagen_url">
                                 </div>
 

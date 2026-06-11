@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Helpers\ImagesManager;
 use App\Helpers\Response;
 
+/** Endpoint para subir imagenes temporales para posterior uso */
 class UploadController
 {
     public function __construct(private Response $response) {}

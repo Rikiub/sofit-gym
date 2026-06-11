@@ -71,18 +71,23 @@ class ImagesManager
     }
 
     /**
-     * Elimina un archivo utilizando directamente la ruta guardada en la base de datos.
+     * Elimina un archivo utilizando la ruta guardada en la base de datos.
      */
     public static function delete(string $webPath): bool
     {
-        // Seguridad básica: Evitar que intenten salir de la carpeta pública (Path Traversal)
-        if (str_contains($webPath, '..')) {
+        if (empty($webPath) || str_contains($webPath, '..')) {
             return false;
         }
 
-        // Traduce la ruta de la BD ('/uploads/...') a la del disco duro
+        // 1. Si existe un BASE_DIR (ej: '/mi-subcarpeta'), lo removemos de la ruta web
+        if (str_starts_with($webPath, BASE_DIR)) {
+            $webPath = substr($webPath, strlen(BASE_DIR));
+        }
+
+        // 2. Traducir la ruta web limpia a la ruta absoluta del disco duro
         $absolutePath = rtrim(ROOT_DIR, '/') . '/' . ltrim($webPath, '/');
 
+        // 3. Verificar y eliminar el archivo físico
         if (file_exists($absolutePath) && is_file($absolutePath)) {
             return unlink($absolutePath);
         }

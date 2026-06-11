@@ -53,8 +53,8 @@ $input ??= [];
         class="image-select-card border border-2 rounded overflow-hidden position-relative"
         style="width: 120px; height: 120px; cursor: pointer;">
 
-        <div x-show="image">
-            <img :src="image" class="w-100 h-100" style="object-fit: cover;" alt="Seleccionar imagen">
+        <div x-show="image" class="ratio ratio-1x1">
+            <img :src="image" alt="Seleccionar imagen">
         </div>
         <div x-show="!image">
             <img src="<?= ASSETS_DIR ?>/default-profile.png" class="w-100 h-100" style="object-fit: cover;" alt="Seleccionar imagen">
