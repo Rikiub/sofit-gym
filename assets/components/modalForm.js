@@ -16,6 +16,18 @@ export function openModal(data, detail) {
 }
 
 /**
+ * @param {Object} data
+ * @param {{
+ * key: string,
+ * message?: string,
+ * id?: string|number,
+ * }} detail
+ */
+export function setFormValidity(data, detail) {
+    data.$dispatch("form-error", detail);
+}
+
+/**
  * @typedef {Object} Actions
  * @property {string} onAdd
  * @property {string} onEditFind

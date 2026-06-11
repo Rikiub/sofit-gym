@@ -1,5 +1,5 @@
 import Alpine from "alpinejs";
-import { modalFormComponent, openModal } from "@/components/modalForm.js";
+import { modalFormComponent, openModal, setFormValidity } from "@/components/modalForm.js";
 import { calendarComponent } from "@/components/calendar.js";
 import { fetchApi } from "@/js/api.js";
 import dayjs from "dayjs";
@@ -80,7 +80,28 @@ Alpine.data("listaClientes", () => ({
     keyName: "clientes",
 
     clientes: [],
-    capacidad_actual: 0,
+    capacidad_actual: null,
+    capacidad_maxima: null,
+
+    init() {
+        for (const key of ["capacidad_actual", "capacidad_maxima"]) {
+            this.$watch(key, () => {
+                if (this.capacidad_actual === 0) {
+                    setFormValidity(this, {
+                        key: this.keyName,
+                        message: "Selecciona al menos un cliente."
+                    });
+                } else if (this.capacidad_actual > this.capacidad_maxima) {
+                    setFormValidity(this, {
+                        key: this.keyName,
+                        message: "Cupos maximo agotados, por favor remueve clientes o aumenta la capacidad maxima."
+                    });
+                } else {
+                    setFormValidity(this, { key: this.keyName, message: null });
+                }
+            });
+        }
+    },
 
     add(item) {
         // No agregar duplicados
@@ -107,13 +128,6 @@ Alpine.data("listaClientes", () => ({
         const clientes = item.data.clientes || [];
         this.clientes = clientes;
         this.capacidad_actual = clientes.length;
-    },
-    validate(detail) {
-        if (this.clientes.length === 0) {
-            detail.setInvalid(this.keyName, "Selecciona al menos uno")
-        } else {
-            detail.setValid(this.keyName);
-        }
     },
     serialize(detail) {
         detail.merge({ clientes: this.clientes.map((item) => item.cedula) });

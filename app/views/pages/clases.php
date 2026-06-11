@@ -59,7 +59,6 @@ $modalForm = $this->fetch('modalForm', [
                 x-data="listaClientes"
                 @form-reset.window="reset()"
                 @form-load.window="load(\$event.detail)"
-                @form-validate.window="validate(\$event.detail)"
                 @form-serialize.window="serialize(\$event.detail)"
             >
                 <fieldset class="row">
@@ -70,7 +69,7 @@ $modalForm = $this->fetch('modalForm', [
 
                     <label class="col">
                         <span class="form-label">Capacidad Maxima</span>
-                        <input class="form-control" name="capacidad_maxima" required type="number" placeholder="1" min="1">
+                        <input class="form-control" name="capacidad_maxima" x-model="capacidad_maxima" required type="number" placeholder="0" min="1">
                         <small class="text-danger" x-text="errors.capacidad_maxima"></small>
                     </label>
                 </fieldset>
