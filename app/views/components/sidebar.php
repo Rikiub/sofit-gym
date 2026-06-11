@@ -24,7 +24,7 @@
 		})()
 	</script>
 
-	<div class="py-4 d-flex justify-content-end">
+	<div class="pb-5 d-flex justify-content-end">
 		<div class="logo-container" style="height: 100px;" x-show="!collapsed" x-transition>
 			<img src="assets/logo.webp" class="img-fluid">
 		</div>
@@ -35,16 +35,6 @@
 	</div>
 
 	<nav class="sidebar-nav">
-		<hr class="m-2">
-
-		<div class="sidebar-actions p-2">
-			<a class="btn btn-secondary w-100" href="?page=login&action=logout">
-				<i class="fa-solid fa-right-from-bracket"></i> <span>Cerrar sesión</span>
-			</a>
-		</div>
-
-		<hr class="m-2">
-
 		<a href="?page=inicio" class="active"><i class="fas fa-home"></i> <span>Inicio</span></a>
 
 		<hr>

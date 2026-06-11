@@ -10,7 +10,7 @@ $isAdmin ??= false;
     <div class="col-auto">
         <span class="form-label d-block mb-2">Foto</span>
         <div class="d-flex flex-column">
-            <?= $this->insert("inputFile", ["input" => ["name" => "imagen_url"]]) ?>
+            <?= $this->insert("inputImage", ["input" => ["name" => "imagen_url"]]) ?>
             <small class="text-danger mt-1 d-block" x-text="errors.imagen_url"></small>
         </div>
     </div>
