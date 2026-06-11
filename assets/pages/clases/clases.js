@@ -117,7 +117,7 @@ Alpine.data("listaClientes", () => ({
     },
     reset() {
         this.clientes = [];
-        this.capacidad_actual = 0;
+        this.capacidad_actual = null;
     },
 
     // EVENTS
