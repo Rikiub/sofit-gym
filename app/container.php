@@ -84,14 +84,19 @@ return [
         $mail->CharSet = 'UTF-8';
 
         // Credenciales
-        $mail->Username = $_ENV["MAIL_USERNAME"];
-        $mail->Password = $_ENV["MAIL_PASSWORD"];
+        $mail->Username = $_ENV["MAIL_USERNAME"] ?? "";
+        $mail->Password = $_ENV["MAIL_PASSWORD"] ?? "";
 
         // Remitente
-        $mail->setFrom(
-            $_ENV["MAIL_FROM_ADDRESS"],
-            $_ENV["MAIL_FROM_NAME"] ?? 'Soporte Sofit GYM'
-        );
+        $from = $_ENV["MAIL_FROM_ADDRESS"] ?? null;
+        $name = $_ENV["MAIL_FROM_NAME"] ?? null;
+
+        if ($from && $name) {
+            $mail->setFrom(
+                $from,
+                $name ?? 'Soporte Sofit GYM'
+            );
+        }
 
         return $mail;
     },
