@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Helpers\Logger;
+namespace App\Helpers;
 
 use App\Helpers\Auth\UsuarioSession;
 use App\Models\BitacoraDTO;

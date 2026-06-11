@@ -72,12 +72,11 @@ class Response
         header('Location: ?' . Response::buildQueryParams($queryParams));
     }
 
-    public static function redirectToError($message = '', int $status = 404)
+    public static function redirectToError(int $status = 404)
     {
         Response::redirect(
             [
                 'page' => 'error',
-                'message' => $message,
                 'status' => $status,
             ],
             404

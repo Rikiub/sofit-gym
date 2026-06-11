@@ -23,7 +23,7 @@ class LoginController extends BaseController
     {
         if (UsuarioSession::getUsuario()) {
             // Si el usuario ya inicio sesión, redirigir a pagina de inicio.
-            $this->response->redirect(["page" => "inicio"]);
+            $this->response->redirect(["page" => "dashboard"]);
             exit;
         }
 
@@ -59,7 +59,7 @@ class LoginController extends BaseController
 
         // Devolver respuesta con la direccion donde deberia redireccionar
         return $this->response->json([
-            "redirect" => "?" . $this->response->buildQueryParams(["page" => "inicio"])
+            "redirect" => "?" . $this->response->buildQueryParams(["page" => "dashboard"])
         ]);
     }
 

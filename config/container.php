@@ -1,6 +1,7 @@
 <?php
 
-use App\Helpers\Logger\BitacoraLogger;
+use App\Helpers\Auth\UsuarioSession;
+use App\Helpers\BitacoraLogger;
 use App\Helpers\Plates\AssetExtension;
 use CuyZ\Valinor\Cache\FileSystemCache;
 use CuyZ\Valinor\Cache\FileWatchingCache;
@@ -62,12 +63,16 @@ return [
 
     // Directorios donde cargar vistas/plantillas
     Engine::class => function () {
-        return Engine::fromTheme(Theme::hierarchy([
+        $engine = Engine::fromTheme(Theme::hierarchy([
             Theme::new('app/views/base', 'Base'),
             Theme::new('app/views/components', 'Components'),
             Theme::new('app/views/pages', 'Page'),
         ]))
             ->loadExtension(new AssetExtension(ASSETS_DIR));
+
+        $usuario = UsuarioSession::getUsuario();
+        $engine->addData(["sesion_usuario" => $usuario]);
+        return $engine;
     },
 
     PHPMailer::class => function () {

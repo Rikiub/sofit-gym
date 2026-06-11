@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Helpers\Logger\BitacoraLogger;
+use App\Helpers\BitacoraLogger;
 use DI\Attribute\Inject;
 use League\Plates\Engine;
 

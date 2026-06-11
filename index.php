@@ -7,7 +7,7 @@ require 'vendor/autoload.php';
 // Luego cargar constantes
 $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->safeLoad();
-require 'app/constants.php';
+require 'config/constants.php';
 
 // Cargar front-controller
 require 'app/bootstrap.php';

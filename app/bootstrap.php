@@ -1,13 +1,12 @@
 <?php
 
-use App\Helpers\Auth\UsuarioSession;
+use App\Helpers\Middlewares\AuthMiddleware;
 use App\Helpers\Response;
 use CuyZ\Valinor\Mapper\MappingError;
 use DI\ContainerBuilder;
 use Psr\Log\LoggerInterface;
 
 // Constantes locales
-const CONTAINER_FILE = 'app/container.php';
 const CONTROLLERS_NAMESPACE = 'App\Controllers';
 
 // Obtener query params
@@ -33,7 +32,7 @@ try {
     // el inyector las instanciara automaticamente con la configuración definida
     // en el archivo CONTAINER_FILE.
     $builder = new ContainerBuilder();
-    $builder->addDefinitions(CONTAINER_FILE)->useAttributes(true);
+    $builder->addDefinitions(require "config/container.php")->useAttributes(true);
     if (!DEBUG) {
         // Activar cache en producción
         $builder->enableCompilation(CACHE_DIR . '/php-di');
@@ -73,11 +72,9 @@ try {
         throw new Exception("Method '$action' not founded in controller '$className'");
     }
 
-    // Si no se ha iniciado sesión, redigir a pagina 'login' siempre.
-    if ($page !== "login" && !UsuarioSession::getUsuario()) {
-        $response->redirect(["page" => "login"]);
-        exit;
-    }
+    // Verificar permisos
+    $auth = new AuthMiddleware(require "config/routes.php");
+    $auth->checkAccess($page);
 
     // Ejecutar controlador junto a su metodo
     $respuesta = $controller->$action();

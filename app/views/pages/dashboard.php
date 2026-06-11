@@ -85,7 +85,7 @@ $this->pushJs('pages/inicio/inicio.js');
                 </div>
             </nav>
 
-            <h2 class="panel-title"><i class="fas fa-chalkboard"></i> Dashboard </h2>
+            <h2 class="panel-title"><i class="fas fa-chalkboard"></i> Panel de control </h2>
 
             <div class="stats-row">
                 <div class="stat-card panel-card">

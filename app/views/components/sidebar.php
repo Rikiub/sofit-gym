@@ -1,3 +1,11 @@
+<?php
+
+/** @var \App\Helpers\Auth\UsuarioSessionDTO $sesion_usuario */
+
+use App\Helpers\Auth\Rol;
+
+?>
+
 <script type="module">
 	import Alpine from "alpinejs";
 	import {
@@ -35,7 +43,7 @@
 	</div>
 
 	<nav class="sidebar-nav">
-		<a href="?page=inicio" class="active"><i class="fas fa-home"></i> <span>Inicio</span></a>
+		<a href="?page=dashboard" class="active"><i class="fas fa-home"></i> <span>Panel de control</span></a>
 
 		<hr>
 
@@ -43,15 +51,19 @@
 			<i class="fas fa-id-card"></i> <span>Clientes</span>
 		</a>
 
-		<a href="?page=trabajadores" class="nav-single">
-			<i class="fas fa-id-card"></i> <span>Trabajadores</span>
-		</a>
+		<?php if ($sesion_usuario->rol === Rol::Administrador): ?>
+			<a href="?page=trabajadores" class="nav-single">
+				<i class="fas fa-id-card"></i> <span>Trabajadores</span>
+			</a>
+		<?php endif ?>
 
 		<hr>
 
-		<a href="?page=facturacion" class="nav-single">
-			<i class="fas fa-coins"></i> <span>Facturación y Control de Pagos</span>
-		</a>
+		<?php if ($sesion_usuario->rol === Rol::Administrador): ?>
+			<a href="?page=facturacion" class="nav-single">
+				<i class="fas fa-coins"></i> <span>Facturación y Control de Pagos</span>
+			</a>
+		<?php endif ?>
 
 		<a href="?page=asistencia" class="nav-single">
 			<i class="fas fa-fingerprint"></i> <span>Control de Asistencia</span>
@@ -61,29 +73,36 @@
 			<i class="fas fa-calendar"></i> <span>Horarios de clases</span>
 		</a>
 
-		<details class="nav-group">
-			<summary class="group-title">
-				<i class="fas fa-dumbbell"></i> <span>Rutinas de Entrenamiento</span>
-				<i class="fas fa-chevron-down toggle-icon"></i>
-			</summary>
-			<div class="group-items">
-				<a href="?page=rutinas&action=index"><i class="fas fa-pen-ruler"></i> <span>Planes de entrenamiento</span></a>
-				<a href="?page=rutinas&action=asignadas"><i class="fas fa-user-check"></i> <span>Asignación de rutinas</span></a>
-			</div>
-		</details>
+		<?php if ($sesion_usuario->rol === Rol::Entrenador): ?>
+			<details class="nav-group">
+				<summary class="group-title">
+					<i class="fas fa-dumbbell"></i> <span>Rutinas de Entrenamiento</span>
+					<i class="fas fa-chevron-down toggle-icon"></i>
+				</summary>
+				<div class="group-items">
+					<a href="?page=rutinas&action=index"><i class="fas fa-pen-ruler"></i> <span>Planes de entrenamiento</span></a>
+					<a href="?page=rutinas&action=asignadas"><i class="fas fa-user-check"></i> <span>Asignación de rutinas</span></a>
+				</div>
+			</details>
+		<?php endif ?>
 
 		<hr>
 
-		<details class="nav-group">
-			<summary class="group-title">
-				<i class="fas fa-microchip"></i> <span>Equipos y Maquinaria</span>
-				<i class="fas fa-chevron-down toggle-icon"></i>
-			</summary>
-			<div class="group-items">
-				<a href="?page=equipos"><i class="fas fa-tools"></i> <span>Inventario de equipos</span></a>
-				<a href="?page=equiposMantenimiento"><i class="fas fa-history"></i> <span>Historial de mantenimientos</span></a>
-			</div>
-		</details>
+		<?php if (
+			$sesion_usuario->rol === Rol::Administrador
+			|| $sesion_usuario->rol === Rol::Entrenador
+		): ?>
+			<details class="nav-group">
+				<summary class="group-title">
+					<i class="fas fa-microchip"></i> <span>Equipos y Maquinaria</span>
+					<i class="fas fa-chevron-down toggle-icon"></i>
+				</summary>
+				<div class="group-items">
+					<a href="?page=equipos"><i class="fas fa-tools"></i> <span>Inventario de equipos</span></a>
+					<a href="?page=equiposMantenimiento"><i class="fas fa-history"></i> <span>Historial de mantenimientos</span></a>
+				</div>
+			</details>
+		<?php endif ?>
 
 		<a href="?page=productos" class="nav-single">
 			<i class="fas fa-boxes"></i> <span>Inventario de Productos</span>
@@ -93,30 +112,33 @@
 			<i class="fas fa-robot"></i> <span>Asistente de Entrenamiento</span>
 		</a>
 
-		<div class="sidebar-divider" role="separator"></div>
+		<?php if ($sesion_usuario->rol === Rol::Administrador): ?>
+			<div class="sidebar-divider" role="separator"></div>
 
-		<details class="nav-group">
-			<summary class="group-title">
-				<i class="fas fa-shield-alt"></i> <span>Auditoría y seguridad</span>
-				<i class="fas fa-chevron-down toggle-icon"></i>
-			</summary>
-			<div class="group-items">
-				<a href="?page=usuarios"><i class="fas fa-lock"></i> <span>Usuarios y permisos</span></a>
-				<a href="?page=bitacora"><i class="fas fa-history"></i> <span>Bitácora</span></a>
-			</div>
-		</details>
+			<details class="nav-group">
+				<summary class="group-title">
+					<i class="fas fa-shield-alt"></i> <span>Auditoría y seguridad</span>
+					<i class="fas fa-chevron-down toggle-icon"></i>
+				</summary>
+				<div class="group-items">
+					<a href="?page=usuarios"><i class="fas fa-lock"></i> <span>Usuarios y permisos</span></a>
+					<a href="?page=bitacora"><i class="fas fa-history"></i> <span>Bitácora</span></a>
+				</div>
+			</details>
 
-		<details class="nav-group">
-			<summary class="group-title">
-				<i class="fas fa-database"></i> <span>Soporte y Datos</span>
-				<i class="fas fa-chevron-down toggle-icon"></i>
-			</summary>
-			<div class="group-items">
-				<a href="?page=reportes"><i class="fas fa-chart-bar"></i> <span>Reportes estadísticos</span></a>
-				<a href="?page=mantenimiento_sistema"><i class="fas fa-database"></i> <span>Mantenimiento del sistema</span></a>
-				<a href="?page=ayuda"><i class="fas fa-question-circle"></i> <span>Manual de usuario</span></a>
-			</div>
-		</details>
+
+			<details class="nav-group">
+				<summary class="group-title">
+					<i class="fas fa-database"></i> <span>Soporte y Datos</span>
+					<i class="fas fa-chevron-down toggle-icon"></i>
+				</summary>
+				<div class="group-items">
+					<a href="?page=reportes"><i class="fas fa-chart-bar"></i> <span>Reportes estadísticos</span></a>
+					<a href="?page=mantenimiento_sistema"><i class="fas fa-database"></i> <span>Mantenimiento del sistema</span></a>
+					<a href="?page=ayuda"><i class="fas fa-question-circle"></i> <span>Manual de usuario</span></a>
+				</div>
+			</details>
+		<?php endif ?>
 	</nav>
 
 	<div class="sidebar-footer text-center">
