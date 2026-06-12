@@ -73,13 +73,13 @@ class ClasesGrupalesController extends BaseController
 
     public function delete(): string|null
     {
-        $cedula = $this->getIdParam();
+        $id = $this->getIdParam();
 
-        if (!$this->clasesModel->find($cedula)) {
+        if (!$this->clasesModel->find($id)) {
             return $this->response->json(['message' => 'No existe'], 404);
         }
 
-        $this->clasesModel->delete($cedula);
+        $this->clasesModel->delete($id);
         return $this->response->empty(204);
     }
 }
