@@ -73,7 +73,10 @@ use App\Helpers\Auth\Rol;
 			<i class="fas fa-calendar"></i> <span>Horarios de clases</span>
 		</a>
 
-		<?php if ($sesion_usuario->rol === Rol::Entrenador): ?>
+		<?php if (
+			$sesion_usuario->rol === Rol::Administrador
+			|| $sesion_usuario->rol === Rol::Entrenador
+		): ?>
 			<details class="nav-group">
 				<summary class="group-title">
 					<i class="fas fa-dumbbell"></i> <span>Rutinas de Entrenamiento</span>
