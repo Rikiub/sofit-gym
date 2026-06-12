@@ -10,7 +10,7 @@ use Psr\Log\LoggerInterface;
 const CONTROLLERS_NAMESPACE = 'App\Controllers';
 
 // Obtener query params
-$page = $_GET['page'] ?? 'inicio';
+$page = $_GET['page'] ?? 'dashboard';
 $action = $_GET['action'] ?? 'index';
 
 // Construir clase a partir de los query params
