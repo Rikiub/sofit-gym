@@ -10,8 +10,9 @@ class ProductosModel extends BaseModel
     private string $tabla = 'producto';
 
     /**
-     * Obtener todos los productos activos de la base de datos
-     * Permite opcionalmente buscar por un término (código, nombre o categoría)
+     * Obtener todos los productos activos de la base de datos.
+     * Realiza un LEFT JOIN para unificar los nombres de las categorías y unidades de medida.
+     * Permite opcionalmente buscar por un término (código, nombre o categoría).
      *
      * @param string|null $termino Término de búsqueda opcional
      * @return array Listado de productos
@@ -20,16 +21,24 @@ class ProductosModel extends BaseModel
     {
         try {
             if (!empty($termino)) {
-                $sql = "SELECT * FROM {$this->tabla} 
-                        WHERE activo = 1 
-                        AND (codigo_producto LIKE :termino 
-                             OR nombre LIKE :termino 
-                             OR categoria LIKE :termino)
-                        ORDER BY nombre ASC";
+                $sql = "SELECT p.*, c.nombre AS nombre_categoria, u.nombre AS nombre_unidad 
+                        FROM {$this->tabla} p
+                        LEFT JOIN categoria_producto c ON p.id_categoria = c.id_categoria
+                        LEFT JOIN unidad_medida u ON p.id_unidad = u.id_unidad
+                        WHERE p.activo = 1
+                        AND (p.codigo_producto LIKE :termino 
+                             OR p.nombre LIKE :termino 
+                             OR c.nombre LIKE :termino)
+                        ORDER BY p.nombre ASC";
                 $stmt = $this->pdo->prepare($sql);
                 $stmt->execute(['termino' => "%{$termino}%"]);
             } else {
-                $sql = "SELECT * FROM {$this->tabla} WHERE activo = 1 ORDER BY nombre ASC";
+                $sql = "SELECT p.*, c.nombre AS nombre_categoria, u.nombre AS nombre_unidad 
+                        FROM {$this->tabla} p 
+                        LEFT JOIN categoria_producto c ON p.id_categoria = c.id_categoria
+                        LEFT JOIN unidad_medida u ON p.id_unidad = u.id_unidad
+                        WHERE p.activo = 1 
+                        ORDER BY p.nombre ASC";
                 $stmt = $this->pdo->query($sql);
             }
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -40,7 +49,7 @@ class ProductosModel extends BaseModel
     }
 
     /**
-     * Obtener un producto específico por su código primario
+     * Obtener un producto específico por su código único de barra/identificador
      *
      * @param string $codigo Código único del producto
      * @return array|null Datos del producto o null si no existe
@@ -48,7 +57,11 @@ class ProductosModel extends BaseModel
     public function obtenerPorCodigo(string $codigo): ?array
     {
         try {
-            $sql = "SELECT * FROM {$this->tabla} WHERE codigo_producto = ? LIMIT 1";
+            $sql = "SELECT p.*, c.nombre AS nombre_categoria, u.nombre AS nombre_unidad 
+                    FROM {$this->tabla} p
+                    LEFT JOIN categoria_producto c ON p.id_categoria = c.id_categoria
+                    LEFT JOIN unidad_medida u ON p.id_unidad = u.id_unidad
+                    WHERE p.codigo_producto = ? LIMIT 1";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$codigo]);
             $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -70,13 +83,13 @@ class ProductosModel extends BaseModel
         try {
             $nuevoProducto = [
                 'codigo_producto' => $datos['codigo_producto'],
+                'id_categoria'    => !empty($datos['id_categoria']) ? intval($datos['id_categoria']) : null,
+                'id_unidad'       => !empty($datos['id_unidad']) ? intval($datos['id_unidad']) : null,
                 'nombre'          => $datos['nombre'],
-                'categoria'       => $datos['categoria'] ?? null,
-                'precio_venta'    => $datos['precio_venta'],
-                'stock_minimo'    => $datos['stock_minimo'] ?? 0,
-                'stock_actual'    => $datos['stock_actual'] ?? 0,
-                'unidad_medida'   => $datos['unidad_medida'] ?? 'unidad',
-                'activo'          => $datos['activo'] ?? 1
+                'precio_venta'    => floatval($datos['precio_venta']),
+                'stock_minimo'    => isset($datos['stock_minimo']) ? intval($datos['stock_minimo']) : 0,
+                'stock_actual'    => isset($datos['stock_actual']) ? intval($datos['stock_actual']) : 0,
+                'activo'          => isset($datos['activo']) ? intval($datos['activo']) : 1
             ];
 
             $this->pdoInsert($this->tabla, $nuevoProducto);
@@ -92,12 +105,12 @@ class ProductosModel extends BaseModel
      *
      * @param string $codigo Código del producto a editar
      * @param array $datos Campos modificados a actualizar
-     * @return bool True si al menos una fila fue modificada o la consulta fue exitosa
+     * @return bool True si se realizó correctamente
      */
     public function actualizar(string $codigo, array $datos): bool
     {
         try {
-            unset($datos['codigo_producto']);
+            unset($datos['codigo_producto']); // Seguridad: No alterar la clave primaria primaria
             $this->pdoUpdate($this->tabla, $datos, ['codigo_producto' => $codigo]);
             return true;
         } catch (PDOException $e) {
@@ -107,7 +120,7 @@ class ProductosModel extends BaseModel
     }
 
     /**
-     * Eliminación de producto (Por defecto, lógica/soft delete para preservar integridad referencial)
+     * Eliminación de producto (Lógica/soft delete por defecto para preservar integridad referencial)
      *
      * @param string $codigo Código del producto
      * @param bool $fisico Definir si se borra permanentemente de la base de datos
@@ -129,7 +142,7 @@ class ProductosModel extends BaseModel
     }
 
     /**
-     * Actualizar únicamente el inventario/stock de un producto específico
+     * Actualizar únicamente el inventario/stock de un producto específico manualmente
      *
      * @param string $codigo Código del producto
      * @param int $cantidad Cantidad física a descontar o añadir (positivo o negativo)
@@ -150,17 +163,20 @@ class ProductosModel extends BaseModel
     }
 
     /**
-     * Obtener listado de productos que se encuentren por debajo de su stock mínimo
+     * Obtener listado de productos que se encuentren por debajo o igual de su stock mínimo
      *
      * @return array Productos en alerta de reposición
      */
     public function obtenerBajoStock(): array
     {
         try {
-            $sql = "SELECT * FROM {$this->tabla} 
-                    WHERE activo = 1 
-                    AND stock_actual <= stock_minimo 
-                    ORDER BY stock_actual ASC";
+            $sql = "SELECT p.*, c.nombre AS nombre_categoria, u.nombre AS nombre_unidad 
+                    FROM {$this->tabla} p 
+                    LEFT JOIN categoria_producto c ON p.id_categoria = c.id_categoria
+                    LEFT JOIN unidad_medida u ON p.id_unidad = u.id_unidad
+                    WHERE p.activo = 1 
+                    AND p.stock_actual <= p.stock_minimo 
+                    ORDER BY p.stock_actual ASC";
             $stmt = $this->pdo->query($sql);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -170,16 +186,16 @@ class ProductosModel extends BaseModel
     }
 
     /**
-     * Obtener todos los clientes activos del gimnasio para asociarlos a una venta
+     * Obtener todos los clientes activos del gimnasio usando las columnas de cédula reales
      *
      * @return array Listado de clientes con su cédula y nombre completo
      */
     public function obtenerClientes(): array
     {
         try {
-            $sql = "SELECT c.cedula_cliente, p.nombre, p.apellido 
+            $sql = "SELECT c.cedula, p.nombre, p.apellido 
                     FROM cliente c 
-                    INNER JOIN persona p ON c.cedula_cliente = p.cedula_persona 
+                    INNER JOIN persona p ON c.cedula = p.cedula 
                     WHERE p.activo = 1 
                     ORDER BY p.nombre ASC, p.apellido ASC";
             $stmt = $this->pdo->query($sql);
@@ -192,29 +208,27 @@ class ProductosModel extends BaseModel
 
     /**
      * Registrar la venta de uno o múltiples productos en una transacción segura.
-     * Realiza verificaciones rigurosas de existencia y de stock suficiente.
-     *
-     * @param string|null $cedulaCliente Cédula del cliente (puede ser null)
-     * @param string $metodoPago Método de pago ('Efectivo', 'Transferencia', etc.)
+     * * @param string|null $cedulaCliente Cédula del cliente (puede ser null para ventas rápidas)
+     * @param int|null $idMetodo ID numérico del método de pago (1=Efectivo, 2=Crédito, 3=Pago móvil, 4=Transf.)
      * @param array $items Listado de productos comprados conteniendo ['codigo', 'cantidad']
-     * @return array Arreglo con el resultado de la operación, estado y detalles de factura
+     * @return array Arreglo con el resultado de la operación, estado y detalles
      */
-    public function registrarVentaMultiplesProductos(?string $cedulaCliente, string $metodoPago, array $items): array
+    public function registrarVentaMultiplesProductos(?string $cedulaCliente, ?int $idMetodo, array $items): array
     {
         if (empty($items)) {
             return ['success' => false, 'message' => 'No se han especificado productos para la venta.'];
         }
 
         try {
-            // Iniciar transacción de base de datos
+            // Iniciar transacción atómica de base de datos
             $this->pdo->beginTransaction();
 
             $detallesVenta = [];
             $montoTotalVenta = 0;
 
-            // Verificar si el cliente existe (en caso de que se envíe una cédula)
+            // Verificar si el cliente existe utilizando la columna física 'cedula'
             if (!empty($cedulaCliente)) {
-                $sqlCliente = "SELECT COUNT(*) FROM cliente WHERE cedula_cliente = ?";
+                $sqlCliente = "SELECT COUNT(*) FROM cliente WHERE cedula = ?";
                 $stmtCliente = $this->pdo->prepare($sqlCliente);
                 $stmtCliente->execute([$cedulaCliente]);
                 if ($stmtCliente->fetchColumn() == 0) {
@@ -222,10 +236,23 @@ class ProductosModel extends BaseModel
                     return ['success' => false, 'message' => "El cliente con cédula '{$cedulaCliente}' no está registrado."];
                 }
             } else {
-                $cedulaCliente = null; // Guardar NULL en DB si no se define
+                $cedulaCliente = null;
             }
 
-            // Primer ciclo: Validar que todos los productos existan y tengan stock suficiente
+            // Validar que el método de pago exista en la tabla maestra
+            if (!empty($idMetodo)) {
+                $sqlMetodo = "SELECT COUNT(*) FROM metodo_pago WHERE id_metodo = ?";
+                $stmtMetodo = $this->pdo->prepare($sqlMetodo);
+                $stmtMetodo->execute([$idMetodo]);
+                if ($stmtMetodo->fetchColumn() == 0) {
+                    $this->pdo->rollBack();
+                    return ['success' => false, 'message' => "El método de pago especificado no es válido."];
+                }
+            } else {
+                $idMetodo = null;
+            }
+
+            // Primer ciclo: Validar rigurosamente existencias y estados
             foreach ($items as $item) {
                 $codigo = $item['codigo'];
                 $cantidad = floatval($item['cantidad']);
@@ -235,7 +262,7 @@ class ProductosModel extends BaseModel
                     return ['success' => false, 'message' => 'La cantidad a vender debe ser mayor que cero.'];
                 }
 
-                // Obtener datos actuales del producto directamente de la DB
+                // Obtener datos del producto directo del estado real de la base de datos
                 $sqlProd = "SELECT nombre, precio_venta, stock_actual, activo FROM {$this->tabla} WHERE codigo_producto = ? LIMIT 1";
                 $stmtProd = $this->pdo->prepare($sqlProd);
                 $stmtProd->execute([$codigo]);
@@ -249,8 +276,8 @@ class ProductosModel extends BaseModel
                 if ($prod['stock_actual'] < $cantidad) {
                     $this->pdo->rollBack();
                     return [
-                        'success' => false, 
-                        'message' => "Stock insuficiente para '{$prod['nombre']}'. Stock actual: {$prod['stock_actual']}, solicitado: {$cantidad}."
+                        'success' => false,
+                        'message' => "Stock insuficiente para '{$prod['nombre']}'. Inventario actual: {$prod['stock_actual']}, solicitado: {$cantidad}."
                     ];
                 }
 
@@ -258,33 +285,33 @@ class ProductosModel extends BaseModel
                 $montoTotalVenta += $montoItem;
 
                 $detallesVenta[] = [
-                    'codigo_producto' => $codigo,
-                    'nombre' => $prod['nombre'],
-                    'precio_unitario' => floatval($prod['precio_venta']),
+                    'codigo_producto'  => $codigo,
+                    'nombre'           => $prod['nombre'],
+                    'precio_unitario'  => floatval($prod['precio_venta']),
                     'cantidad_vendida' => $cantidad,
-                    'monto_total' => $montoItem
+                    'monto_total'      => $montoItem
                 ];
             }
 
-            // Segundo ciclo: Registrar cada venta en 'venta_producto'
-            // El trigger 'tr_descontar_stock_venta' se encargará automáticamente de actualizar el stock
-            $sqlInsert = "INSERT INTO venta_producto (codigo_producto, cedula_cliente, cantidad_vendida, monto_total, metodo_pago, fecha) 
-                          VALUES (:codigo, :cedula, :cantidad, :monto, :metodo, NOW())";
+            // Segundo ciclo: Insertar registros en 'venta_producto'
+            // Nota: Tu Trigger 'tg_actualizar_stock_venta' restará de forma automática el stock de la tabla producto
+            $sqlInsert = "INSERT INTO venta_producto (id_metodo, codigo_producto, cedula_cliente, cantidad_vendida, monto_total) 
+                          VALUES (:id_metodo, :codigo, :cedula, :cantidad, :monto)";
             $stmtInsert = $this->pdo->prepare($sqlInsert);
 
             $idsVenta = [];
             foreach ($detallesVenta as &$detalle) {
                 $stmtInsert->execute([
-                    'codigo'   => $detalle['codigo_producto'],
-                    'cedula'   => $cedulaCliente,
-                    'cantidad' => $detalle['cantidad_vendida'],
-                    'monto'    => $detalle['monto_total'],
-                    'metodo'   => $metodoPago
+                    'id_metodo' => $idMetodo,
+                    'codigo'    => $detalle['codigo_producto'],
+                    'cedula'    => $cedulaCliente,
+                    'cantidad'  => $detalle['cantidad_vendida'],
+                    'monto'     => $detalle['monto_total']
                 ]);
                 $idsVenta[] = $this->pdo->lastInsertId();
             }
 
-            // Confirmar transacción
+            // Confirmar transacción definitiva si todo culminó bien
             $this->pdo->commit();
 
             return [
@@ -292,20 +319,19 @@ class ProductosModel extends BaseModel
                 'message' => '✅ Venta registrada y procesada con éxito.',
                 'comprobante' => [
                     'nro_transacciones' => $idsVenta,
-                    'cedula_cliente' => $cedulaCliente,
-                    'metodo_pago' => $metodoPago,
-                    'fecha' => date('Y-m-d H:i:s'),
-                    'items' => $detallesVenta,
-                    'total' => $montoTotalVenta
+                    'cedula_cliente'    => $cedulaCliente,
+                    'id_metodo'         => $idMetodo,
+                    'fecha'             => date('Y-m-d H:i:s'),
+                    'items'             => $detallesVenta,
+                    'total'             => $montoTotalVenta
                 ]
             ];
-
         } catch (PDOException $e) {
             if ($this->pdo->inTransaction()) {
                 $this->pdo->rollBack();
             }
             error_log("Error en ProductosModel::registrarVentaMultiplesProductos: " . $e->getMessage());
-            return ['success' => false, 'message' => '❌ Error de base de datos al registrar la venta. Contacte soporte.'];
+            return ['success' => false, 'message' => '❌ Error de base de datos al procesar la venta. Contacte soporte técnico.'];
         }
     }
 }

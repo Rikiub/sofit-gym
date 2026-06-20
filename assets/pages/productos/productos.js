@@ -90,14 +90,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 <tr data-codigo="${escapeHtml(p.codigo_producto)}">
                     <td><strong>${escapeHtml(p.codigo_producto)}</strong></td>
                     <td>${escapeHtml(p.nombre)}</td>
-                    <td><span class="badge bg-secondary">${escapeHtml(p.categoria || 'Sin categoría')}</span></td>
+                    <td><span class="badge bg-secondary">${escapeHtml(p.nombre_categoria || 'Sin categoría')}</span></td>
                     <td>$${precioVenta}</td>
                     <td>
                         <span class="badge-stock ${claseStock}">
                             ${stockActual} <small class="text-muted">/ ${stockMinimo}</small>
                         </span>
                     </td>
-                    <td>${escapeHtml(p.unidad_medida)}</td>
+                    <td>${escapeHtml(p.nombre_unidad)}</td>
                     <td>
                         <div class="acciones-botones justify-content-end">
                             <!-- Movimiento Rápido Stock -->
@@ -111,10 +111,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             <button class="btn btn-sm btn-warning editar-prod-btn btn-sm-custom" 
                                     data-codigo="${escapeHtml(p.codigo_producto)}" 
                                     data-nombre="${escapeHtml(p.nombre)}" 
-                                    data-categoria="${escapeHtml(p.categoria || '')}" 
+                                    data-categoria="${p.id_categoria}" 
                                     data-precio="${p.precio_venta}" 
                                     data-minimo="${stockMinimo}" 
-                                    data-unidad="${escapeHtml(p.unidad_medida)}">
+                                    data-unidad="${p.id_unidad}">
                                 <i class="fas fa-edit"></i> Editar
                             </button>
                             <!-- Eliminar -->
@@ -158,8 +158,8 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(clientes => {
                 let html = '<option value="">-- Consumidor Final (Sin registrar) --</option>';
                 clientes.forEach(c => {
-                    html += `<option value="${escapeHtml(c.cedula_cliente)}">
-                        ${escapeHtml(c.nombre)} ${escapeHtml(c.apellido)} (${escapeHtml(c.cedula_cliente)})
+                    html += `<option value="${escapeHtml(c.cedula)}">
+                        ${escapeHtml(c.nombre)} ${escapeHtml(c.apellido)} (${escapeHtml(c.cedula)})
                     </option>`;
                 });
                 ventaCliente.innerHTML = html;
@@ -382,7 +382,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (carrito.length === 0) return;
 
             const payload = {
-                cedula_cliente: ventaCliente.value || null,
+                cedula: ventaCliente.value || null,
                 metodo_pago: ventaMetodoPago.value,
                 productos: carrito.map(item => ({
                     codigo: item.codigo,
@@ -430,7 +430,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('compFecha').innerText = comp.fecha;
         document.getElementById('compMetodo').innerText = comp.metodo_pago;
 
-        if (comp.cedula_cliente && ventaCliente) {
+        if (comp.cedula && ventaCliente) {
             const clientText = ventaCliente.options[ventaCliente.selectedIndex].text;
             document.getElementById('compCliente').innerText = clientText;
         } else {
@@ -547,10 +547,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData();
             formData.append('codigo_producto', codigo);
             formData.append('nombre', nombre);
-            formData.append('categoria', categoria);
+            formData.append('id_categoria', categoria);
             formData.append('precio_venta', precio);
             formData.append('stock_minimo', minimo);
-            formData.append('unidad_medida', unidad);
+            formData.append('id_unidad', unidad);
 
             fetch('?page=productos&action=editar', {
                 method: 'POST',

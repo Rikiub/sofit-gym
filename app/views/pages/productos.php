@@ -1,7 +1,5 @@
 <?php
-// Añadimos un query string con marca de tiempo o versión estática para romper la caché del navegador
-$this->pushJs("pages/productos/productos.js?v=" . time());
-
+$this->pushJs("pages/productos/productos.js");
 $this->layout("layout", ["title" => "Inventario de Productos"]);
 ?>
 
@@ -283,9 +281,12 @@ $this->layout("layout", ["title" => "Inventario de Productos"]);
         body * {
             visibility: hidden;
         }
-        #comprobantePrintArea, #comprobantePrintArea * {
+
+        #comprobantePrintArea,
+        #comprobantePrintArea * {
             visibility: visible;
         }
+
         #comprobantePrintArea {
             position: absolute;
             left: 0;
@@ -293,6 +294,7 @@ $this->layout("layout", ["title" => "Inventario de Productos"]);
             width: 100%;
             padding: 20px;
         }
+
         .no-print {
             display: none !important;
         }
@@ -390,12 +392,12 @@ $this->layout("layout", ["title" => "Inventario de Productos"]);
                         </div>
                         <div class="form-group-custom">
                             <label><i class="fas fa-folder"></i> Categoría</label>
-                            <select name="categoria" id="prod_categoria" class="form-select select-custom">
-                                <option value="Suplementos">Suplementos</option>
-                                <option value="Bebidas">Bebidas</option>
-                                <option value="Snacks">Snacks</option>
-                                <option value="Accesorios">Accesorios</option>
-                                <option value="Otros">Otros</option>
+                            <select name="id_categoria" id="prod_categoria" class="form-select select-custom">
+                                <option value="1">Suplementos</option>
+                                <option value="2">Bebidas</option>
+                                <option value="3">Snacks</option>
+                                <option value="4">Accesorios</option>
+                                <option value="5">Otros</option>
                             </select>
                         </div>
                         <div class="form-group-custom">
@@ -412,7 +414,9 @@ $this->layout("layout", ["title" => "Inventario de Productos"]);
                         </div>
                         <div class="form-group-custom">
                             <label><i class="fas fa-balance-scale"></i> Unidad</label>
-                            <input type="text" name="unidad_medida" id="prod_unidad" class="form-control input-custom" value="unidad">
+                            <select name="id_unidad" id="prod_unidad" class="form-select select-custom">
+                                <option value="1">Unidad</option>
+                            </select>
                         </div>
                         <div class="form-group-custom">
                             <button type="submit" class="btn-custom btn-main"><i class="fas fa-save"></i> Guardar</button>
@@ -455,14 +459,14 @@ $this->layout("layout", ["title" => "Inventario de Productos"]);
                                     <tr data-codigo="<?= htmlspecialchars($p['codigo_producto']) ?>">
                                         <td><strong><?= htmlspecialchars($p['codigo_producto']) ?></strong></td>
                                         <td><?= htmlspecialchars($p['nombre']) ?></td>
-                                        <td><span class="badge bg-secondary"><?= htmlspecialchars($p['categoria'] ?? 'Sin categoría') ?></span></td>
+                                        <td><span class="badge bg-secondary"><?= htmlspecialchars($p['nombre_categoria'] ?? 'Sin categoría') ?></span></td>
                                         <td>$<?= number_format($p['precio_venta'], 2) ?></td>
                                         <td>
                                             <span class="badge-stock <?= $claseStock ?>">
                                                 <?= $p['stock_actual'] ?> <small class="text-muted">/ <?= $p['stock_minimo'] ?></small>
                                             </span>
                                         </td>
-                                        <td><?= htmlspecialchars($p['unidad_medida']) ?></td>
+                                        <td><?= htmlspecialchars($p['nombre_unidad']) ?></td>
                                         <td>
                                             <div class="acciones-botones justify-content-end">
                                                 <!-- Movimiento Rápido Stock -->
@@ -476,10 +480,10 @@ $this->layout("layout", ["title" => "Inventario de Productos"]);
                                                 <button class="btn btn-sm btn-warning editar-prod-btn btn-sm-custom"
                                                     data-codigo="<?= htmlspecialchars($p['codigo_producto']) ?>"
                                                     data-nombre="<?= htmlspecialchars($p['nombre']) ?>"
-                                                    data-categoria="<?= htmlspecialchars($p['categoria'] ?? '') ?>"
+                                                    data-categoria="<?= htmlspecialchars($p['id_categoria'] ?? '') ?>"
                                                     data-precio="<?= $p['precio_venta'] ?>"
                                                     data-minimo="<?= $p['stock_minimo'] ?>"
-                                                    data-unidad="<?= htmlspecialchars($p['unidad_medida']) ?>">
+                                                    data-unidad="<?= htmlspecialchars($p['id_unidad']) ?>">
                                                     <i class="fas fa-edit"></i> Editar
                                                 </button>
                                                 <!-- Eliminar -->
@@ -530,10 +534,10 @@ $this->layout("layout", ["title" => "Inventario de Productos"]);
                                     <option value="">-- Seleccionar un Producto --</option>
                                     <?php foreach ($productos as $p): ?>
                                         <?php if ($p['stock_actual'] > 0): ?>
-                                            <option value="<?= htmlspecialchars($p['codigo_producto']) ?>" 
-                                                    data-precio="<?= $p['precio_venta'] ?>" 
-                                                    data-nombre="<?= htmlspecialchars($p['nombre']) ?>" 
-                                                    data-stock="<?= $p['stock_actual'] ?>">
+                                            <option value="<?= htmlspecialchars($p['codigo_producto']) ?>"
+                                                data-precio="<?= $p['precio_venta'] ?>"
+                                                data-nombre="<?= htmlspecialchars($p['nombre']) ?>"
+                                                data-stock="<?= $p['stock_actual'] ?>">
                                                 <?= htmlspecialchars($p['nombre']) ?> - $<?= number_format($p['precio_venta'], 2) ?> (Dispo: <?= $p['stock_actual'] ?>)
                                             </option>
                                         <?php endif; ?>
@@ -601,11 +605,11 @@ $this->layout("layout", ["title" => "Inventario de Productos"]);
                                     <div class="col-md-6 mb-3 mb-md-0">
                                         <label class="form-label"><i class="fas fa-wallet"></i> Método de Pago</label>
                                         <select id="ventaMetodoPago" class="form-select select-custom">
-                                            <option value="Efectivo">Efectivo</option>
-                                            <option value="Transferencia">Transferencia Bancaria</option>
-                                            <option value="Tarjeta de Débito">Tarjeta de Débito</option>
-                                            <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
-                                            <option value="Pago Móvil">Pago Móvil</option>
+                                            <option value="1">Efectivo</option>
+                                            <option value="2">Transferencia Bancaria</option>
+                                            <option value="6">Tarjeta de Débito</option>
+                                            <option value="2">Tarjeta de Crédito</option>
+                                            <option value="3">Pago Móvil</option>
                                         </select>
                                     </div>
                                     <div class="col-md-6 text-end">
@@ -686,11 +690,11 @@ $this->layout("layout", ["title" => "Inventario de Productos"]);
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Categoría</label>
                         <select id="edit_prod_categoria" class="form-select select-custom">
-                            <option value="Suplementos">Suplementos</option>
-                            <option value="Bebidas">Bebidas</option>
-                            <option value="Snacks">Snacks</option>
-                            <option value="Accesorios">Accesorios</option>
-                            <option value="Otros">Otros</option>
+                            <option value="1">Suplementos</option>
+                            <option value="2">Bebidas</option>
+                            <option value="3">Snacks</option>
+                            <option value="4">Accesorios</option>
+                            <option value="5">Otros</option>
                         </select>
                     </div>
                     <div class="col-md-6 mb-3">
@@ -705,7 +709,9 @@ $this->layout("layout", ["title" => "Inventario de Productos"]);
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Unidad de Medida</label>
-                        <input type="text" id="edit_prod_unidad" class="form-control" required>
+                        <select class="form-select" id="edit_prod_unidad" required>
+                            <option value="1" selected>Unidad</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -765,7 +771,7 @@ $this->layout("layout", ["title" => "Inventario de Productos"]);
                 <div class="bg-light p-2 rounded mb-3 small text-muted">
                     <strong>Cliente:</strong> <span id="compCliente">Consumidor Final</span>
                 </div>
-                
+
                 <table class="comprobante-tabla">
                     <thead>
                         <tr>
@@ -819,7 +825,7 @@ $this->layout("layout", ["title" => "Inventario de Productos"]);
             tabInventario.classList.remove('active');
             seccionInventario.style.display = 'none';
             seccionVenta.style.display = 'block';
-            
+
             // Si existe la función de sincronizar de JS, la disparamos de forma segura
             if (typeof window.actualizarListaClientesGlobal === 'function') {
                 window.actualizarListaClientesGlobal();

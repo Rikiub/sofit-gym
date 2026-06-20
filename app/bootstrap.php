@@ -110,7 +110,7 @@ try {
     // Registrar error en los logs del servidor en producción
     error_log(sprintf("Error: %s en %s:%d", $error->getMessage(), $error->getFile(), $error->getLine()));
 
-    if ($wantsJson) {
+    if (DEBUG || $wantsJson) {
         $res = [
             'error' => 'Internal Server Error',
             'message' => DEBUG ? $error->getMessage() : 'An unexpected error occurred on the server'

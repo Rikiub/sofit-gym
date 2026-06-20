@@ -6,7 +6,6 @@ use Exception;
 
 class FacturacionPagosModel extends BaseModel
 {
-    // Registrar pago
     public function registrarPago(
         string $cedulaCliente,
         float $monto,
@@ -20,7 +19,7 @@ class FacturacionPagosModel extends BaseModel
         }
 
         $membresiaActual = null;
-        if ($cliente['id_membresia'] > 0) {
+        if (isset($cliente['id_membresia']) && $cliente['id_membresia'] > 0) {
             $membresiaActual = $this->obtenerMembresiaPorId($cliente['id_membresia']);
         }
 
@@ -43,24 +42,21 @@ class FacturacionPagosModel extends BaseModel
 
         $this->pdo->beginTransaction();
         try {
-            // Crear nueva membresía
-            $stmt = $this->pdo->prepare("INSERT INTO membresia (id_tipo, id_estado, fecha_inicio, fecha_fin) VALUES (?, 1, ?, ?)");
-            $stmt->execute([$tipoMembresiaId, $fechaPago, $nuevaFechaVencimiento]);
+            $stmt = $this->pdo->prepare("INSERT INTO membresia (id_tipo, id_estado, fecha_inicio, fecha_fin, cedula_cliente) VALUES (?, 1, ?, ?, ?)");
+            $stmt->execute([$tipoMembresiaId, $fechaPago, $nuevaFechaVencimiento, $cedulaCliente]);
             $nuevaId = $this->pdo->lastInsertId();
 
-            // Actualizar cliente
-            $stmt = $this->pdo->prepare("UPDATE cliente SET id_membresia = ? WHERE cedula_cliente = ?");
-            $stmt->execute([$nuevaId, $cedulaCliente]);
-
-            // Marcar membresía anterior como vencida
             if ($membresiaActual && $membresiaActual['id_membresia']) {
                 $stmt = $this->pdo->prepare("UPDATE membresia SET id_estado = 2 WHERE id_membresia = ?");
                 $stmt->execute([$membresiaActual['id_membresia']]);
             }
 
-            // Registrar pago
-            $stmt = $this->pdo->prepare("INSERT INTO pago (cedula_cliente, monto, metodo_pago, comprobante_url, estado, fecha_pago, fecha_vencimiento) VALUES (?, ?, ?, ?, 'Pagado', ?, ?)");
-            $stmt->execute([$cedulaCliente, $monto, $metodoPago, $comprobanteUrl, $fechaPago, $nuevaFechaVencimiento]);
+            $stmtMetodo = $this->pdo->prepare("SELECT id_metodo FROM metodo_pago WHERE nombre LIKE ? LIMIT 1");
+            $stmtMetodo->execute(["%" . $metodoPago . "%"]);
+            $idMetodo = $stmtMetodo->fetchColumn() ?: 1;
+
+            $stmt = $this->pdo->prepare("INSERT INTO pago (id_membresia, id_metodo, monto, comprobante_url, estado, fecha_pago) VALUES (?, ?, ?, ?, 'Pagado', ?)");
+            $stmt->execute([$nuevaId, $idMetodo, $monto, $comprobanteUrl, $fechaPago]);
             $idPago = $this->pdo->lastInsertId();
 
             $this->pdo->commit();
@@ -76,36 +72,37 @@ class FacturacionPagosModel extends BaseModel
         }
     }
 
-    // Obtener todos los pagos con estado del cliente
     public function obtenerTodosPagos(): array
     {
         $sql = "SELECT 
                     p.id_pago, 
-                    p.cedula_cliente, 
+                    m.cedula_cliente, 
                     CONCAT(per.nombre, ' ', per.apellido) AS nombre_cliente,
                     p.monto, 
-                    p.metodo_pago, 
+                    mp.nombre AS metodo_pago, 
                     p.estado AS estado_pago,
                     p.fecha_pago, 
-                    p.fecha_vencimiento,
+                    m.fecha_fin AS fecha_vencimiento,
                     m.fecha_fin AS membresia_fecha_fin,
                     COALESCE(DATEDIFF(m.fecha_fin, CURDATE()), 0) AS dias_restantes,
                     CASE
-                        WHEN p.estado = 'Atrasado' AND p.fecha_vencimiento < CURDATE() THEN 'Vencido'
-                        WHEN p.estado = 'Atrasado' AND p.fecha_vencimiento >= CURDATE() THEN 'Moroso'
+                        WHEN p.estado = 'Atrasado' AND m.fecha_fin < CURDATE() THEN 'Vencido'
+                        WHEN p.estado = 'Atrasado' AND m.fecha_fin >= CURDATE() THEN 'Moroso'
                         WHEN m.fecha_fin < CURDATE() THEN 'Vencido'
                         WHEN DATEDIFF(m.fecha_fin, CURDATE()) <= 7 THEN 'Próximo a vencer'
                         ELSE 'Activo'
                     END AS estado_cliente
                 FROM pago p
+                JOIN membresia m ON p.id_membresia = m.id_membresia
+                LEFT JOIN metodo_pago mp ON p.id_metodo = mp.id_metodo
                 JOIN (
-                    SELECT cedula_cliente, MAX(id_pago) AS ultimo_id
-                    FROM pago
-                    GROUP BY cedula_cliente
+                    SELECT m_sub.cedula_cliente, MAX(p_sub.id_pago) AS ultimo_id
+                    FROM pago p_sub
+                    JOIN membresia m_sub ON p_sub.id_membresia = m_sub.id_membresia
+                    GROUP BY m_sub.cedula_cliente
                 ) ult ON p.id_pago = ult.ultimo_id
-                JOIN cliente c ON p.cedula_cliente = c.cedula_cliente
-                JOIN persona per ON c.cedula_cliente = per.cedula_persona
-                LEFT JOIN membresia m ON c.id_membresia = m.id_membresia
+                JOIN cliente c ON m.cedula_cliente = c.cedula
+                JOIN persona per ON c.cedula = per.cedula
                 ORDER BY p.fecha_pago DESC
                 LIMIT 50";
         $stmt = $this->pdo->prepare($sql);
@@ -113,39 +110,40 @@ class FacturacionPagosModel extends BaseModel
         return $stmt->fetchAll();
     }
 
-    // Búsqueda AJAX de pagos
     public function buscarPagos(string $termino): array
     {
         $termino = "%{$termino}%";
         $sql = "SELECT 
                     p.id_pago, 
-                    p.cedula_cliente, 
+                    m.cedula_cliente, 
                     CONCAT(per.nombre, ' ', per.apellido) AS nombre_cliente,
                     p.monto, 
-                    p.metodo_pago, 
+                    mp.nombre AS metodo_pago, 
                     p.estado AS estado_pago,
                     p.fecha_pago, 
-                    p.fecha_vencimiento,
+                    m.fecha_fin AS fecha_vencimiento,
                     m.fecha_fin AS membresia_fecha_fin,
                     COALESCE(DATEDIFF(m.fecha_fin, CURDATE()), 0) AS dias_restantes,
                     CASE
-                        WHEN p.estado = 'Atrasado' AND p.fecha_vencimiento < CURDATE() THEN 'Vencido'
-                        WHEN p.estado = 'Atrasado' AND p.fecha_vencimiento >= CURDATE() THEN 'Moroso'
+                        WHEN p.estado = 'Atrasado' AND m.fecha_fin < CURDATE() THEN 'Vencido'
+                        WHEN p.estado = 'Atrasado' AND m.fecha_fin >= CURDATE() THEN 'Moroso'
                         WHEN m.fecha_fin < CURDATE() THEN 'Vencido'
                         WHEN DATEDIFF(m.fecha_fin, CURDATE()) <= 7 THEN 'Próximo a vencer'
                         ELSE 'Activo'
                     END AS estado_cliente
                 FROM pago p
+                JOIN membresia m ON p.id_membresia = m.id_membresia
+                LEFT JOIN metodo_pago mp ON p.id_metodo = mp.id_metodo
                 JOIN (
-                    SELECT cedula_cliente, MAX(id_pago) AS ultimo_id
-                    FROM pago
-                    GROUP BY cedula_cliente
+                    SELECT m_sub.cedula_cliente, MAX(p_sub.id_pago) AS ultimo_id
+                    FROM pago p_sub
+                    JOIN membresia m_sub ON p_sub.id_membresia = m_sub.id_membresia
+                    GROUP BY m_sub.cedula_cliente
                 ) ult ON p.id_pago = ult.ultimo_id
-                JOIN cliente c ON p.cedula_cliente = c.cedula_cliente
-                JOIN persona per ON c.cedula_cliente = per.cedula_persona
-                LEFT JOIN membresia m ON c.id_membresia = m.id_membresia
+                JOIN cliente c ON m.cedula_cliente = c.cedula
+                JOIN persona per ON c.cedula = per.cedula
                 WHERE p.id_pago LIKE ? 
-                   OR p.cedula_cliente LIKE ? 
+                   OR m.cedula_cliente LIKE ? 
                    OR per.nombre LIKE ? 
                    OR per.apellido LIKE ?
                 ORDER BY p.fecha_pago DESC
@@ -155,7 +153,6 @@ class FacturacionPagosModel extends BaseModel
         return $stmt->fetchAll();
     }
 
-    // Actualizar pago
     public function actualizarPago(
         int $idPago,
         float $monto,
@@ -164,34 +161,54 @@ class FacturacionPagosModel extends BaseModel
         string $fechaPago,
         string $fechaVencimiento,
     ): bool {
-        $sql = "UPDATE pago SET monto = ?, metodo_pago = ?, estado = ?, fecha_pago = ?, fecha_vencimiento = ? WHERE id_pago = ?";
+        $stmtMetodo = $this->pdo->prepare("SELECT id_metodo FROM metodo_pago WHERE nombre LIKE ? LIMIT 1");
+        $stmtMetodo->execute(["%" . $metodoPago . "%"]);
+        $idMetodo = $stmtMetodo->fetchColumn() ?: 1;
+
+        $sql = "UPDATE pago SET monto = ?, id_metodo = ?, estado = ?, fecha_pago = ? WHERE id_pago = ?";
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([$monto, $metodoPago, $estado, $fechaPago, $fechaVencimiento, $idPago]);
+        $res = $stmt->execute([$monto, $idMetodo, $estado, $fechaPago, $idPago]);
+
+        if ($res) {
+            $stmtMem = $this->pdo->prepare("SELECT id_membresia FROM pago WHERE id_pago = ?");
+            $stmtMem->execute([$idPago]);
+            $idMembresia = $stmtMem->fetchColumn();
+
+            if ($idMembresia) {
+                $stmtUpdateMem = $this->pdo->prepare("UPDATE membresia SET fecha_fin = ? WHERE id_membresia = ?");
+                $stmtUpdateMem->execute([$fechaVencimiento, $idMembresia]);
+            }
+        }
+
+        return $res;
     }
 
-    // Eliminar pago
     public function eliminarPago(int $idPago): bool
     {
         $stmt = $this->pdo->prepare("DELETE FROM pago WHERE id_pago = ?");
         return $stmt->execute([$idPago]);
     }
 
-    // Obtener clientes (solo primer nombre) para el modal
     public function obtenerClientesSimples(): array
     {
-        $sql = "SELECT cedula_cliente, p.nombre AS nombre, p.correo, p.telefono 
+        $sql = "SELECT c.cedula AS cedula_cliente, p.nombre AS nombre, p.correo, p.telefono 
                 FROM cliente c 
-                JOIN persona p ON c.cedula_cliente = p.cedula_persona 
+                JOIN persona p ON c.cedula = p.cedula 
                 ORDER BY p.nombre";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll();
     }
 
-    // Métodos auxiliares privados
     private function obtenerCliente(string $cedula): ?array
     {
-        $stmt = $this->pdo->prepare("SELECT cedula_cliente, id_membresia FROM cliente WHERE cedula_cliente = ?");
+        $stmt = $this->pdo->prepare("
+            SELECT 
+                cedula AS cedula_cliente,
+                (SELECT id_membresia FROM membresia WHERE cedula_cliente = cliente.cedula ORDER BY id_membresia DESC LIMIT 1) AS id_membresia 
+            FROM cliente 
+            WHERE cedula = ?
+        ");
         $stmt->execute([$cedula]);
         return $stmt->fetch() ?: null;
     }

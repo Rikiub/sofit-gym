@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Helpers\Response;
 use App\Models\ProductosModel;
 
 class ProductosController extends BaseController
@@ -93,11 +94,11 @@ class ProductosController extends BaseController
         $datos = [
             'codigo_producto' => strip_tags(trim($codigo)),
             'nombre' => strip_tags(trim($nombre)),
-            'categoria' => !empty($_POST['categoria']) ? strip_tags(trim($_POST['categoria'])) : null,
+            'id_categoria' => !empty($_POST['id_categoria']) ? strip_tags(trim($_POST['id_categoria'])) : null,
             'precio_venta' => floatval($precio),
             'stock_minimo' => isset($_POST['stock_minimo']) ? intval($_POST['stock_minimo']) : 0,
             'stock_actual' => isset($_POST['stock_actual']) ? intval($_POST['stock_actual']) : 0,
-            'unidad_medida' => !empty($_POST['unidad_medida']) ? strip_tags(trim($_POST['unidad_medida'])) : 'unidad',
+            'id_unidad' => !empty($_POST['id_unidad']) ? strip_tags(trim($_POST['id_unidad'])) : 'unidad',
             'activo' => 1
         ];
 
@@ -132,16 +133,16 @@ class ProductosController extends BaseController
         $datosNuevos = [];
         if (isset($_POST['nombre']))
             $datosNuevos['nombre'] = strip_tags(trim($_POST['nombre']));
-        if (isset($_POST['categoria']))
-            $datosNuevos['categoria'] = strip_tags(trim($_POST['categoria']));
+        if (isset($_POST['id_categoria']))
+            $datosNuevos['id_categoria'] = strip_tags(trim($_POST['id_categoria']));
         if (isset($_POST['precio_venta']))
             $datosNuevos['precio_venta'] = floatval($_POST['precio_venta']);
         if (isset($_POST['stock_minimo']))
             $datosNuevos['stock_minimo'] = intval($_POST['stock_minimo']);
         if (isset($_POST['stock_actual']))
             $datosNuevos['stock_actual'] = intval($_POST['stock_actual']);
-        if (isset($_POST['unidad_medida']))
-            $datosNuevos['unidad_medida'] = strip_tags(trim($_POST['unidad_medida']));
+        if (isset($_POST['id_unidad']))
+            $datosNuevos['id_unidad'] = strip_tags(trim($_POST['id_unidad']));
 
         $exito = $this->model->actualizar($codigo, $datosNuevos);
 
@@ -228,8 +229,8 @@ class ProductosController extends BaseController
         // Obtener el cuerpo de la petición (JSON)
         $input = json_decode(file_get_contents('php://input'), true);
 
-        $cedulaCliente = !empty($input['cedula_cliente']) ? strip_tags(trim($input['cedula_cliente'])) : null;
-        $metodoPago = !empty($input['metodo_pago']) ? strip_tags(trim($input['metodo_pago'])) : 'Efectivo';
+        $cedulaCliente = !empty($input['cedula']) ? strip_tags(trim($input['cedula'])) : null;
+        $metodoPago = !empty($input['metodo_pago']) ? intval($input['metodo_pago'] ?? 0) : 1;
         $items = $input['productos'] ?? [];
 
         if (empty($items)) {
