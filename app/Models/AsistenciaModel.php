@@ -11,15 +11,15 @@ class AsistenciaModel extends BaseModel
     {
         $termino = "%{$termino}%";
         $sql = "SELECT 
-                    p.cedula_persona,
+                    p.cedula AS cedula_persona,
                     p.nombre AS nombre,
                     p.correo,
                     p.telefono,
                     m.fecha_fin
                 FROM cliente c
-                INNER JOIN persona p ON c.cedula_cliente = p.cedula_persona
-                INNER JOIN membresia m ON c.id_membresia = m.id_membresia
-                WHERE (p.cedula_persona LIKE ? OR p.nombre LIKE ?)
+                INNER JOIN persona p ON c.cedula = p.cedula
+                INNER JOIN membresia m ON m.cedula_cliente = c.cedula
+                WHERE (p.cedula LIKE ? OR p.nombre LIKE ?)
                   AND m.fecha_fin >= CURDATE()
                   AND m.id_estado = 1
                 ORDER BY p.nombre
@@ -35,11 +35,11 @@ class AsistenciaModel extends BaseModel
     public function registrarEntrada(string $cedula, ?string $hora = null): array
     {
         // Verificar cliente y membresía activa
-        $stmt = $this->pdo->prepare("SELECT p.cedula_persona, CONCAT(p.nombre, ' ', p.apellido) as nombre
+        $stmt = $this->pdo->prepare("SELECT p.cedula AS cedula_persona, CONCAT(p.nombre, ' ', p.apellido) as nombre
                                     FROM persona p
-                                    JOIN cliente c ON p.cedula_persona = c.cedula_cliente
-                                    JOIN membresia m ON c.id_membresia = m.id_membresia
-                                    WHERE p.cedula_persona = ? AND m.fecha_fin >= CURDATE() AND m.id_estado = 1");
+                                    JOIN cliente c ON p.cedula = c.cedula
+                                    JOIN membresia m ON m.cedula_cliente = c.cedula
+                                    WHERE p.cedula = ? AND m.fecha_fin >= CURDATE() AND m.id_estado = 1");
         $stmt->execute([$cedula]);
         $cliente = $stmt->fetch();
         if (!$cliente) {
@@ -81,8 +81,8 @@ class AsistenciaModel extends BaseModel
         $sql = "SELECT a.id_asistencia, a.cedula_persona AS `cedula_cliente`, a.fecha,
                        CONCAT(p.nombre, ' ', p.apellido) AS nombre_cliente
                 FROM asistencia_gimnasio a
-                JOIN cliente c ON a.cedula_persona = c.cedula_cliente
-                JOIN persona p ON c.cedula_cliente = p.cedula_persona
+                JOIN cliente c ON a.cedula_persona = c.cedula
+                JOIN persona p ON c.cedula = p.cedula
                 WHERE DATE(a.fecha) = CURDATE() AND a.tipo = 'Entrada'
                 ORDER BY a.fecha DESC";
         $stmt = $this->pdo->prepare($sql);
@@ -99,8 +99,8 @@ class AsistenciaModel extends BaseModel
         $sql = "SELECT a.id_asistencia, a.cedula_persona AS `cedula_cliente`, a.fecha,
                        CONCAT(p.nombre, ' ', p.apellido) AS nombre_cliente
                 FROM asistencia_gimnasio a
-                JOIN cliente c ON a.cedula_persona = c.cedula_cliente
-                JOIN persona p ON c.cedula_cliente = p.cedula_persona
+                JOIN cliente c ON a.cedula_persona = c.cedula
+                JOIN persona p ON c.cedula = p.cedula
                 WHERE DATE(a.fecha) = CURDATE() AND a.tipo = 'Entrada'
                   AND (TIME(a.fecha) LIKE ? OR a.cedula_persona LIKE ? OR p.nombre LIKE ? OR p.apellido LIKE ?)
                 ORDER BY a.fecha DESC";
@@ -163,8 +163,8 @@ class AsistenciaModel extends BaseModel
         $sql = "SELECT a.id_asistencia, a.cedula_persona AS `cedula_cliente`, a.fecha,
                        CONCAT(p.nombre, ' ', p.apellido) AS nombre_cliente
                 FROM asistencia_gimnasio a
-                JOIN cliente c ON a.cedula_persona = c.cedula_cliente
-                JOIN persona p ON c.cedula_cliente = p.cedula_persona
+                JOIN cliente c ON a.cedula_persona = c.cedula
+                JOIN persona p ON c.cedula = p.cedula
                 WHERE DATE(a.fecha) = ? AND a.tipo = 'Entrada'
                 ORDER BY a.fecha ASC";
         $stmt = $this->pdo->prepare($sql);

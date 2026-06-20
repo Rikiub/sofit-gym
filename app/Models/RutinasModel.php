@@ -76,8 +76,7 @@ class RutinasModel extends BaseModel
                 'duracion_semanas' => $datos['duracion_semanas'] ?? null
             ]);
             return true;
-        } catch (\PDOException $e) {
-            // Manejo de errores o logs según requiera el sistema
+        } catch (\PDOException) {
             return false;
         }
     }
@@ -115,8 +114,8 @@ class RutinasModel extends BaseModel
     public function eliminarRutina(int $id): bool
     {
         try {
-            $filasAfectadas = $this->pdoDelete('rutina', ['id_rutina' => $id]);
-            return $filasAfectadas > 0;
+            $this->pdoDelete('rutina', ['id_rutina' => $id]);
+            return true;
         } catch (\PDOException $e) {
             return false;
         }
@@ -138,8 +137,8 @@ class RutinasModel extends BaseModel
                        r.nombre AS nombre_rutina,
                        d.nombre AS nombre_dificultad
                 FROM rutina_asignada ra
-                INNER JOIN cliente c ON ra.cedula_cliente = c.cedula_cliente
-                INNER JOIN persona p ON c.cedula_cliente = p.cedula_persona
+                INNER JOIN cliente c ON ra.cedula_cliente = c.cedula
+                INNER JOIN persona p ON c.cedula = p.cedula
                 INNER JOIN rutina r ON ra.id_rutina = r.id_rutina
                 LEFT JOIN tipo_dificultad d ON r.id_dificultad = d.id_dificultad
                 ORDER BY ra.fecha_asignacion DESC, ra.id_asignacion DESC";
@@ -159,8 +158,8 @@ class RutinasModel extends BaseModel
                        CONCAT(p.nombre, ' ', p.apellido) AS nombre_cliente,
                        r.nombre AS nombre_rutina
                 FROM rutina_asignada ra
-                INNER JOIN cliente c ON ra.cedula_cliente = c.cedula_cliente
-                INNER JOIN persona p ON c.cedula_cliente = p.cedula_persona
+                INNER JOIN cliente c ON ra.cedula_cliente = c.cedula
+                INNER JOIN persona p ON c.cedula = p.cedula
                 INNER JOIN rutina r ON ra.id_rutina = r.id_rutina
                 WHERE ra.id_asignacion = ?";
         $stmt = $this->pdo->prepare($sql);
@@ -195,17 +194,16 @@ class RutinasModel extends BaseModel
     public function asignarRutina(array $datos): bool
     {
         try {
-            // Validaciones básicas de integridad de cliente y rutina previo a la inserción
-            $checkCliente = $this->pdo->prepare("SELECT 1 FROM cliente WHERE cedula_cliente = ?");
+            $checkCliente = $this->pdo->prepare("SELECT 1 FROM cliente WHERE cedula = ?");
             $checkCliente->execute([$datos['cedula_cliente']]);
             if (!$checkCliente->fetch()) {
-                return false; // El cliente no existe o está inactivo
+                return false;
             }
 
             $checkRutina = $this->pdo->prepare("SELECT 1 FROM rutina WHERE id_rutina = ?");
             $checkRutina->execute([$datos['id_rutina']]);
             if (!$checkRutina->fetch()) {
-                return false; // La rutina no existe
+                return false;
             }
 
             $this->pdoInsert('rutina_asignada', [
