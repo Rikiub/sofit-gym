@@ -14,7 +14,7 @@ $modalForm = $this->fetch('modalForm', [
                     <span class="form-label">Rol</span>
                     <select class="form-select" name="id_rol" required>
                         <option value="">Seleccione un rol</option>
-                        <option value="1">Administrador</option>
+                        <option value="1">Gerente</option>
                         <option value="2">Entrenador</option>
                         <option value="3">Recepcionista</option>
                     </select>

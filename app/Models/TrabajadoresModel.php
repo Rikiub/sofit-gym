@@ -13,7 +13,6 @@ use PDO;
 readonly class TrabajadorDTO extends PersonaDTO
 {
     public function __construct(
-        // Atributos heredados
         ?string $cedula = null,
         ?string $nombre = null,
         ?string $apellido = null,
@@ -26,7 +25,6 @@ readonly class TrabajadorDTO extends PersonaDTO
         public ?int $id_rol = null,
         public ?string $rol = null,
         public ?float $salario = null,
-        // Nuevos atributos
         public ?DateTimeImmutable $fecha_contratacion = null,
     ) {
         parent::__construct(
@@ -46,7 +44,7 @@ readonly class TrabajadorDTO extends PersonaDTO
 class TrabajadoresModel extends BaseModel
 {
     private string $table = 'trabajador';
-    private string $primaryKey = 'cedula_trabajador';
+    private string $primaryKey = 'cedula';
 
     public function __construct(
         PDO $pdo,
@@ -63,14 +61,13 @@ class TrabajadoresModel extends BaseModel
 
         return <<<SQL
                 SELECT
-                    trabajador.{$this->primaryKey} AS `cedula`,
                     trabajador.*,
                     persona.*,
                     rol.nombre AS `rol`
                 FROM {$this->table} trabajador
                 LEFT JOIN {$pTable} persona
                     ON persona.{$pKey} = trabajador.{$this->primaryKey}
-                LEFT JOIN sofit_gym_seguridad.rol rol
+                LEFT JOIN rol_trabajador rol
                     ON trabajador.id_rol = rol.id_rol
             SQL;
     }
@@ -85,15 +82,14 @@ class TrabajadoresModel extends BaseModel
         $whereClauses = [];
         $params = [];
 
-        // Bloque de Búsqueda de Texto
         if ($search) {
             $search = trim($search);
 
             $columns = [
                 'persona.nombre',
                 'persona.apellido',
-                "CONCAT(persona.nombre, ' ', persona.apellido)", // Permite buscar "Juan Perez"
-                "CONCAT(persona.apellido, ' ', persona.nombre)", // Permite buscar "Perez Juan"
+                "CONCAT(persona.nombre, ' ', persona.apellido)",
+                "CONCAT(persona.apellido, ' ', persona.nombre)",
                 'persona.correo',
                 'persona.telefono',
                 'persona.fecha_nacimiento',
@@ -101,29 +97,23 @@ class TrabajadoresModel extends BaseModel
                 'rol.nombre',
             ];
 
-            // Creamos las "columna LIKE ?"
-            // Y agrupamos TODOS los ORs dentro de un paréntesis para proteger la lógica
             $clauses = array_map(fn($col) => "$col LIKE ?", $columns);
             $whereClauses[] = "(" . implode(" OR ", $clauses) . ")";
 
-            // Rellenamos los parámetros posicionales uno por uno
             foreach ($columns as $col) {
                 $params[] = "%" . $search . "%";
             }
         }
 
-        // Bloque de Filtro por Rol
         if ($id_rol) {
             $whereClauses[] = "rol.id_rol = ?";
             $params[] = $id_rol;
         }
 
-        // Armar SQL
         if (!empty($whereClauses)) {
             $sql .= " WHERE " . implode(" AND ", $whereClauses);
         }
 
-        // Execute
         $rows = $this->pdoQuery($sql, $params)->fetchAll();
 
         return array_map(
@@ -135,7 +125,7 @@ class TrabajadoresModel extends BaseModel
     public function find(string $cedula): ?TrabajadorDTO
     {
         $row = $this->pdoQuery(
-            "{$this->sqlSelect()} WHERE {$this->primaryKey} = ?",
+            "{$this->sqlSelect()} WHERE trabajador.{$this->primaryKey} = ?",
             [$cedula]
         )->fetch();
 
@@ -167,7 +157,7 @@ class TrabajadoresModel extends BaseModel
         $this->personasModel->update($trabajador);
 
         $array = $this->dtoToArray($trabajador);
-        unset($array['cedula_trabajador']);
+        unset($array['cedula']);
 
         $this->pdoUpdate(
             $this->table,
@@ -187,7 +177,7 @@ class TrabajadoresModel extends BaseModel
     private function dtoToArray(TrabajadorDTO $dto): array
     {
         return [
-            'cedula_trabajador' => $dto->cedula,
+            'cedula' => $dto->cedula,
             'id_rol' => $dto->id_rol,
             'salario' => $dto->salario,
             'fecha_contratacion' => Validator::dateToString($dto->fecha_contratacion),

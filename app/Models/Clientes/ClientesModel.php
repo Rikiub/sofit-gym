@@ -10,6 +10,9 @@ use PDO;
 
 class ClientesModel extends BaseModel
 {
+    public string $table = 'cliente';
+    public string $primaryKey = 'cedula';
+
     public function __construct(
         PDO $pdo,
         private TreeMapper $mapper,
@@ -22,15 +25,7 @@ class ClientesModel extends BaseModel
     {
         return <<<SQL
                 SELECT
-                    cliente.cedula_cliente AS `cedula`,
-                    persona.nombre,
-                    persona.apellido,
-                    persona.correo,
-                    persona.telefono,
-                    persona.direccion,
-                    persona.fecha_nacimiento,
-                    persona.fecha_creacion,
-                    persona.activo,
+                    persona.*,
                     JSON_OBJECT(
                         "id_membresia", m.id_membresia,
                         "id_tipo", m.id_tipo,
@@ -41,8 +36,14 @@ class ClientesModel extends BaseModel
                         "fecha_fin", m.fecha_fin
                     ) AS membresia
                 FROM cliente
-                LEFT JOIN persona ON persona.cedula_persona = cliente.cedula_cliente
-                LEFT JOIN membresia m ON cliente.id_membresia = m.id_membresia
+                LEFT JOIN persona ON persona.cedula = cliente.cedula
+                LEFT JOIN membresia m ON m.id_membresia = (
+                    SELECT m2.id_membresia 
+                    FROM membresia m2 
+                    WHERE m2.cedula_cliente = cliente.cedula 
+                    ORDER BY m2.id_membresia DESC 
+                    LIMIT 1
+                )
                 LEFT JOIN tipo_membresia mt ON m.id_tipo = mt.id_tipo
                 LEFT JOIN estado_membresia me ON m.id_estado = me.id_estado
             SQL;
@@ -81,20 +82,17 @@ class ClientesModel extends BaseModel
             $columns = [
                 'persona.nombre',
                 'persona.apellido',
-                "CONCAT(persona.nombre, ' ', persona.apellido)", // Permite buscar "Juan Perez"
-                "CONCAT(persona.apellido, ' ', persona.nombre)", // Permite buscar "Perez Juan"
+                "CONCAT(persona.nombre, ' ', persona.apellido)",
+                "CONCAT(persona.apellido, ' ', persona.nombre)",
                 'persona.correo',
                 'persona.telefono',
                 'persona.fecha_nacimiento',
                 'persona.fecha_creacion',
             ];
 
-            // Creamos las "columna LIKE ?"
-            // Y agrupamos TODOS los ORs dentro de un paréntesis para proteger la lógica
             $searchClauses = array_map(fn($col) => "$col LIKE ?", $columns);
             $whereClauses[] = "(" . implode(" OR ", $searchClauses) . ")";
 
-            // Rellenamos los parámetros posicionales uno por uno
             foreach ($columns as $col) {
                 $params[] = "%" . $search . "%";
             }
@@ -107,22 +105,20 @@ class ClientesModel extends BaseModel
             'apellido'           => ['column' => 'persona.apellido', 'op' => 'LIKE'],
             'correo'             => ['column' => 'persona.correo', 'op' => 'LIKE'],
             'telefono'           => ['column' => 'persona.telefono', 'op' => 'LIKE'],
-            'activo'             => ['column' => 'cliente.activo', 'op' => '='],
-            'id_tipo'            => ['column' => 'membresia.id_tipo', 'op' => '='],
-            'id_estado'          => ['column' => 'membresia.id_estado', 'op' => '='],
-            'fecha_inicio_desde' => ['column' => 'membresia.fecha_inicio', 'op' => '>='],
-            'fecha_inicio_hasta' => ['column' => 'membresia.fecha_inicio', 'op' => '<='],
-            'fecha_fin_desde'    => ['column' => 'membresia.fecha_fin', 'op' => '>='],
-            'fecha_fin_hasta'    => ['column' => 'membresia.fecha_fin', 'op' => '<='],
+            'activo'             => ['column' => 'persona.activo', 'op' => '='],
+            'id_tipo'            => ['column' => 'm.id_tipo', 'op' => '='],
+            'id_estado'          => ['column' => 'm.id_estado', 'op' => '='],
+            'fecha_inicio_desde' => ['column' => 'm.fecha_inicio', 'op' => '>='],
+            'fecha_inicio_hasta' => ['column' => 'm.fecha_inicio', 'op' => '<='],
+            'fecha_fin_desde'    => ['column' => 'm.fecha_fin', 'op' => '>='],
+            'fecha_fin_hasta'    => ['column' => 'm.fecha_fin', 'op' => '<='],
         ];
 
         foreach ($filters as $key => $value) {
-            // Solo procesar si el filtro esta permitido y el valor no es nulo
             if (isset($filterDefinitions[$key]) && $value !== null && $value !== '') {
                 $column = $filterDefinitions[$key]['column'];
                 $op = $filterDefinitions[$key]['op'];
 
-                // Si el operador es LIKE, aplicamos la colación para ignorar acentos en los filtros individuales
                 if ($op === 'LIKE') {
                     $whereClauses[] = "$column LIKE ? COLLATE utf8mb4_unicode_ci";
                     $params[] = "%" . $value . "%";
@@ -133,7 +129,6 @@ class ClientesModel extends BaseModel
             }
         }
 
-        // Construir los WHERE en el SQL
         if (!empty($whereClauses)) {
             $sql .= " WHERE " . implode(" AND ", $whereClauses);
         }
@@ -148,7 +143,7 @@ class ClientesModel extends BaseModel
     public function find(string $cedula): ?ClienteDTO
     {
         $row = $this->pdoQuery(
-            "{$this->sqlSelect()} WHERE cedula_cliente = ?",
+            "{$this->sqlSelect()} WHERE cliente.{$this->primaryKey} = ?",
             [$cedula]
         )->fetch();
 
@@ -163,8 +158,8 @@ class ClientesModel extends BaseModel
         $this->pdo->beginTransaction();
 
         $this->personasModel->insert($cliente);
-        $this->pdoInsert('cliente', [
-            'cedula_cliente' => $cliente->cedula,
+        $this->pdoInsert($this->table, [
+            $this->primaryKey => $cliente->cedula,
         ]);
         $cliente = $this->find($cliente->cedula);
 
@@ -178,21 +173,6 @@ class ClientesModel extends BaseModel
         $this->pdo->beginTransaction();
 
         $this->personasModel->update($cliente);
-
-        if ($cliente->membresia) {
-            // Obtener ID de la membresia desde el cliente
-            $membresiaId = $this->pdoQuery(
-                'SELECT id_membresia FROM cliente WHERE cedula_cliente = ?',
-                [$cliente->cedula]
-            )->fetchColumn();
-
-            $this->pdoUpdate(
-                'membresia',
-                $this->membresiaToArray($cliente->membresia),
-                ['id_membresia' => $membresiaId],
-            );
-        }
-
         $cliente = $this->find($cliente->cedula);
 
         $this->pdo->commit();
@@ -201,16 +181,6 @@ class ClientesModel extends BaseModel
 
     public function delete(string $cedula): void
     {
-        $this->pdoDelete('cliente', ['cedula_cliente' => $cedula]);
-    }
-
-    private function membresiaToArray(MembresiaDTO $membresia): array
-    {
-        return [
-            'id_tipo' => $membresia->id_tipo,
-            'id_estado' => $membresia->id_estado,
-            'fecha_inicio' => Validator::dateToString($membresia->fecha_inicio),
-            'fecha_fin' => Validator::dateToString($membresia->fecha_fin),
-        ];
+        $this->pdoDelete($this->table, [$this->primaryKey => $cedula]);
     }
 }

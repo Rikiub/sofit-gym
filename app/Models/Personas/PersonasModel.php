@@ -13,7 +13,7 @@ use PDO;
 class PersonasModel extends BaseModel
 {
     public string $table = 'persona';
-    public string $primaryKey = 'cedula_persona';
+    public string $primaryKey = 'cedula';
 
     public function __construct(
         PDO $pdo,
@@ -25,9 +25,7 @@ class PersonasModel extends BaseModel
     private function sqlSelect(): string
     {
         return <<<SQL
-                SELECT
-                    persona.*,
-                    cedula_persona AS `cedula`
+                SELECT persona.*
                 FROM {$this->table} persona
             SQL;
     }
@@ -73,7 +71,7 @@ class PersonasModel extends BaseModel
         $persona->validateUpdate();
 
         $array = $this->dtoToArray($persona);
-        unset($array['cedula_persona']);
+        unset($array['cedula']);
 
         $this->pdoUpdate(
             $this->table,
@@ -92,7 +90,7 @@ class PersonasModel extends BaseModel
     private function dtoToArray(PersonaDTO $persona): array
     {
         return [
-            'cedula_persona' => $persona->cedula,
+            'cedula' => $persona->cedula,
             'nombre' => $persona->nombre,
             'apellido' => $persona->apellido,
             'correo' => $persona->correo,
