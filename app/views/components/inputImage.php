@@ -8,7 +8,7 @@ $input ??= [];
 <script type="module">
     import Alpine from "alpinejs";
 
-    Alpine.data("inputFile", () => ({
+    Alpine.data("inputImage", () => ({
         image: null,
 
         async sendImage(input) {
@@ -47,7 +47,7 @@ $input ??= [];
     }));
 </script>
 
-<div x-data="inputFile" class="d-inline-block">
+<div x-data="inputImage" class="d-inline-block">
     <div
         @click="$refs.input.click()"
         class="image-select-card border border-2 rounded overflow-hidden position-relative"
