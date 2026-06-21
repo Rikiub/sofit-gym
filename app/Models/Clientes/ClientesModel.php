@@ -2,7 +2,6 @@
 
 namespace App\Models\Clientes;
 
-use App\Helpers\Validator;
 use App\Models\BaseModel;
 use App\Models\Personas\PersonasModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -21,7 +20,7 @@ class ClientesModel extends BaseModel
         return parent::__construct($pdo);
     }
 
-    private function sqlSelect(): string
+    private function sqlSelect(string $where = ""): string
     {
         return <<<SQL
                 SELECT
@@ -46,6 +45,12 @@ class ClientesModel extends BaseModel
                 )
                 LEFT JOIN tipo_membresia mt ON m.id_tipo = mt.id_tipo
                 LEFT JOIN estado_membresia me ON m.id_estado = me.id_estado
+                {$where} 
+                ORDER BY
+                    CASE
+                        WHEN m.id_membresia IS NOT NULL THEN 0
+                        ELSE 1
+                    END ASC;
             SQL;
     }
 
@@ -143,7 +148,7 @@ class ClientesModel extends BaseModel
     public function find(string $cedula): ?ClienteDTO
     {
         $row = $this->pdoQuery(
-            "{$this->sqlSelect()} WHERE cliente.{$this->primaryKey} = ?",
+            $this->sqlSelect("WHERE cliente.{$this->primaryKey} = ?"),
             [$cedula]
         )->fetch();
 

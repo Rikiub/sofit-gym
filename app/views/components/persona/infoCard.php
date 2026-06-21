@@ -59,13 +59,16 @@ $elementName ??= "";
     x-data="personaInfo"
     @form-success.window="handleFormSuccess($event.detail)">
 
-    <div class="card shadow-sm">
-        <header class="card-header d-flex justify-content-between">
-            <h3 class="card-title mb-0" x-text="nombreCompleto"></h3>
+    <div class="card h-100 border border-light-subtle bg-body-tertiary rounded-3 shadow-none">
+        <header class="card-header bg-transparent border-0 pt-3 pb-0 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <i class="fa-solid fa-circle-user text-primary me-2 fs-5"></i>
+                <h5 class="card-title mb-0 fw-bold fs-5" x-text="nombreCompleto"></h5>
+            </div>
 
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-1">
                 <button
-                    class="btn btn-warning"
+                    class="btn btn-sm btn-warning"
                     title="Editar"
                     data-bs-toggle="tooltip"
                     data-bs-placement="bottom"
@@ -74,7 +77,7 @@ $elementName ??= "";
                 </button>
 
                 <button
-                    class="btn btn-danger"
+                    class="btn btn-sm btn-danger"
                     title="Eliminar"
                     data-bs-toggle="tooltip"
                     data-bs-placement="bottom"
@@ -84,39 +87,54 @@ $elementName ??= "";
             </div>
         </header>
 
-        <div class="card-body">
-            <div class="row mb-3">
-                <div class="col-6">
-                    <h5>Cédula</h5>
-                    <p x-text="setText(persona.cedula)"></p>
-                </div>
-                <div class="col-6">
-                    <h5>Telefono</h5>
-                    <p x-text="setText(persona.telefono)"></p>
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-6">
-                    <h5>Correo</h5>
-                    <p x-text="setText(persona.correo)"></p>
+        <div class="card-body p-4">
+            <div class="row g-3">
+                <div class="col-6 col-md-4">
+                    <div class="d-flex align-items-center text-muted small text-uppercase fw-bold mb-1">
+                        <i class="fa-solid fa-id-card me-1"></i>
+                        <span>Cédula</span>
+                    </div>
+                    <span class="fs-6 fw-semibold" x-text="setText(persona.cedula)"></span>
                 </div>
 
-                <div class="col-6">
-                    <h5>Dirección</h5>
-                    <p x-text="setText(persona.direccion)"></p>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-6">
-                    <h5>Fecha de nacimiento</h5>
-                    <p x-text="setText(onlyDate(persona.fecha_nacimiento))"></p>
+                <div class="col-6 col-md-4">
+                    <div class="d-flex align-items-center text-muted small text-uppercase fw-bold mb-1">
+                        <i class="fa-solid fa-phone me-1"></i>
+                        <span>Teléfono</span>
+                    </div>
+                    <span class="fs-6 fw-semibold" x-text="setText(persona.telefono)"></span>
                 </div>
 
-                <div class="col-6">
-                    <h5>Fecha de registro</h5>
-                    <p x-text="setText(onlyDate(persona.fecha_creacion))"></p>
+                <div class="col-12 col-md-4">
+                    <div class="d-flex align-items-center text-muted small text-uppercase fw-bold mb-1">
+                        <i class="fa-solid fa-envelope me-1"></i>
+                        <span>Correo</span>
+                    </div>
+                    <span class="fs-6 fw-semibold" x-text="setText(persona.correo)"></span>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <div class="d-flex align-items-center text-muted small text-uppercase fw-bold mb-1">
+                        <i class="fa-solid fa-location-dot me-1"></i>
+                        <span>Dirección</span>
+                    </div>
+                    <span class="fs-6 fw-semibold" x-text="setText(persona.direccion)"></span>
+                </div>
+
+                <div class="col-6 col-md-4">
+                    <div class="d-flex align-items-center text-muted small text-uppercase fw-bold mb-1">
+                        <i class="fa-solid fa-cake-candles me-1"></i>
+                        <span>Nacimiento</span>
+                    </div>
+                    <span class="fs-6 fw-semibold" x-text="setText(onlyDate(persona.fecha_nacimiento))"></span>
+                </div>
+
+                <div class="col-6 col-md-4">
+                    <div class="d-flex align-items-center text-muted small text-uppercase fw-bold mb-1">
+                        <i class="fa-solid fa-calendar-plus me-1"></i>
+                        <span>Registro</span>
+                    </div>
+                    <span class="fs-6 fw-semibold" x-text="setText(onlyDate(persona.fecha_creacion))"></span>
                 </div>
             </div>
         </div>

@@ -5,6 +5,15 @@ import { h } from "gridjs";
 import Alpine from "alpinejs";
 import dayjs from "dayjs";
 
+/** @returns {string} */
+function getDiasRestantes(fecha_inicio, fecha_fin) {
+    fecha_inicio = dayjs(fecha_inicio);
+    fecha_fin = dayjs(fecha_fin);
+
+    const diasRestantes = fecha_fin.diff(fecha_inicio, "day");
+    return diasRestantes;
+}
+
 // CLIENTES
 const CLIENTES_PAGE = "clientes";
 const clientesId = "clientes";
@@ -15,6 +24,11 @@ Alpine.data("crudClientes", () =>
         params: {
             page: CLIENTES_PAGE,
             action: "query",
+        },
+        gridOptions: {
+            search: {
+                ignoreHiddenColumns: false,
+            }
         },
         columns: [
             {
@@ -31,8 +45,25 @@ Alpine.data("crudClientes", () =>
             },
             "Nombre",
             "Apellido",
-            "Correo",
-            "Telefono",
+            { id: "telefono", hidden: true },
+            { id: "correo", hidden: true },
+            {
+                id: "membresia",
+                name: "Vencimiento",
+                formatter: (cell, row) => {
+                    const membresia = cell;
+
+                    if (membresia?.fecha_inicio) {
+                        const diasRestantes = getDiasRestantes(
+                            membresia.fecha_inicio,
+                            membresia.fecha_fin
+                        );
+                        return h("span", {}, `${diasRestantes} dias restantes`);
+                    } else {
+                        return h("span", {}, "Sin membresia");
+                    }
+                },
+            }
         ],
     }));
 
@@ -92,6 +123,16 @@ Alpine.data("clienteInfo", () => ({
     onlyDate(value) {
         if (!value) return value;
         return dayjs(value).format("DD/MM/YYYY");
+    },
+
+    diasRestantes() {
+        const membresia = this.cliente.membresia;
+
+        if (membresia.fecha_inicio) {
+            return getDiasRestantes(membresia.fecha_inicio, membresia.fecha_fin);
+        } else {
+            return "";
+        }
     }
 }));
 
