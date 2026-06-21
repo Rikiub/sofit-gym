@@ -25,6 +25,7 @@ Alpine.data("crudTable", () => (
 Alpine.data("modalForm", () => (
     modalFormComponent({
         page: PAGE,
+        elementName: "Trabajador",
         prepareAddData: {
             fecha_contratacion: new Date(),
         },

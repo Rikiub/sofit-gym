@@ -16,7 +16,7 @@ $this->pushJs('components/modalForm.js');
     x-id="['form']"
     :closedby="loading ? 'none' : 'any'"
     @open-modal.window="handleOpenModal($event.detail)">
-    <div class="modal-dialog" :class="mode == 'delete' ? 'modal-sm' : 'modal-lg'">
+    <div class="modal-dialog" :class="mode == 'delete' ? 'small-modal' : 'modal-lg'">
         <article class="modal-content">
             <header class="modal-header">
                 <template x-if="mode == 'add'">
@@ -98,6 +98,10 @@ $this->pushJs('components/modalForm.js');
         .modal-header {
             background-color: #C62828;
             color: white;
+        }
+
+        .small-modal {
+            max-width: 400px;
         }
     }
 </style>

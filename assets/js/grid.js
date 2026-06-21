@@ -65,10 +65,13 @@ export function createGrid(options = {}) {
 
 function addButton(callback) {
     return h("button", {
-        className: "btn btn-primary",
-        "title": "Crear",
+        className: "btn btn-primary d-flex align-items-center gap-1",
+        "title": "Registrar",
         onClick: callback,
-    }, h("i", { className: "fa-solid fa-square-plus" }));
+    }, [
+        h("i", { className: "fa-solid fa-square-plus" }),
+        "Registrar"
+    ]);
 }
 
 export function crudButtons(onEdit, onDelete) {
@@ -78,20 +81,26 @@ export function crudButtons(onEdit, onDelete) {
         sort: false,
         data: () => null,
         formatter: (cell, row) => {
-            return h("div", { className: "crud-actions" }, [
+            return h("div", { className: "crud-actions d-flex gap-1" }, [
                 onEdit
                     ? h("button", {
-                        className: "btn btn-warning",
+                        className: "btn btn-sm btn-warning d-flex align-items-center",
                         "title": "Editar",
                         onClick: () => onEdit(row.cells[0].data),
-                    }, h("i", { className: "fa-solid fa-pen-to-square" }))
+                    }, [
+                        h("i", { className: "fa-solid fa-pen-to-square" }),
+                        "Editar",
+                    ])
                     : "",
                 onDelete
                     ? h("button", {
-                        className: "btn btn-danger",
+                        className: "btn btn-sm btn-danger d-flex align-items-center",
                         "title": "Eliminar",
                         onClick: () => onDelete(row.cells[0].data),
-                    }, h("i", { className: "fa-solid fa-trash-can" }))
+                    }, [
+                        h("i", { className: "fa-solid fa-trash-can" }),
+                        "Eliminar"
+                    ])
                     : "",
             ]);
         },

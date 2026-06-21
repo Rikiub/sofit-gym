@@ -15,12 +15,8 @@ $this->pushJs('components/crudTable.js');
         overflow: auto;
 
         .crud-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 3px;
-
             button {
-                width: 50px;
+                font-size: 0.8rem;
             }
         }
 
