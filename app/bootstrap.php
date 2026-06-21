@@ -1,6 +1,6 @@
 <?php
 
-use App\Helpers\Middlewares\AuthMiddleware;
+use App\Helpers\Auth\AuthMiddleware;
 use App\Helpers\Response;
 use CuyZ\Valinor\Mapper\MappingError;
 use DI\ContainerBuilder;

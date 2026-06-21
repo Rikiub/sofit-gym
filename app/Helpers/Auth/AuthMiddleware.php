@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Helpers\Middlewares;
+namespace App\Helpers\Auth;
 
-use App\Helpers\Auth\UsuarioSession;
 use App\Helpers\Response;
 
 /** 
