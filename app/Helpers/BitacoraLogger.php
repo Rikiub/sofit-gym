@@ -31,15 +31,20 @@ class BitacoraLogger extends AbstractLogger
     ): void {
         $message = $this->interpolate((string) $message, $context);
 
-        $context["modulo"] = $context["modulo"] ?? $this->modulo;
-        $context["accion"] = $context["accion"] ?? $this->accion;
+        $modulo = $context["modulo"] ?? $this->modulo;
+        $accion = $context["accion"] ?? $this->accion;
+
+        $datosPrevios = $context["datos_previos"] ?? null;
+        $datosNuevos = $context["datos_nuevos"] ?? null;
 
         $this->bitacoraModel->insert(new BitacoraDTO(
             id_usuario: UsuarioSession::getUsuario()->id ?? null,
-            modulo: $context["modulo"],
-            accion: $context["accion"],
+            modulo: $modulo,
+            accion: $accion,
             mensaje: $message,
             nivel: strtoupper((string)$level),
+            datos_previos: $datosPrevios ? json_encode($datosPrevios) : null,
+            datos_nuevos: $datosNuevos ? json_encode($datosNuevos) : null,
         ));
     }
 

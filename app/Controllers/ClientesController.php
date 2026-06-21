@@ -62,14 +62,19 @@ class ClientesController extends BaseController
         $cliente = $this->mapper->map(ClienteDTO::class, $body);
 
         // Verificar que el cliente no exista
-        if ($this->clientesModelo->find($cliente->cedula)) {
+        $oldCliente = $this->clientesModelo->find($cliente->cedula);
+        if ($oldCliente) {
             return $this->conflict(true, 400);
         }
 
         $cliente = $this->clientesModelo->insert($cliente);
         $this->logger->info(
             "Cliente {cedula_cliente} creado",
-            ["cedula_cliente" => $cliente->cedula]
+            [
+                "cedula_cliente" => $cliente->cedula,
+                "datos_previos" => $oldCliente,
+                "datos_nuevos" => $cliente,
+            ],
         );
 
         return $this->response->json($cliente, 201);
@@ -80,14 +85,19 @@ class ClientesController extends BaseController
         $body = $this->response->getParsedBody();
         $cliente = $this->mapper->map(ClienteDTO::class, $body);
 
-        if (!$this->clientesModelo->find($cliente->cedula)) {
-            return $this->conflict(false, 400);
+        $oldCliente = $this->clientesModelo->find($cliente->cedula);
+        if (!$oldCliente) {
+            return $this->conflict(true, 400);
         }
 
         $cliente = $this->clientesModelo->update($cliente);
         $this->logger->info(
             "Cliente {cedula_cliente} actualizado",
-            ["cedula_cliente" => $cliente->cedula]
+            [
+                "cedula_cliente" => $cliente->cedula,
+                "datos_previos" => $oldCliente,
+                "datos_nuevos" => $cliente,
+            ],
         );
 
         return $this->response->json($cliente, 201);

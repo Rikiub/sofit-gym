@@ -16,36 +16,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `asistencia_clase`
---
-
-DROP TABLE IF EXISTS `asistencia_clase`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `asistencia_clase` (
-  `id_asistencia` int(11) NOT NULL AUTO_INCREMENT,
-  `id_clase` int(11) NOT NULL,
-  `cedula_cliente` varchar(15) NOT NULL,
-  `asistio` tinyint(1) DEFAULT 1,
-  `fecha_registro` datetime DEFAULT current_timestamp(),
-  PRIMARY KEY (`id_asistencia`),
-  KEY `id_clase` (`id_clase`),
-  KEY `cedula_cliente` (`cedula_cliente`),
-  CONSTRAINT `asistencia_clase_ibfk_1` FOREIGN KEY (`id_clase`) REFERENCES `clase` (`id_clase`) ON DELETE CASCADE,
-  CONSTRAINT `asistencia_clase_ibfk_2` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula_cliente`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `asistencia_clase`
---
-
-LOCK TABLES `asistencia_clase` WRITE;
-/*!40000 ALTER TABLE `asistencia_clase` DISABLE KEYS */;
-/*!40000 ALTER TABLE `asistencia_clase` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `asistencia_gimnasio`
 --
 
@@ -60,8 +30,8 @@ CREATE TABLE `asistencia_gimnasio` (
   PRIMARY KEY (`id_asistencia`),
   KEY `cedula_cliente` (`cedula_persona`),
   KEY `idx_asistencias_fecha` (`fecha`),
-  CONSTRAINT `asistencia_gimnasio_ibfk_1` FOREIGN KEY (`cedula_persona`) REFERENCES `cliente` (`cedula_cliente`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  CONSTRAINT `asistencia_gimnasio_ibfk_1` FOREIGN KEY (`cedula_persona`) REFERENCES `cliente` (`cedula`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -70,7 +40,7 @@ CREATE TABLE `asistencia_gimnasio` (
 
 LOCK TABLES `asistencia_gimnasio` WRITE;
 /*!40000 ALTER TABLE `asistencia_gimnasio` DISABLE KEYS */;
-INSERT INTO `asistencia_gimnasio` VALUES (4,'V-11111111','Entrada','2026-05-17 12:12:12'),(6,'V-22222222','Entrada','2026-05-18 12:12:12'),(9,'V-33333333','Entrada','2026-05-21 12:12:12'),(10,'V-33333333','Entrada','2026-05-23 12:12:12'),(11,'V-11111111','Entrada','2026-06-09 20:00:00'),(12,'V-11111111','Entrada','2026-05-09 12:12:12'),(13,'V-33333333','Entrada','2026-06-09 12:00:00');
+INSERT INTO `asistencia_gimnasio` VALUES (4,'V-11111111','Entrada','2026-05-17 12:12:12'),(6,'V-22222222','Entrada','2026-05-18 12:12:12'),(9,'V-33333333','Entrada','2026-05-21 12:12:12'),(10,'V-33333333','Entrada','2026-05-23 12:12:12'),(11,'V-11111111','Entrada','2026-06-09 20:00:00'),(12,'V-11111111','Entrada','2026-05-09 12:12:12'),(13,'V-33333333','Entrada','2026-06-09 12:00:00'),(14,'V-11773948','Entrada','2026-06-20 20:07:08');
 /*!40000 ALTER TABLE `asistencia_gimnasio` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -91,7 +61,7 @@ CREATE TABLE `asistente_mensaje` (
   KEY `idx_consultas_fecha` (`fecha_creacion`),
   KEY `asistente_mensaje_asistente_sesion_FK` (`id_sesion`),
   CONSTRAINT `asistente_mensaje_asistente_sesion_FK` FOREIGN KEY (`id_sesion`) REFERENCES `asistente_sesion` (`id_sesion`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -100,7 +70,7 @@ CREATE TABLE `asistente_mensaje` (
 
 LOCK TABLES `asistente_mensaje` WRITE;
 /*!40000 ALTER TABLE `asistente_mensaje` DISABLE KEYS */;
-INSERT INTO `asistente_mensaje` VALUES (46,9,'usuario','hola!','2026-06-07 14:03:14'),(47,9,'asistente','¡Hola! ¿En qué puedo ayudarte hoy?','2026-06-07 14:03:16'),(48,9,'usuario','Podrias decirme cual es la cedula del cliente: Luis	Martínez','2026-06-07 14:03:35'),(49,9,'asistente','No se encontró ningún cliente con el nombre \"Luis Martínez\". ¿Podrías verificar el nombre o proporcionarme algún otro dato como su número de cédula o correo electrónico para poder ayudarte mejor?','2026-06-07 14:03:37'),(50,9,'usuario','Podrias intentar buscar a Luis Martínez nuevamente?','2026-06-07 14:15:51'),(51,9,'asistente','La cédula del cliente Luis Martínez es V-22222222. ¿Necesitas algo más?','2026-06-07 14:15:54'),(52,9,'usuario','Podrias darme un seguimiento de como va su seguimiento fisico?','2026-06-07 14:16:17'),(53,9,'asistente','No puedo darte un seguimiento de su progreso físico, ya que no tengo acceso a esa información. Mi función es ayudarte con la gestión del gimnasio, como información de clientes, trabajadores, finanzas, clases, equipos y rutinas de entrenamiento.\n\n¿Te gustaría que te ayude a revisar su historial de asistencia, estado de membresía o si tiene alguna rutina de entrenamiento asignada?','2026-06-07 14:16:18'),(54,9,'usuario','Podrias darme un seguimiento de como va su seguimiento fisico?','2026-06-07 14:17:43'),(55,9,'asistente','Lamento informarte que no tengo la capacidad de acceder o proporcionar seguimientos físicos de los clientes. Mi funcionalidad se limita a la gestión de la información del gimnasio, como datos de clientes, membresías, finanzas, clases, equipos y rutinas de entrenamiento.\n\nSi necesitas información sobre el progreso físico de Luis Martínez, te sugiero que consultes directamente con el entrenador o el personal encargado de su seguimiento.\n\n¿Puedo ayudarte con alguna otra consulta relacionada con la gestión del gimnasio? Por ejemplo, ¿quieres revisar su historial de asistencia, estado de membresía, o asignarle una nueva rutina de entrenamiento?','2026-06-07 14:17:45'),(56,9,'usuario','Podrias darme un seguimiento de como va su seguimiento fisico?','2026-06-07 14:18:01'),(57,9,'asistente','Como te mencioné anteriormente, no tengo acceso a la información de seguimiento físico de los clientes. Mi rol es facilitar la gestión administrativa y operativa del gimnasio.\n\nPara obtener información sobre el progreso físico de Luis Martínez, por favor, contacta directamente a su entrenador o al personal responsable de su seguimiento.\n\n¿Hay algo más en lo que pueda asistirte con respecto a las funcionalidades del sistema de gestión del gimnasio?','2026-06-07 14:18:03'),(58,10,'usuario','Podrias decirme','2026-06-07 14:18:24'),(59,10,'asistente','Claro, ¿qué necesitas consultar o qué acción deseas realizar?','2026-06-07 14:18:25'),(60,10,'usuario','Podrias decirme como va el seguimiento fisico del cliente Luis Martínez?','2026-06-07 14:21:09'),(61,10,'asistente','Lo siento, no se ha encontrado información sobre el seguimiento físico del cliente Luis Martínez. ¿Podrías verificar si el nombre y/o la cédula son correctos? Si deseas, puedo buscarlo en la base de datos para confirmar su existencia.','2026-06-07 14:21:12'),(62,10,'usuario','Buscalo!','2026-06-07 14:21:30'),(63,10,'asistente','Perfecto. Para poder buscar a Luis Martínez en la base de datos, necesitaría que me proporciones su número de cédula.','2026-06-07 14:21:32'),(64,11,'usuario','Podrias decirme como va el seguimiento fisico del cliente Luis Martínez?','2026-06-07 14:26:13'),(65,11,'usuario','Podrias decirme como va el seguimiento fisico del cliente Luis Martínez?','2026-06-07 14:32:26'),(66,11,'usuario','hola!','2026-06-07 18:54:58'),(67,12,'usuario','Podrias decirme como va el seguimiento fisico del cliente Luis Martínez?','2026-06-08 21:36:30'),(68,12,'asistente','Aquí tienes el historial de seguimientos físicos de **Luis Martínez** (C.I. V-22222222):\n\n**Seguimiento del 24 de Mayo de 2026:**\n*   Altura: 210 cm\n*   Peso: No registrado\n*   Cintura: No registrada\n*   Cadera: No registrada\n*   Pecho: No registrado\n*   Muslo: No registrado\n*   Hombros: No registrado\n*   Pantorrilla: No registrado\n\n**Seguimiento del 20 de Mayo de 2026:**\n*   Altura: 111 cm\n*   Peso: No registrado\n*   Cintura: No registrada\n*   Cadera: No registrada\n*   Pecho: No registrado\n*   Muslo: No registrado\n*   Hombros: No registrado\n*   Pantorrilla: No registrado\n\n**Seguimiento del 30 de Mayo de 2026:**\n*   Altura: 200 cm\n*   Peso: 50 kg\n*   Cintura: 50 cm\n*   Cadera: 50 cm\n*   Pecho: 50 cm\n*   Muslo: 50 cm\n*   Hombros: 50 cm\n*   Pantorrilla: 50 cm','2026-06-08 21:36:36');
+INSERT INTO `asistente_mensaje` VALUES (46,9,'usuario','hola!','2026-06-07 14:03:14'),(47,9,'asistente','¡Hola! ¿En qué puedo ayudarte hoy?','2026-06-07 14:03:16'),(48,9,'usuario','Podrias decirme cual es la cedula del cliente: Luis	Martínez','2026-06-07 14:03:35'),(49,9,'asistente','No se encontró ningún cliente con el nombre \"Luis Martínez\". ¿Podrías verificar el nombre o proporcionarme algún otro dato como su número de cédula o correo electrónico para poder ayudarte mejor?','2026-06-07 14:03:37'),(50,9,'usuario','Podrias intentar buscar a Luis Martínez nuevamente?','2026-06-07 14:15:51'),(51,9,'asistente','La cédula del cliente Luis Martínez es V-22222222. ¿Necesitas algo más?','2026-06-07 14:15:54'),(52,9,'usuario','Podrias darme un seguimiento de como va su seguimiento fisico?','2026-06-07 14:16:17'),(53,9,'asistente','No puedo darte un seguimiento de su progreso físico, ya que no tengo acceso a esa información. Mi función es ayudarte con la gestión del gimnasio, como información de clientes, trabajadores, finanzas, clases, equipos y rutinas de entrenamiento.\n\n¿Te gustaría que te ayude a revisar su historial de asistencia, estado de membresía o si tiene alguna rutina de entrenamiento asignada?','2026-06-07 14:16:18'),(54,9,'usuario','Podrias darme un seguimiento de como va su seguimiento fisico?','2026-06-07 14:17:43'),(55,9,'asistente','Lamento informarte que no tengo la capacidad de acceder o proporcionar seguimientos físicos de los clientes. Mi funcionalidad se limita a la gestión de la información del gimnasio, como datos de clientes, membresías, finanzas, clases, equipos y rutinas de entrenamiento.\n\nSi necesitas información sobre el progreso físico de Luis Martínez, te sugiero que consultes directamente con el entrenador o el personal encargado de su seguimiento.\n\n¿Puedo ayudarte con alguna otra consulta relacionada con la gestión del gimnasio? Por ejemplo, ¿quieres revisar su historial de asistencia, estado de membresía, o asignarle una nueva rutina de entrenamiento?','2026-06-07 14:17:45'),(56,9,'usuario','Podrias darme un seguimiento de como va su seguimiento fisico?','2026-06-07 14:18:01'),(57,9,'asistente','Como te mencioné anteriormente, no tengo acceso a la información de seguimiento físico de los clientes. Mi rol es facilitar la gestión administrativa y operativa del gimnasio.\n\nPara obtener información sobre el progreso físico de Luis Martínez, por favor, contacta directamente a su entrenador o al personal responsable de su seguimiento.\n\n¿Hay algo más en lo que pueda asistirte con respecto a las funcionalidades del sistema de gestión del gimnasio?','2026-06-07 14:18:03'),(58,10,'usuario','Podrias decirme','2026-06-07 14:18:24'),(59,10,'asistente','Claro, ¿qué necesitas consultar o qué acción deseas realizar?','2026-06-07 14:18:25'),(60,10,'usuario','Podrias decirme como va el seguimiento fisico del cliente Luis Martínez?','2026-06-07 14:21:09'),(61,10,'asistente','Lo siento, no se ha encontrado información sobre el seguimiento físico del cliente Luis Martínez. ¿Podrías verificar si el nombre y/o la cédula son correctos? Si deseas, puedo buscarlo en la base de datos para confirmar su existencia.','2026-06-07 14:21:12'),(62,10,'usuario','Buscalo!','2026-06-07 14:21:30'),(63,10,'asistente','Perfecto. Para poder buscar a Luis Martínez en la base de datos, necesitaría que me proporciones su número de cédula.','2026-06-07 14:21:32'),(64,11,'usuario','Podrias decirme como va el seguimiento fisico del cliente Luis Martínez?','2026-06-07 14:26:13'),(65,11,'usuario','Podrias decirme como va el seguimiento fisico del cliente Luis Martínez?','2026-06-07 14:32:26'),(66,11,'usuario','hola!','2026-06-07 18:54:58'),(67,12,'usuario','Podrias decirme como va el seguimiento fisico del cliente Luis Martínez?','2026-06-08 21:36:30'),(68,12,'asistente','Aquí tienes el historial de seguimientos físicos de **Luis Martínez** (C.I. V-22222222):\n\n**Seguimiento del 24 de Mayo de 2026:**\n*   Altura: 210 cm\n*   Peso: No registrado\n*   Cintura: No registrada\n*   Cadera: No registrada\n*   Pecho: No registrado\n*   Muslo: No registrado\n*   Hombros: No registrado\n*   Pantorrilla: No registrado\n\n**Seguimiento del 20 de Mayo de 2026:**\n*   Altura: 111 cm\n*   Peso: No registrado\n*   Cintura: No registrada\n*   Cadera: No registrada\n*   Pecho: No registrado\n*   Muslo: No registrado\n*   Hombros: No registrado\n*   Pantorrilla: No registrado\n\n**Seguimiento del 30 de Mayo de 2026:**\n*   Altura: 200 cm\n*   Peso: 50 kg\n*   Cintura: 50 cm\n*   Cadera: 50 cm\n*   Pecho: 50 cm\n*   Muslo: 50 cm\n*   Hombros: 50 cm\n*   Pantorrilla: 50 cm','2026-06-08 21:36:36'),(69,13,'usuario','Dame el seguimiento fisico del cliente Luis Martinez','2026-06-11 21:58:15'),(70,13,'asistente','Aquí tienes el seguimiento físico del cliente Luis Martínez (V-22222222):\n\n### Seguimiento Físico - Luis Martínez\n\n| Fecha        | Altura (cm) | Peso (kg) | Cintura (cm) | Cadera (cm) | Pecho (cm) | Muslo (cm) | Hombros (cm) | Pantorrilla (cm) |\n|--------------|-------------|-----------|--------------|-------------|------------|------------|--------------|------------------|\n| 2026-05-30   | 200         | 50        | 50           | 50          | 50         | 50         | 50           | 50               |\n| 2026-05-24   | 210         | N/A       | N/A          | N/A         | N/A        | N/A        | N/A          | N/A              |\n| 2026-05-20   | 111         | N/A       | N/A          | N/A         | N/A        | N/A        | N/A          | N/A              |\n\n**Nota:** \"N/A\" indica que el dato no fue registrado en esa fecha.','2026-06-11 21:58:20');
 /*!40000 ALTER TABLE `asistente_mensaje` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -118,7 +88,7 @@ CREATE TABLE `asistente_sesion` (
   `modelo_usado` varchar(100) DEFAULT NULL,
   `fecha_creacion` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id_sesion`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -127,7 +97,7 @@ CREATE TABLE `asistente_sesion` (
 
 LOCK TABLES `asistente_sesion` WRITE;
 /*!40000 ALTER TABLE `asistente_sesion` DISABLE KEYS */;
-INSERT INTO `asistente_sesion` VALUES (9,2,NULL,'gemini-2.5-flash-lite','2026-06-07 14:02:34'),(10,2,NULL,'gemini-2.5-flash-lite','2026-06-07 14:18:17'),(11,2,NULL,'gemini-2.5-flash-lite','2026-06-07 14:26:11'),(12,2,NULL,'gemini-2.5-flash-lite','2026-06-08 21:36:28');
+INSERT INTO `asistente_sesion` VALUES (9,2,NULL,'gemini-2.5-flash-lite','2026-06-07 14:02:34'),(10,2,NULL,'gemini-2.5-flash-lite','2026-06-07 14:18:17'),(11,2,NULL,'gemini-2.5-flash-lite','2026-06-07 14:26:11'),(12,2,NULL,'gemini-2.5-flash-lite','2026-06-08 21:36:28'),(13,2,NULL,'gemini-2.5-flash-lite','2026-06-11 21:57:55'),(14,14,NULL,'gemini-2.5-flash-lite','2026-06-16 22:20:57'),(15,2,NULL,'gemini-2.5-flash-lite','2026-06-20 19:35:54');
 /*!40000 ALTER TABLE `asistente_sesion` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -140,7 +110,7 @@ DROP TABLE IF EXISTS `categoria_producto`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `categoria_producto` (
   `id_categoria` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(100) DEFAULT NULL,
+  `nombre` varchar(100) NOT NULL,
   PRIMARY KEY (`id_categoria`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -168,13 +138,13 @@ CREATE TABLE `clase` (
   `nombre` varchar(100) NOT NULL,
   `descripcion` text DEFAULT NULL,
   `capacidad_maxima` int(11) NOT NULL,
-  `estado` enum('Programado','En curso','Finalizado','Cancelado') DEFAULT 'Programado',
+  `estado` enum('Programado','En curso','Finalizado','Cancelado') NOT NULL DEFAULT 'Programado',
   `fecha_inicio` datetime NOT NULL,
   `fecha_fin` datetime NOT NULL,
   PRIMARY KEY (`id_clase`),
   KEY `cedula_trabajador` (`cedula_trabajador`),
-  CONSTRAINT `clase_ibfk_1` FOREIGN KEY (`cedula_trabajador`) REFERENCES `trabajador` (`cedula_trabajador`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  CONSTRAINT `clase_ibfk_1` FOREIGN KEY (`cedula_trabajador`) REFERENCES `trabajador` (`cedula`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -183,7 +153,7 @@ CREATE TABLE `clase` (
 
 LOCK TABLES `clase` WRITE;
 /*!40000 ALTER TABLE `clase` DISABLE KEYS */;
-INSERT INTO `clase` VALUES (2,'V-00000002','Dia de pierna','¡Hora de fortalecer esas piernas!',15,'Programado','2026-05-26 12:00:00','2026-05-12 03:00:00'),(13,'V-00000002','Hola','Adios',20,'Programado','2026-05-29 11:00:00','2026-05-29 02:00:00'),(20,'V-00000002','asf','asfsa',5,'Programado','2026-06-06 08:26:00','2026-06-07 12:00:00');
+INSERT INTO `clase` VALUES (2,'V-00000002','Dia de pierna','¡Hora de fortalecer esas piernas!',15,'Programado','2026-05-26 12:00:00','2026-05-12 03:00:00'),(13,'V-00000002','Hola','Adios',20,'Programado','2026-05-29 11:00:00','2026-05-29 02:00:00'),(20,'V-00000002','Hola','Adios',3,'Programado','2026-06-06 08:26:00','2026-06-07 12:00:00');
 /*!40000 ALTER TABLE `clase` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -197,10 +167,12 @@ DROP TABLE IF EXISTS `clase_cliente`;
 CREATE TABLE `clase_cliente` (
   `id_clase` int(11) NOT NULL,
   `cedula_cliente` varchar(15) NOT NULL,
+  `asistio` tinyint(4) NOT NULL DEFAULT 0,
+  `fecha_registro` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id_clase`,`cedula_cliente`),
   KEY `clase_cliente_cliente_FK` (`cedula_cliente`),
   CONSTRAINT `clase_cliente_clase_FK` FOREIGN KEY (`id_clase`) REFERENCES `clase` (`id_clase`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `clase_cliente_cliente_FK` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula_cliente`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `clase_cliente_cliente_FK` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -210,7 +182,7 @@ CREATE TABLE `clase_cliente` (
 
 LOCK TABLES `clase_cliente` WRITE;
 /*!40000 ALTER TABLE `clase_cliente` DISABLE KEYS */;
-INSERT INTO `clase_cliente` VALUES (2,'V-11111111'),(2,'V-22222222'),(2,'V-33333333'),(13,'V-11111111'),(13,'V-33333333'),(20,'V-11111111'),(20,'V-22222222');
+INSERT INTO `clase_cliente` VALUES (2,'V-11111111',0,'2026-06-20 19:45:42'),(2,'V-22222222',0,'2026-06-20 19:45:42'),(2,'V-33333333',0,'2026-06-20 19:45:42'),(13,'V-11111111',0,'2026-06-20 19:45:42'),(13,'V-33333333',0,'2026-06-20 19:45:42'),(20,'V-11111111',0,'2026-06-20 19:45:42'),(20,'V-22222222',0,'2026-06-20 19:45:42'),(20,'V-33333333',0,'2026-06-20 19:45:42');
 /*!40000 ALTER TABLE `clase_cliente` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -222,22 +194,38 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `tg_control_capacidad_clase` BEFORE INSERT ON `clase_cliente` FOR EACH ROW begin
-	declare capacidad_actual int;
-	declare capacidad_maxima int;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `tg_control_capacidad_clase` BEFORE INSERT ON `clase_cliente` FOR EACH ROW begin
 
-	select COUNT(*) into capacidad_actual
-	from clase_cliente
-	where cedula_cliente = new.cedula_cliente;
-	
-	select capacidad_maxima into capacidad_maxima
-	from clase
-	where id_clase = new.id_clase;
-	
-	if capacidad_actual > capacidad_maxima then
-		signal sqlstate "45000"
-		set MESSAGE_TEXT = "Error: La clase ha alcanzado su maxima capacidad. No se admiten mas clientes.";
-	end if;
+	declare capacidad_actual int;
+
+	declare capacidad_maxima int;
+
+
+
+	select COUNT(*) into capacidad_actual
+
+	from clase_cliente
+
+	where cedula_cliente = new.cedula_cliente;
+
+	
+
+	select capacidad_maxima into capacidad_maxima
+
+	from clase
+
+	where id_clase = new.id_clase;
+
+	
+
+	if capacidad_actual > capacidad_maxima then
+
+		signal sqlstate "45000"
+
+		set MESSAGE_TEXT = "Error: La clase ha alcanzado su maxima capacidad. No se admiten mas clientes.";
+
+	end if;
+
 end */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -253,12 +241,10 @@ DROP TABLE IF EXISTS `cliente`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `cliente` (
-  `cedula_cliente` varchar(15) NOT NULL,
-  `id_membresia` int(11) DEFAULT NULL,
-  PRIMARY KEY (`cedula_cliente`),
-  KEY `cliente_membresia_FK` (`id_membresia`),
-  CONSTRAINT `cliente_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `persona` (`cedula_persona`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `cliente_membresia_FK` FOREIGN KEY (`id_membresia`) REFERENCES `membresia` (`id_membresia`) ON DELETE CASCADE ON UPDATE CASCADE
+  `cedula` varchar(15) NOT NULL,
+  `fecha_creacion` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`cedula`),
+  CONSTRAINT `cliente_ibfk_1` FOREIGN KEY (`cedula`) REFERENCES `persona` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -268,7 +254,7 @@ CREATE TABLE `cliente` (
 
 LOCK TABLES `cliente` WRITE;
 /*!40000 ALTER TABLE `cliente` DISABLE KEYS */;
-INSERT INTO `cliente` VALUES ('V-22222222',12),('V-11111111',19),('V-33333333',38);
+INSERT INTO `cliente` VALUES ('V-10556291','2026-06-18 13:30:12'),('V-11029384','2026-06-18 13:30:12'),('V-11111111','2026-06-18 13:30:12'),('V-11773948','2026-06-18 13:30:12'),('V-12894355','2026-06-18 13:30:12'),('V-13449582','2026-06-18 13:30:12'),('V-13556294','2026-06-18 13:30:12'),('V-14228394','2026-06-18 13:30:12'),('V-15667281','2026-06-18 13:30:12'),('V-16883920','2026-06-18 13:30:12'),('V-17334901','2026-06-18 13:30:12'),('V-18943201','2026-06-18 13:30:12'),('V-19442039','2026-06-18 13:30:12'),('V-19882043','2026-06-18 13:30:12'),('V-20556114','2026-06-18 13:30:12'),('V-21059483','2026-06-18 13:30:12'),('V-22222222','2026-06-18 13:30:12'),('V-22884711','2026-06-18 13:30:12'),('V-23991048','2026-06-18 13:30:12'),('V-24119384','2026-06-18 13:30:12'),('V-24589122','2026-06-18 13:30:12'),('V-25001948','2026-06-18 13:30:12'),('V-26771493','2026-06-18 13:30:12'),('V-27338194','2026-06-18 13:30:12'),('V-28661049','2026-06-18 13:30:12'),('V-29114059','2026-06-18 13:30:12'),('V-33333333','2026-06-18 13:30:12');
 /*!40000 ALTER TABLE `cliente` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -278,11 +264,14 @@ UNLOCK TABLES;
 /*!50003 SET character_set_results = utf8mb4 */ ;
 /*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `tg_delete_person` AFTER DELETE ON `cliente` FOR EACH ROW begin
-	delete from persona
-	where persona.cedula_persona = old.cedula_cliente;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `tg_delete_person` AFTER DELETE ON `cliente` FOR EACH ROW begin
+
+	delete from persona
+
+	where persona.cedula = old.cedula;
+
 end */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -328,7 +317,7 @@ DROP TABLE IF EXISTS `estado_membresia`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `estado_membresia` (
   `id_estado` int(11) NOT NULL,
-  `nombre` varchar(100) DEFAULT NULL,
+  `nombre` varchar(100) NOT NULL,
   PRIMARY KEY (`id_estado`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -362,7 +351,7 @@ CREATE TABLE `mantenimiento_equipo` (
   KEY `codigo_equipo` (`codigo_equipo`),
   KEY `mantenimiento_equipo_trabajador_FK` (`cedula_trabajador`),
   CONSTRAINT `mantenimiento_equipo_ibfk_1` FOREIGN KEY (`codigo_equipo`) REFERENCES `equipo` (`codigo_equipo`) ON UPDATE CASCADE,
-  CONSTRAINT `mantenimiento_equipo_trabajador_FK` FOREIGN KEY (`cedula_trabajador`) REFERENCES `trabajador` (`cedula_trabajador`) ON DELETE SET NULL ON UPDATE CASCADE
+  CONSTRAINT `mantenimiento_equipo_trabajador_FK` FOREIGN KEY (`cedula_trabajador`) REFERENCES `trabajador` (`cedula`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -387,14 +376,18 @@ CREATE TABLE `membresia` (
   `id_membresia` int(11) NOT NULL AUTO_INCREMENT,
   `id_tipo` int(11) NOT NULL,
   `id_estado` int(11) NOT NULL DEFAULT 3,
-  `fecha_inicio` date DEFAULT NULL,
-  `fecha_fin` date DEFAULT NULL,
+  `cedula_cliente` varchar(15) NOT NULL,
+  `fecha_inicio` date NOT NULL,
+  `fecha_fin` date NOT NULL,
+  `fecha_creacion` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id_membresia`),
   KEY `id_tipo` (`id_tipo`),
   KEY `id_estado` (`id_estado`),
+  KEY `membresia_cliente_FK` (`cedula_cliente`),
+  CONSTRAINT `membresia_cliente_FK` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `membresia_ibfk_1` FOREIGN KEY (`id_tipo`) REFERENCES `tipo_membresia` (`id_tipo`) ON UPDATE CASCADE,
   CONSTRAINT `membresia_ibfk_2` FOREIGN KEY (`id_estado`) REFERENCES `estado_membresia` (`id_estado`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -403,7 +396,7 @@ CREATE TABLE `membresia` (
 
 LOCK TABLES `membresia` WRITE;
 /*!40000 ALTER TABLE `membresia` DISABLE KEYS */;
-INSERT INTO `membresia` VALUES (1,1,2,'2026-05-01','2026-05-31'),(2,2,2,'2026-03-01','2026-05-30'),(3,1,2,'2026-04-01','2026-04-30'),(4,1,1,'2026-05-24','2026-05-30'),(5,1,1,'2026-05-17','2026-05-30'),(6,1,1,'2026-05-17','2026-05-30'),(7,1,1,'2026-05-18','2026-05-30'),(8,1,1,'2026-05-17','2026-05-30'),(9,1,2,'2026-05-18','2026-06-17'),(10,2,2,'2026-05-18','2026-08-16'),(11,1,2,'2026-05-17','2026-06-16'),(12,2,1,'2026-05-17','2026-08-15'),(13,1,2,'2026-05-17','2026-06-16'),(14,1,2,'2026-05-17','2026-06-16'),(15,1,2,'2026-05-18','2026-06-17'),(16,1,2,'2026-05-18','2026-06-17'),(17,1,2,'2026-05-18','2026-06-17'),(18,1,2,'2026-05-18','2026-06-17'),(19,1,1,'2026-05-18','2026-06-17'),(20,1,1,'2026-05-17','2026-05-30'),(21,1,1,'2026-05-19','2026-05-30'),(22,1,2,'2026-05-22','2026-06-21'),(23,1,1,'2026-05-21','2026-05-30'),(24,1,2,'2026-05-22','2026-06-21'),(25,1,1,'2026-05-22','2026-05-30'),(26,1,1,'2026-05-23','2026-05-30'),(27,1,1,'2026-05-25','2026-05-30'),(28,1,1,'2026-05-27','2026-05-30'),(29,1,1,'2026-06-01','2026-06-27'),(30,1,1,'2026-06-07','2026-06-27'),(31,1,1,'2026-06-07','2026-06-26'),(37,1,2,'2026-06-07','2026-07-07'),(38,1,1,'2026-06-09','2026-07-09');
+INSERT INTO `membresia` VALUES (40,1,1,'V-11773948','2026-06-20','2026-07-20','2026-06-20 16:30:17'),(41,1,1,'V-21059483','2026-06-20','2026-07-20','2026-06-20 19:14:40');
 /*!40000 ALTER TABLE `membresia` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -416,9 +409,9 @@ DROP TABLE IF EXISTS `metodo_pago`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `metodo_pago` (
   `id_metodo` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(100) DEFAULT NULL,
+  `nombre` varchar(100) NOT NULL,
   PRIMARY KEY (`id_metodo`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -427,43 +420,8 @@ CREATE TABLE `metodo_pago` (
 
 LOCK TABLES `metodo_pago` WRITE;
 /*!40000 ALTER TABLE `metodo_pago` DISABLE KEYS */;
-INSERT INTO `metodo_pago` VALUES (1,'Efectivo'),(2,'Tarjeta de crédito'),(3,'Pago móvil'),(4,'Transferencia');
+INSERT INTO `metodo_pago` VALUES (1,'Efectivo'),(2,'Tarjeta de crédito'),(3,'Pago móvil'),(4,'Transferencia'),(6,'Tarjeta de débito');
 /*!40000 ALTER TABLE `metodo_pago` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `notificacion`
---
-
-DROP TABLE IF EXISTS `notificacion`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `notificacion` (
-  `id_notificacion` int(11) NOT NULL AUTO_INCREMENT,
-  `id_tipo_notificacion` int(11) NOT NULL,
-  `id_tipo_canal` int(11) NOT NULL,
-  `cedula_cliente` varchar(15) NOT NULL,
-  `mensaje` text NOT NULL,
-  `estado` enum('Pendiente','Enviado','Fallido') DEFAULT 'Pendiente',
-  `fecha_programada` datetime DEFAULT NULL,
-  `fecha_envio` datetime DEFAULT NULL,
-  PRIMARY KEY (`id_notificacion`),
-  KEY `cedula_cliente` (`cedula_cliente`),
-  KEY `id_tipo_notificacion` (`id_tipo_notificacion`),
-  KEY `id_tipo_canal` (`id_tipo_canal`),
-  CONSTRAINT `notificacion_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula_cliente`) ON DELETE CASCADE,
-  CONSTRAINT `notificacion_ibfk_2` FOREIGN KEY (`id_tipo_notificacion`) REFERENCES `tipo_notificacion` (`id_tipo`),
-  CONSTRAINT `notificacion_ibfk_3` FOREIGN KEY (`id_tipo_canal`) REFERENCES `tipo_canal` (`id_tipo`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `notificacion`
---
-
-LOCK TABLES `notificacion` WRITE;
-/*!40000 ALTER TABLE `notificacion` DISABLE KEYS */;
-/*!40000 ALTER TABLE `notificacion` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -475,23 +433,18 @@ DROP TABLE IF EXISTS `pago`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `pago` (
   `id_pago` int(11) NOT NULL AUTO_INCREMENT,
-  `id_membresia` int(11) DEFAULT NULL,
-  `id_metodo` int(11) DEFAULT NULL,
-  `cedula_cliente` varchar(15) NOT NULL,
+  `id_membresia` int(11) NOT NULL,
+  `id_metodo` int(11) NOT NULL,
   `monto` decimal(10,2) NOT NULL,
-  `metodo_pago` varchar(50) DEFAULT NULL,
   `comprobante_url` varchar(255) DEFAULT NULL,
-  `estado` enum('Pagado','Pendiente','Atrasado') DEFAULT 'Pagado',
+  `estado` enum('Pagado','Pendiente','Atrasado') NOT NULL DEFAULT 'Pagado',
   `fecha_pago` date NOT NULL,
-  `fecha_vencimiento` date NOT NULL,
   PRIMARY KEY (`id_pago`),
   KEY `pago_membresia_FK` (`id_membresia`),
   KEY `pago_metodo_pago_FK` (`id_metodo`),
-  KEY `pago_ibfk_1` (`cedula_cliente`),
-  CONSTRAINT `pago_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula_cliente`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `pago_membresia_FK` FOREIGN KEY (`id_membresia`) REFERENCES `membresia` (`id_membresia`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `pago_metodo_pago_FK` FOREIGN KEY (`id_metodo`) REFERENCES `metodo_pago` (`id_metodo`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -500,7 +453,7 @@ CREATE TABLE `pago` (
 
 LOCK TABLES `pago` WRITE;
 /*!40000 ALTER TABLE `pago` DISABLE KEYS */;
-INSERT INTO `pago` VALUES (1,NULL,NULL,'V-11111111',30.00,'Efectivo',NULL,'Pagado','2026-05-01','2026-05-31'),(2,NULL,NULL,'V-22222222',80.00,'Transferencia',NULL,'Atrasado','2026-03-01','2026-05-30'),(3,NULL,NULL,'V-33333333',30.00,'Efectivo',NULL,'Atrasado','2026-04-01','2026-04-30'),(4,NULL,NULL,'V-33333333',5.00,'Efectivo','','Pagado','2026-05-18','2026-06-17'),(5,NULL,NULL,'V-22222222',5.00,'Efectivo','','Pagado','2026-05-18','2026-08-16'),(7,NULL,NULL,'V-22222222',4.00,'Efectivo','','Pagado','2026-05-17','2026-08-15'),(13,NULL,NULL,'V-33333333',5.00,'Efectivo','','Pagado','2026-05-18','2026-06-17'),(14,NULL,NULL,'V-11111111',5.00,'Efectivo','','Pagado','2026-05-18','2026-06-17'),(15,NULL,NULL,'V-33333333',5.00,'Efectivo','','Pagado','2026-05-22','2026-06-21'),(16,NULL,NULL,'V-33333333',6.00,'Efectivo','','Pagado','2026-05-22','2026-06-21'),(17,NULL,NULL,'V-33333333',5.00,'Efectivo','','Pagado','2026-06-07','2026-07-07'),(18,NULL,NULL,'V-33333333',5.00,'Efectivo','','Pagado','2026-06-09','2026-07-09');
+INSERT INTO `pago` VALUES (20,40,1,5.00,'','Pagado','2026-06-20'),(21,41,1,5.00,'','Pagado','2026-06-20');
 /*!40000 ALTER TABLE `pago` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -512,7 +465,7 @@ DROP TABLE IF EXISTS `persona`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `persona` (
-  `cedula_persona` varchar(15) NOT NULL,
+  `cedula` varchar(15) NOT NULL,
   `nombre` varchar(50) NOT NULL,
   `apellido` varchar(50) NOT NULL,
   `correo` varchar(100) DEFAULT NULL,
@@ -522,7 +475,7 @@ CREATE TABLE `persona` (
   `fecha_nacimiento` date DEFAULT NULL,
   `fecha_creacion` datetime NOT NULL DEFAULT current_timestamp(),
   `activo` tinyint(1) NOT NULL DEFAULT 1,
-  PRIMARY KEY (`cedula_persona`)
+  PRIMARY KEY (`cedula`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -532,7 +485,7 @@ CREATE TABLE `persona` (
 
 LOCK TABLES `persona` WRITE;
 /*!40000 ALTER TABLE `persona` DISABLE KEYS */;
-INSERT INTO `persona` VALUES ('V-00000001','Carlos','Pérez','carlos@sofit.com','0412-4471891',NULL,NULL,'2026-05-21','2026-06-08 15:19:56',1),('V-00000002','Ana','Gómez','ana@sofit.com','0426-2142141',NULL,NULL,'2026-05-21','2026-06-07 14:36:07',1),('V-11111111','María','Torres','maria@example.com','0412-1234567',NULL,NULL,'2026-05-17','2026-06-07 20:12:40',1),('V-22222222','Luis','Martínez','luis@example.com','0412-7654321',NULL,NULL,'2026-05-17','2026-06-07 14:36:07',1),('V-33333333','Juan','Garcia','moroso@test.com','0412-4471891',NULL,NULL,'2026-05-15','2026-06-01 16:32:47',1);
+INSERT INTO `persona` VALUES ('V-00000001','Carlos','Pérez','carlos@sofit.com','0412-4471891',NULL,NULL,'2026-05-21','2026-06-08 15:19:56',1),('V-00000002','Ana','Gómez','ana@sofit.com','0426-2142141',NULL,NULL,'2026-05-21','2026-06-07 14:36:07',1),('V-10556291','Lucía','Rojas','lucia.rojas@example.com','0426-3335555','La Guaira',NULL,'1971-12-10','2026-06-16 19:37:52',1),('V-11029384','Gabriela','López','gabriela.lopez@example.com','0416-8888888','Mérida',NULL,'1973-08-24','2026-06-16 19:37:52',1),('V-11111111','María','Torres','maria@example.com','0412-1234567',NULL,NULL,'2026-05-17','2026-06-07 20:12:40',1),('V-11773948','Andrea','Machado','andrea.machado@example.com','0414-5557777','Puerto Ayacucho',NULL,'1975-10-31','2026-06-16 19:37:52',1),('V-12894355','María','Martínez','maria.martinez@example.com','0424-4444444','Barquisimeto',NULL,'1978-02-14','2026-06-16 19:37:52',1),('V-13449582','Laura','Flores','laura.flores@example.com','0424-9992222','Los Teques',NULL,'1979-04-03','2026-06-16 19:37:52',1),('V-13556294','José','Gutiérrez','jose.gutierrez@example.com','0426-8880000','Carora',NULL,'1979-01-23','2026-06-16 19:37:52',1),('V-14228394','Camila','Alvarez','camila.alvarez@example.com','0416-1113333','San Fernando',NULL,'1980-08-12','2026-06-16 19:37:52',1),('V-15667281','Sofía','Ramírez','sofia.ramirez@example.com','0414-7654321','Cumaná',NULL,'1982-06-15','2026-06-16 19:37:52',1),('V-16883920','Valentina','Reyes','valentina.reyes@example.com','0412-5556666','Guanare',NULL,'1984-09-05','2026-06-16 19:37:52',1),('V-17334901','Elena','Silva','elena.silva@example.com','0412-6666666','San Cristóbal',NULL,'1986-05-18','2026-06-16 19:37:52',1),('V-18943201','Ana','Rodríguez','ana.rodriguez@example.com','0414-2222222','Maracaibo',NULL,'1988-11-23','2026-06-16 19:37:52',1),('V-19442039','Patricia','Hernández','patricia.hernandez@example.com','0426-0000000','Maturín',NULL,'1989-10-07','2026-06-16 19:37:52',1),('V-19882043','Manuel','Rondón','manuel.rondon@example.com','0416-6668888','San Carlos',NULL,'1990-06-14','2026-06-16 19:37:52',1),('V-20556114','Luis','Gómez','luis.gomez@example.com','0416-3333333','Valencia',NULL,'1991-07-05','2026-06-16 19:37:52',1),('V-21059483','Alejandro','Sánchez','alejandro.sanchez@example.com','0412-1234567','Puerto La Cruz',NULL,'1992-01-29','2026-06-16 19:37:52',1),('V-22222222','Luis','Martínez','luis@example.com','0412-7654321',NULL,NULL,'2026-05-17','2026-06-07 14:36:07',1),('V-22884711','Pedro','Castillo','pedro.castillo@example.com','0414-7777777','Barcelona',NULL,'1993-12-01','2026-06-16 19:37:52',1),('V-23991048','Daniel','Delgado','daniel.delgado@example.com','0414-7778888','San Felipe',NULL,'1994-02-17','2026-06-16 19:37:52',1),('V-24119384','Isabella','Bermúdez','isabella.bermudez@example.com','0424-7779999','El Tigre',NULL,'1995-11-08','2026-06-16 19:37:52',1),('V-24589122','Carlos','Mendoza','carlos.mendoza@example.com','0412-1111111','Caracas',NULL,'1995-04-12','2026-06-16 19:37:52',1),('V-25001948','Gabriel','Morales','gabriel.morales@example.com','0426-3334444','Coro',NULL,'1996-07-19','2026-06-16 19:37:52',1),('V-26771493','Ricardo','Díaz','ricardo.diaz@example.com','0424-9999999','Ciudad Guayana',NULL,'1998-03-11','2026-06-16 19:37:52',1),('V-27338194','Javier','Acosta','javier.acosta@example.com','0424-2224444','Trujillo',NULL,'1999-05-26','2026-06-16 19:37:52',1),('V-28661049','Marcos','Suárez','marcos.suarez@example.com','0412-4446666','Tucupita',NULL,'2001-03-04','2026-06-16 19:37:52',1),('V-29114059','Diego','Torres','diego.torres@example.com','0416-8881111','Barinas',NULL,'2002-11-22','2026-06-16 19:37:52',1),('V-33333333','Juan','Garcia','moroso@test.com','0412-4471891',NULL,NULL,'2026-05-15','2026-06-01 16:32:47',1);
 /*!40000 ALTER TABLE `persona` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -545,15 +498,13 @@ DROP TABLE IF EXISTS `producto`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `producto` (
   `codigo_producto` varchar(20) NOT NULL,
-  `id_categoria` int(11) DEFAULT NULL,
-  `id_unidad` int(11) DEFAULT NULL,
-  `unidad_medida` varchar(20) DEFAULT 'unidad',
+  `id_categoria` int(11) NOT NULL,
+  `id_unidad` int(11) NOT NULL,
   `nombre` varchar(100) NOT NULL,
-  `categoria` varchar(50) DEFAULT NULL,
   `precio_venta` decimal(10,2) NOT NULL,
-  `stock_minimo` int(11) DEFAULT 0,
+  `stock_minimo` int(11) NOT NULL DEFAULT 0,
   `stock_actual` int(11) NOT NULL DEFAULT 0,
-  `activo` tinyint(1) DEFAULT 1,
+  `activo` tinyint(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`codigo_producto`),
   KEY `producto_categoria_producto_FK` (`id_categoria`),
   KEY `producto_unidad_medida_FK` (`id_unidad`),
@@ -568,8 +519,32 @@ CREATE TABLE `producto` (
 
 LOCK TABLES `producto` WRITE;
 /*!40000 ALTER TABLE `producto` DISABLE KEYS */;
-INSERT INTO `producto` VALUES ('1313131',NULL,NULL,'unidad','asfasfasfas','Suplementos',4444.00,5,10,0),('2352323',NULL,NULL,'unidad','asfa','Suplementos',5.00,10,5,0),('PROT001',NULL,NULL,'unidad','Proteína Whe','',45.00,0,19,0),('xcbxb',NULL,NULL,'unidad','Proteinas','Snacks',5.00,5,3,1);
+INSERT INTO `producto` VALUES ('1313131',1,1,'asfasfasfas',4444.00,5,10,0),('2352323',1,1,'asfa',5.00,10,5,0),('as-525',4,1,'ASF',5.00,5,2,0),('PROT001',1,1,'Proteína Whe',45.00,0,19,0),('xcbxb',1,1,'Proteinas',5.00,5,0,1),('ZAR-0012',2,1,'Gatorade',1.00,5,3,1);
 /*!40000 ALTER TABLE `producto` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `rol_trabajador`
+--
+
+DROP TABLE IF EXISTS `rol_trabajador`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `rol_trabajador` (
+  `id_rol` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) NOT NULL,
+  PRIMARY KEY (`id_rol`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `rol_trabajador`
+--
+
+LOCK TABLES `rol_trabajador` WRITE;
+/*!40000 ALTER TABLE `rol_trabajador` DISABLE KEYS */;
+INSERT INTO `rol_trabajador` VALUES (1,'Gerente'),(2,'Entrenador'),(3,'Recepcionista');
+/*!40000 ALTER TABLE `rol_trabajador` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -589,7 +564,7 @@ CREATE TABLE `rutina` (
   PRIMARY KEY (`id_rutina`),
   KEY `id_dificultad` (`id_dificultad`),
   CONSTRAINT `rutina_ibfk_1` FOREIGN KEY (`id_dificultad`) REFERENCES `tipo_dificultad` (`id_dificultad`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -615,18 +590,18 @@ CREATE TABLE `rutina_asignada` (
   `cedula_cliente` varchar(15) NOT NULL,
   `asignado_por` varchar(15) DEFAULT NULL,
   `fecha_asignacion` date NOT NULL,
-  `fecha_inicio` date DEFAULT NULL,
-  `fecha_fin` date DEFAULT NULL,
-  `estado` enum('Activa','Completada','Cancelada') DEFAULT 'Activa',
+  `fecha_inicio` date NOT NULL,
+  `fecha_fin` date NOT NULL,
+  `estado` enum('Activa','Completada','Cancelada') NOT NULL DEFAULT 'Activa',
   `progreso` decimal(5,2) DEFAULT 0.00,
   PRIMARY KEY (`id_asignacion`),
   KEY `cedula_cliente` (`cedula_cliente`),
   KEY `id_rutina` (`id_rutina`),
   KEY `rutina_asignada_trabajador_FK` (`asignado_por`),
-  CONSTRAINT `rutina_asignada_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula_cliente`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `rutina_asignada_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `rutina_asignada_ibfk_2` FOREIGN KEY (`id_rutina`) REFERENCES `rutina` (`id_rutina`) ON DELETE CASCADE,
-  CONSTRAINT `rutina_asignada_trabajador_FK` FOREIGN KEY (`asignado_por`) REFERENCES `trabajador` (`cedula_trabajador`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  CONSTRAINT `rutina_asignada_trabajador_FK` FOREIGN KEY (`asignado_por`) REFERENCES `trabajador` (`cedula`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -635,7 +610,7 @@ CREATE TABLE `rutina_asignada` (
 
 LOCK TABLES `rutina_asignada` WRITE;
 /*!40000 ALTER TABLE `rutina_asignada` DISABLE KEYS */;
-INSERT INTO `rutina_asignada` VALUES (1,1,'V-33333333',NULL,'2026-05-21','2026-05-20','2026-05-31','Activa',0.00);
+INSERT INTO `rutina_asignada` VALUES (1,1,'V-33333333',NULL,'2026-05-21','2026-05-20','2026-05-30','Activa',0.00),(2,1,'V-11773948',NULL,'2026-06-20','2026-06-21','2026-06-30','Activa',3.00);
 /*!40000 ALTER TABLE `rutina_asignada` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -650,7 +625,7 @@ CREATE TABLE `seguimiento_fisico` (
   `id_seguimiento` int(11) NOT NULL AUTO_INCREMENT,
   `cedula_cliente` varchar(15) NOT NULL,
   `registrado_por` varchar(15) DEFAULT NULL,
-  `fecha` date DEFAULT NULL,
+  `fecha` date NOT NULL DEFAULT current_timestamp(),
   `altura_cm` decimal(5,2) DEFAULT NULL,
   `peso_kg` decimal(5,2) DEFAULT NULL,
   `cintura_cm` decimal(5,2) DEFAULT NULL,
@@ -662,9 +637,9 @@ CREATE TABLE `seguimiento_fisico` (
   PRIMARY KEY (`id_seguimiento`),
   KEY `cedula_cliente` (`cedula_cliente`),
   KEY `seguimiento_fisico_trabajador_FK` (`registrado_por`),
-  CONSTRAINT `seguimiento_fisico_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula_cliente`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `seguimiento_fisico_trabajador_FK` FOREIGN KEY (`registrado_por`) REFERENCES `trabajador` (`cedula_trabajador`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  CONSTRAINT `seguimiento_fisico_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `seguimiento_fisico_trabajador_FK` FOREIGN KEY (`registrado_por`) REFERENCES `trabajador` (`cedula`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -688,15 +663,15 @@ CREATE TABLE `seguimiento_nutricional` (
   `id_seguimiento` int(11) NOT NULL AUTO_INCREMENT,
   `cedula_cliente` varchar(15) NOT NULL,
   `registrado_por` varchar(15) DEFAULT NULL,
-  `fecha` date DEFAULT NULL,
+  `fecha` date NOT NULL DEFAULT current_timestamp(),
   `proteinas_g` decimal(5,2) DEFAULT NULL,
   `carbohidratos_g` decimal(5,2) DEFAULT NULL,
   `grasas_g` decimal(5,2) DEFAULT NULL,
   PRIMARY KEY (`id_seguimiento`),
   KEY `cedula_cliente` (`cedula_cliente`),
   KEY `seguimiento_nutricional_trabajador_FK` (`registrado_por`),
-  CONSTRAINT `seguimiento_nutricional_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula_cliente`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `seguimiento_nutricional_trabajador_FK` FOREIGN KEY (`registrado_por`) REFERENCES `trabajador` (`cedula_trabajador`) ON DELETE SET NULL ON UPDATE CASCADE
+  CONSTRAINT `seguimiento_nutricional_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `seguimiento_nutricional_trabajador_FK` FOREIGN KEY (`registrado_por`) REFERENCES `trabajador` (`cedula`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -711,30 +686,6 @@ INSERT INTO `seguimiento_nutricional` VALUES (3,'V-11111111',NULL,'2026-05-17',1
 UNLOCK TABLES;
 
 --
--- Table structure for table `tipo_canal`
---
-
-DROP TABLE IF EXISTS `tipo_canal`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `tipo_canal` (
-  `id_tipo` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`id_tipo`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `tipo_canal`
---
-
-LOCK TABLES `tipo_canal` WRITE;
-/*!40000 ALTER TABLE `tipo_canal` DISABLE KEYS */;
-INSERT INTO `tipo_canal` VALUES (1,'App'),(2,'Email'),(3,'WhatsApp');
-/*!40000 ALTER TABLE `tipo_canal` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `tipo_dificultad`
 --
 
@@ -743,7 +694,7 @@ DROP TABLE IF EXISTS `tipo_dificultad`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tipo_dificultad` (
   `id_dificultad` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(100) DEFAULT NULL,
+  `nombre` varchar(100) NOT NULL,
   PRIMARY KEY (`id_dificultad`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -784,30 +735,6 @@ INSERT INTO `tipo_membresia` VALUES (1,'Mensual',30.00),(2,'Trimestral',80.00),(
 UNLOCK TABLES;
 
 --
--- Table structure for table `tipo_notificacion`
---
-
-DROP TABLE IF EXISTS `tipo_notificacion`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `tipo_notificacion` (
-  `id_tipo` int(11) NOT NULL,
-  `nombre` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`id_tipo`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `tipo_notificacion`
---
-
-LOCK TABLES `tipo_notificacion` WRITE;
-/*!40000 ALTER TABLE `tipo_notificacion` DISABLE KEYS */;
-INSERT INTO `tipo_notificacion` VALUES (1,'Pago vencimiento'),(2,'Recordatorio clase'),(3,'Promoción'),(4,'Otro');
-/*!40000 ALTER TABLE `tipo_notificacion` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `trabajador`
 --
 
@@ -815,13 +742,14 @@ DROP TABLE IF EXISTS `trabajador`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `trabajador` (
-  `cedula_trabajador` varchar(15) NOT NULL,
+  `cedula` varchar(15) NOT NULL,
   `id_rol` int(11) NOT NULL,
   `salario` decimal(10,2) DEFAULT NULL,
-  `fecha_contratacion` date DEFAULT NULL,
-  PRIMARY KEY (`cedula_trabajador`),
+  `fecha_contratacion` date NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`cedula`),
   KEY `id_rol` (`id_rol`),
-  CONSTRAINT `trabajador_ibfk_1` FOREIGN KEY (`cedula_trabajador`) REFERENCES `persona` (`cedula_persona`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `trabajador_ibfk_1` FOREIGN KEY (`cedula`) REFERENCES `persona` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `trabajador_rol_trabajador_FK` FOREIGN KEY (`id_rol`) REFERENCES `rol_trabajador` (`id_rol`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -841,11 +769,14 @@ UNLOCK TABLES;
 /*!50003 SET character_set_results = utf8mb4 */ ;
 /*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `tg_delete_trabajador` AFTER DELETE ON `trabajador` FOR EACH ROW begin
-	delete from persona
-	where cedula_persona = old.cedula_trabajador;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `tg_delete_trabajador` AFTER DELETE ON `trabajador` FOR EACH ROW begin
+
+	delete from persona
+
+	where cedula = old.cedula;
+
 end */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -861,11 +792,11 @@ DROP TABLE IF EXISTS `unidad_medida`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `unidad_medida` (
-  `id_unidad` int(11) NOT NULL,
-  `nombre` varchar(100) DEFAULT NULL,
+  `id_unidad` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) NOT NULL,
   `abreviatura` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id_unidad`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -874,6 +805,7 @@ CREATE TABLE `unidad_medida` (
 
 LOCK TABLES `unidad_medida` WRITE;
 /*!40000 ALTER TABLE `unidad_medida` DISABLE KEYS */;
+INSERT INTO `unidad_medida` VALUES (1,'Unidad','unidad');
 /*!40000 ALTER TABLE `unidad_medida` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -886,22 +818,21 @@ DROP TABLE IF EXISTS `venta_producto`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `venta_producto` (
   `id_venta` int(11) NOT NULL AUTO_INCREMENT,
-  `id_metodo` int(11) DEFAULT NULL,
-  `metodo_pago` varchar(50) DEFAULT NULL,
+  `id_metodo` int(11) NOT NULL,
   `codigo_producto` varchar(20) NOT NULL,
   `cedula_cliente` varchar(15) DEFAULT NULL,
-  `cantidad_vendida` decimal(10,2) DEFAULT NULL,
-  `monto_total` decimal(10,2) DEFAULT NULL,
-  `fecha` datetime DEFAULT current_timestamp(),
+  `cantidad_vendida` decimal(10,2) NOT NULL,
+  `monto_total` decimal(10,2) NOT NULL,
+  `fecha` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id_venta`),
   KEY `codigo_producto` (`codigo_producto`),
   KEY `cedula_cliente` (`cedula_cliente`),
   KEY `idx_ventas_fecha` (`fecha`),
   KEY `venta_producto_metodo_pago_FK` (`id_metodo`),
   CONSTRAINT `venta_producto_ibfk_1` FOREIGN KEY (`codigo_producto`) REFERENCES `producto` (`codigo_producto`) ON UPDATE CASCADE,
-  CONSTRAINT `venta_producto_ibfk_2` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula_cliente`) ON UPDATE CASCADE,
-  CONSTRAINT `venta_producto_metodo_pago_FK` FOREIGN KEY (`id_metodo`) REFERENCES `metodo_pago` (`id_metodo`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  CONSTRAINT `venta_producto_ibfk_2` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula`) ON UPDATE CASCADE,
+  CONSTRAINT `venta_producto_metodo_pago_FK` FOREIGN KEY (`id_metodo`) REFERENCES `metodo_pago` (`id_metodo`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -910,7 +841,7 @@ CREATE TABLE `venta_producto` (
 
 LOCK TABLES `venta_producto` WRITE;
 /*!40000 ALTER TABLE `venta_producto` DISABLE KEYS */;
-INSERT INTO `venta_producto` VALUES (1,NULL,'Efectivo','PROT001','V-11111111',45.00,NULL,'2026-04-26 02:55:55'),(2,NULL,'Efectivo','xcbxb','V-22222222',2.00,10.00,'2026-06-08 15:12:25'),(3,NULL,'Efectivo','xcbxb',NULL,3.00,15.00,'2026-06-08 15:15:04'),(4,NULL,'Efectivo','xcbxb','V-33333333',1.00,5.00,'2026-06-11 00:46:56');
+INSERT INTO `venta_producto` VALUES (7,1,'xcbxb','V-11773948',3.00,15.00,'2026-06-20 18:24:33'),(8,1,'ZAR-0012','V-22222222',2.00,2.00,'2026-06-20 18:26:23');
 /*!40000 ALTER TABLE `venta_producto` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -922,10 +853,14 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `tg_actualizar_stock_venta` AFTER INSERT ON `venta_producto` FOR EACH ROW begin
-	update producto
-	set stock_actual = stock_actual - new.cantidad_vendida
-	where codigo_producto = new.codigo_producto;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `tg_actualizar_stock_venta` AFTER INSERT ON `venta_producto` FOR EACH ROW begin
+
+	update producto
+
+	set stock_actual = stock_actual - new.cantidad_vendida
+
+	where codigo_producto = new.codigo_producto;
+
 end */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -946,4 +881,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-06-11 15:37:11
+-- Dump completed on 2026-06-20 21:18:09
