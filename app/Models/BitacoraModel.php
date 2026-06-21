@@ -55,8 +55,12 @@ class BitacoraModel extends BaseModel
     private function sqlSelect(string $where = ""): string
     {
         return <<<SQL
-                SELECT *
-                FROM {$this->table}
+                SELECT
+                    b.*,
+                    modulo.nombre AS `modulo`
+                FROM {$this->table} b
+                LEFT JOIN {$this->tableSeguridad}.modulo
+                    ON b.id_modulo = modulo.id_modulo
                 {$where}
                 ORDER BY fecha DESC
             SQL;

@@ -28,12 +28,12 @@ Alpine.data("crudTable", () => (
             action: "query",
         },
         columns: [
+            { id: "id_modulo", hidden: true },
             {
                 id: "fecha",
                 name: "Fecha y Hora",
                 formatter: (cell, row) => dayjs(cell).format("DD/MM/YYYY HH:MM"),
             },
-            "Mensaje",
             {
                 name: "Nivel",
                 formatter: (cell, row) => {
@@ -44,13 +44,14 @@ Alpine.data("crudTable", () => (
                     `)
                 },
             },
+            "Mensaje",
             {
                 name: "Modulo",
-                formatter: (cell, row) => capitalizeWords(cell),
+                formatter: (cell, row) => cell ? capitalizeWords(cell) : "?",
             },
             {
                 name: "Accion",
-                formatter: (cell, row) => capitalizeWords(cell),
+                formatter: (cell, row) => cell ? capitalizeWords(cell) : "?",
             },
             { name: "ID Usuario", id: "id_usuario" },
         ],
