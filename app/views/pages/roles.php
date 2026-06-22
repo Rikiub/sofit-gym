@@ -1,4 +1,7 @@
 <?php
+
+/** @var \App\Helpers\Auth\UsuarioSessionDTO $sesion_usuario */
+
 $title = "Roles y Permisos";
 
 $this->layout('layout', ['title' => $title]);
@@ -26,9 +29,12 @@ foreach ($permisos as $p) {
 ?>
 
 <?php ob_start() ?>
-<fieldset class="row">
+<fieldset class="row" x-data="{ id_rol: null, nombre: null }">
+    <input hidden name="id_rol" x-model="id_rol">
+    <input hidden name="nombre" x-model="nombre">
+
+    <h1 class="fs-4" x-text="nombre"></h1>
     <h2 class="fs-5">Permisos</h2>
-    <input hidden name="id_rol">
 
     <div class="row g-2">
         <?php foreach ($groupedPermisos as $modulo => $listaPermisos): ?>
@@ -41,7 +47,12 @@ foreach ($permisos as $p) {
                     <?php foreach ($listaPermisos as $p): ?>
                         <div class="mb-2">
                             <label class="d-flex align-items-center gap-2 m-0" style="cursor: pointer;">
-                                <input class="form-checkbox" type="checkbox" name="permisos[]" value="<?= $p["nombre"] ?>">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    name="permisos[]"
+                                    value="<?= $p["nombre"] ?>"
+                                    :disabled="id_rol == 1 && $el.checked">
                                 <span class="form-label mb-0"><?= $p["accion"] ?></span>
                             </label>
                         </div>
