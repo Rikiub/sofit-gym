@@ -4,4 +4,4 @@
 - [ ] Hacer Dashboard funcional.
 - [ ] Implementar notificaciones por AI.
 - [ ] Agregar Captcha en Login.
-- [ ] Agregar contraseña al crear usuario.
+- [ ] Editar contraseña de usuario.
