@@ -126,7 +126,7 @@
 
 			<div class="group-items">
 				<?php if ($sesion_usuario->hasPermiso("usuarios:ver")): ?>
-					<a href="?page=usuarios"><i class="fas fa-lock"></i> <span>Usuarios</span></a>
+					<a href="?page=usuarios"><i class="fa-solid fa-user"></i> <span>Usuarios</span></a>
 				<?php endif ?>
 
 				<?php if ($sesion_usuario->hasPermiso("roles:ver")): ?>
