@@ -2,10 +2,9 @@
 $this->pushJs("pages/asistencia/asistencia.js");
 
 $this->layout("layout", ["title" => "Control de asistencia"]);
-// Recibe $entradasHoy, $mensaje, $tipoMensaje
 ?>
 
-<div class="container">
+<div class="container asistencia-scope">
     <div class="header">
         <h1><i class="fas fa-door-open"></i> Control de Asistencia</h1>
     </div>
@@ -20,7 +19,6 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
 
     <div id="toastMessage"></div>
 
-    <!-- Formulario de registro -->
     <div class="card">
         <div class="card-header"><i class="fas fa-plus-circle"></i> Registrar nueva entrada</div>
         <div class="card-body">
@@ -48,7 +46,6 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
         </div>
     </div>
 
-    <!-- Tabla de entradas del día -->
     <div class="card">
         <div class="card-header"><i class="fas fa-list"></i> Entradas de hoy</div>
         <div class="card-body">
@@ -82,7 +79,7 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
                         <?php endforeach; ?>
                         <?php if (empty($entradasHoy)): ?>
                             <tr>
-                                <td colspan="4" class="text-center">No hay entradas registradas hoy.<?php echo "<!-- debug: entradas vacío -->"; ?></td>
+                                <td colspan="4" class="text-center">No hay entradas registradas hoy.<?php echo ""; ?></td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -92,8 +89,7 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
     </div>
 </div>
 
-<!-- Modal Clientes (selección) -->
-<div class="modal fade" id="clienteModal" tabindex="-1">
+<div class="modal fade asistencia-scope" id="clienteModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
@@ -124,8 +120,7 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
     </div>
 </div>
 
-<!-- Modal Editar Hora -->
-<div class="modal fade" id="editarModal" tabindex="-1">
+<div class="modal fade asistencia-scope" id="editarModal" tabindex="-1">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
@@ -155,8 +150,7 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
     </div>
 </div>
 
-<!-- Modal Confirmar Eliminación -->
-<div class="modal fade" id="eliminarModal" tabindex="-1">
+<div class="modal fade asistencia-scope" id="eliminarModal" tabindex="-1">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
@@ -179,285 +173,305 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
 </div>
 
 <style>
-    .container {
-        --bs-gutter-x: 0;
-        max-width: 1100px;
-        margin: 0 auto;
-        background: white;
-        border-radius: 28px;
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-        overflow: hidden;
-    }
+    .asistencia-scope {
+        &.container {
+            --bs-gutter-x: 0;
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
 
-    .header {
-        background: #C62828;
-        color: white;
-        padding: 1.2rem 2rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-    }
+        .header {
+            background: #C62828;
+            color: white;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
 
-    .header h1 {
-        font-size: 1.6rem;
-        font-weight: 600;
-        margin: 0;
-    }
+        .header h1 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin: 0;
+        }
 
-    .header .badge {
-        background: #8B0000;
-        padding: 0.3rem 1rem;
-        border-radius: 40px;
-        font-size: 0.8rem;
-    }
+        .header .badge {
+            background: #8B0000;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+        }
 
-    .card {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03), 0 4px 12px rgba(0, 0, 0, 0.05);
-        margin-bottom: 1.8rem;
-        border: 1px solid #edf2f7;
-    }
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03), 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.8rem;
+            border: 1px solid #edf2f7;
+        }
 
-    .card-header {
-        background: #fafbfc;
-        padding: 1rem 1.5rem;
-        font-weight: 700;
-        font-size: 1.1rem;
-        border-bottom: 1px solid #edf2f7;
-        color: #1e2a3a;
-    }
+        .card-header {
+            background: #fafbfc;
+            padding: 1rem 1.5rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-bottom: 1px solid #edf2f7;
+            color: #1e2a3a;
+        }
 
-    .card-body {
-        padding: 1.5rem;
-    }
+        .card-body {
+            padding: 1.5rem;
+        }
 
-    .form-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 1rem;
-        align-items: flex-end;
-    }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            align-items: flex-end;
+        }
 
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.4rem;
-    }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
 
-    label {
-        font-weight: 600;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: #5a6e7a;
-    }
+        .form-group .form-control,
+        .form-group select,
+        .buscador .form-control,
+        .search-client {
+            padding: 0.7rem 1rem;
+            border-radius: 14px;
+            border: 1px solid #cfdfe8;
+            font-size: 0.9rem;
+            width: 100%;
+        }
 
-    input,
-    select,
-    button {
-        padding: 0.7rem 1rem;
-        border-radius: 14px;
-        border: 1px solid #cfdfe8;
-        font-size: 0.9rem;
-        width: 100%;
-    }
+        label {
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #5a6e7a;
+        }
 
-    button {
-        background: #C62828;
-        color: white;
-        font-weight: 600;
-        border: none;
-        cursor: pointer;
-    }
+        #btnRegistrar {
+            padding: 0.7rem 1rem;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            width: 100%;
+            background: #C62828;
+            color: white;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
 
-    button:hover {
-        background: #b71c1c;
-        transform: translateY(-1px);
-    }
+        #btnRegistrar:hover {
+            background: #b71c1c;
+            transform: translateY(-1px);
+        }
 
-    .btn-sm {
-        padding: 0.2rem 0.6rem !important;
-        font-size: 0.7rem !important;
-        border-radius: 20px !important;
-        width: auto;
-    }
+        .btn-sm {
+            padding: 0.2rem 0.6rem !important;
+            font-size: 0.7rem !important;
+            border-radius: 20px !important;
+            width: auto !important;
+        }
 
-    .btn-secondary {
-        background: #6c757d;
-    }
+        .btn-secondary {
+            background: #6c757d !important;
+            color: white !important;
+        }
 
-    .btn-warning {
-        background: #ffc107;
-        color: #1e2a3a;
-    }
+        .btn-secondary:hover {
+            background: #5a6268 !important;
+        }
 
-    .btn-danger {
-        background: #dc3545;
-    }
+        .btn-warning {
+            background: #ffc107 !important;
+            color: #1e2a3a !important;
+        }
 
-    .acciones-botones {
-        display: flex;
-        gap: 0.3rem;
-        flex-wrap: nowrap;
-        justify-content: flex-start;
-    }
+        .btn-warning:hover {
+            background: #e0a800 !important;
+        }
 
-    .table-responsive {
-        overflow-x: auto;
-    }
+        .btn-danger {
+            background: #dc3545 !important;
+            color: white !important;
+        }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.85rem;
-    }
+        .btn-danger:hover {
+            background: #bd2130 !important;
+        }
 
-    th,
-    td {
-        padding: 0.6rem 0.5rem;
-        text-align: left;
-        border-bottom: 1px solid #eef2f6;
-        vertical-align: middle;
-    }
+        .acciones-botones {
+            display: flex;
+            gap: 0.3rem;
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+        }
 
-    th {
-        background: #f8fafc;
-        font-weight: 600;
-    }
+        .table-responsive {
+            overflow-x: auto;
+        }
 
-    /* Ancho fijo para la columna de acciones */
-    td:last-child,
-    th:last-child {
-        width: 120px;
-        white-space: nowrap;
-    }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
 
-    .alert {
-        padding: 0.9rem 1.2rem;
-        border-radius: 16px;
-        margin-bottom: 1.5rem;
-    }
+        th,
+        td {
+            padding: 0.6rem 0.5rem;
+            text-align: left;
+            border-bottom: 1px solid #eef2f6;
+            vertical-align: middle;
+        }
 
-    .alert-success {
-        background: #e6f4ea;
-        border-left: 5px solid #2e7d32;
-        color: #1e4620;
-    }
-
-    .alert-danger {
-        background: #fce8e6;
-        border-left: 5px solid #c62828;
-        color: #8b1e1e;
-    }
-
-    footer {
-        text-align: center;
-        padding: 1rem;
-        background: #fafbfc;
-        color: #7f8c8d;
-        font-size: 0.75rem;
-    }
-
-    /* Buscador con botón pequeño (igual que facturación) */
-    .buscador {
-        margin-bottom: 1rem;
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-    }
-
-    .buscador input {
-        flex: 1;
-        width: auto;
-    }
-
-    .buscador button {
-        width: auto;
-        background: #6c757d;
-        padding: 0.5rem 1rem;
-        font-size: 0.85rem;
-    }
-
-    .buscador button:hover {
-        background: #5a6268;
-    }
-
-    .modal-select-btn {
-        background: white;
-        border: 1px solid #cfdfe8;
-        padding: 0.7rem 1rem;
-        border-radius: 14px;
-        text-align: left;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        cursor: pointer;
-        transition: 0.2s;
-        width: 100%;
-    }
-
-    .modal-select-btn:hover {
-        border-color: #C62828;
-        background: #fef2f2;
-    }
-
-    .btn-select-client {
-        background: #6c757d !important;
-        color: white !important;
-        border: none !important;
-        padding: 0.3rem 0.8rem !important;
-        border-radius: 30px !important;
-        font-size: 0.7rem !important;
-        font-weight: 600 !important;
-        cursor: pointer !important;
-        width: auto;
-    }
-
-    .search-client {
-        margin-bottom: 1rem;
-        padding: 0.5rem;
-        border-radius: 12px;
-        border: 1px solid #cfdfe8;
-        width: 100%;
-    }
-
-    #toastMessage {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: #323232;
-        color: white;
-        padding: 12px 20px;
-        border-radius: 8px;
-        z-index: 9999;
-        display: none;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    }
-
-    #toastMessage.success {
-        background: #2ecc71;
-    }
-
-    #toastMessage.error {
-        background: #e74c3c;
-    }
-
-    .modal-header.bg-danger {
-        background-color: #C62828 !important;
-    }
-
-    .modal-body .form-control {
-        width: 100%;
-    }
-
-    @media (max-width: 768px) {
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+        }
 
         td:last-child,
         th:last-child {
+            width: 120px;
+            white-space: nowrap;
+        }
+
+        .alert {
+            padding: 0.9rem 1.2rem;
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-success {
+            background: #e6f4ea;
+            border-left: 5px solid #2e7d32;
+            color: #1e4620;
+        }
+
+        .alert-danger {
+            background: #fce8e6;
+            border-left: 5px solid #c62828;
+            color: #8b1e1e;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background: #fafbfc;
+            color: #7f8c8d;
+            font-size: 0.75rem;
+        }
+
+        .buscador {
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .buscador input {
+            flex: 1;
             width: auto;
-            white-space: normal;
+        }
+
+        .buscador button {
+            width: auto;
+            background: #6c757d;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            border-radius: 14px;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        .buscador button:hover {
+            background: #5a6268;
+        }
+
+        .modal-select-btn {
+            background: white;
+            border: 1px solid #cfdfe8;
+            padding: 0.7rem 1rem;
+            border-radius: 14px;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 100%;
+        }
+
+        .modal-select-btn:hover {
+            border-color: #C62828;
+            background: #fef2f2;
+        }
+
+        .btn-select-client {
+            background: #6c757d !important;
+            color: white !important;
+            border: none !important;
+            padding: 0.3rem 0.8rem !important;
+            border-radius: 30px !important;
+            font-size: 0.7rem !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            width: auto !important;
+        }
+
+        .search-client {
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            border-radius: 12px;
+            border: 1px solid #cfdfe8;
+            width: 100%;
+        }
+
+        #toastMessage {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #323232;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 9999;
+            display: none;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #toastMessage.success {
+            background: #2ecc71;
+        }
+
+        #toastMessage.error {
+            background: #e74c3c;
+        }
+
+        .modal-header.bg-danger {
+            background-color: #C62828 !important;
+        }
+
+        @media (max-width: 768px) {
+
+            td:last-child,
+            th:last-child {
+                width: auto;
+                white-space: normal;
+            }
         }
     }
 </style>

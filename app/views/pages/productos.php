@@ -355,7 +355,7 @@ $this->layout("layout", ["title" => "Inventario de Productos"]);
                                         <td><?= htmlspecialchars($bs['nombre']) ?></td>
                                         <td><span class="badge bg-danger"><?= $bs['stock_actual'] ?></span></td>
                                         <td><span class="badge bg-secondary"><?= $bs['stock_minimo'] ?></span></td>
-                                        <td><?= htmlspecialchars($bs['unidad_medida']) ?></td>
+                                        <td><?= htmlspecialchars($bs['nombre_unidad']) ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>

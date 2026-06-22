@@ -171,7 +171,8 @@ Alpine.data("crudSegFisico", () =>
         gridOptions: {
             search: false,
             crudButtons: {
-                onEdit: null
+                onEdit: false,
+                onView: false,
             },
         },
     }));
@@ -224,7 +225,8 @@ Alpine.data("crudSegNutricional", () =>
         gridOptions: {
             search: false,
             crudButtons: {
-                onEdit: null
+                onEdit: false,
+                onView: false,
             },
         },
     }));

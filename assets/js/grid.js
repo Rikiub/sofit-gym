@@ -110,7 +110,7 @@ export function crudButtons(onEdit, onDelete, onView) {
                         "title": "Ver",
                         onClick: () => onView(id),
                     }, [
-                        h("i", { className: "fa-solid fa-square-plus" }),
+                        h("i", { className: "fa-solid fa-magnifying-glass" }),
                         "Ver"
                     ])
                     : "",

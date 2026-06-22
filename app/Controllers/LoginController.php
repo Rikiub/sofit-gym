@@ -42,6 +42,11 @@ class LoginController extends BaseController
         };
 
         if (!password_verify($contrasena, $usuario->contrasena_hash)) {
+            $this->logger->info(
+                "Usuario {nombre_usuario} ha fallado al iniciar sesión",
+                ["nombre_usuario" => $usuario->nombre_usuario]
+            );
+
             return $this->invalidInput();
         }
 
@@ -54,11 +59,12 @@ class LoginController extends BaseController
             rol: Rol::from($usuario->id_rol),
             nombre: $usuario->nombre_usuario,
             permisos: $usuario->permisos,
+            ultimo_acceso: $usuario->ultimo_acceso,
         ));
 
         $this->logger->info(
-            "Usuario {id_usuario} ha iniciado sesión",
-            ["id_usuario" => $usuario->id_usuario]
+            "Usuario {nombre_usuario} ha iniciado sesión",
+            ["nombre_usuario" => $usuario->nombre_usuario]
         );
 
         // Devolver respuesta con la direccion donde deberia redireccionar
@@ -71,8 +77,8 @@ class LoginController extends BaseController
     {
         $usuario = UsuarioSession::getUsuario();
         $this->logger->info(
-            "Usuario {id_usuario} ha cerrado sesión",
-            ["id_usuario" => $usuario->id]
+            "Usuario {nombre_usuario} ha cerrado sesión",
+            ["nombre_usuario" => $usuario->nombre]
         );
         UsuarioSession::logout();
 
@@ -86,8 +92,7 @@ class LoginController extends BaseController
         return $this->response->json(["message" => "Usuario o contraseña incorrectos"], 401);
     }
 
-
-    // --- MÓDULO RECUPERACIÓN (LIMPIO) ---
+    // --- MÓDULO RECUPERACIÓN ---
     public function recover(): string
     {
         $body = $this->response->getParsedBody();

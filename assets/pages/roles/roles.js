@@ -17,6 +17,7 @@ Alpine.data("crudPermisos", () => (
             crudButtons: {
                 onAdd: false,
                 onDelete: false,
+                onView: false,
             }
         }
     })))

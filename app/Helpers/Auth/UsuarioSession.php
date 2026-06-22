@@ -9,6 +9,7 @@ class UsuarioSession
 
     public static function login(UsuarioSessionDto $usuario): void
     {
+        session_regenerate_id();
         $_SESSION[self::SESSION_KEY] = $usuario;
     }
 
