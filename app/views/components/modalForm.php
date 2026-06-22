@@ -19,6 +19,13 @@ $this->pushJs('components/modalForm.js');
     <div class="modal-dialog" :class="mode == 'delete' ? 'small-modal' : 'modal-lg'">
         <article class="modal-content">
             <header class="modal-header">
+                <template x-if="mode == 'view'">
+                    <h4 class="modal-title fw-semibold">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span x-text="elementName"></span>
+                    </h4>
+                </template>
+
                 <template x-if="mode == 'add'">
                     <h4 class="modal-title fw-semibold">
                         <i class="fa-solid fa-square-plus"></i>

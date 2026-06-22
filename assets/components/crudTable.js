@@ -22,7 +22,12 @@ export function crudTableComponent({
         grid: null,
 
         init() {
-            const { crudButtons = {}, ...restOptions } = gridOptions;
+            const {
+                crudButtons = {
+                    onView: null 
+                },
+                ...restOptions
+            } = gridOptions;
 
             const query = new URLSearchParams(params);
             const url = `?${query.toString()}`;
@@ -34,10 +39,19 @@ export function crudTableComponent({
                     then: (data) => data.map((item) => item),
                 },
                 crud: {
-                    onAdd: () => openModal(this, {
+                    onAdd: () => {
+                        openModal(this, {
                             id: componentId,
                             mode: "add"
-                        }),
+                        });
+                    },
+                    onView: (dataId) => {
+                        openModal(this, {
+                            id: componentId,
+                            dataId,
+                            mode: "view",
+                        });
+                    },
                     onEdit: (dataId) => {
                         openModal(this, {
                             id: componentId,

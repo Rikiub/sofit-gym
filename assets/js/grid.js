@@ -7,7 +7,7 @@ import { Grid, h, PluginPosition } from "gridjs";
 export function createGrid(options = {}) {
     if (options.crud?.onEdit || options.crud?.onDelete) {
         options.columns?.push(
-            crudButtons(options.crud.onEdit, options.crud.onDelete),
+            crudButtons(options.crud.onEdit, options.crud.onDelete, options.crud.onView),
         );
     }
 
@@ -74,19 +74,21 @@ function addButton(callback) {
     ]);
 }
 
-export function crudButtons(onEdit, onDelete) {
+export function crudButtons(onEdit, onDelete, onView) {
     return {
         name: "Acciones",
         width: "150px",
         sort: false,
         data: () => null,
         formatter: (cell, row) => {
+            const id = row.cells[0].data;
+
             return h("div", { className: "crud-actions d-flex gap-1" }, [
                 onEdit
                     ? h("button", {
                         className: "btn btn-sm btn-warning d-flex align-items-center",
                         "title": "Editar",
-                        onClick: () => onEdit(row.cells[0].data),
+                        onClick: () => onEdit(id),
                     }, [
                         h("i", { className: "fa-solid fa-pen-to-square" }),
                         "Editar",
@@ -96,10 +98,20 @@ export function crudButtons(onEdit, onDelete) {
                     ? h("button", {
                         className: "btn btn-sm btn-danger d-flex align-items-center",
                         "title": "Eliminar",
-                        onClick: () => onDelete(row.cells[0].data),
+                        onClick: () => onDelete(id),
                     }, [
                         h("i", { className: "fa-solid fa-trash-can" }),
                         "Eliminar"
+                    ])
+                    : "",
+                onView
+                    ? h("button", {
+                        className: "btn btn-info d-flex align-items-center gap-1",
+                        "title": "Ver",
+                        onClick: () => onView(id),
+                    }, [
+                        h("i", { className: "fa-solid fa-square-plus" }),
+                        "Ver"
                     ])
                     : "",
             ]);

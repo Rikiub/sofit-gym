@@ -115,11 +115,12 @@ export function modalFormComponent({
                 return console.error("A 'dataId' must be provided");
             }
 
+            if (mode === "view") return this.onView(dataId);
             if (mode === "edit") return this.onEdit(dataId);
             if (mode === "delete") return this.onDelete(dataId);
 
             return console.error(
-                "'mode' must be one of: 'add', 'edit', 'delete'",
+                "'mode' must be one of: 'view', 'add', 'edit', 'delete'",
             );
         },
 
@@ -218,15 +219,25 @@ export function modalFormComponent({
         },
 
         async onAdd() {
-            this.resetForm();
             this.mode = "add";
 
-            populateForm(this.$refs.form, prepareAddData);
+            this.fillForm(prepareAddData);
+            this.openModal();
+        },
+        async onView(id) {
+            this.mode = "view";
+            this.currentDataId = id;
+
+            let data = await fetchApi({
+                page: this.page,
+                action: this.actions.onEditFind,
+                id: this.currentDataId,
+            });
+            this.fillForm(data);
+            this.setReadonlyInputs(true);
             this.openModal();
         },
         async onEdit(id) {
-            this.resetForm();
-
             this.mode = "edit";
             this.currentDataId = id;
 
@@ -235,20 +246,8 @@ export function modalFormComponent({
                 action: this.actions.onEditFind,
                 id: this.currentDataId,
             });
-
-            // Alertar a otros componentes que preparen sus datos
-            this.$dispatch("form-load", { id: this.currentId, data });
-            await this.$nextTick();
-
-            // Rellenar datos iniciales
-            populateForm(this.$refs.form, data);
-
-            // Reactivar inputs desactivados
-            for (const inputName of editDisableFields) {
-                if (this.$refs.form[inputName]) {
-                    this.$refs.form[inputName].disabled = true;
-                }
-            }
+            this.fillForm(data);
+            this.setDisableFields(true);
 
             // Informar a otros componentes que los inputs han cambiado
             for (const el of this.$refs.form.elements) {
@@ -299,21 +298,44 @@ export function modalFormComponent({
             input.setCustomValidity("");
             this.errors[input.name] = "";
         },
+        /** @param {Object} data */
+        fillForm(data) {
+            this.resetForm();
+
+            // Alertar a otros componentes que preparen sus datos
+            this.$dispatch("form-load", { id: this.currentId, data });
+
+            // Rellenar datos iniciales
+            populateForm(this.$refs.form, data);
+        },
         resetForm() {
             this.$refs.form.reset();
 
-            for (const inputName of editDisableFields) {
-                if (this.$refs.form[inputName]) {
-                    this.$refs.form[inputName].disabled = false;
-                }
-            }
+            // Reactivar inputs desactivados
+            this.setDisableFields(false);
+            this.setReadonlyInputs(false);
 
+            // Remover validaciones erroneas
             for (const input of this.$refs.form.elements) {
                 this.clearInputValidity(input);
             }
 
             this.errors = {};
             this.$dispatch("form-reset", { id: componentId });
+        },
+        setDisableFields(disabled) {
+            for (const inputName of editDisableFields) {
+                if (this.$refs.form[inputName]) {
+                    this.$refs.form[inputName].disabled = disabled;
+                }
+            }
+        },
+        setReadonlyInputs(readOnly) {
+            for (const element of this.$refs.form.elements) {
+                if ('readOnly' in element) {
+                    element.readOnly = readOnly;
+                }
+            }
         },
 
         // Validaciones reutilizables
