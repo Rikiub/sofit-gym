@@ -34,7 +34,7 @@ return [
         "permisos" => ["asistente:ver"],
     ],
     "facturacion" => [
-        "permisos" => ["facturaciones:ver"],
+        "permisos" => ["facturacion:ver"],
     ],
     "usuarios" => [
         "permisos" => ["usuarios:ver"],

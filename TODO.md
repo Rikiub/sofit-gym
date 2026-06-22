@@ -1,0 +1,7 @@
+- [ ] Crear modulo de reportes.
+- [x] Crear modulo de permisos y roles.
+- [ ] Crear modulo de mantenimiento/respaldo.
+- [ ] Hacer Dashboard funcional.
+- [ ] Implementar notificaciones por AI.
+- [ ] Agregar Captcha en Login.
+- [ ] Agregar contraseña al crear usuario.
