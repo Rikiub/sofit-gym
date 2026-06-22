@@ -9,5 +9,11 @@ readonly class UsuarioSessionDto
         public int $id,
         public Rol $rol,
         public string $nombre,
+        public array $permisos,
     ) {}
+
+    public function hasPermiso(string $permiso): bool
+    {
+        return in_array($permiso, $this->permisos);
+    }
 }

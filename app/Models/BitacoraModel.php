@@ -28,7 +28,7 @@ readonly class BitacoraDTO
 
 class BitacoraModel extends BaseModel
 {
-    private string $tableSeguridad = 'sofit_gym_seguridad';
+    private string $dbSeguridad = "sofit_gym_seguridad";
     private string $table = "sofit_gym_seguridad.bitacora";
     private string $primaryKey = 'id_bitacora';
 
@@ -36,7 +36,7 @@ class BitacoraModel extends BaseModel
         PDO $pdo,
         private TreeMapper $mapper,
     ) {
-        return parent::__construct($pdo);
+        parent::__construct($pdo);
     }
 
     private function dtoToArray(BitacoraDTO $dto): array
@@ -56,11 +56,12 @@ class BitacoraModel extends BaseModel
     {
         return <<<SQL
                 SELECT
-                    b.*,
+                    bitacora.*,
                     modulo.nombre AS `modulo`
-                FROM {$this->table} b
-                LEFT JOIN {$this->tableSeguridad}.modulo
-                    ON b.id_modulo = modulo.id_modulo
+                FROM
+                    {$this->table} bitacora
+                LEFT JOIN {$this->dbSeguridad}.modulo
+                    ON bitacora.id_modulo = modulo.id_modulo
                 {$where}
                 ORDER BY fecha DESC
             SQL;
@@ -83,7 +84,7 @@ class BitacoraModel extends BaseModel
     public function find(int $id): ?BitacoraDTO
     {
         $row = $this->pdoQuery(
-            $this->sqlSelect("WHERE {$this->primaryKey} = ?"),
+            $this->sqlSelect("WHERE {$this->table}.{$this->primaryKey} = ?"),
             [$id]
         )->fetch();
 
@@ -101,7 +102,7 @@ class BitacoraModel extends BaseModel
         $this->pdoQuery(
             <<<SQL
                 INSERT INTO
-                    {$this->tableSeguridad}.modulo (nombre)
+                    {$this->dbSeguridad}.modulo (nombre)
                 VALUES
                     (?)
                 ON DUPLICATE KEY UPDATE

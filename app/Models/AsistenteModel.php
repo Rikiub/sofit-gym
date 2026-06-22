@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Helpers\Validator;
 use App\Models\Clientes\ClientesModel;
 use App\Models\Clientes\SegumientoFisicoModel;
 use App\Models\Clientes\SegumientoNutricionalModel;

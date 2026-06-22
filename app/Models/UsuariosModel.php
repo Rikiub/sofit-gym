@@ -22,6 +22,8 @@ readonly class UsuarioDTO
         public ?string $email = null,
         public ?DateTimeImmutable $fecha_creacion = null,
         public ?DateTimeImmutable $ultimo_acceso = null,
+        /** @var string[] */
+        public array $permisos = [],
     ) {}
 
     public function validateInsert() {}
@@ -30,6 +32,7 @@ readonly class UsuarioDTO
 
 class UsuariosModel extends BaseModel
 {
+    private string $dbSeguridad = "sofit_gym_seguridad";
     private string $table = 'sofit_gym_seguridad.usuario';
     private string $tableRecuperacion = 'sofit_gym_seguridad.recuperacion_contrasena';
     private string $primaryKey = 'id_usuario';
@@ -38,19 +41,37 @@ class UsuariosModel extends BaseModel
         PDO $pdo,
         private TreeMapper $mapper,
     ) {
-        return parent::__construct($pdo);
+        parent::__construct($pdo);
     }
 
-    private function sqlSelect(): string
+    private function sqlSelect(?string $where = ""): string
     {
         return <<<SQL
-                SELECT
-                    usuario.*,
-                    rol.nombre AS `rol`
-                FROM {$this->table} usuario
-                LEFT JOIN sofit_gym_seguridad.rol rol
-                    ON rol.id_rol = usuario.id_rol
-            SQL;
+            SELECT
+                usuario.*,
+                rol.nombre AS `rol`,
+                (
+                    SELECT CONCAT('[', GROUP_CONCAT(CONCAT('"', p.nombre, '"')), ']')
+                    FROM
+                        {$this->dbSeguridad}.permiso p
+                    JOIN
+                        {$this->dbSeguridad}.rol_permiso rp 
+                        ON rp.id_permiso = p.id_permiso
+                    WHERE rp.id_rol = usuario.id_rol
+                ) AS `permisos`
+            FROM {$this->table} usuario
+            LEFT JOIN
+                {$this->dbSeguridad}.rol rol
+                ON rol.id_rol = usuario.id_rol
+            {$where}
+        SQL;
+    }
+
+    private function mapUsuario(array $row): UsuarioDTO
+    {
+        $row["permisos"] = json_decode($row["permisos"], true);
+        $usuario = $this->mapper->map(UsuarioDTO::class, $row);
+        return $usuario;
     }
 
     /**
@@ -59,41 +80,37 @@ class UsuariosModel extends BaseModel
     public function query(): array
     {
         $rows = $this->pdoQuery($this->sqlSelect())->fetchAll();
-        return array_map(
-            fn($row) => $this->mapper->map(UsuarioDTO::class, $row),
-            $rows
-        );
+        return array_map($this->mapUsuario(...), $rows);
     }
 
     public function find(int|string $nombre_usuario): ?UsuarioDTO
     {
         $row = $this->pdoQuery(
-            <<<SQL
-                {$this->sqlSelect()}
+            $this->sqlSelect(
+                <<<SQL
                 WHERE
-                    usuario.id_usuario = ?
-                    OR usuario.nombre_usuario = ?
-            SQL,
+                    {$this->table}.id_usuario = ?
+                    OR {$this->table}.nombre_usuario = ?
+                SQL
+            ),
             [$nombre_usuario, $nombre_usuario]
         )->fetch();
 
-        if (!$row)
-            return null;
-        return $this->mapper->map(UsuarioDTO::class, $row);
+        return $row
+            ? $this->mapUsuario($row)
+            : null;
     }
 
     public function findByEmail(string $email): ?UsuarioDTO
     {
         $row = $this->pdoQuery(
-            <<<SQL
-                {$this->sqlSelect()}
-                WHERE usuario.email = ?
-            SQL,
+            $this->sqlSelect("WHERE {$this->table}.email = ?"),
             [$email]
         )->fetch();
 
-        if (!$row) return null;
-        return $this->mapper->map(UsuarioDTO::class, $row);
+        return $row
+            ?  $this->mapUsuario($row)
+            : null;
     }
 
     public function insert(UsuarioDTO $usuario): UsuarioDTO
@@ -142,6 +159,15 @@ class UsuariosModel extends BaseModel
                     OR nombre_usuario = ?
             SQL,
             [$id, $id],
+        );
+    }
+
+    public function actualizarUltimoAcceso(int $id)
+    {
+        $this->pdoUpdate(
+            $this->table,
+            ["ultimo_acceso" => Validator::dateToString(new DateTimeImmutable())],
+            ["id_usuario" => $id]
         );
     }
 

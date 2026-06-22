@@ -56,7 +56,7 @@ class UsuariosController extends BaseController
         // entonces pararlo
         $usuarioSesion = UsuarioSession::getUsuario();
         if (
-            $usuarioSesion->rol !== Rol::Administrador
+            !$usuarioSesion->hasPermiso("usuarios:ver")
             && $usuarioSesion->id !== $usuario->id_usuario
         ) {
             return $this->response->json(["message" => "No esta autorizado"], 403);
@@ -67,6 +67,7 @@ class UsuariosController extends BaseController
 
     public function insert(): string
     {
+        $this->protect("usuarios:crear");
         $body = $this->response->getParsedBody();
 
         // Verificar que no exista
@@ -91,6 +92,7 @@ class UsuariosController extends BaseController
 
     public function update(): string
     {
+        $this->protect("usuarios:editar");
         $body = $this->response->getParsedBody();
 
         // Verificar que exista
@@ -104,7 +106,7 @@ class UsuariosController extends BaseController
         // entonces pararlo
         $usuarioSesion = UsuarioSession::getUsuario();
         if (
-            $usuarioSesion->rol !== Rol::Administrador
+            !$usuarioSesion->hasPermiso("usuarios:ver")
             && $usuarioSesion->id !== $oldUsuario->id_usuario
         ) {
             return $this->response->json(["message" => "No esta autorizado"], 403);
@@ -127,6 +129,8 @@ class UsuariosController extends BaseController
 
     public function delete(): string|null
     {
+        $this->protect("usuarios:eliminar");
+
         $id = $this->getParamId();
         $usuario = $this->usuariosModel->find($id);
 

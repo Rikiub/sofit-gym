@@ -28,15 +28,19 @@ class AuthMiddleware
             // Por razones de compatibilidad.
             return;
         }
-        $rolesPermitidos = $route["roles"] ?? [];
+        $permisosPermitidos = $route["permisos"] ?? [];
 
         // Si se solicita una acción específica y está configurada, sobrescribimos los roles
         if (isset($route["actions"][$action])) {
-            $rolesPermitidos = $route["actions"][$action];
+            $permisosPermitidos = $route["actions"][$action];
+        }
+
+        if (in_array("todos", $permisosPermitidos, true)) {
+            return;
         }
 
         // Validar autorización
-        if (!in_array($usuario->rol, $rolesPermitidos, true)) {
+        if (!array_intersect($usuario->permisos, $permisosPermitidos)) {
             Response::redirectToError(403);
             exit;
         }

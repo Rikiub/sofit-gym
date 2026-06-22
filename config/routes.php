@@ -1,32 +1,52 @@
 <?php
 
-use App\Helpers\Auth\Rol;
-
-const Todos = [Rol::Administrador, Rol::Entrenador, Rol::Recepcionista];
-
 /** Mapeo de rutas basico
  * 
- * Si una ruta tiene el atributo "roles"
- * Entonces solo permitira ingresar a los usuarios con dichos roles.
+ * Si una ruta tiene el atributo "permisos"
+ * Entonces solo permitira ingresar a los usuarios con dichos permisos.
  */
 return [
+    "clientes" => [
+        "permisos" => ["clientes:ver"],
+    ],
+    "clientesItem" => [
+        "permisos" => ["clientes:ver"],
+    ],
     "trabajadores" => [
-        "roles" => [Rol::Administrador],
+        "permisos" => ["trabajadores:ver"],
     ],
     "clases" => [
-        "roles" => [Rol::Administrador, Rol::Entrenador],
+        "permisos" => ["clases:ver"],
+    ],
+    "productos" => [
+        "permisos" => ["productos:ver"],
+    ],
+    "rutinas" => [
+        "permisos" => ["rutinas:ver"],
+    ],
+    "equipos" => [
+        "permisos" => ["equipos:ver"],
+    ],
+    "asistencia" => [
+        "permisos" => ["asistencia:ver"],
+    ],
+    "asistente" => [
+        "permisos" => ["asistente:ver"],
     ],
     "facturacion" => [
-        "roles" => [Rol::Administrador],
+        "permisos" => ["facturaciones:ver"],
     ],
     "usuarios" => [
-        "roles" => [Rol::Administrador],
+        "permisos" => ["usuarios:ver"],
         "actions" => [
-            "find" => Todos,
-            "update" => Todos,
+            "find" => ["todos"],
+            "update" => ["usuarios:editar"],
         ],
     ],
+    "roles" => [
+        "permisos" => ["roles:ver"],
+    ],
     "bitacora" => [
-        "roles" => [Rol::Administrador],
+        "permisos" => ["bitacora:ver"],
     ],
 ];

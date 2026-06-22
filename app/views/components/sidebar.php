@@ -1,9 +1,6 @@
 <?php
 
 /** @var \App\Helpers\Auth\UsuarioSessionDTO $sesion_usuario */
-
-use App\Helpers\Auth\Rol;
-
 ?>
 
 <script type="module">
@@ -47,11 +44,13 @@ use App\Helpers\Auth\Rol;
 
 		<hr>
 
-		<a href="?page=clientes" class="nav-single">
-			<i class="fas fa-id-card"></i> <span>Clientes</span>
-		</a>
+		<?php if ($sesion_usuario->hasPermiso("clientes:ver")): ?>
+			<a href="?page=clientes" class="nav-single">
+				<i class="fas fa-id-card"></i> <span>Clientes</span>
+			</a>
+		<?php endif ?>
 
-		<?php if ($sesion_usuario->rol === Rol::Administrador): ?>
+		<?php if ($sesion_usuario->hasPermiso("trabajadores:ver")): ?>
 			<a href="?page=trabajadores" class="nav-single">
 				<i class="fas fa-id-card"></i> <span>Trabajadores</span>
 			</a>
@@ -59,24 +58,25 @@ use App\Helpers\Auth\Rol;
 
 		<hr>
 
-		<?php if ($sesion_usuario->rol === Rol::Administrador): ?>
+		<?php if ($sesion_usuario->hasPermiso("facturacion:ver")): ?>
 			<a href="?page=facturacion" class="nav-single">
 				<i class="fas fa-coins"></i> <span>Facturación y Control de Pagos</span>
 			</a>
 		<?php endif ?>
 
-		<a href="?page=asistencia" class="nav-single">
-			<i class="fas fa-fingerprint"></i> <span>Control de Asistencia</span>
-		</a>
+		<?php if ($sesion_usuario->hasPermiso("asistencia:ver")): ?>
+			<a href="?page=asistencia" class="nav-single">
+				<i class="fas fa-fingerprint"></i> <span>Control de Asistencia</span>
+			</a>
+		<?php endif ?>
 
-		<a href="?page=clasesGrupales" class="nav-single">
-			<i class="fas fa-calendar"></i> <span>Horarios de clases</span>
-		</a>
+		<?php if ($sesion_usuario->hasPermiso("clases:ver")): ?>
+			<a href="?page=clasesGrupales" class="nav-single">
+				<i class="fas fa-calendar"></i> <span>Horarios de clases</span>
+			</a>
+		<?php endif ?>
 
-		<?php if (
-			$sesion_usuario->rol === Rol::Administrador
-			|| $sesion_usuario->rol === Rol::Entrenador
-		): ?>
+		<?php if ($sesion_usuario->hasPermiso("rutinas:ver")): ?>
 			<details class="nav-group">
 				<summary class="group-title">
 					<i class="fas fa-dumbbell"></i> <span>Rutinas de Entrenamiento</span>
@@ -91,10 +91,7 @@ use App\Helpers\Auth\Rol;
 
 		<hr>
 
-		<?php if (
-			$sesion_usuario->rol === Rol::Administrador
-			|| $sesion_usuario->rol === Rol::Entrenador
-		): ?>
+		<?php if ($sesion_usuario->hasPermiso("equipos:ver")): ?>
 			<details class="nav-group">
 				<summary class="group-title">
 					<i class="fas fa-microchip"></i> <span>Equipos y Maquinaria</span>
@@ -107,41 +104,52 @@ use App\Helpers\Auth\Rol;
 			</details>
 		<?php endif ?>
 
-		<a href="?page=productos" class="nav-single">
-			<i class="fas fa-boxes"></i> <span>Inventario de Productos</span>
-		</a>
-
-		<a href="?page=asistente" class="nav-single">
-			<i class="fas fa-robot"></i> <span>Asistente de Entrenamiento</span>
-		</a>
-
-		<?php if ($sesion_usuario->rol === Rol::Administrador): ?>
-			<div class="sidebar-divider" role="separator"></div>
-
-			<details class="nav-group">
-				<summary class="group-title">
-					<i class="fas fa-shield-alt"></i> <span>Auditoría y seguridad</span>
-					<i class="fas fa-chevron-down toggle-icon"></i>
-				</summary>
-				<div class="group-items">
-					<a href="?page=usuarios"><i class="fas fa-lock"></i> <span>Usuarios y permisos</span></a>
-					<a href="?page=bitacora"><i class="fas fa-history"></i> <span>Bitácora</span></a>
-				</div>
-			</details>
-
-
-			<details class="nav-group">
-				<summary class="group-title">
-					<i class="fas fa-database"></i> <span>Soporte y Datos</span>
-					<i class="fas fa-chevron-down toggle-icon"></i>
-				</summary>
-				<div class="group-items">
-					<a href="?page=reportes"><i class="fas fa-chart-bar"></i> <span>Reportes estadísticos</span></a>
-					<a href="?page=mantenimiento_sistema"><i class="fas fa-database"></i> <span>Mantenimiento del sistema</span></a>
-					<a href="?page=ayuda"><i class="fas fa-question-circle"></i> <span>Manual de usuario</span></a>
-				</div>
-			</details>
+		<?php if ($sesion_usuario->hasPermiso("productos:ver")): ?>
+			<a href="?page=productos" class="nav-single">
+				<i class="fas fa-boxes"></i> <span>Inventario de Productos</span>
+			</a>
 		<?php endif ?>
+
+		<?php if ($sesion_usuario->hasPermiso("asistente:ver")): ?>
+			<a href="?page=asistente" class="nav-single">
+				<i class="fas fa-robot"></i> <span>Asistente de Entrenamiento</span>
+			</a>
+		<?php endif ?>
+
+		<div class="sidebar-divider" role="separator"></div>
+
+		<details class="nav-group">
+			<summary class="group-title">
+				<i class="fas fa-shield-alt"></i> <span>Auditoría y seguridad</span>
+				<i class="fas fa-chevron-down toggle-icon"></i>
+			</summary>
+
+			<div class="group-items">
+				<?php if ($sesion_usuario->hasPermiso("usuarios:ver")): ?>
+					<a href="?page=usuarios"><i class="fas fa-lock"></i> <span>Usuarios</span></a>
+				<?php endif ?>
+
+				<?php if ($sesion_usuario->hasPermiso("roles:ver")): ?>
+					<a href="?page=roles"><i class="fas fa-lock"></i> <span>Roles y Permisos</span></a>
+				<?php endif ?>
+
+				<?php if ($sesion_usuario->hasPermiso("bitacora:ver")): ?>
+					<a href="?page=bitacora"><i class="fas fa-history"></i> <span>Bitácora</span></a>
+				<?php endif ?>
+			</div>
+		</details>
+
+		<details class="nav-group">
+			<summary class="group-title">
+				<i class="fas fa-database"></i> <span>Soporte y Datos</span>
+				<i class="fas fa-chevron-down toggle-icon"></i>
+			</summary>
+			<div class="group-items">
+				<a href="?page=reportes"><i class="fas fa-chart-bar"></i> <span>Reportes estadísticos</span></a>
+				<a href="?page=mantenimiento_sistema"><i class="fas fa-database"></i> <span>Mantenimiento del sistema</span></a>
+				<a href="?page=ayuda"><i class="fas fa-question-circle"></i> <span>Manual de usuario</span></a>
+			</div>
+		</details>
 	</nav>
 
 	<div class="sidebar-footer text-center">

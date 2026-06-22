@@ -45,11 +45,15 @@ class LoginController extends BaseController
             return $this->invalidInput();
         }
 
+        // Actualizar ultimo acceso
+        $this->usuariosModel->actualizarUltimoAcceso($usuario->id_usuario);
+
         // Guardar la sesión utilizando un helper
         UsuarioSession::login(new UsuarioSessionDto(
             id: $usuario->id_usuario,
             rol: Rol::from($usuario->id_rol),
             nombre: $usuario->nombre_usuario,
+            permisos: $usuario->permisos,
         ));
 
         $this->logger->info(
