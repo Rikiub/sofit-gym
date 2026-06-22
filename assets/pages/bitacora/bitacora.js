@@ -20,7 +20,7 @@ const BADGES = {
 function capitalizeWords(str) {
   return str.replace(/\b\w/g, char => char.toUpperCase());
 }
-    
+
 Alpine.data("crudTable", () => (
     crudTableComponent({
         params: {
@@ -53,7 +53,7 @@ Alpine.data("crudTable", () => (
                 name: "Accion",
                 formatter: (cell, row) => cell ? capitalizeWords(cell) : "?",
             },
-            { name: "ID Usuario", id: "id_usuario" },
+            { name: "Usuario", id: "nombre_usuario" },
         ],
         gridOptions: {
             crudButtons: {

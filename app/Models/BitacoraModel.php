@@ -12,6 +12,7 @@ readonly class BitacoraDTO
     public function __construct(
         public ?int $id_bitacora = null,
         public ?int $id_usuario = null,
+        public ?string $nombre_usuario = null,
         public ?int $id_modulo = null,
         public ?string $modulo = null,
         public ?string $accion = null,
@@ -57,11 +58,14 @@ class BitacoraModel extends BaseModel
         return <<<SQL
                 SELECT
                     bitacora.*,
+                    usuario.nombre_usuario,
                     modulo.nombre AS `modulo`
                 FROM
                     {$this->table} bitacora
                 LEFT JOIN {$this->dbSeguridad}.modulo
                     ON bitacora.id_modulo = modulo.id_modulo
+                LEFT JOIN {$this->dbSeguridad}.usuario
+                    ON usuario.id_usuario = bitacora.id_usuario
                 {$where}
                 ORDER BY fecha DESC
             SQL;
