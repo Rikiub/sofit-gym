@@ -55,37 +55,39 @@ $this->pushJs("components/querySelect.js");
                     x-model="search">
             </search>
 
-            <table class="table table-striped table-sm align-middle">
-                <thead>
-                    <tr>
-                        <?php foreach ($columns as $col): ?>
-                            <th><?= $this->e($col['name']) ?></th>
-                        <?php endforeach; ?>
-
-                        <th class="text-end">Acción</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <template x-for="item in items" :key="item[itemKey]">
+            <div class="overflow-y-auto" style="max-height: 300px;">
+                <table class="table table-striped table-sm align-middle">
+                    <thead>
                         <tr>
                             <?php foreach ($columns as $col): ?>
-                                <?php if (isset($col["computed"])): ?>
-                                    <td x-text="<?= $col['computed'] ?>"></td>
-                                <?php else: ?>
-                                    <td x-text="item.<?= $col['id'] ?>"></td>
-                                <?php endif ?>
+                                <th><?= $this->e($col['name']) ?></th>
                             <?php endforeach; ?>
 
-                            <td class="text-end">
-                                <button type="button" class="btn btn-sm btn-secondary" @click="setSelected(item)">
-                                    Seleccionar
-                                </button>
-                            </td>
+                            <th class="text-end">Acción</th>
                         </tr>
-                    </template>
-                </tbody>
-            </table>
+                    </thead>
+
+                    <tbody>
+                        <template x-for="item in items" :key="item[itemKey]">
+                            <tr>
+                                <?php foreach ($columns as $col): ?>
+                                    <?php if (isset($col["computed"])): ?>
+                                        <td x-text="<?= $col['computed'] ?>"></td>
+                                    <?php else: ?>
+                                        <td x-text="item.<?= $col['id'] ?>"></td>
+                                    <?php endif ?>
+                                <?php endforeach; ?>
+
+                                <td class="text-end">
+                                    <button type="button" class="btn btn-sm btn-secondary" @click="setSelected(item)">
+                                        Seleccionar
+                                    </button>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

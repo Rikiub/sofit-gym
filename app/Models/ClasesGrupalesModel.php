@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Clientes\ClienteDTO;
 use App\Helpers\Validator;
 use App\Models\BaseModel;
 use App\Models\Clientes\ClientesModel;
@@ -19,13 +18,23 @@ enum EstadoClase: string
     case CANCELADO = "Cancelado";
 }
 
+readonly class ClaseClienteDTO
+{
+    public function __construct(
+        public string $cedula,
+        public string $nombre,
+        public string $apellido,
+        public bool $asistio,
+    ) {}
+}
+
 readonly class ClaseGrupalDTO
 {
     public function __construct(
         public ?int $id_clase = null,
         public ?string $cedula_trabajador = null,
-        /** @var ClienteDTO[]|string[] */
-        public ?array $clientes = [],
+        /** @var ClaseClienteDTO[]|string[] */
+        public array $clientes = [],
         public ?string $nombre = null,
         public ?string $descripcion = null,
         public ?int $capacidad_actual = 0,
@@ -35,7 +44,7 @@ readonly class ClaseGrupalDTO
         public ?DateTimeImmutable $fecha_fin = null,
     ) {
         foreach ($this->clientes as $cliente) {
-            if ($cliente instanceof ClienteDTO && !$cliente->cedula) {
+            if ($cliente instanceof ClaseClienteDTO && !$cliente->cedula) {
                 throw new InvalidArgumentException("Cada cliente debe tener una cédula.");
             }
 
@@ -46,7 +55,6 @@ readonly class ClaseGrupalDTO
     }
 
     public function validateInsert() {}
-
     public function validateUpdate() {}
 }
 
@@ -70,37 +78,35 @@ class ClasesGrupalesModel extends BaseModel
                 clase.*,
                 COUNT(cc.id_clase) AS `capacidad_actual`,
                 COALESCE(
-                    CONCAT(
-                        '[', 
-                        GROUP_CONCAT(
-                            IF(cc.cedula_cliente IS NOT NULL, JSON_OBJECT('cedula', cc.cedula_cliente), NULL)
-                        ), 
-                        ']'
-                    ),
-                    '[]'
+                (
+                    SELECT CONCAT('[', GROUP_CONCAT(
+                        JSON_OBJECT(
+                            'cedula', cliente.cedula,
+                            'nombre', cliente.nombre,
+                            'apellido', cliente.apellido,
+                            'asistio', cc_sub.asistio
+                        )
+                    ), ']')
+                    FROM clase_cliente cc_sub
+                    LEFT JOIN persona cliente
+                        ON cliente.cedula = cc_sub.cedula_cliente
+                    WHERE cc_sub.id_clase = clase.id_clase
+                ),
+                '[]'
                 ) AS clientes
-            FROM {$this->table} AS clase
-            LEFT JOIN clase_cliente AS cc
+            FROM {$this->table} clase
+            LEFT JOIN clase_cliente cc
                 ON clase.id_clase = cc.id_clase
             {$where}
             GROUP BY clase.id_clase
         SQL;
     }
 
-    /** 
-     * @return ClaseGrupalDTO
-     */
     private function map(array $row): ClaseGrupalDTO
     {
         $clientes = json_decode($row["clientes"], true);
-        $clientes = array_map(
-            fn($r) => $this->clientesModel->find($r["cedula"]),
-            $clientes,
-        );
         $row["clientes"] = $clientes;
-
-        $row = $this->mapper->map(ClaseGrupalDTO::class, $row);
-        return $row;
+        return $this->mapper->map(ClaseGrupalDTO::class, $row);
     }
 
     /**
@@ -167,6 +173,7 @@ class ClasesGrupalesModel extends BaseModel
         $this->pdoDelete($this->table, [$this->primaryKey => $id]);
     }
 
+    /** @param ClaseClienteDTO[]|array<string> $clientes */
     private function syncClientes(int $id_clase, array $clientes): void
     {
         $table = "clase_cliente";
@@ -179,7 +186,7 @@ class ClasesGrupalesModel extends BaseModel
         // Insertar los nuevos clientes
         foreach ($clientes as $cliente) {
             // Extraer solo la cedula
-            if ($cliente instanceof ClienteDTO) {
+            if ($cliente instanceof ClaseClienteDTO) {
                 $cedula = $cliente->cedula;
             } else {
                 $cedula = $cliente;
@@ -187,7 +194,8 @@ class ClasesGrupalesModel extends BaseModel
 
             $this->pdoInsert($table, [
                 "id_clase" => $id_clase,
-                "cedula_cliente" => $cedula
+                "cedula_cliente" => $cedula,
+                "asistio" => $cliente->asistio,
             ]);
         }
     }

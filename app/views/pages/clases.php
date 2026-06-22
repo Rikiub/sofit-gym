@@ -89,9 +89,15 @@ $modalForm = $this->fetch('modalForm', [
                                     <span class="text-dark" x-text='`\${cliente.nombre} \${cliente.apellido}`'></span>
                                 </div>
                                 
-                                <button type="button" class="btn btn-sm btn-danger border-0" @click="remove(index)">
-                                    Eliminar
-                                </button>
+                                <div class="d-flex gap-2">
+                                    <label>
+                                        <input class="form-check-input" type="checkbox" x-model="cliente.asistio"> Asistio
+                                    </label>
+
+                                    <button type="button" class="btn btn-sm btn-danger border-0" @click="remove(index)">
+                                        Eliminar
+                                    </button>
+                                </div>
                             </li>
                         </template>
 

@@ -130,6 +130,6 @@ Alpine.data("listaClientes", () => ({
         this.capacidad_actual = clientes.length;
     },
     serialize(detail) {
-        detail.merge({ clientes: this.clientes.map((item) => item.cedula) });
+        detail.merge({ clientes: this.clientes });
     },
 }));
