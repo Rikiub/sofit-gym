@@ -188,6 +188,38 @@ class UsuariosModel extends BaseModel
         return $data;
     }
 
+    // Intentos
+    public function insertIntentoAcceso(int $id_usuario, bool $exito): void
+    {
+        $this->pdoInsert(
+            "{$this->dbSeguridad}.intento_acceso",
+            [
+                "id_usuario" => $id_usuario,
+                "exito" => $exito
+            ],
+        );
+    }
+
+    public function intentosFallidos(int $id_usuario, DateTimeImmutable $duracion): int
+    {
+        $intentos = $this->pdoQuery(
+            <<<SQL
+                SELECT COUNT(*)
+                FROM
+                    {$this->dbSeguridad}.intento_acceso
+                WHERE
+                    id_usuario = ?
+                    AND exito = 0
+                    AND fecha_creacion > ?;
+            SQL,
+            [
+                $id_usuario,
+                Validator::dateToString($duracion)
+            ]
+        )->fetchColumn();
+        return (int)$intentos;
+    }
+
     // ====================================================================
     // MÉTODOS AÑADIDOS PARA LA RECUPERACIÓN DE CONTRASEÑA
     // ====================================================================

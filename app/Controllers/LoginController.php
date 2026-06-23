@@ -46,10 +46,28 @@ class LoginController extends BaseController
                 ["nombre_usuario" => $usuario->nombre_usuario]
             );
 
+            $maximoIntentos = 3;
+            $minutosBloqueo = 15;
+            $duracion = new DateTimeImmutable("-{$minutosBloqueo} minutes");
+
+            // Si el usuario excedio el maximo numero de intentos
+            if ($this->usuariosModel->intentosFallidos(
+                $usuario->id_usuario,
+                $duracion,
+            ) >= $maximoIntentos) {
+                return $this->response->json(
+                    ["message" => "Numero de intentos excedidos. Vuelva a intentarlo en {$minutosBloqueo} minutos."],
+                    401
+                );
+            } else {
+                $this->usuariosModel->insertIntentoAcceso($usuario->id_usuario, exito: false);
+            }
+
             return $this->invalidInput();
         }
 
-        // Actualizar ultimo acceso
+        // Actualizar estado
+        $this->usuariosModel->insertIntentoAcceso($usuario->id_usuario, exito: true);
         $this->usuariosModel->actualizarUltimoAcceso($usuario->id_usuario);
 
         // Guardar la sesión utilizando un helper

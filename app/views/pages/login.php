@@ -11,6 +11,8 @@ $this->layout("layout", ["title" => $title, "sidebar" => false]);
     import FormDataJson from "form-data-json";
 
     Alpine.data("login", () => ({
+        timeout: null,
+
         error: "",
         success: "",
         step: 'login',
@@ -34,6 +36,8 @@ $this->layout("layout", ["title" => $title, "sidebar" => false]);
 
         async handleSubmit() {
             try {
+                clearTimeout(this.timeout);
+
                 const json = await fetchApi({
                     page: "login",
                     action: "login"
@@ -41,10 +45,11 @@ $this->layout("layout", ["title" => $title, "sidebar" => false]);
                     method: "POST",
                     body: FormDataJson.toJson(this.$refs.form),
                 });
+
                 self.location.href = json.redirect;
             } catch (e) {
                 this.error = e.cause.message;
-                setTimeout(() => {
+                this.timeout = setTimeout(() => {
                     this.error = "";
                 }, 5000);
             }
@@ -52,6 +57,8 @@ $this->layout("layout", ["title" => $title, "sidebar" => false]);
 
         async handleRecover() {
             try {
+                clearTimeout(this.timeout);
+
                 await fetchApi({
                     page: "login",
                     action: "recover"
@@ -66,10 +73,9 @@ $this->layout("layout", ["title" => $title, "sidebar" => false]);
 
                 // Mostramos el mensaje y lo quitamos a los 5 segundos
                 this.success = "Código enviado a tu correo";
-                setTimeout(() => {
+                this.timeout = setTimeout(() => {
                     this.success = "";
                 }, 5000);
-
             } catch (e) {
                 this.error = e.cause.message;
             }
@@ -372,11 +378,17 @@ $this->layout("layout", ["title" => $title, "sidebar" => false]);
 
     /* Layout */
     .split-login-wrapper {
+        background-image:
+            linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6)),
+            url('<?= ASSETS_DIR ?>/pages/login/background.jpg');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+
         display: flex;
         min-height: 100vh;
         width: 100%;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6)), url('<?= ASSETS_DIR ?>/pages/login/background.jpg') no-repeat center center/cover;
         margin: -1rem;
         width: calc(100% + 2rem);
     }
