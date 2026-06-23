@@ -12,6 +12,6 @@ class Validator
 {
     public static function dateToString(?DateTimeInterface $date): ?string
     {
-        return $date ? $date->format(DateTimeInterface::ATOM) : null;
+        return $date ? $date->format("Y-m-d H:i:s") : null;
     }
 }
