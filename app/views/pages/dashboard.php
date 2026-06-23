@@ -115,7 +115,8 @@ $this->pushJs('pages/dashboard/dashboard.js');
         </div>
 
         <h2 class="fs-3 fw-bold text-white mb-4 d-flex align-items-center gap-2" style="text-shadow: 0 1px 3px rgba(0,0,0,0.3);">
-            <i class="fas fa-chalkboard"></i> Estadísticas
+            <i class="fas fa-chalkboard"></i>
+            Estadísticas
         </h2>
 
         <div class="row g-3">
@@ -143,7 +144,6 @@ $this->pushJs('pages/dashboard/dashboard.js');
 </div>
 
 <style>
-    /* CSS ESTRICTO: Únicamente lo que Bootstrap NO provee en sus utilidades básicas */
     .glass-card {
         background: rgba(255, 255, 255, 0.2);
         backdrop-filter: blur(12px);
