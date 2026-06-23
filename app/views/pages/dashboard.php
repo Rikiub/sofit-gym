@@ -7,7 +7,7 @@ $asistencias ??= [];
 $clientesMensuales ??= [];
 $ingresosMensuales ??= [];
 
-$this->layout('layout', ['title' => 'Dashboard']);
+$this->layout('layout', ['title' => 'Inicio']);
 $this->pushJs('lib/chart.js/chart.umd.min.js');
 $this->pushJs('pages/dashboard/dashboard.js');
 

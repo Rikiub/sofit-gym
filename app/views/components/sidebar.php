@@ -102,7 +102,7 @@ $dropdown = function (
 	<nav class="sidebar-nav">
 		<a href="?page=dashboard" class="active">
 			<i class="fas fa-home"></i>
-			<span>Panel de control</span>
+			<span>Inicio</span>
 		</a>
 
 		<hr>
@@ -230,24 +230,27 @@ $dropdown = function (
 			title: "Soporte y Datos",
 			items: [
 				[
-					"permiso" => "roles:ver",
+					"permiso" => "reportes:ver",
 					"page" => "reportes",
 					"icon" => "fa-chart-bar",
 					"title" => "Reportes estadísticos"
 				],
 				[
-					"permiso" => "roles:ver",
+					"permiso" => "respaldos:ver",
 					"page" => "sistema",
 					"icon" => "fa-database",
 					"title" => "Mantenimiento del sistema"
 				],
-				[
-					"permiso" => "roles:ver",
-					"page" => "sistema",
-					"icon" => "fa-question-circle",
-					"title" => "Manual de usuario"
-				]
 			]
+		) ?>
+
+		<hr>
+
+		<?= $link(
+			permiso: "disabled",
+			page: "ayuda",
+			icon: "fa-question-circle",
+			title: "Manual de usuario"
 		) ?>
 	</nav>
 
