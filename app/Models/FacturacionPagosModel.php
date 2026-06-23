@@ -110,6 +110,24 @@ class FacturacionPagosModel extends BaseModel
         return $stmt->fetchAll();
     }
 
+    public function obtenerIngresosMesActual(): array
+    {
+        $sql = <<<SQL
+                SELECT 
+                    COUNT(p.id_pago) AS total_vendidos,
+                    SUM(p.monto) AS total_ingresado
+                FROM pago p
+                JOIN membresia m ON p.id_membresia = m.id_membresia
+                WHERE p.estado = 'Pagado'
+                    AND YEAR(p.fecha_pago) = YEAR(CURDATE())
+                    AND MONTH(p.fecha_pago) = MONTH(CURDATE())
+        SQL;
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
     public function buscarPagos(string $termino): array
     {
         $termino = "%{$termino}%";

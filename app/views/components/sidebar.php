@@ -1,6 +1,7 @@
 <?php
 
 /** @var \App\Helpers\Auth\UsuarioSessionDTO $sesion_usuario */
+
 ?>
 
 <script type="module">
@@ -116,7 +117,7 @@
 			</a>
 		<?php endif ?>
 
-		<div class="sidebar-divider" role="separator"></div>
+		<hr>
 
 		<details class="nav-group">
 			<summary class="group-title">
@@ -144,6 +145,7 @@
 				<i class="fas fa-database"></i> <span>Soporte y Datos</span>
 				<i class="fas fa-chevron-down toggle-icon"></i>
 			</summary>
+
 			<div class="group-items">
 				<a href="?page=reportes"><i class="fas fa-chart-bar"></i> <span>Reportes estadísticos</span></a>
 				<a href="?page=mantenimiento_sistema"><i class="fas fa-database"></i> <span>Mantenimiento del sistema</span></a>

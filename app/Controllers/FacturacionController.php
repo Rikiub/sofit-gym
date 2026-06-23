@@ -141,4 +141,10 @@ class FacturacionController extends BaseController
 
         return $this->response->json($resultados);
     }
+
+    public function ingresos_mensuales()
+    {
+        $ingresos = $this->model->obtenerIngresosMesActual();
+        return $this->response->json($ingresos);
+    }
 }

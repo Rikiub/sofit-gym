@@ -40,7 +40,8 @@ class ClientesController extends BaseController
     public function query(): string
     {
         $search = $_GET["search"] ?? null;
-        $clientes = $this->clientesModelo->query($search);
+        $filters = $_GET["filters"] ?? [];
+        $clientes = $this->clientesModelo->query($search, $filters);
         return $this->response->json($clientes);
     }
 

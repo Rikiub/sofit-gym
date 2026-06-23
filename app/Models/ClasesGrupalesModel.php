@@ -24,7 +24,7 @@ readonly class ClaseClienteDTO
         public string $cedula,
         public string $nombre,
         public string $apellido,
-        public bool $asistio,
+        public bool $asistio = false,
     ) {}
 }
 

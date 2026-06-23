@@ -171,4 +171,17 @@ class AsistenciaModel extends BaseModel
         $stmt->execute([$fecha]);
         return $stmt->fetchAll();
     }
+
+    public function obtenerTotalesPorRango(string $fechaInicio, string $fechaFin): array
+    {
+        $sql = "SELECT DATE(a.fecha) AS dia, COUNT(*) AS total_asistencias
+            FROM asistencia_gimnasio a
+            WHERE DATE(a.fecha) BETWEEN ? AND ? AND a.tipo = 'Entrada'
+            GROUP BY DATE(a.fecha)
+            ORDER BY dia ASC";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$fechaInicio, $fechaFin]);
+        return $stmt->fetchAll();
+    }
 }

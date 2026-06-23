@@ -65,6 +65,25 @@ class AsistenciaController extends BaseController
         exit;
     }
 
+    public function buscar_entradas_hoy()
+    {
+        $resultados = $this->model->obtenerEntradasHoy();
+        header('Content-Type: application/json');
+        echo json_encode($resultados);
+        exit;
+    }
+
+    public function obtener_totales()
+    {
+        $inicio = $_GET["inicio"] ?? null;
+        $fin = $_GET["fin"] ?? null;
+        $resultados = $this->model->obtenerTotalesPorRango($inicio, $fin);
+
+        header('Content-Type: application/json');
+        echo json_encode($resultados);
+        exit;
+    }
+
     public function editar()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

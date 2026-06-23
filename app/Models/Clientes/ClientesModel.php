@@ -76,7 +76,6 @@ class ClientesModel extends BaseModel
      */
     public function query(?string $search = null, array $filters = []): array
     {
-        $sql = $this->sqlSelect();
         $whereClauses = [];
         $params = [];
 
@@ -134,9 +133,11 @@ class ClientesModel extends BaseModel
             }
         }
 
-        if (!empty($whereClauses)) {
-            $sql .= " WHERE " . implode(" AND ", $whereClauses);
-        }
+        $sql = $this->sqlSelect(
+            !empty($whereClauses)
+                ? " WHERE " . implode(" AND ", $whereClauses)
+                : ""
+        );
 
         $rows = $this->pdoQuery($sql, $params)->fetchAll();
         return array_map(
