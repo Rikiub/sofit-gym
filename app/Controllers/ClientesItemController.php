@@ -26,6 +26,7 @@ class ClientesItemController extends BaseController
 
     public function index(): string
     {
+        $this->protect("clientes:ver");
         $cedula = $this->getCedulaParam();
 
         if (!$this->clientesModel->find($cedula)) {
@@ -53,6 +54,7 @@ class ClientesItemController extends BaseController
 
     public function getSegFisicoByCliente(): ?string
     {
+        $this->protect("clientes:ver");
         $cedula = $this->getCedulaParam();
 
         if (!$this->clientesModel->find($cedula)) {
@@ -65,6 +67,7 @@ class ClientesItemController extends BaseController
 
     public function insertSegFisico(): string
     {
+        $this->protect("clientes:crear");
         $body = $this->response->getParsedBody();
 
         // Valida el POST
@@ -84,6 +87,7 @@ class ClientesItemController extends BaseController
 
     public function updateSegFisico(): string
     {
+        $this->protect("clientes:editar");
         $cedula = $this->getCedulaParam();
 
         $body = $this->response->getParsedBody();
@@ -101,6 +105,7 @@ class ClientesItemController extends BaseController
 
     public function deleteSegFisico(): string|null
     {
+        $this->protect("clientes:eliminar");
         $idSeguimiento = isset($_GET['id']) ? intval($_GET['id']) : null;
 
         if (!$this->fisicoModel->find($idSeguimiento)) {
@@ -115,6 +120,7 @@ class ClientesItemController extends BaseController
 
     public function getSegNutricionalByCliente(): ?string
     {
+        $this->protect("clientes:ver");
         $cedula = $this->getCedulaParam();
 
         if (!$this->clientesModel->find($cedula)) {
@@ -127,6 +133,7 @@ class ClientesItemController extends BaseController
 
     public function insertSegNutricional(): string
     {
+        $this->protect("clientes:crear");
         $body = $this->response->getParsedBody();
 
         // Valida el POST
@@ -146,6 +153,7 @@ class ClientesItemController extends BaseController
 
     public function updateSegNutricional(): string
     {
+        $this->protect("clientes:editar");
         $cedula = $this->getCedulaParam();
 
         $body = $this->response->getParsedBody();
@@ -163,6 +171,7 @@ class ClientesItemController extends BaseController
 
     public function deleteSegNutricional(): string|null
     {
+        $this->protect("clientes:eliminar");
         $idSeguimiento = isset($_GET['id']) ? intval($_GET['id']) : null;
 
         if (!$this->nutricionalModel->find($idSeguimiento)) {

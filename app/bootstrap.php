@@ -1,6 +1,6 @@
 <?php
 
-use App\Helpers\Auth\AuthMiddleware;
+use App\Helpers\Auth\UsuarioSession;
 use App\Helpers\Response;
 use CuyZ\Valinor\Mapper\MappingError;
 use DI\ContainerBuilder;
@@ -19,9 +19,6 @@ $classPath = '\\' . CONTROLLERS_NAMESPACE . "\\$className";
 
 // Response
 $response = new Response(normalizer: null);
-$wantsJson = $response->acceptsJson()
-    || $response->isJson()
-    || ($_GET['format'] ?? '') === 'json';
 
 // FRONT CONTROLLER
 try {
@@ -29,8 +26,7 @@ try {
 
     // Configurar inyector de dependencias (PHP-DI).
     // Dependiendo de las dependencias que tengan en los __contruct de los controladores
-    // el inyector las instanciara automaticamente con la configuración definida
-    // en el archivo CONTAINER_FILE.
+    // el inyector las instanciara automaticamente con la configuración definida.
     $builder = new ContainerBuilder();
     $builder->addDefinitions(require "config/container.php")->useAttributes(true);
     if (!DEBUG) {
@@ -46,7 +42,7 @@ try {
     }
 
     if (!class_exists($classPath)) {
-        if ($wantsJson) {
+        if ($response->wantsJson()) {
             // Si no se encuentra la pagina, devolver error como JSON
             echo $response->json([
                 'error' => 'Not Found',
@@ -72,9 +68,12 @@ try {
         throw new Exception("Method '$action' not founded in controller '$className'");
     }
 
-    // Verificar permisos
-    $auth = new AuthMiddleware(require "config/routes.php");
-    $auth->checkAccess($page, $action);
+    // Si el usuario no ha iniciado sesion, redigirir a pagina de login.
+    $usuario = UsuarioSession::getUsuario();
+    if ($page !== "login" && !$usuario) {
+        Response::redirect(["page" => "login"]);
+        exit;
+    }
 
     // Ejecutar controlador junto a su metodo
     $respuesta = $controller->$action();
@@ -110,7 +109,7 @@ try {
     // Registrar error en los logs del servidor en producción
     error_log(sprintf("Error: %s en %s:%d", $error->getMessage(), $error->getFile(), $error->getLine()));
 
-    if (DEBUG || $wantsJson) {
+    if (DEBUG || $response->wantsJson()) {
         $res = [
             'error' => 'Internal Server Error',
             'message' => DEBUG ? $error->getMessage() : 'An unexpected error occurred on the server'

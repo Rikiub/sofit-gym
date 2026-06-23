@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Helpers\Auth\Rol;
 use App\Helpers\Auth\UsuarioSession;
 use App\Helpers\Auth\UsuarioSessionDto;
 use App\Helpers\Response;
@@ -69,24 +68,25 @@ class AsistenteController extends BaseController
             FunctionBuilder::buildFunctionInfo(new HumanInTheLoopTool(), "askUser")
         );
 
-        // Herramientas accesibles por todos los roles
-        $this->addTool("queryClientes");
-        $this->addTool("findCliente");
+        // Limitar herramientas segun permisos
+        $permissionTools = [
+            'trabajadores:ver' => ['queryTrabajadores'],
+            'clientes:ver'     => [
+                'queryClientes',
+                'findCliente',
+                'querySegFisico',
+                'querySegNutricional'
+            ],
+            'asistencia:ver'   => ['queryAsistencias'],
+            'rutinas:ver'      => ['queryRutinas'],
+        ];
 
-
-        // Limitar herramientas segun rol
-        if ($this->usuario->rol === Rol::Administrador) {
-            $this->addTool("queryTrabajadores");
-        }
-
-        if (
-            $this->usuario->rol === Rol::Administrador
-            || $this->usuario->rol === Rol::Entrenador
-        ) {
-            $this->addTool("querySegFisico");
-            $this->addTool("querySegNutricional");
-            $this->addTool("queryAsistencias");
-            $this->addTool("queryRutinas");
+        foreach ($permissionTools as $permission => $tools) {
+            if ($this->usuario->hasPermiso($permission)) {
+                foreach ($tools as $tool) {
+                    $this->addTool($tool);
+                }
+            }
         }
     }
 

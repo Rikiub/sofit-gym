@@ -24,7 +24,6 @@ readonly class BitacoraDTO
     ) {}
 
     public function validateInsert() {}
-    public function validateUpdate() {}
 }
 
 class BitacoraModel extends BaseModel
@@ -76,7 +75,6 @@ class BitacoraModel extends BaseModel
      */
     public function query(): array
     {
-        // Execute
         $rows = $this->pdoQuery($this->sqlSelect())->fetchAll();
 
         return array_map(
@@ -130,27 +128,5 @@ class BitacoraModel extends BaseModel
         $this->pdo->commit();
 
         return $bitacora;
-    }
-
-    public function update(BitacoraDTO $bitacora): BitacoraDTO
-    {
-        $bitacora->validateUpdate();
-        $this->pdo->beginTransaction();
-
-        $this->pdoUpdate(
-            $this->table,
-            $this->dtoToArray($bitacora),
-            [$this->primaryKey => $bitacora->id_bitacora],
-        );
-
-        $bitacora = $this->find($bitacora->id_bitacora);
-        $this->pdo->commit();
-
-        return $bitacora;
-    }
-
-    public function delete(int $id): void
-    {
-        $this->pdoDelete($this->table, [$this->primaryKey => $id]);
     }
 }

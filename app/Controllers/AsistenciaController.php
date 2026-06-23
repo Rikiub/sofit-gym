@@ -13,6 +13,8 @@ class AsistenciaController extends BaseController
 
     public function index()
     {
+        $this->protect("asistencia:ver");
+
         $fechaSeleccionada = $_GET['fecha'] ?? date('Y-m-d');
         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
@@ -28,6 +30,8 @@ class AsistenciaController extends BaseController
 
     public function buscar_clientes_ajax()
     {
+        $this->protect("asistencia:ver");
+
         if (!isset($_GET['ajax']) || $_GET['ajax'] !== 'buscar_clientes')
             return;
         $termino = $_GET['termino'] ?? '';
@@ -39,6 +43,8 @@ class AsistenciaController extends BaseController
 
     public function registrar()
     {
+        $this->protect("asistencia:crear");
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(['error' => 'Método no permitido']);
@@ -56,6 +62,8 @@ class AsistenciaController extends BaseController
 
     public function buscar_entradas_ajax()
     {
+        $this->protect("asistencia:ver");
+
         if (!isset($_GET['ajax']) || $_GET['ajax'] !== 'buscar_entradas')
             return;
         $termino = $_GET['termino'] ?? '';
@@ -67,6 +75,8 @@ class AsistenciaController extends BaseController
 
     public function buscar_entradas_hoy()
     {
+        $this->protect("asistencia:ver");
+
         $resultados = $this->model->obtenerEntradasHoy();
         header('Content-Type: application/json');
         echo json_encode($resultados);
@@ -75,6 +85,8 @@ class AsistenciaController extends BaseController
 
     public function obtener_totales()
     {
+        $this->protect("asistencia:ver");
+
         $inicio = $_GET["inicio"] ?? null;
         $fin = $_GET["fin"] ?? null;
         $resultados = $this->model->obtenerTotalesPorRango($inicio, $fin);
@@ -86,6 +98,8 @@ class AsistenciaController extends BaseController
 
     public function editar()
     {
+        $this->protect("asistencia:editar");
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(['error' => 'Método no permitido']);
@@ -103,6 +117,8 @@ class AsistenciaController extends BaseController
 
     public function eliminar()
     {
+        $this->protect("asistencia:eliminar");
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(['error' => 'Método no permitido']);

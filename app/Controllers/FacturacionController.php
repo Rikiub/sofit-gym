@@ -16,6 +16,7 @@ class FacturacionController extends BaseController
 
     public function index()
     {
+        $this->protect("facturacion:ver");
         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
         return $this->templates->render('facturacion', [
@@ -29,6 +30,8 @@ class FacturacionController extends BaseController
 
     public function registrar()
     {
+        $this->protect("facturacion:crear");
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->response->redirect([
                 'page' => 'facturacion',
@@ -62,6 +65,8 @@ class FacturacionController extends BaseController
 
     public function editar()
     {
+        $this->protect("facturacion:editar");
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->response->redirect([
                 'page' => 'facturacion',
@@ -100,6 +105,8 @@ class FacturacionController extends BaseController
 
     public function eliminar()
     {
+        $this->protect("facturacion:eliminar");
+
         if (!isset($_GET['eliminar_pago'])) {
             $this->response->redirect([
                 'page' => 'facturacion',
@@ -132,6 +139,8 @@ class FacturacionController extends BaseController
 
     public function buscar_ajax()
     {
+        $this->protect("facturacion:ver");
+
         if (!isset($_GET['ajax']) || $_GET['ajax'] !== 'buscar_pagos') {
             return;
         }
@@ -144,6 +153,8 @@ class FacturacionController extends BaseController
 
     public function ingresos_mensuales()
     {
+        $this->protect("facturacion:ver");
+
         $ingresos = $this->model->obtenerIngresosMesActual();
         return $this->response->json($ingresos);
     }

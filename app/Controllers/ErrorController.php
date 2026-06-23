@@ -10,11 +10,15 @@ class ErrorController extends BaseController
     {
         $status = (int)($_GET['status'] ?? 0);
         $message = match ($status) {
-            403 => "403 Forbidden: No tienes permiso para acceder a esta pagina",
-            404 => '404: Pagina no encontrada',
-            405 => '405: Metodo no soportado',
-            500 => '500: Ocurrio un error inesperado en el servidor',
+            403 => "Forbidden: No tienes permiso para acceder a esta pagina",
+            404 => 'Pagina no encontrada',
+            405 => 'Metodo no soportado',
+            500 => 'Ocurrio un error inesperado en el servidor',
+            default => "Ocurrio un error inesperado en el servidor",
         };
-        return $this->templates->render('error', ['message' => $message]);
+
+        return $this->templates->render('error', [
+            'message' => "{$status}: {$message}"
+        ]);
     }
 }

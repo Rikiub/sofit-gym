@@ -18,16 +18,6 @@ class Response
     ) {}
 
     /**
-     * Obtiene los datos del $_GET.
-     * Este metodo existe solo en caso de que en el futuro
-     * se implemente mayor funcionalidad
-     */
-    public static function getQueryParams(): array
-    {
-        return $_GET;
-    }
-
-    /**
      * Convierte un array en una URL query como: ?page=inicio&action=index
      */
     public static function buildQueryParams(array $data): string
@@ -94,6 +84,19 @@ class Response
             return $this->normalizer->normalize($data);
         } else {
             return json_encode($data);
+        }
+    }
+
+    public static function wantsJson()
+    {
+        if (
+            Response::acceptsJson()
+            || Response::isJson()
+            || ($_GET['format'] ?? '') === 'json'
+        ) {
+            return true;
+        } else {
+            return false;
         }
     }
 

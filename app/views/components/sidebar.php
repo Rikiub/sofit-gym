@@ -138,32 +138,30 @@ $dropdown = function (
 		) ?>
 
 		<?= $link(
-			permiso: "clases:ver",
+			permiso: "clasesGrupales:ver",
 			page: "clasesGrupales",
 			icon: "fa-calendar",
 			title: "Horarios de clases"
 		) ?>
 
-		<?php if ($sesion_usuario->hasPermiso("rutinas:ver")): ?>
-			<?= $dropdown(
-				icon: "fa-dumbbell",
-				title: "Rutinas de Entrenamiento",
-				items: [
-					[
-						"permiso" => "rutinas:ver",
-						"page" => "rutinas&action=index",
-						"icon" => "fa-pen-ruler",
-						"title" => "Planes de entrenamiento"
-					],
-					[
-						"permiso" => "rutinas:ver",
-						"page" => "rutinas&action=asignadas",
-						"icon" => "fa-user-check",
-						"title" => "Asignación de rutinas"
-					]
+		<?= $dropdown(
+			icon: "fa-dumbbell",
+			title: "Rutinas de Entrenamiento",
+			items: [
+				[
+					"permiso" => "rutinas:ver",
+					"page" => "rutinas&action=index",
+					"icon" => "fa-pen-ruler",
+					"title" => "Planes de entrenamiento"
+				],
+				[
+					"permiso" => "rutinas:ver",
+					"page" => "rutinas&action=asignadas",
+					"icon" => "fa-user-check",
+					"title" => "Asignación de rutinas"
 				]
-			) ?>
-		<?php endif ?>
+			]
+		) ?>
 
 		<hr>
 
@@ -232,16 +230,19 @@ $dropdown = function (
 			title: "Soporte y Datos",
 			items: [
 				[
+					"permiso" => "roles:ver",
 					"page" => "reportes",
 					"icon" => "fa-chart-bar",
 					"title" => "Reportes estadísticos"
 				],
 				[
+					"permiso" => "roles:ver",
 					"page" => "sistema",
 					"icon" => "fa-database",
 					"title" => "Mantenimiento del sistema"
 				],
 				[
+					"permiso" => "roles:ver",
 					"page" => "sistema",
 					"icon" => "fa-question-circle",
 					"title" => "Manual de usuario"

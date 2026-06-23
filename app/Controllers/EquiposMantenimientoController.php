@@ -19,6 +19,7 @@ class EquiposMantenimientoController extends BaseController
 
     public function index()
     {
+        $this->protect("equipos:ver");
         return $this->templates->render('equipos_mantenimiento');
     }
 
@@ -33,24 +34,27 @@ class EquiposMantenimientoController extends BaseController
 
     public function query()
     {
+        $this->protect("equipos:ver");
         $mantenimientos = $this->model->query();
         return $this->response->json($mantenimientos);
     }
 
     public function find(): ?string
     {
+        $this->protect("equipos:ver");
+
         $id = $this->getIdParam();
         $mantenimiento = $this->model->find($id);
 
-        if (!$mantenimiento) {
-            return $this->response->empty(404);
-        }
-
-        return $this->response->json($mantenimiento);
+        return $mantenimiento
+            ? $this->response->json($mantenimiento)
+            : $this->response->empty(404);
     }
 
     public function insert(): string
     {
+        $this->protect("equipos:crear");
+
         $body = $this->response->getParsedBody();
         $mantenimiento = $this->mapper->map(MantenimientoEquipoDTO::class, $body);
 

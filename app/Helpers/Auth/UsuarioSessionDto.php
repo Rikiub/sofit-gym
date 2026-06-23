@@ -9,7 +9,8 @@ readonly class UsuarioSessionDto
 {
     public function __construct(
         public int $id,
-        public Rol $rol,
+        public int $id_rol,
+        public string $rol,
         public string $nombre,
         public array $permisos,
         public DateTimeImmutable|null $ultimo_acceso = null,

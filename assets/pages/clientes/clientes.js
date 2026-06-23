@@ -5,7 +5,7 @@ import { h } from "gridjs";
 import Alpine from "alpinejs";
 import dayjs from "dayjs";
 
-/** @returns {string} */
+/** @returns {number} */
 function getDiasRestantes(fecha_inicio, fecha_fin) {
     fecha_inicio = dayjs(fecha_inicio);
     fecha_fin = dayjs(fecha_fin);
@@ -55,7 +55,7 @@ Alpine.data("crudClientes", () =>
 
                     if (membresia?.fecha_inicio) {
                         const diasRestantes = getDiasRestantes(
-                            membresia.fecha_inicio,
+                            dayjs(),
                             membresia.fecha_fin
                         );
                         return h("span", {}, `${diasRestantes} dias restantes`);
@@ -129,7 +129,10 @@ Alpine.data("clienteInfo", () => ({
         const membresia = this.cliente.membresia;
 
         if (membresia.fecha_inicio) {
-            return getDiasRestantes(membresia.fecha_inicio, membresia.fecha_fin);
+            return getDiasRestantes(
+                dayjs(),
+                membresia.fecha_fin
+            );
         } else {
             return "";
         }

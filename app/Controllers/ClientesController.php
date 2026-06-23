@@ -21,44 +21,41 @@ class ClientesController extends BaseController
 
     public function index(): string
     {
-        // Cargar vista app/views/clientes/index.php
+        $this->protect("clientes:ver");
+
         $templates = $this->templates->addData(
             ['formMeta' => $this->clientesModelo->queryMembresiaMetadata()]
         );
         return $templates->render('clientes/index');
     }
 
-    private function getCedulaParam(): string
-    {
-        $cedula = $_GET['cedula'] ?? $_GET['id'] ?? '';
-        if (!$cedula) {
-            throw new Exception("'id' or 'cedula' param is required");
-        }
-        return $cedula;
-    }
-
     public function query(): string
     {
+        $this->protect("clientes:ver");
+
         $search = $_GET["search"] ?? null;
         $filters = $_GET["filters"] ?? [];
+
         $clientes = $this->clientesModelo->query($search, $filters);
         return $this->response->json($clientes);
     }
 
     public function find(): ?string
     {
+        $this->protect("clientes:ver");
+
         $cedula = $this->getCedulaParam();
         $cliente = $this->clientesModelo->find($cedula);
 
-        if (!$cliente) {
-            return $this->response->empty(404);
-        }
-
-        return $this->response->json($cliente);
+        return $cliente
+            ? $this->response->json($cliente)
+            : $this->response->empty(404);
     }
 
     public function insert(): string
     {
+        $this->protect("clientes:crear");
+
         $body = $this->response->getParsedBody();
         $cliente = $this->mapper->map(ClienteDTO::class, $body);
 
@@ -83,6 +80,8 @@ class ClientesController extends BaseController
 
     public function update(): string
     {
+        $this->protect("clientes:editar");
+
         $body = $this->response->getParsedBody();
         $cliente = $this->mapper->map(ClienteDTO::class, $body);
 
@@ -106,10 +105,11 @@ class ClientesController extends BaseController
 
     public function delete(): string|null
     {
+        $this->protect("clientes:eliminar");
         $cedula = $this->getCedulaParam();
 
         if (!$this->clientesModelo->find($cedula)) {
-            $this->conflict(false, 404);
+            return $this->conflict(false, 404);
         }
 
         $this->clientesModelo->delete($cedula);
@@ -123,13 +123,21 @@ class ClientesController extends BaseController
 
     private function conflict(bool $exists, int $id, ?int $code = 400): string
     {
-        if ($exists) {
-            $message = "El cliente {cedula_cliente} ya existe";
-        } else {
-            $message = "El cliente {cedula_cliente} no existe";
-        }
+        $message = match ($exists) {
+            true => "El cliente {cedula_cliente} ya existe",
+            false => "El cliente {cedula_cliente} no existe",
+        };
 
         $this->logger->error($message, ["cedula_cliente" => $id]);
         return $this->response->json(['message' => $message], $code);
+    }
+
+    private function getCedulaParam(): string
+    {
+        $cedula =
+            $_GET['cedula']
+            ?? $_GET['id']
+            ?? throw new Exception("'id' or 'cedula' param is required");
+        return $cedula;
     }
 }

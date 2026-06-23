@@ -168,7 +168,7 @@ $this->layout("layout", ["title" => $title, "sidebar" => false]);
                 <form class="login-form" x-ref="form" @submit.prevent="handleSubmit">
                     <div class="form-field">
                         <label class="text-white">Usuario</label>
-                        <input type="text" name="nombre_usuario" value="admin" autocomplete="username" required>
+                        <input type="text" name="nombre_usuario" autocomplete="username" required>
                     </div>
 
                     <div class="form-field">

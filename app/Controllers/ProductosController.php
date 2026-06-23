@@ -17,6 +17,8 @@ class ProductosController extends BaseController
      */
     public function index()
     {
+        $this->protect("productos:ver");
+
         // Soporte para término de búsqueda en URL (?buscar=)
         $termino = $_GET['buscar'] ?? null;
 
@@ -46,6 +48,8 @@ class ProductosController extends BaseController
      */
     public function buscarAjax()
     {
+        $this->protect("productos:ver");
+
         if (!isset($_GET['ajax']) || $_GET['ajax'] !== 'buscar_productos') {
             http_response_code(400);
             echo json_encode(['error' => 'Solicitud inválida']);
@@ -65,6 +69,8 @@ class ProductosController extends BaseController
      */
     public function obtenerClientesAjax()
     {
+        $this->protect("productos:ver");
+
         $clientes = $this->model->obtenerClientes();
         header('Content-Type: application/json');
         echo json_encode($clientes);
@@ -76,6 +82,8 @@ class ProductosController extends BaseController
      */
     public function crear()
     {
+        $this->protect("productos:crear");
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(['error' => 'Método no permitido']);
@@ -118,6 +126,8 @@ class ProductosController extends BaseController
      */
     public function editar()
     {
+        $this->protect("productos:editar");
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(['error' => 'Método no permitido']);
@@ -160,6 +170,8 @@ class ProductosController extends BaseController
      */
     public function eliminar()
     {
+        $this->protect("productos:eliminar");
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(['error' => 'Método no permitido']);
@@ -190,6 +202,8 @@ class ProductosController extends BaseController
      */
     public function actualizarStock()
     {
+        $this->protect("productos:editar");
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(['error' => 'Método no permitido']);
@@ -220,6 +234,8 @@ class ProductosController extends BaseController
      */
     public function registrarVenta()
     {
+        $this->protect("productos:crear");
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(['success' => false, 'message' => 'Método no permitido']);

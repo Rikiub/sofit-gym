@@ -17,6 +17,8 @@ class RutinasController extends BaseController
      */
     public function index()
     {
+        $this->protect("rutinas:ver");
+
         // Limpiamos mensajes de sesión previos
         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
@@ -34,6 +36,8 @@ class RutinasController extends BaseController
      */
     public function asignadas()
     {
+        $this->protect("rutinas:ver");
+
         // Limpiamos mensajes de sesión previos
         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
@@ -55,6 +59,8 @@ class RutinasController extends BaseController
      */
     public function buscar_rutinas_ajax()
     {
+        $this->protect("rutinas:ver");
+
         if (!isset($_GET['ajax']) || $_GET['ajax'] !== 'buscar_rutinas')
             return;
         $termino = $_GET['termino'] ?? '';
@@ -69,6 +75,8 @@ class RutinasController extends BaseController
      */
     public function registrar_rutina()
     {
+        $this->protect("rutinas:ver");
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(['error' => 'Método no permitido']);
@@ -103,6 +111,8 @@ class RutinasController extends BaseController
      */
     public function editar_rutina()
     {
+        $this->protect("rutinas:editar");
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(['error' => 'Método no permitido']);
@@ -142,6 +152,8 @@ class RutinasController extends BaseController
      */
     public function eliminar_rutina()
     {
+        $this->protect("rutinas:eliminar");
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(['error' => 'Método no permitido']);
@@ -167,6 +179,8 @@ class RutinasController extends BaseController
      */
     public function asignar_rutina()
     {
+        $this->protect("rutinas:crear");
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(['error' => 'Método no permitido']);
@@ -205,6 +219,8 @@ class RutinasController extends BaseController
      */
     public function editar_asignacion()
     {
+        $this->protect("rutinas:editar");
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(['error' => 'Método no permitido']);
@@ -242,6 +258,8 @@ class RutinasController extends BaseController
      */
     public function eliminar_asignacion()
     {
+        $this->protect("rutinas:eliminar");
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(['error' => 'Método no permitido']);
@@ -263,6 +281,8 @@ class RutinasController extends BaseController
      */
     public function buscar_asignaciones_cliente_ajax()
     {
+        $this->protect("rutinas:ver");
+
         $cedula = $_GET['cedula_cliente'] ?? '';
         if (empty($cedula)) {
             echo json_encode([]);

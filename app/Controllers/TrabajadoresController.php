@@ -19,6 +19,7 @@ class TrabajadoresController extends BaseController
 
     public function index(): string
     {
+        $this->protect("trabajadores:ver");
         return $this->templates->render('trabajadores');
     }
 
@@ -33,6 +34,8 @@ class TrabajadoresController extends BaseController
 
     public function query(): string
     {
+        $this->protect("trabajadores:ver");
+
         $search = $_GET["search"] ?? null;
         $id_rol = (int)($_GET["id_rol"] ?? 0);
 
@@ -42,6 +45,8 @@ class TrabajadoresController extends BaseController
 
     public function find(): ?string
     {
+        $this->protect("trabajadores:ver");
+
         $cedula = $this->getCedulaParam();
         $trabajador = $this->trabajadoresModel->find($cedula);
 
@@ -54,6 +59,8 @@ class TrabajadoresController extends BaseController
 
     public function insert(): string
     {
+        $this->protect("trabajadores:crear");
+
         $body = $this->response->getParsedBody();
         $trabajador = $this->mapper->map(TrabajadorDTO::class, $body);
 
@@ -67,6 +74,8 @@ class TrabajadoresController extends BaseController
 
     public function update(): string
     {
+        $this->protect("trabajadores:editar");
+
         $body = $this->response->getParsedBody();
         $trabajador = $this->mapper->map(TrabajadorDTO::class, $body);
 
@@ -80,6 +89,7 @@ class TrabajadoresController extends BaseController
 
     public function delete(): string|null
     {
+        $this->protect("trabajadores:eliminar");
         $cedula = $this->getCedulaParam();
 
         if (!$this->trabajadoresModel->find($cedula)) {

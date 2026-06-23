@@ -2,6 +2,7 @@
 
 use function App\Helpers\stringifyAttributes;
 
+$endpoint ??= "";
 $input ??= [];
 ?>
 
@@ -18,14 +19,8 @@ $input ??= [];
             const formData = new FormData();
             formData.append('image', file);
 
-            const query = new URLSearchParams({
-                page: "upload",
-                action: "uploadImageTemp",
-            }).toString();
-            const url = `?${query}`;
-
             try {
-                const res = await fetch(url, {
+                const res = await fetch("<?= $endpoint ?>", {
                     method: 'POST',
                     body: formData,
                 });

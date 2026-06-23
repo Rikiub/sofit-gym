@@ -19,38 +19,32 @@ class ClasesGrupalesController extends BaseController
 
     public function index(): string
     {
+        $this->protect("clasesGrupales:ver");
         return $this->templates->render('clases');
-    }
-
-    private function getIdParam(): int
-    {
-        $id = $_GET['id'] ?? '';
-        if (!$id) {
-            throw new Exception("'id' param is required");
-        }
-        return (int) $id;
     }
 
     public function query(): string
     {
+        $this->protect("clasesGrupales:ver");
         $clases = $this->clasesModel->query();
         return $this->response->json($clases);
     }
 
     public function find(): ?string
     {
+        $this->protect("clasesGrupales:ver");
+
         $cedula = $this->getIdParam();
         $clase = $this->clasesModel->find($cedula);
 
-        if (!$clase) {
-            return $this->response->empty(404);
-        }
-
-        return $this->response->json($clase);
+        return $clase
+            ? $this->response->json($clase)
+            : $this->response->empty(404);
     }
 
     public function insert(): string
     {
+        $this->protect("clasesGrupales:crear");
         $body = $this->response->getParsedBody();
         $clase = $this->mapper->map(ClaseGrupalDTO::class, $body);
 
@@ -60,6 +54,8 @@ class ClasesGrupalesController extends BaseController
 
     public function update(): string
     {
+        $this->protect("clasesGrupales:editar");
+
         $body = $this->response->getParsedBody();
         $clase = $this->mapper->map(ClaseGrupalDTO::class, $body);
 
@@ -73,6 +69,7 @@ class ClasesGrupalesController extends BaseController
 
     public function delete(): string|null
     {
+        $this->protect("clasesGrupales:eliminar");
         $id = $this->getIdParam();
 
         if (!$this->clasesModel->find($id)) {
@@ -81,5 +78,14 @@ class ClasesGrupalesController extends BaseController
 
         $this->clasesModel->delete($id);
         return $this->response->empty(204);
+    }
+
+    private function getIdParam(): int
+    {
+        $id = (int)(
+            $_GET['id']
+            ?? throw new Exception("'id' param is required")
+        );
+        return (int) $id;
     }
 }

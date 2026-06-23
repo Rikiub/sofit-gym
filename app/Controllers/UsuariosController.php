@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Helpers\Auth\Rol;
 use App\Helpers\Auth\UsuarioSession;
 use App\Helpers\ImagesManager;
 use App\Helpers\Response;
@@ -22,23 +21,17 @@ class UsuariosController extends BaseController
 
     public function index(): string
     {
+        $this->protect("usuarios:ver");
+
         $usuario = UsuarioSession::getUsuario();
         return $this->templates->render('usuarios/index', [
             "usuario" => $usuario,
         ]);
     }
 
-    private function getParamId(): string
-    {
-        $id = $_GET['id'] ?? null;
-        if (!$id) {
-            throw new Exception("'id' param is required");
-        }
-        return $id;
-    }
-
     public function query(): string
     {
+        $this->protect("usuarios:ver");
         $usuarios = $this->usuariosModel->query();
         return $this->response->json($usuarios);
     }
@@ -92,7 +85,6 @@ class UsuariosController extends BaseController
 
     public function update(): string
     {
-        $this->protect("usuarios:editar");
         $body = $this->response->getParsedBody();
 
         // Verificar que exista
@@ -106,7 +98,7 @@ class UsuariosController extends BaseController
         // entonces pararlo
         $usuarioSesion = UsuarioSession::getUsuario();
         if (
-            !$usuarioSesion->hasPermiso("usuarios:ver")
+            !$usuarioSesion->hasPermiso("usuarios:editar")
             && $usuarioSesion->id !== $oldUsuario->id_usuario
         ) {
             return $this->response->json(["message" => "No esta autorizado"], 403);
@@ -144,5 +136,30 @@ class UsuariosController extends BaseController
         }
 
         return $this->response->empty(204);
+    }
+
+    public function uploadImage(): string
+    {
+        $image = $_FILES['image'] ?? null;
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !$image) {
+            return $this->response->json(['error' => 'Petición inválida'], 400);
+        }
+
+        $filename = ImagesManager::saveTemp($image);
+
+        // Devolvemos el nombre generado
+        return $this->response->json([
+            'temp_filename' => $filename
+        ]);
+    }
+
+    private function getParamId(): string
+    {
+        $id = (int)(
+            $_GET['id']
+            ?? throw new Exception("'id' param is required")
+        );
+        return $id;
     }
 }
