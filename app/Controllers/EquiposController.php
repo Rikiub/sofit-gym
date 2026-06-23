@@ -22,14 +22,7 @@ class EquiposController extends BaseController
         return $this->templates->render('equipos');
     }
 
-    private function getIdParam(): string
-    {
-        $codigo = $_GET['codigo'] ?? $_GET['id'] ?? '';
-        if (!$codigo) {
-            throw new Exception("'id' or 'codigo_equipo' param is required");
-        }
-        return $codigo;
-    }
+
 
     public function query()
     {
@@ -42,7 +35,7 @@ class EquiposController extends BaseController
     {
         $this->protect("equipos:ver");
 
-        $id = $this->getIdParam();
+        $id = $this->getParamId();
         $equipo = $this->equiposModel->find($id);
 
         if (!$equipo) {
@@ -86,7 +79,7 @@ class EquiposController extends BaseController
     public function delete(): string|null
     {
         $this->protect("equipos:eliminar");
-        $codigo = $this->getIdParam();
+        $codigo = $this->getParamId();
 
         if (!$this->equiposModel->find($codigo)) {
             return $this->response->json(['message' => 'El equipo no existe'], 404);
@@ -94,5 +87,13 @@ class EquiposController extends BaseController
 
         $this->equiposModel->delete($codigo);
         return $this->response->empty(204);
+    }
+
+    private function getParamId(): string
+    {
+        return
+            $_GET['codigo']
+            ?? $_GET['id']
+            ?? throw new Exception("'id' or 'codigo_equipo' param is required");
     }
 }

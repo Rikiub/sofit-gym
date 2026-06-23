@@ -4,6 +4,7 @@ namespace App\Models;
 
 use PDO;
 use PDOStatement;
+use Throwable;
 
 abstract class BaseModel
 {
@@ -136,5 +137,27 @@ abstract class BaseModel
         );
 
         return $this->pdoQuery($sql, $conditions);
+    }
+
+    /** Inicia una transacción, hace commit en exito y rollback en excepciones automaticamente.
+     * 
+     * @template T
+     * @param callable(PDO): T $callback
+     * @return T
+     */
+    protected function pdoTransaction(callable $callback)
+    {
+        $this->pdo->beginTransaction();
+
+        try {
+            $result = $callback($this->pdo);
+            $this->pdo->commit();
+            return $result;
+        } catch (Throwable $e) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+            throw $e;
+        }
     }
 }

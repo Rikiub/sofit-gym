@@ -161,28 +161,22 @@ class ClientesModel extends BaseModel
     public function insert(ClienteDTO $cliente): ClienteDTO
     {
         $cliente->validateInsert();
-        $this->pdo->beginTransaction();
 
-        $this->personasModel->insert($cliente);
-        $this->pdoInsert($this->table, [
-            $this->primaryKey => $cliente->cedula,
-        ]);
-        $cliente = $this->find($cliente->cedula);
-
-        $this->pdo->commit();
-        return $cliente;
+        return $this->pdoTransaction(function () use ($cliente) {
+            $this->personasModel->insert($cliente);
+            $this->pdoInsert($this->table, [
+                $this->primaryKey => $cliente->cedula,
+            ]);
+            return $this->find($cliente->cedula);
+        });
     }
 
     public function update(ClienteDTO $cliente): ClienteDTO
     {
         $cliente->validateUpdate();
-        $this->pdo->beginTransaction();
 
         $this->personasModel->update($cliente);
-        $cliente = $this->find($cliente->cedula);
-
-        $this->pdo->commit();
-        return $cliente;
+        return $this->find($cliente->cedula);
     }
 
     public function delete(string $cedula): void

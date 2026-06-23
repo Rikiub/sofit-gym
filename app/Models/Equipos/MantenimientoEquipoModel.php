@@ -108,9 +108,9 @@ class MantenimientoEquipoModel extends BaseModel
             [$id]
         )->fetch();
 
-        if (!$row)
-            return null;
-        return $this->mapToMantenimiento($row);
+        return $row
+            ? $this->mapToMantenimiento($row)
+            : null;
     }
 
     public function insert(MantenimientoEquipoDTO $mantenimiento): MantenimientoEquipoDTO

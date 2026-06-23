@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Helpers\Validator;
 use App\Models\BaseModel;
-use App\Models\Clientes\ClientesModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use InvalidArgumentException;
@@ -65,7 +64,6 @@ class ClasesGrupalesModel extends BaseModel
 
     public function __construct(
         PDO $pdo,
-        private ClientesModel $clientesModel,
         private TreeMapper $mapper,
     ) {
         parent::__construct($pdo);
@@ -135,16 +133,15 @@ class ClasesGrupalesModel extends BaseModel
     public function insert(ClaseGrupalDTO $clase): ClaseGrupalDTO
     {
         $clase->validateInsert();
-        $this->pdo->beginTransaction();
 
-        $this->pdoInsert($this->table, $this->dtoToArray($clase));
-        $id_clase = (int) $this->pdo->lastInsertId();
-        $this->syncClientes($id_clase, $clase->clientes);
+        return $this->pdoTransaction(function () use ($clase) {
+            $this->pdoInsert($this->table, $this->dtoToArray($clase));
 
-        $clase = $this->find($id_clase);
-        $this->pdo->commit();
+            $id_clase = (int) $this->pdo->lastInsertId();
+            $this->syncClientes($id_clase, $clase->clientes);
 
-        return $clase;
+            return $this->find($id_clase);
+        });
     }
 
     public function update(ClaseGrupalDTO $clase): ClaseGrupalDTO

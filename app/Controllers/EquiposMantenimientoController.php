@@ -23,31 +23,22 @@ class EquiposMantenimientoController extends BaseController
         return $this->templates->render('equipos_mantenimiento');
     }
 
-    private function getIdParam(): int
-    {
-        $id = $_GET['id'] ?? null;
-        if (!$id) {
-            throw new Exception("'id' param is required");
-        }
-        return (int) $id;
-    }
-
     public function query()
     {
         $this->protect("equipos:ver");
-        $mantenimientos = $this->model->query();
-        return $this->response->json($mantenimientos);
+        $data = $this->model->query();
+        return $this->response->json($data);
     }
 
     public function find(): ?string
     {
         $this->protect("equipos:ver");
 
-        $id = $this->getIdParam();
-        $mantenimiento = $this->model->find($id);
+        $id = $this->getParamId();
+        $data = $this->model->find($id);
 
-        return $mantenimiento
-            ? $this->response->json($mantenimiento)
+        return $data
+            ? $this->response->json($data)
             : $this->response->empty(404);
     }
 
@@ -56,28 +47,31 @@ class EquiposMantenimientoController extends BaseController
         $this->protect("equipos:crear");
 
         $body = $this->response->getParsedBody();
-        $mantenimiento = $this->mapper->map(MantenimientoEquipoDTO::class, $body);
+        $data = $this->mapper->map(MantenimientoEquipoDTO::class, $body);
 
-        $mantenimiento = $this->model->insert($mantenimiento);
-        return $this->response->json($mantenimiento, 201);
+        $data = $this->model->insert($data);
+        return $this->response->json($data, 201);
     }
 
     public function update(): string
     {
+        $this->protect("equipos:editar");
+
         $body = $this->response->getParsedBody();
-        $mantenimiento = $this->mapper->map(MantenimientoEquipoDTO::class, $body);
+        $data = $this->mapper->map(MantenimientoEquipoDTO::class, $body);
 
         if (!$this->model->find($mantenimiento->id_mantenimiento ?? 0)) {
             return $this->response->json(['message' => 'El mantenimiento no existe'], 404);
         }
 
-        $mantenimiento = $this->model->update($mantenimiento);
-        return $this->response->json($mantenimiento, 201);
+        $data = $this->model->update($data);
+        return $this->response->json($data, 201);
     }
 
     public function delete(): string|null
     {
-        $id = $this->getIdParam();
+        $this->protect("equipos:eliminar");
+        $id = $this->getParamId();
 
         if (!$this->model->find($id)) {
             return $this->response->json(['message' => 'El mantenimiento no existe'], 404);
@@ -85,5 +79,12 @@ class EquiposMantenimientoController extends BaseController
 
         $this->model->delete($id);
         return $this->response->empty(204);
+    }
+
+    private function getParamId(): int
+    {
+        return
+            $_GET['id']
+            ?? new Exception("'id' param is required");
     }
 }

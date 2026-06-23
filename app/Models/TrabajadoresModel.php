@@ -137,36 +137,35 @@ class TrabajadoresModel extends BaseModel
     public function insert(TrabajadorDTO $trabajador): TrabajadorDTO
     {
         $trabajador->validateInsert();
-        $this->pdo->beginTransaction();
 
-        $this->personasModel->insert($trabajador);
-        $this->pdoInsert(
-            $this->table,
-            $this->dtoToArray($trabajador),
-        );
-
-        $this->pdo->commit();
-        return $this->find($trabajador->cedula);
+        return $this->pdoTransaction(function () use ($trabajador) {
+            $this->personasModel->insert($trabajador);
+            $this->pdoInsert(
+                $this->table,
+                $this->dtoToArray($trabajador),
+            );
+            return $this->find($trabajador->cedula);
+        });
     }
 
     public function update(TrabajadorDTO $trabajador): TrabajadorDTO
     {
         $trabajador->validateUpdate();
-        $this->pdo->beginTransaction();
 
-        $this->personasModel->update($trabajador);
+        return $this->pdoTransaction(function () use ($trabajador) {
+            $this->personasModel->update($trabajador);
 
-        $array = $this->dtoToArray($trabajador);
-        unset($array['cedula']);
+            $array = $this->dtoToArray($trabajador);
+            unset($array['cedula']);
 
-        $this->pdoUpdate(
-            $this->table,
-            $array,
-            [$this->primaryKey => $trabajador->cedula],
-        );
+            $this->pdoUpdate(
+                $this->table,
+                $array,
+                [$this->primaryKey => $trabajador->cedula],
+            );
 
-        $this->pdo->commit();
-        return $this->find($trabajador->cedula);
+            return $this->find($trabajador->cedula);
+        });
     }
 
     public function delete(string $cedula): void

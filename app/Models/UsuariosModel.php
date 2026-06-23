@@ -9,6 +9,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Exception;
 use PDO;
+use Throwable;
 
 readonly class UsuarioDTO
 {
@@ -116,7 +117,6 @@ class UsuariosModel extends BaseModel
     public function insert(UsuarioDTO $usuario): UsuarioDTO
     {
         $usuario->validateInsert();
-        $this->pdo->beginTransaction();
 
         $this->pdoInsert(
             $this->table,
@@ -125,15 +125,12 @@ class UsuariosModel extends BaseModel
 
         $id = (int) $this->pdo->lastInsertId();
         $usuario = $this->find($id);
-
-        $this->pdo->commit();
         return $usuario;
     }
 
     public function update(UsuarioDTO $usuario): UsuarioDTO
     {
         $usuario->validateUpdate();
-        $this->pdo->beginTransaction();
 
         $array = $this->dtoToArray($usuario);
         unset($array["contrasena_hash"]);
@@ -143,9 +140,8 @@ class UsuariosModel extends BaseModel
             $array,
             [$this->primaryKey => $usuario->id_usuario],
         );
-        $usuario = $this->find($usuario->nombre_usuario);
 
-        $this->pdo->commit();
+        $usuario = $this->find($usuario->nombre_usuario);
         return $usuario;
     }
 
@@ -247,36 +243,41 @@ class UsuariosModel extends BaseModel
             [$codigo]
         )->fetch();
 
-        if (!$row) return null;
-        return $this->find($row["id_usuario"]);
+        return $row
+            ? $this->find($row["id_usuario"])
+            : null;
     }
 
     public function updatePasswordAndClearCode(int $id_usuario, string $new_password): void
     {
         $hashedPassword = password_hash($new_password, PASSWORD_DEFAULT);
 
-        $this->pdo->beginTransaction();
-
         if (!$this->find($id_usuario)) {
             throw new Exception("Usuario no encontrado");
         }
 
-        $this->pdoQuery(
-            <<<SQL
+        $this->pdo->beginTransaction();
+        try {
+            $this->pdoQuery(
+                <<<SQL
                 UPDATE {$this->table}
                 SET contrasena_hash = ?
                 WHERE id_usuario = ?
             SQL,
-            [$hashedPassword, $id_usuario]
-        );
-        $this->pdoQuery(
-            <<<SQL
+                [$hashedPassword, $id_usuario]
+            );
+            $this->pdoQuery(
+                <<<SQL
                 DELETE FROM {$this->tableRecuperacion}
                 WHERE id_usuario = ?
             SQL,
-            [$id_usuario]
-        );
+                [$id_usuario]
+            );
 
-        $this->pdo->commit();
+            $this->pdo->commit();
+        } catch (Throwable $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
     }
 }

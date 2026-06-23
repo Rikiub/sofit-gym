@@ -34,7 +34,7 @@ class ClasesGrupalesController extends BaseController
     {
         $this->protect("clasesGrupales:ver");
 
-        $cedula = $this->getIdParam();
+        $cedula = $this->getParamId();
         $clase = $this->clasesModel->find($cedula);
 
         return $clase
@@ -70,7 +70,7 @@ class ClasesGrupalesController extends BaseController
     public function delete(): string|null
     {
         $this->protect("clasesGrupales:eliminar");
-        $id = $this->getIdParam();
+        $id = $this->getParamId();
 
         if (!$this->clasesModel->find($id)) {
             return $this->response->json(['message' => 'No existe'], 404);
@@ -80,7 +80,7 @@ class ClasesGrupalesController extends BaseController
         return $this->response->empty(204);
     }
 
-    private function getIdParam(): int
+    private function getParamId(): int
     {
         $id = (int)(
             $_GET['id']

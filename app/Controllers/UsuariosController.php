@@ -156,10 +156,8 @@ class UsuariosController extends BaseController
 
     private function getParamId(): string
     {
-        $id = (int)(
+        return
             $_GET['id']
-            ?? throw new Exception("'id' param is required")
-        );
-        return $id;
+            ?? throw new Exception("'id' param is required");
     }
 }

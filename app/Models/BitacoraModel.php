@@ -98,35 +98,29 @@ class BitacoraModel extends BaseModel
     public function insert(BitacoraDTO $bitacora): BitacoraDTO
     {
         $bitacora->validateInsert();
-        $this->pdo->beginTransaction();
 
-        // Crear modulo dinamicamente si no existe
-        $this->pdoQuery(
-            <<<SQL
-                INSERT INTO
-                    {$this->dbSeguridad}.modulo (nombre)
-                VALUES
-                    (?)
-                ON DUPLICATE KEY UPDATE
-                    id_modulo = LAST_INSERT_ID(id_modulo)
-            SQL,
-            [$bitacora->modulo],
-        );
-        $idModulo = (int)$this->pdo->lastInsertId();
+        return $this->pdoTransaction(function () use ($bitacora) {
+            // Crear modulo dinamicamente si no existe
+            $this->pdoQuery(
+                <<<SQL
+                    INSERT INTO
+                        {$this->dbSeguridad}.modulo (nombre)
+                    VALUES
+                        (?)
+                    ON DUPLICATE KEY UPDATE
+                        id_modulo = LAST_INSERT_ID(id_modulo)
+                SQL,
+                [$bitacora->modulo],
+            );
+            $idModulo = (int)$this->pdo->lastInsertId();
 
-        // Insertar bitacora
-        $array = $this->dtoToArray($bitacora);
-        $array["id_modulo"] = $idModulo;
+            // Insertar bitacora
+            $array = $this->dtoToArray($bitacora);
+            $array["id_modulo"] = $idModulo;
+            $this->pdoInsert($this->table, $array);
 
-        $this->pdoInsert(
-            $this->table,
-            $array,
-        );
-
-        $id = (int)$this->pdo->lastInsertId();
-        $bitacora = $this->find($id);
-        $this->pdo->commit();
-
-        return $bitacora;
+            $id = (int)$this->pdo->lastInsertId();
+            return $this->find($id);
+        });
     }
 }

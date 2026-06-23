@@ -4,8 +4,6 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Helpers\Response;
-use App\Models\PermisoDTO;
-use App\Models\PermisosModel;
 use App\Models\RolDTO;
 use App\Models\RolesModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -17,24 +15,14 @@ class RolesController extends BaseController
         private Response $response,
         private TreeMapper $mapper,
         private RolesModel $rolesModel,
-        private PermisosModel $permisosModel,
     ) {}
 
     public function index(): string
     {
-        $permisos = $this->permisosModel->query();
+        $permisos = $this->rolesModel->queryPermisos();
         return $this->templates->render('roles', [
             "permisos" => $permisos
         ]);
-    }
-
-    private function getParamId(): string
-    {
-        $id = $_GET['id'] ?? null;
-        if (!$id) {
-            throw new Exception("'id' param is required");
-        }
-        return $id;
     }
 
     public function query(): string
@@ -93,13 +81,20 @@ class RolesController extends BaseController
         $this->protect("roles:eliminar");
 
         $id = $this->getParamId();
-        $permiso = $this->permisosModel->find($id);
+        $permiso = $this->rolesModel->find($id);
 
         if (!$permiso) {
             return $this->response->json(['message' => 'El rol no existe'], 404);
         }
 
-        $this->permisosModel->delete($permiso->id_permiso);
+        $this->rolesModel->delete($permiso->id_rol);
         return $this->response->empty(204);
+    }
+
+    private function getParamId(): string
+    {
+        return
+            $_GET['id']
+            ?? throw new Exception("'id' param is required");
     }
 }

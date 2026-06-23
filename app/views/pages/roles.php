@@ -12,7 +12,7 @@ $permisos ??= [];
 $groupedPermisos = [];
 
 foreach ($permisos as $p) {
-    $nombre = $p->nombre;
+    $nombre = $p["nombre"];
     $parts = explode(":", $nombre);
 
     $modulo = $parts[0];

@@ -19,13 +19,10 @@ readonly class RolDTO
 class RolesModel extends BaseModel
 {
     private string $dbSeguridad = "sofit_gym_seguridad";
-    private string $table = "sofit_gym_seguridad.permiso";
-    private string $primaryKey = 'id_permiso';
 
     public function __construct(
         PDO $pdo,
         private TreeMapper $mapper,
-        private PermisosModel $permisosModel,
     ) {
         parent::__construct($pdo);
     }
@@ -59,6 +56,30 @@ class RolesModel extends BaseModel
         return array_map($this->mapRol(...), $rows);
     }
 
+    public function queryPermisos(): array
+    {
+        $rows = $this->pdoQuery(
+            <<<SQL
+                SELECT *
+                FROM {$this->dbSeguridad}.permiso
+                ORDER BY nombre
+            SQL
+        )->fetchAll();
+        return $rows;
+    }
+    public function findPermiso(string $nombre): array
+    {
+        $row = $this->pdoQuery(
+            <<<SQL
+                SELECT *
+                FROM {$this->dbSeguridad}.permiso
+                WHERE nombre = ?
+            SQL,
+            [$nombre]
+        )->fetch();
+        return $row ?? null;
+    }
+
     public function find(int $id): ?RolDTO
     {
         $row = $this->pdoQuery(
@@ -79,35 +100,30 @@ class RolesModel extends BaseModel
 
     public function insert(RolDTO $rol): RolDTO
     {
-        $this->pdo->beginTransaction();
+        return $this->pdoTransaction(function () use ($rol) {
+            $this->pdoInsert(
+                "rol",
+                ["nombre" => $rol->nombre],
+            );
 
-        $this->pdoInsert(
-            $this->table,
-            ["nombre" => $rol->nombre],
-        );
+            $id = (int)$this->pdo->lastInsertId();
+            $this->syncPermisos($id, $rol->permisos);
 
-        $id = (int)$this->pdo->lastInsertId();
-        $this->syncPermisos($id, $rol->permisos);
-        $rol = $this->find($id);
-
-        $this->pdo->commit();
-        return $rol;
+            return $this->find($id);
+        });
     }
 
     public function update(RolDTO $rol): RolDTO
     {
-        $this->pdo->beginTransaction();
-
-        $this->syncPermisos($rol->id_rol, $rol->permisos);
-        $rol = $this->find($rol->id_rol);
-
-        $this->pdo->commit();
-        return $rol;
+        return $this->pdoTransaction(function () use ($rol) {
+            $this->syncPermisos($rol->id_rol, $rol->permisos);
+            return $this->find($rol->id_rol);
+        });
     }
 
     public function delete(int $id): void
     {
-        $this->pdoDelete($this->table, [$this->primaryKey => $id]);
+        $this->pdoDelete("rol", ["id_rol" => $id]);
     }
 
     private function syncPermisos(int $id_rol, array $permisos): void
@@ -120,11 +136,11 @@ class RolesModel extends BaseModel
         }
 
         foreach ($permisos as $p) {
-            $permiso = $this->permisosModel->find($p);
+            $permiso = $this->findPermiso($p);
 
             $this->pdoInsert($table, [
                 "id_rol" => $id_rol,
-                "id_permiso" => $permiso->id_permiso,
+                "id_permiso" => $permiso["id_permiso"],
             ]);
         }
     }
