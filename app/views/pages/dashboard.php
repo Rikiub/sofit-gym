@@ -5,7 +5,7 @@
 // Props
 $asistencias ??= [];
 $clientesMensuales ??= [];
-$ingresosMensual ??= [];
+$ingresosMensuales ??= [];
 
 $this->layout('layout', ['title' => 'Dashboard']);
 $this->pushJs('lib/chart.js/chart.umd.min.js');
@@ -183,7 +183,7 @@ function cardEstadistica(string $titulo, int|string $valor, string $footer)
 
                 <?= cardEstadistica(
                     titulo: "Ingresos mensuales",
-                    valor: "$" . round($ingresosMensual["total_ingresado"]),
+                    valor: "$" . round($ingresosMensuales["total_ingresado"]),
                     footer: "Ganancias totales",
                 ) ?>
             </div>

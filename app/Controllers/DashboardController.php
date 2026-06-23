@@ -23,14 +23,14 @@ class DashboardController extends BaseController
             'fecha_inicio_desde' => date('Y-m-01'),
             'fecha_inicio_hasta' => date('Y-m-t'),
         ]);
-        $ingresosMensual = $this->facturacionModel->obtenerIngresosMesActual();
+        $ingresosMensuales = $this->facturacionModel->obtenerIngresosMesActual();
 
         $usuario = UsuarioSession::getUsuario();
         return $this->templates->render('dashboard', [
             "usuario" => $usuario,
             "asistencias" => $asistencias,
             "clientesMensuales" => $clientesMensuales,
-            "ingresosMensual" => $ingresosMensual,
+            "ingresosMensuales" => $ingresosMensuales,
         ]);
     }
 }
