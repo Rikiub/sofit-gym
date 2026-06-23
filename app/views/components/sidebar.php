@@ -2,6 +2,65 @@
 
 /** @var \App\Helpers\Auth\UsuarioSessionDTO $sesion_usuario */
 
+$link = function (
+	string $page,
+	string $icon,
+	string $title,
+	string|null $permiso = null,
+) use ($sesion_usuario): string {
+	if ($permiso === null || $sesion_usuario->hasPermiso($permiso)) {
+		return <<<HTML
+            <a href="?page={$page}" class="nav-single">
+                <i class="fas {$icon}"></i>
+                <span>{$title}</span>
+            </a>
+        HTML;
+	} else {
+		return "";
+	}
+};
+
+$dropdown = function (
+	string $icon,
+	string $title,
+	array $items,
+) use ($sesion_usuario): string {
+	$htmlItems = "";
+	foreach ($items as $i) {
+		$itemPermiso = $i["permiso"] ?? null;
+		$itemPage = $i["page"] ?? "";
+		$itemIcon = $i["icon"] ?? "";
+		$itemTitle = $i["title"] ?? "";
+
+		if ($itemPermiso === null || $sesion_usuario->hasPermiso($itemPermiso)) {
+			$htmlItems .= <<<HTML
+                <a href="?page={$itemPage}">
+                    <i class="fas {$itemIcon}"></i>
+                    <span>{$itemTitle}</span>
+                </a>
+            HTML;
+		}
+	}
+
+	// Si ninguna de las sub-páginas tiene permiso, evitamos renderizar el menú vacío
+	if (empty(trim($htmlItems))) {
+		return "";
+	}
+
+	return <<<HTML
+        <details class="nav-group">
+            <summary class="group-title">
+                <i class="fas {$icon}"></i>
+                <span>{$title}</span>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </summary>
+
+            <div class="group-items">
+                {$htmlItems}
+            </div>
+        </details>
+    HTML;
+};
 ?>
 
 <script type="module">
@@ -41,117 +100,154 @@
 	</div>
 
 	<nav class="sidebar-nav">
-		<a href="?page=dashboard" class="active"><i class="fas fa-home"></i> <span>Panel de control</span></a>
+		<a href="?page=dashboard" class="active">
+			<i class="fas fa-home"></i>
+			<span>Panel de control</span>
+		</a>
 
 		<hr>
 
-		<?php if ($sesion_usuario->hasPermiso("clientes:ver")): ?>
-			<a href="?page=clientes" class="nav-single">
-				<i class="fas fa-id-card"></i> <span>Clientes</span>
-			</a>
-		<?php endif ?>
+		<?= $link(
+			permiso: "clientes:ver",
+			page: "clientes",
+			icon: "fa-id-card",
+			title: "Gestión de Clientes"
+		) ?>
 
-		<?php if ($sesion_usuario->hasPermiso("trabajadores:ver")): ?>
-			<a href="?page=trabajadores" class="nav-single">
-				<i class="fas fa-id-card"></i> <span>Trabajadores</span>
-			</a>
-		<?php endif ?>
+		<?= $link(
+			permiso: "trabajadores:ver",
+			page: "trabajadores",
+			icon: "fa-id-card",
+			title: "Gestión de Trabajadores"
+		) ?>
 
 		<hr>
 
-		<?php if ($sesion_usuario->hasPermiso("facturacion:ver")): ?>
-			<a href="?page=facturacion" class="nav-single">
-				<i class="fas fa-coins"></i> <span>Facturación y Control de Pagos</span>
-			</a>
-		<?php endif ?>
+		<?= $link(
+			permiso: "facturacion:ver",
+			page: "facturacion",
+			icon: "fa-coins",
+			title: "Facturación y Control de Pagos"
+		) ?>
 
-		<?php if ($sesion_usuario->hasPermiso("asistencia:ver")): ?>
-			<a href="?page=asistencia" class="nav-single">
-				<i class="fas fa-fingerprint"></i> <span>Control de Asistencia</span>
-			</a>
-		<?php endif ?>
+		<?= $link(
+			permiso: "asistencia:ver",
+			page: "asistencia",
+			icon: "fa-fingerprint",
+			title: "Control de Asistencia"
+		) ?>
 
-		<?php if ($sesion_usuario->hasPermiso("clases:ver")): ?>
-			<a href="?page=clasesGrupales" class="nav-single">
-				<i class="fas fa-calendar"></i> <span>Horarios de clases</span>
-			</a>
-		<?php endif ?>
+		<?= $link(
+			permiso: "clases:ver",
+			page: "clasesGrupales",
+			icon: "fa-calendar",
+			title: "Horarios de clases"
+		) ?>
 
 		<?php if ($sesion_usuario->hasPermiso("rutinas:ver")): ?>
-			<details class="nav-group">
-				<summary class="group-title">
-					<i class="fas fa-dumbbell"></i> <span>Rutinas de Entrenamiento</span>
-					<i class="fas fa-chevron-down toggle-icon"></i>
-				</summary>
-				<div class="group-items">
-					<a href="?page=rutinas&action=index"><i class="fas fa-pen-ruler"></i> <span>Planes de entrenamiento</span></a>
-					<a href="?page=rutinas&action=asignadas"><i class="fas fa-user-check"></i> <span>Asignación de rutinas</span></a>
-				</div>
-			</details>
+			<?= $dropdown(
+				icon: "fa-dumbbell",
+				title: "Rutinas de Entrenamiento",
+				items: [
+					[
+						"permiso" => "rutinas:ver",
+						"page" => "rutinas&action=index",
+						"icon" => "fa-pen-ruler",
+						"title" => "Planes de entrenamiento"
+					],
+					[
+						"permiso" => "rutinas:ver",
+						"page" => "rutinas&action=asignadas",
+						"icon" => "fa-user-check",
+						"title" => "Asignación de rutinas"
+					]
+				]
+			) ?>
 		<?php endif ?>
 
 		<hr>
 
-		<?php if ($sesion_usuario->hasPermiso("equipos:ver")): ?>
-			<details class="nav-group">
-				<summary class="group-title">
-					<i class="fas fa-microchip"></i> <span>Equipos y Maquinaria</span>
-					<i class="fas fa-chevron-down toggle-icon"></i>
-				</summary>
-				<div class="group-items">
-					<a href="?page=equipos"><i class="fas fa-tools"></i> <span>Inventario de equipos</span></a>
-					<a href="?page=equiposMantenimiento"><i class="fas fa-history"></i> <span>Historial de mantenimientos</span></a>
-				</div>
-			</details>
-		<?php endif ?>
+		<?= $dropdown(
+			icon: "fa-microchip",
+			title: "Equipos y Maquinaria",
+			items: [
+				[
+					"permiso" => "equipos:ver",
+					"page" => "equipos",
+					"icon" => "fa-tools",
+					"title" => "Inventario de equipos"
+				],
+				[
+					"permiso" => "equipos:ver",
+					"page" => "equiposMantenimiento",
+					"icon" => "fa-history",
+					"title" => "Historial de mantenimientos"
+				]
+			]
+		) ?>
 
-		<?php if ($sesion_usuario->hasPermiso("productos:ver")): ?>
-			<a href="?page=productos" class="nav-single">
-				<i class="fas fa-boxes"></i> <span>Inventario de Productos</span>
-			</a>
-		<?php endif ?>
+		<?= $link(
+			permiso: "productos:ver",
+			page: "productos",
+			icon: "fa-boxes",
+			title: "Inventario de Productos"
+		) ?>
 
-		<?php if ($sesion_usuario->hasPermiso("asistente:ver")): ?>
-			<a href="?page=asistente" class="nav-single">
-				<i class="fas fa-robot"></i> <span>Asistente de Entrenamiento</span>
-			</a>
-		<?php endif ?>
+		<?= $link(
+			permiso: "asistente:ver",
+			page: "asistente",
+			icon: "fa-robot",
+			title: "Asistente de Entrenamiento"
+		) ?>
 
 		<hr>
 
-		<details class="nav-group">
-			<summary class="group-title">
-				<i class="fas fa-shield-alt"></i> <span>Auditoría y seguridad</span>
-				<i class="fas fa-chevron-down toggle-icon"></i>
-			</summary>
+		<?= $dropdown(
+			icon: "fa-shield-alt",
+			title: "Auditoría y seguridad",
+			items: [
+				[
+					"permiso" => "usuarios:ver",
+					"page" => "usuarios",
+					"icon" => "fa-user",
+					"title" => "Usuarios"
+				],
+				[
+					"permiso" => "roles:ver",
+					"page" => "roles",
+					"icon" => "fa-lock",
+					"title" => "Roles y Permisos"
+				],
+				[
+					"permiso" => "bitacora:ver",
+					"page" => "bitacora",
+					"icon" => "fa-history",
+					"title" => "Bitácora"
+				]
+			]
+		) ?>
 
-			<div class="group-items">
-				<?php if ($sesion_usuario->hasPermiso("usuarios:ver")): ?>
-					<a href="?page=usuarios"><i class="fa-solid fa-user"></i> <span>Usuarios</span></a>
-				<?php endif ?>
-
-				<?php if ($sesion_usuario->hasPermiso("roles:ver")): ?>
-					<a href="?page=roles"><i class="fas fa-lock"></i> <span>Roles y Permisos</span></a>
-				<?php endif ?>
-
-				<?php if ($sesion_usuario->hasPermiso("bitacora:ver")): ?>
-					<a href="?page=bitacora"><i class="fas fa-history"></i> <span>Bitácora</span></a>
-				<?php endif ?>
-			</div>
-		</details>
-
-		<details class="nav-group">
-			<summary class="group-title">
-				<i class="fas fa-database"></i> <span>Soporte y Datos</span>
-				<i class="fas fa-chevron-down toggle-icon"></i>
-			</summary>
-
-			<div class="group-items">
-				<a href="?page=reportes"><i class="fas fa-chart-bar"></i> <span>Reportes estadísticos</span></a>
-				<a href="?page=mantenimiento_sistema"><i class="fas fa-database"></i> <span>Mantenimiento del sistema</span></a>
-				<a href="?page=ayuda"><i class="fas fa-question-circle"></i> <span>Manual de usuario</span></a>
-			</div>
-		</details>
+		<?= $dropdown(
+			icon: "fa-database",
+			title: "Soporte y Datos",
+			items: [
+				[
+					"page" => "reportes",
+					"icon" => "fa-chart-bar",
+					"title" => "Reportes estadísticos"
+				],
+				[
+					"page" => "sistema",
+					"icon" => "fa-database",
+					"title" => "Mantenimiento del sistema"
+				],
+				[
+					"page" => "sistema",
+					"icon" => "fa-question-circle",
+					"title" => "Manual de usuario"
+				]
+			]
+		) ?>
 	</nav>
 
 	<div class="sidebar-footer text-center">

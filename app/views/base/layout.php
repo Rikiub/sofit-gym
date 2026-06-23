@@ -15,12 +15,9 @@ $title ??= null;
 
 // Insertar layout base
 $this->layout('base', ['title' => $title]);
-$backgroundImage = ASSETS_DIR . '/base/background.webp';
 ?>
 
-<div
-    class="layout-root <?= $sidebar ? 'layout-sidebar' : '' ?>"
-    style="background-image: url('<?= $backgroundImage ?>'); background-color: #021C26;">
+<div class="layout-root <?= $sidebar ? 'layout-sidebar' : '' ?>">
 
     <?php if ($sidebar): ?>
         <?= $this->insert('sidebar') ?>
@@ -38,6 +35,11 @@ $backgroundImage = ASSETS_DIR . '/base/background.webp';
     }
 
     .layout-root {
+        --backdrop-opacity: 0.1;
+        background-image:
+            linear-gradient(rgba(0, 0, 0, var(--backdrop-opacity)), rgba(0, 0, 0, var(--backdrop-opacity))),
+            url('<?= ASSETS_DIR . '/base/background.webp' ?>');
+        background-color: #021C26;
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
