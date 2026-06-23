@@ -170,20 +170,20 @@ function cardEstadistica(string $titulo, int|string $valor, string $footer)
 
             <div class="row g-3">
                 <?= cardEstadistica(
-                    titulo: "Clientes del mes",
-                    valor: count($clientesMensuales),
-                    footer: "Membresías activas",
-                ) ?>
-
-                <?= cardEstadistica(
                     titulo: "Asistencias de hoy",
                     valor: count($asistencias),
                     footer: "Registradas",
                 ) ?>
 
                 <?= cardEstadistica(
+                    titulo: "Clientes del mes",
+                    valor: count($clientesMensuales),
+                    footer: "Membresías activas",
+                ) ?>
+
+                <?= cardEstadistica(
                     titulo: "Ingresos mensuales",
-                    valor: round($ingresosMensual["total_ingresado"]),
+                    valor: "$" . round($ingresosMensual["total_ingresado"]),
                     footer: "Ganancias totales",
                 ) ?>
             </div>
