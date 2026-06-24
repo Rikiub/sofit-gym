@@ -84,14 +84,8 @@ class FacturacionPagosModel extends BaseModel
                     p.fecha_pago, 
                     m.fecha_fin AS fecha_vencimiento,
                     m.fecha_fin AS membresia_fecha_fin,
-                    COALESCE(DATEDIFF(m.fecha_fin, CURDATE()), 0) AS dias_restantes,
-                    CASE
-                        WHEN p.estado = 'Atrasado' AND m.fecha_fin < CURDATE() THEN 'Vencido'
-                        WHEN p.estado = 'Atrasado' AND m.fecha_fin >= CURDATE() THEN 'Moroso'
-                        WHEN m.fecha_fin < CURDATE() THEN 'Vencido'
-                        WHEN DATEDIFF(m.fecha_fin, CURDATE()) <= 7 THEN 'Próximo a vencer'
-                        ELSE 'Activo'
-                    END AS estado_cliente
+                    fn_dias_restantes(m.fecha_fin) AS dias_restantes,
+                    fn_estado_membresia(m.fecha_fin, p.estado) as estado_cliente
                 FROM pago p
                 JOIN membresia m ON p.id_membresia = m.id_membresia
                 LEFT JOIN metodo_pago mp ON p.id_metodo = mp.id_metodo
@@ -141,14 +135,8 @@ class FacturacionPagosModel extends BaseModel
                     p.fecha_pago, 
                     m.fecha_fin AS fecha_vencimiento,
                     m.fecha_fin AS membresia_fecha_fin,
-                    COALESCE(DATEDIFF(m.fecha_fin, CURDATE()), 0) AS dias_restantes,
-                    CASE
-                        WHEN p.estado = 'Atrasado' AND m.fecha_fin < CURDATE() THEN 'Vencido'
-                        WHEN p.estado = 'Atrasado' AND m.fecha_fin >= CURDATE() THEN 'Moroso'
-                        WHEN m.fecha_fin < CURDATE() THEN 'Vencido'
-                        WHEN DATEDIFF(m.fecha_fin, CURDATE()) <= 7 THEN 'Próximo a vencer'
-                        ELSE 'Activo'
-                    END AS estado_cliente
+                    fn_dias_restantes(m.fecha_fin) AS dias_restantes,
+                    fn_estado_membresia(m.fecha_fin, p.estado) as estado_cliente
                 FROM pago p
                 JOIN membresia m ON p.id_membresia = m.id_membresia
                 LEFT JOIN metodo_pago mp ON p.id_metodo = mp.id_metodo

@@ -30,10 +30,28 @@ class AsistenciaModel extends BaseModel
     }
 
     /**
-     * Registrar entrada (usa NOW() de MySQL para evitar desfase horario)
+     * Registrar entrada
      */
     public function registrarEntrada(string $cedula, ?string $hora = null): array
     {
+        $stmt = $this->pdo->prepare(
+            <<<SQL
+                CALL sp_registrar_entrada_cliente(?, ?, @ok, @msg, @id, @fecha)
+            SQL
+        );
+        $stmt->execute([$cedula, $hora]);
+
+        $stmt = $this->pdo->query(
+            <<<SQL
+                SELECT
+                    @ok as exito,
+                    @msg as mensaje,
+                    @id as id,
+                    @fecha as fecha
+            SQL
+        );
+        $asistencia = $stmt->fetch();
+
         // Verificar cliente y membresía activa
         $stmt = $this->pdo->prepare("SELECT p.cedula AS cedula_persona, CONCAT(p.nombre, ' ', p.apellido) as nombre
                                     FROM persona p
@@ -46,28 +64,10 @@ class AsistenciaModel extends BaseModel
             return ['success' => false, 'message' => 'Cliente no encontrado o membresía inactiva/vencida.'];
         }
 
-        if ($hora) {
-            // Hora personalizada: se combina con la fecha actual de MySQL
-            $sql = "INSERT INTO asistencia_gimnasio (cedula_persona, fecha, tipo) 
-                    VALUES (?, CONCAT(CURDATE(), ' ', ?), 'Entrada')";
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$cedula, $hora]);
-            $fechaHora = date('Y-m-d') . ' ' . $hora; // solo para respuesta
-        } else {
-            // Usar NOW() de MySQL
-            $sql = "INSERT INTO asistencia_gimnasio (cedula_persona, fecha, tipo) 
-                    VALUES (?, NOW(), 'Entrada')";
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$cedula]);
-            // Obtener la fecha real insertada (con zona horaria de MySQL)
-            $fechaHora = $this->pdo->lastInsertId() ? date('Y-m-d H:i:s') : '';
-        }
-        $id = $this->pdo->lastInsertId();
-
         return [
             'success' => true,
-            'id' => $id,
-            'fecha' => $fechaHora,
+            'id' => $asistencia["id"],
+            'fecha' => $asistencia["fecha"],
             'cedula' => $cedula,
             'nombre' => $cliente['nombre']
         ];
@@ -174,13 +174,7 @@ class AsistenciaModel extends BaseModel
 
     public function obtenerTotalesPorRango(string $fechaInicio, string $fechaFin): array
     {
-        $sql = "SELECT DATE(a.fecha) AS dia, COUNT(*) AS total_asistencias
-            FROM asistencia_gimnasio a
-            WHERE DATE(a.fecha) BETWEEN ? AND ? AND a.tipo = 'Entrada'
-            GROUP BY DATE(a.fecha)
-            ORDER BY dia ASC";
-
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->pdo->prepare("CALL sp_obtener_totales_asistencias_por_rango(?, ?)");
         $stmt->execute([$fechaInicio, $fechaFin]);
         return $stmt->fetchAll();
     }

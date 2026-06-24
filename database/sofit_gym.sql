@@ -31,7 +31,7 @@ CREATE TABLE `asistencia_gimnasio` (
   KEY `cedula_cliente` (`cedula_persona`),
   KEY `idx_asistencias_fecha` (`fecha`),
   CONSTRAINT `asistencia_gimnasio_ibfk_1` FOREIGN KEY (`cedula_persona`) REFERENCES `cliente` (`cedula`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=123 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=127 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +40,7 @@ CREATE TABLE `asistencia_gimnasio` (
 
 LOCK TABLES `asistencia_gimnasio` WRITE;
 /*!40000 ALTER TABLE `asistencia_gimnasio` DISABLE KEYS */;
-INSERT INTO `asistencia_gimnasio` VALUES (4,'V-11111111','Entrada','2026-05-17 12:12:12'),(6,'V-22222222','Entrada','2026-05-18 12:12:12'),(9,'V-33333333','Entrada','2026-05-21 12:12:12'),(10,'V-33333333','Entrada','2026-05-23 12:12:12'),(11,'V-11111111','Entrada','2026-06-09 20:00:00'),(12,'V-11111111','Entrada','2026-05-09 12:12:12'),(13,'V-33333333','Entrada','2026-06-09 12:00:00'),(14,'V-11773948','Entrada','2026-06-20 20:07:08'),(15,'V-11773948','Entrada','2026-06-22 12:00:00'),(16,'V-10556291','Entrada','2026-06-22 06:28:00'),(17,'V-10556291','Entrada','2026-06-20 16:40:00'),(18,'V-10556291','Entrada','2026-06-18 18:22:00'),(19,'V-11029384','Entrada','2026-06-21 07:23:00'),(20,'V-11029384','Entrada','2026-06-20 09:16:00'),(21,'V-11029384','Entrada','2026-06-19 19:08:00'),(22,'V-11029384','Entrada','2026-06-18 16:15:00'),(23,'V-11111111','Entrada','2026-06-22 09:55:00'),(24,'V-11111111','Entrada','2026-06-21 09:43:00'),(25,'V-11111111','Entrada','2026-06-20 14:00:00'),(26,'V-11111111','Entrada','2026-06-18 12:13:00'),(27,'V-11111111','Entrada','2026-06-16 19:45:00'),(28,'V-11773948','Entrada','2026-06-22 14:52:00'),(29,'V-11773948','Entrada','2026-06-21 14:47:00'),(30,'V-11773948','Entrada','2026-06-19 13:41:00'),(31,'V-11773948','Entrada','2026-06-18 15:35:00'),(32,'V-11773948','Entrada','2026-06-16 17:13:00'),(33,'V-12894355','Entrada','2026-06-22 07:23:00'),(34,'V-12894355','Entrada','2026-06-21 13:57:00'),(35,'V-12894355','Entrada','2026-06-18 07:14:00'),(36,'V-12894355','Entrada','2026-06-16 12:46:00'),(37,'V-13449582','Entrada','2026-06-22 07:05:00'),(38,'V-13449582','Entrada','2026-06-18 12:19:00'),(39,'V-13556294','Entrada','2026-06-22 09:08:00'),(40,'V-13556294','Entrada','2026-06-21 18:55:00'),(41,'V-13556294','Entrada','2026-06-20 16:11:00'),(42,'V-13556294','Entrada','2026-06-19 11:07:00'),(43,'V-13556294','Entrada','2026-06-18 06:35:00'),(44,'V-13556294','Entrada','2026-06-16 18:37:00'),(45,'V-14228394','Entrada','2026-06-22 13:11:00'),(46,'V-14228394','Entrada','2026-06-21 11:40:00'),(47,'V-14228394','Entrada','2026-06-18 09:00:00'),(48,'V-14228394','Entrada','2026-06-16 17:01:00'),(49,'V-15667281','Entrada','2026-06-22 08:00:00'),(50,'V-15667281','Entrada','2026-06-21 11:21:00'),(51,'V-15667281','Entrada','2026-06-20 12:08:00'),(52,'V-15667281','Entrada','2026-06-19 12:02:00'),(53,'V-15667281','Entrada','2026-06-18 12:33:00'),(54,'V-15667281','Entrada','2026-06-16 10:17:00'),(55,'V-16883920','Entrada','2026-06-22 07:43:00'),(56,'V-16883920','Entrada','2026-06-20 06:57:00'),(57,'V-16883920','Entrada','2026-06-19 14:59:00'),(58,'V-16883920','Entrada','2026-06-16 14:16:00'),(59,'V-17334901','Entrada','2026-06-22 18:58:00'),(60,'V-17334901','Entrada','2026-06-20 19:32:00'),(61,'V-17334901','Entrada','2026-06-19 09:55:00'),(62,'V-17334901','Entrada','2026-06-18 16:07:00'),(63,'V-18943201','Entrada','2026-06-20 11:41:00'),(64,'V-18943201','Entrada','2026-06-18 13:13:00'),(65,'V-18943201','Entrada','2026-06-16 16:11:00'),(66,'V-19442039','Entrada','2026-06-22 11:29:00'),(67,'V-19442039','Entrada','2026-06-18 17:18:00'),(68,'V-19882043','Entrada','2026-06-22 18:06:00'),(69,'V-19882043','Entrada','2026-06-21 12:29:00'),(70,'V-19882043','Entrada','2026-06-19 09:19:00'),(71,'V-19882043','Entrada','2026-06-18 19:34:00'),(72,'V-19882043','Entrada','2026-06-16 16:08:00'),(73,'V-20556114','Entrada','2026-06-22 14:43:00'),(74,'V-20556114','Entrada','2026-06-21 09:27:00'),(75,'V-20556114','Entrada','2026-06-20 15:37:00'),(76,'V-20556114','Entrada','2026-06-18 18:20:00'),(77,'V-20556114','Entrada','2026-06-16 15:40:00'),(78,'V-21059483','Entrada','2026-06-20 15:00:00'),(79,'V-21059483','Entrada','2026-06-19 15:42:00'),(80,'V-21059483','Entrada','2026-06-18 17:55:00'),(81,'V-22222222','Entrada','2026-06-21 15:01:00'),(82,'V-22222222','Entrada','2026-06-18 19:37:00'),(83,'V-22884711','Entrada','2026-06-22 14:36:00'),(84,'V-22884711','Entrada','2026-06-19 18:58:00'),(85,'V-22884711','Entrada','2026-06-16 06:25:00'),(86,'V-23991048','Entrada','2026-06-20 15:25:00'),(87,'V-23991048','Entrada','2026-06-18 07:06:00'),(88,'V-24119384','Entrada','2026-06-22 15:58:00'),(89,'V-24119384','Entrada','2026-06-21 14:21:00'),(90,'V-24119384','Entrada','2026-06-20 14:16:00'),(91,'V-24119384','Entrada','2026-06-19 18:43:00'),(92,'V-24119384','Entrada','2026-06-16 08:29:00'),(93,'V-24589122','Entrada','2026-06-22 16:14:00'),(94,'V-24589122','Entrada','2026-06-21 06:13:00'),(95,'V-24589122','Entrada','2026-06-19 13:31:00'),(96,'V-24589122','Entrada','2026-06-18 06:30:00'),(97,'V-24589122','Entrada','2026-06-16 11:41:00'),(98,'V-25001948','Entrada','2026-06-22 15:29:00'),(99,'V-25001948','Entrada','2026-06-20 07:31:00'),(100,'V-25001948','Entrada','2026-06-19 08:47:00'),(101,'V-25001948','Entrada','2026-06-18 17:41:00'),(102,'V-26771493','Entrada','2026-06-21 09:43:00'),(103,'V-26771493','Entrada','2026-06-20 06:31:00'),(104,'V-26771493','Entrada','2026-06-19 11:18:00'),(105,'V-26771493','Entrada','2026-06-16 14:37:00'),(106,'V-27338194','Entrada','2026-06-20 11:20:00'),(107,'V-27338194','Entrada','2026-06-19 14:34:00'),(108,'V-27338194','Entrada','2026-06-18 07:43:00'),(109,'V-28661049','Entrada','2026-06-21 14:26:00'),(110,'V-28661049','Entrada','2026-06-19 17:00:00'),(111,'V-28661049','Entrada','2026-06-18 16:12:00'),(112,'V-28661049','Entrada','2026-06-16 18:16:00'),(113,'V-29114059','Entrada','2026-06-22 19:26:00'),(114,'V-29114059','Entrada','2026-06-21 13:29:00'),(115,'V-29114059','Entrada','2026-06-20 19:09:00'),(116,'V-29114059','Entrada','2026-06-19 19:01:00'),(117,'V-29114059','Entrada','2026-06-16 16:10:00'),(118,'V-33333333','Entrada','2026-06-22 10:45:00'),(119,'V-33333333','Entrada','2026-06-21 12:31:00'),(120,'V-33333333','Entrada','2026-06-19 09:05:00'),(121,'V-33333333','Entrada','2026-06-18 15:58:00'),(122,'V-33333333','Entrada','2026-06-16 10:55:00');
+INSERT INTO `asistencia_gimnasio` VALUES (4,'V-11111111','Entrada','2026-05-17 12:12:12'),(6,'V-22222222','Entrada','2026-05-18 12:12:12'),(9,'V-33333333','Entrada','2026-05-21 12:12:12'),(10,'V-33333333','Entrada','2026-05-23 12:12:12'),(11,'V-11111111','Entrada','2026-06-09 20:00:00'),(12,'V-11111111','Entrada','2026-05-09 12:12:12'),(13,'V-33333333','Entrada','2026-06-09 12:00:00'),(14,'V-11773948','Entrada','2026-06-20 20:07:08'),(15,'V-11773948','Entrada','2026-06-22 12:00:00'),(16,'V-10556291','Entrada','2026-06-22 06:28:00'),(17,'V-10556291','Entrada','2026-06-20 16:40:00'),(18,'V-10556291','Entrada','2026-06-18 18:22:00'),(19,'V-11029384','Entrada','2026-06-21 07:23:00'),(20,'V-11029384','Entrada','2026-06-20 09:16:00'),(21,'V-11029384','Entrada','2026-06-19 19:08:00'),(22,'V-11029384','Entrada','2026-06-18 16:15:00'),(23,'V-11111111','Entrada','2026-06-22 09:55:00'),(24,'V-11111111','Entrada','2026-06-21 09:43:00'),(25,'V-11111111','Entrada','2026-06-20 14:00:00'),(26,'V-11111111','Entrada','2026-06-18 12:13:00'),(27,'V-11111111','Entrada','2026-06-16 19:45:00'),(28,'V-11773948','Entrada','2026-06-22 14:52:00'),(29,'V-11773948','Entrada','2026-06-21 14:47:00'),(30,'V-11773948','Entrada','2026-06-19 13:41:00'),(31,'V-11773948','Entrada','2026-06-18 15:35:00'),(32,'V-11773948','Entrada','2026-06-16 17:13:00'),(33,'V-12894355','Entrada','2026-06-22 07:23:00'),(34,'V-12894355','Entrada','2026-06-21 13:57:00'),(35,'V-12894355','Entrada','2026-06-18 07:14:00'),(36,'V-12894355','Entrada','2026-06-16 12:46:00'),(37,'V-13449582','Entrada','2026-06-22 07:05:00'),(38,'V-13449582','Entrada','2026-06-18 12:19:00'),(39,'V-13556294','Entrada','2026-06-22 09:08:00'),(40,'V-13556294','Entrada','2026-06-21 18:55:00'),(41,'V-13556294','Entrada','2026-06-20 16:11:00'),(42,'V-13556294','Entrada','2026-06-19 11:07:00'),(43,'V-13556294','Entrada','2026-06-18 06:35:00'),(44,'V-13556294','Entrada','2026-06-16 18:37:00'),(45,'V-14228394','Entrada','2026-06-22 13:11:00'),(46,'V-14228394','Entrada','2026-06-21 11:40:00'),(47,'V-14228394','Entrada','2026-06-18 09:00:00'),(48,'V-14228394','Entrada','2026-06-16 17:01:00'),(49,'V-15667281','Entrada','2026-06-22 08:00:00'),(50,'V-15667281','Entrada','2026-06-21 11:21:00'),(51,'V-15667281','Entrada','2026-06-20 12:08:00'),(52,'V-15667281','Entrada','2026-06-19 12:02:00'),(53,'V-15667281','Entrada','2026-06-18 12:33:00'),(54,'V-15667281','Entrada','2026-06-16 10:17:00'),(55,'V-16883920','Entrada','2026-06-22 07:43:00'),(56,'V-16883920','Entrada','2026-06-20 06:57:00'),(57,'V-16883920','Entrada','2026-06-19 14:59:00'),(58,'V-16883920','Entrada','2026-06-16 14:16:00'),(59,'V-17334901','Entrada','2026-06-22 18:58:00'),(60,'V-17334901','Entrada','2026-06-20 19:32:00'),(61,'V-17334901','Entrada','2026-06-19 09:55:00'),(62,'V-17334901','Entrada','2026-06-18 16:07:00'),(63,'V-18943201','Entrada','2026-06-20 11:41:00'),(64,'V-18943201','Entrada','2026-06-18 13:13:00'),(65,'V-18943201','Entrada','2026-06-16 16:11:00'),(66,'V-19442039','Entrada','2026-06-22 11:29:00'),(67,'V-19442039','Entrada','2026-06-18 17:18:00'),(68,'V-19882043','Entrada','2026-06-22 18:06:00'),(69,'V-19882043','Entrada','2026-06-21 12:29:00'),(70,'V-19882043','Entrada','2026-06-19 09:19:00'),(71,'V-19882043','Entrada','2026-06-18 19:34:00'),(72,'V-19882043','Entrada','2026-06-16 16:08:00'),(73,'V-20556114','Entrada','2026-06-22 14:43:00'),(74,'V-20556114','Entrada','2026-06-21 09:27:00'),(75,'V-20556114','Entrada','2026-06-20 15:37:00'),(76,'V-20556114','Entrada','2026-06-18 18:20:00'),(77,'V-20556114','Entrada','2026-06-16 15:40:00'),(78,'V-21059483','Entrada','2026-06-20 15:00:00'),(79,'V-21059483','Entrada','2026-06-19 15:42:00'),(80,'V-21059483','Entrada','2026-06-18 17:55:00'),(81,'V-22222222','Entrada','2026-06-21 15:01:00'),(82,'V-22222222','Entrada','2026-06-18 19:37:00'),(83,'V-22884711','Entrada','2026-06-22 14:36:00'),(84,'V-22884711','Entrada','2026-06-19 18:58:00'),(85,'V-22884711','Entrada','2026-06-16 06:25:00'),(86,'V-23991048','Entrada','2026-06-20 15:25:00'),(87,'V-23991048','Entrada','2026-06-18 07:06:00'),(88,'V-24119384','Entrada','2026-06-22 15:58:00'),(89,'V-24119384','Entrada','2026-06-21 14:21:00'),(90,'V-24119384','Entrada','2026-06-20 14:16:00'),(91,'V-24119384','Entrada','2026-06-19 18:43:00'),(92,'V-24119384','Entrada','2026-06-16 08:29:00'),(93,'V-24589122','Entrada','2026-06-22 16:14:00'),(94,'V-24589122','Entrada','2026-06-21 06:13:00'),(95,'V-24589122','Entrada','2026-06-19 13:31:00'),(96,'V-24589122','Entrada','2026-06-18 06:30:00'),(97,'V-24589122','Entrada','2026-06-16 11:41:00'),(98,'V-25001948','Entrada','2026-06-22 15:29:00'),(99,'V-25001948','Entrada','2026-06-20 07:31:00'),(100,'V-25001948','Entrada','2026-06-19 08:47:00'),(101,'V-25001948','Entrada','2026-06-18 17:41:00'),(102,'V-26771493','Entrada','2026-06-21 09:43:00'),(103,'V-26771493','Entrada','2026-06-20 06:31:00'),(104,'V-26771493','Entrada','2026-06-19 11:18:00'),(105,'V-26771493','Entrada','2026-06-16 14:37:00'),(106,'V-27338194','Entrada','2026-06-20 11:20:00'),(107,'V-27338194','Entrada','2026-06-19 14:34:00'),(108,'V-27338194','Entrada','2026-06-18 07:43:00'),(109,'V-28661049','Entrada','2026-06-21 14:26:00'),(110,'V-28661049','Entrada','2026-06-19 17:00:00'),(111,'V-28661049','Entrada','2026-06-18 16:12:00'),(112,'V-28661049','Entrada','2026-06-16 18:16:00'),(113,'V-29114059','Entrada','2026-06-22 19:26:00'),(114,'V-29114059','Entrada','2026-06-21 13:29:00'),(115,'V-29114059','Entrada','2026-06-20 19:09:00'),(116,'V-29114059','Entrada','2026-06-19 19:01:00'),(117,'V-29114059','Entrada','2026-06-16 16:10:00'),(118,'V-33333333','Entrada','2026-06-22 10:45:00'),(119,'V-33333333','Entrada','2026-06-21 12:31:00'),(120,'V-33333333','Entrada','2026-06-19 09:05:00'),(121,'V-33333333','Entrada','2026-06-18 15:58:00'),(122,'V-33333333','Entrada','2026-06-16 10:55:00'),(124,'V-11773948','Entrada','2026-06-23 17:42:54'),(126,'V-24119384','Entrada','2026-06-23 12:00:00');
 /*!40000 ALTER TABLE `asistencia_gimnasio` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -185,6 +185,7 @@ LOCK TABLES `clase_cliente` WRITE;
 INSERT INTO `clase_cliente` VALUES (2,'V-11111111',0,'2026-06-20 19:45:42'),(2,'V-22222222',0,'2026-06-20 19:45:42'),(2,'V-33333333',0,'2026-06-20 19:45:42'),(13,'V-11111111',0,'2026-06-20 19:45:42'),(13,'V-33333333',0,'2026-06-20 19:45:42'),(20,'V-11111111',0,'2026-06-20 19:45:42'),(20,'V-22222222',0,'2026-06-20 19:45:42'),(20,'V-33333333',0,'2026-06-20 19:45:42');
 /*!40000 ALTER TABLE `clase_cliente` ENABLE KEYS */;
 UNLOCK TABLES;
+ALTER DATABASE `sofit_gym` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -248,6 +249,7 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+ALTER DATABASE `sofit_gym` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
 
 --
 -- Table structure for table `cliente`
@@ -273,6 +275,7 @@ LOCK TABLES `cliente` WRITE;
 INSERT INTO `cliente` VALUES ('V-10556291','2026-06-18 13:30:12'),('V-11029384','2026-06-18 13:30:12'),('V-11111111','2026-06-18 13:30:12'),('V-11773948','2026-06-18 13:30:12'),('V-12894355','2026-06-18 13:30:12'),('V-13449582','2026-06-18 13:30:12'),('V-13556294','2026-06-18 13:30:12'),('V-14228394','2026-06-18 13:30:12'),('V-15667281','2026-06-18 13:30:12'),('V-16883920','2026-06-18 13:30:12'),('V-17334901','2026-06-18 13:30:12'),('V-18943201','2026-06-18 13:30:12'),('V-19442039','2026-06-18 13:30:12'),('V-19882043','2026-06-18 13:30:12'),('V-20556114','2026-06-18 13:30:12'),('V-21059483','2026-06-18 13:30:12'),('V-22222222','2026-06-18 13:30:12'),('V-22884711','2026-06-18 13:30:12'),('V-23991048','2026-06-18 13:30:12'),('V-24119384','2026-06-18 13:30:12'),('V-24589122','2026-06-18 13:30:12'),('V-25001948','2026-06-18 13:30:12'),('V-26771493','2026-06-18 13:30:12'),('V-27338194','2026-06-18 13:30:12'),('V-28661049','2026-06-18 13:30:12'),('V-29114059','2026-06-18 13:30:12'),('V-33333333','2026-06-18 13:30:12');
 /*!40000 ALTER TABLE `cliente` ENABLE KEYS */;
 UNLOCK TABLES;
+ALTER DATABASE `sofit_gym` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -297,6 +300,7 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+ALTER DATABASE `sofit_gym` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
 
 --
 -- Table structure for table `equipo`
@@ -781,6 +785,7 @@ LOCK TABLES `trabajador` WRITE;
 INSERT INTO `trabajador` VALUES ('V-00000001',1,5.00,'2026-06-07'),('V-00000002',2,5.00,'2026-05-22');
 /*!40000 ALTER TABLE `trabajador` ENABLE KEYS */;
 UNLOCK TABLES;
+ALTER DATABASE `sofit_gym` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -805,6 +810,7 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+ALTER DATABASE `sofit_gym` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
 
 --
 -- Table structure for table `unidad_medida`
@@ -866,6 +872,7 @@ LOCK TABLES `venta_producto` WRITE;
 INSERT INTO `venta_producto` VALUES (7,1,'xcbxb','V-11773948',3.00,15.00,'2026-06-20 18:24:33'),(8,1,'ZAR-0012','V-22222222',2.00,2.00,'2026-06-20 18:26:23');
 /*!40000 ALTER TABLE `venta_producto` ENABLE KEYS */;
 UNLOCK TABLES;
+ALTER DATABASE `sofit_gym` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -893,10 +900,159 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+ALTER DATABASE `sofit_gym` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
 
 --
 -- Dumping routines for database 'sofit_gym'
 --
+/*!50003 DROP FUNCTION IF EXISTS `fn_dias_restantes` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `fn_dias_restantes`(p_fecha_fin DATE
+) RETURNS int(11)
+    READS SQL DATA
+BEGIN
+    IF p_fecha_fin IS NULL THEN
+        RETURN NULL;
+    END IF;
+    RETURN DATEDIFF(p_fecha_fin, CURDATE());
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP FUNCTION IF EXISTS `fn_estado_membresia` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `fn_estado_membresia`(p_fecha_fin DATE,
+    p_estado_pago VARCHAR(20)
+) RETURNS varchar(20) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci
+    READS SQL DATA
+BEGIN
+    IF p_fecha_fin IS NULL THEN
+        RETURN 'Sin membresía';
+    ELSEIF p_fecha_fin < CURDATE() THEN
+        RETURN 'Vencido';
+    ELSEIF p_estado_pago = 'Atrasado' THEN
+        RETURN 'Moroso';
+    ELSEIF DATEDIFF(p_fecha_fin, CURDATE()) <= 7 THEN
+        RETURN 'Próximo a vencer';
+    ELSE
+        RETURN 'Activo';
+    END IF;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_obtener_totales_asistencias_por_rango` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_obtener_totales_asistencias_por_rango`(
+    IN p_fecha_inicio DATE,
+    IN p_fecha_fin DATE
+)
+BEGIN
+    SELECT 
+        DATE(a.fecha) AS dia,
+        COUNT(*) AS total_asistencias
+    FROM asistencia_gimnasio a
+    WHERE DATE(a.fecha) BETWEEN p_fecha_inicio AND p_fecha_fin
+      AND a.tipo = 'Entrada'
+    GROUP BY DATE(a.fecha)
+    ORDER BY dia ASC;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_registrar_entrada_cliente` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_registrar_entrada_cliente`(
+    IN p_cedula VARCHAR(15),
+    IN p_hora TIME,          -- NULL para usar NOW()
+    OUT p_success BOOLEAN,
+    OUT p_message VARCHAR(255),
+    OUT p_id_asistencia INT,
+    OUT p_fecha_registro DATETIME
+)
+BEGIN
+    DECLARE v_cliente_nombre VARCHAR(101);
+    DECLARE v_membresia_valida INT DEFAULT 0;
+
+    -- Verificar cliente con membresía activa
+    SELECT 
+        CONCAT(p.nombre, ' ', p.apellido),
+        COUNT(m.id_membresia)
+    INTO
+        v_cliente_nombre,
+        v_membresia_valida
+    FROM persona p
+    JOIN cliente c ON c.cedula = p.cedula
+    JOIN membresia m ON m.cedula_cliente = c.cedula
+    WHERE c.cedula = p_cedula
+      AND m.fecha_fin >= CURDATE()
+      AND m.id_estado = 1
+    GROUP BY p.cedula;
+
+    IF v_membresia_valida = 0 THEN
+        SET p_success = FALSE;
+        SET p_message = 'Cliente no encontrado o membresía inactiva/vencida.';
+        SET p_id_asistencia = NULL;
+        SET p_fecha_registro = NULL;
+    ELSE
+        -- Insertar entrada
+        IF p_hora IS NOT NULL THEN
+            INSERT INTO asistencia_gimnasio (cedula_persona, fecha, tipo)
+            VALUES (p_cedula, CONCAT(CURDATE(), ' ', p_hora), 'Entrada');
+        ELSE
+            INSERT INTO asistencia_gimnasio (cedula_persona, fecha, tipo)
+            VALUES (p_cedula, NOW(), 'Entrada');
+        END IF;
+
+        SET p_id_asistencia = LAST_INSERT_ID();
+        SELECT fecha INTO p_fecha_registro FROM asistencia_gimnasio WHERE id_asistencia = p_id_asistencia;
+        SET p_success = TRUE;
+        SET p_message = CONCAT('Entrada registrada para ', v_cliente_nombre);
+    END IF;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -907,4 +1063,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-06-23 15:00:11
+-- Dump completed on 2026-06-23 21:24:57

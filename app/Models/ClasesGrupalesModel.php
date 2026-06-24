@@ -126,8 +126,9 @@ class ClasesGrupalesModel extends BaseModel
             [$id]
         )->fetch();
 
-        if (!$row) return null;
-        return $this->map($row);
+        return $row
+            ? $this->map($row)
+            : null;
     }
 
     public function insert(ClaseGrupalDTO $clase): ClaseGrupalDTO
@@ -149,20 +150,19 @@ class ClasesGrupalesModel extends BaseModel
         $clase->validateUpdate();
         $this->pdo->beginTransaction();
 
-        $array = $this->dtoToArray($clase);
-        unset($array[$this->primaryKey]);
+        return $this->pdoTransaction(function () use ($clase) {
+            $array = $this->dtoToArray($clase);
+            unset($array[$this->primaryKey]);
 
-        $this->pdoUpdate(
-            $this->table,
-            $array,
-            [$this->primaryKey => $clase->id_clase]
-        );
-        $this->syncClientes($clase->id_clase, $clase->clientes);
+            $this->pdoUpdate(
+                $this->table,
+                $array,
+                [$this->primaryKey => $clase->id_clase]
+            );
+            $this->syncClientes($clase->id_clase, $clase->clientes);
 
-        $clase = $this->find($clase->id_clase);
-        $this->pdo->commit();
-
-        return $clase;
+            return $this->find($clase->id_clase);
+        });
     }
 
     public function delete(int $id): void
