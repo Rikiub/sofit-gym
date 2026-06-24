@@ -2,10 +2,11 @@
 
 namespace App\Models\Personas;
 
-use App\Helpers\Validator;
 use App\Models\BaseModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use PDO;
+
+use function App\Helpers\toDbDate;
 
 /**
  * Base para realizar operaciones sobre la tabla `persona`.
@@ -68,8 +69,6 @@ class PersonasModel extends BaseModel
 
     public function update(PersonaDTO $persona): PersonaDTO
     {
-        $persona->validateUpdate();
-
         $array = $this->dtoToArray($persona);
         unset($array['cedula']);
 
@@ -96,7 +95,7 @@ class PersonasModel extends BaseModel
             'correo' => $persona->correo,
             'telefono' => $persona->telefono,
             'direccion' => $persona->direccion,
-            'fecha_nacimiento' => Validator::dateToString($persona->fecha_nacimiento),
+            'fecha_nacimiento' => toDbDate($persona->fecha_nacimiento),
             'activo' => $persona->activo,
         ];
     }

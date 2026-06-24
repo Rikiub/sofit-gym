@@ -9,6 +9,8 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use PDO;
 
+use function App\Helpers\toDbDate;
+
 enum TipoMantenimiento: string
 {
     case Preventivo = 'Preventivo';
@@ -31,13 +33,9 @@ readonly class MantenimientoEquipoDTO
     public function validateInsert(): void
     {
         $this->validateShared();
+        Validator::required($this->tipo, "tipo");
+        Validator::required($this->costo, "costo");
 
-        if (!$this->fecha) {
-            throw new InvalidArgumentException('La fecha del mantenimiento es obligatoria');
-        }
-        if ($this->tipo === null) {
-            throw new InvalidArgumentException('El tipo de mantenimiento es obligatorio');
-        }
         if ($this->costo !== null && $this->costo < 0) {
             throw new InvalidArgumentException('El costo no puede ser negativo');
         }
@@ -46,17 +44,12 @@ readonly class MantenimientoEquipoDTO
     public function validateUpdate()
     {
         $this->validateShared();
-
-        if (!$this->id_mantenimiento) {
-            throw new InvalidArgumentException('El ID de mantenimiento es necesario para actualizar');
-        }
+        Validator::required($this->id_mantenimiento, "id_mantenimiento");
     }
 
     private function validateShared()
     {
-        if (!$this->codigo_equipo) {
-            throw new InvalidArgumentException('El código de equipo es obligatorio');
-        }
+        Validator::required($this->codigo_equipo, "codigo_equipo");
     }
 }
 
@@ -162,7 +155,7 @@ class MantenimientoEquipoModel extends BaseModel
         return [
             'codigo_equipo' => $dto->codigo_equipo,
             'cedula_trabajador' => $dto->cedula_trabajador,
-            'fecha' => Validator::dateToString($dto->fecha),
+            'fecha' => toDbDate($dto->fecha),
             'tipo' => $dto->tipo->value,
             'descripcion' => $dto->descripcion,
             'costo' => $dto->costo,

@@ -10,6 +10,8 @@ use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use PDO;
 
+use function App\Helpers\toDbDate;
+
 readonly class TrabajadorDTO extends PersonaDTO
 {
     public function __construct(
@@ -38,6 +40,12 @@ readonly class TrabajadorDTO extends PersonaDTO
             fecha_nacimiento: $fecha_nacimiento,
             fecha_creacion: $fecha_creacion,
         );
+    }
+
+    public function validateInsert()
+    {
+        parent::validateInsert();
+        Validator::required($this->id_rol, "id_rol");
     }
 }
 
@@ -150,8 +158,6 @@ class TrabajadoresModel extends BaseModel
 
     public function update(TrabajadorDTO $trabajador): TrabajadorDTO
     {
-        $trabajador->validateUpdate();
-
         return $this->pdoTransaction(function () use ($trabajador) {
             $this->personasModel->update($trabajador);
 
@@ -179,7 +185,7 @@ class TrabajadoresModel extends BaseModel
             'cedula' => $dto->cedula,
             'id_rol' => $dto->id_rol,
             'salario' => $dto->salario,
-            'fecha_contratacion' => Validator::dateToString($dto->fecha_contratacion),
+            'fecha_contratacion' => toDbDate($dto->fecha_contratacion),
         ];
     }
 }

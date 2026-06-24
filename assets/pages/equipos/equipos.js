@@ -14,7 +14,7 @@ Alpine.data("crudEquipos", () => (
             "Nombre",
             "Tipo",
             "Estado",
-            "Ubicación",
+            { name: "Ubicación", id: "ubicacion" },
         ],
     })))
 

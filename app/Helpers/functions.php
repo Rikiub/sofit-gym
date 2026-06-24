@@ -6,6 +6,14 @@
 
 namespace App\Helpers;
 
+use DateTimeInterface;
+
+/** Convierte un objeto DateTime en una string compatible con bases de datos */
+function toDbDate(?DateTimeInterface $date): ?string
+{
+    return $date ? $date->format("Y-m-d H:i:s") : null;
+}
+
 /** Convierte un array en una lista de atributos HTML */
 function stringifyAttributes(array $inputAttributes): string
 {

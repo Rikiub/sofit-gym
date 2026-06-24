@@ -11,6 +11,8 @@ use Exception;
 use PDO;
 use Throwable;
 
+use function App\Helpers\toDbDate;
+
 readonly class UsuarioDTO
 {
     public function __construct(
@@ -27,8 +29,12 @@ readonly class UsuarioDTO
         public array $permisos = [],
     ) {}
 
-    public function validateInsert() {}
-    public function validateUpdate() {}
+    public function validateInsert()
+    {
+        Validator::required($this->id_rol, "id_rol");
+        Validator::required($this->nombre_usuario, "nombre_usuario");
+        Validator::required($this->nombre_usuario, "contrasena_hash");
+    }
 }
 
 class UsuariosModel extends BaseModel
@@ -130,8 +136,6 @@ class UsuariosModel extends BaseModel
 
     public function update(UsuarioDTO $usuario): UsuarioDTO
     {
-        $usuario->validateUpdate();
-
         $array = $this->dtoToArray($usuario);
         unset($array["contrasena_hash"]);
 
@@ -162,7 +166,7 @@ class UsuariosModel extends BaseModel
     {
         $this->pdoUpdate(
             $this->table,
-            ["ultimo_acceso" => Validator::dateToString(new DateTimeImmutable())],
+            ["ultimo_acceso" => toDbDate(new DateTimeImmutable())],
             ["id_usuario" => $id]
         );
     }
@@ -210,7 +214,7 @@ class UsuariosModel extends BaseModel
             SQL,
             [
                 $id_usuario,
-                Validator::dateToString($duracion)
+                toDbDate($duracion)
             ]
         )->fetchColumn();
         return (int)$intentos;
@@ -225,8 +229,8 @@ class UsuariosModel extends BaseModel
         $this->pdoInsert($this->tableRecuperacion, [
             "id_usuario" => $id_usuario,
             "codigo" => $codigo,
-            "creado_en" => Validator::dateToString(new DateTimeImmutable()),
-            "expira_en" => Validator::dateToString($expiracion),
+            "creado_en" => toDbDate(new DateTimeImmutable()),
+            "expira_en" => toDbDate($expiracion),
         ]);
     }
 

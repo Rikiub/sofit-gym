@@ -48,11 +48,11 @@ function cardEstadistica(string $titulo, int|string $valor, string $footer)
 {
     return <<<HTML
         <div class="col-12 col-sm-6 col-md-4">
-            <a class="glass-card d-block p-4 rounded-4 text-center text-decoration-none text-white h-100 hover-lift" href="?page=clientes">
+            <div class="glass-card d-block p-4 rounded-4 text-center text-decoration-none text-white h-100 hover-lift">
                 <h4 class="fs-6 fw-semibold text-white mb-2">{$titulo}</h4>
                 <div class="display-6 fw-bold text-danger my-2">{$valor}</div>
                 <span class="small text-white-50">{$footer}</span>
-            </a>
+            </div>
         </div>
     HTML;
 }

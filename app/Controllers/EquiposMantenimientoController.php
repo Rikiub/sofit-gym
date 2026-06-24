@@ -60,7 +60,7 @@ class EquiposMantenimientoController extends BaseController
         $body = $this->response->getParsedBody();
         $data = $this->mapper->map(MantenimientoEquipoDTO::class, $body);
 
-        if (!$this->model->find($mantenimiento->id_mantenimiento ?? 0)) {
+        if (!$this->model->find($data->id_mantenimiento)) {
             return $this->response->json(['message' => 'El mantenimiento no existe'], 404);
         }
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\Validator;
 use App\Models\BaseModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
@@ -23,7 +24,12 @@ readonly class BitacoraDTO
         public ?DateTimeImmutable $fecha = null,
     ) {}
 
-    public function validateInsert() {}
+    public function validateInsert()
+    {
+        Validator::required($this->accion, "accion");
+        Validator::required($this->modulo, "modulo");
+        Validator::required($this->nivel, "nivel");
+    }
 }
 
 class BitacoraModel extends BaseModel

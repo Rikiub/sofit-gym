@@ -10,12 +10,16 @@ use League\Plates\Engine;
 
 abstract class BaseController
 {
+    /** 
+     * Atributos inyectadas por PHP-DI automaticamente.
+     * Estan aqui por comodidad ya que se usan en la mayoria de vistas.
+     */
     #[Inject]
     protected Engine $templates;
-
     #[Inject]
     protected BitacoraLogger $logger;
 
+    /** Bloquea el acceso a una ruta y redirige a la pagina de error si el usuario no tiene el permiso. */
     protected function protect(string $permiso)
     {
         $usuario = UsuarioSession::getUsuario();

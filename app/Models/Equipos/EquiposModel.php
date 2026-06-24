@@ -2,6 +2,7 @@
 
 namespace App\Models\Equipos;
 
+use App\Helpers\Validator;
 use App\Models\BaseModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
@@ -29,22 +30,13 @@ readonly class EquipoDTO
 
     public function validateInsert(): void
     {
-        if (empty($this->codigo)) {
-            throw new InvalidArgumentException('El código del equipo es obligatorio');
-        }
-        if (empty($this->nombre)) {
-            throw new InvalidArgumentException('El nombre del equipo es obligatorio');
-        }
-        if ($this->estado === null) {
-            throw new InvalidArgumentException('El estado del equipo es obligatorio');
-        }
+        Validator::required($this->codigo, "codigo");
+        Validator::required($this->nombre, "nombre");
+        Validator::required($this->estado, "estado");
     }
-
     public function validateUpdate(): void
     {
-        if (empty($this->codigo)) {
-            throw new InvalidArgumentException('El código del equipo es necesario para actualizar');
-        }
+        Validator::required($this->codigo, "codigo");
     }
 }
 

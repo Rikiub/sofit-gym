@@ -173,8 +173,6 @@ class ClientesModel extends BaseModel
 
     public function update(ClienteDTO $cliente): ClienteDTO
     {
-        $cliente->validateUpdate();
-
         $this->personasModel->update($cliente);
         return $this->find($cliente->cedula);
     }

@@ -9,6 +9,8 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use PDO;
 
+use function App\Helpers\toDbDate;
+
 readonly class SeguimientoFisicoDTO
 {
     public function __construct(
@@ -23,16 +25,15 @@ readonly class SeguimientoFisicoDTO
         public ?float $muslo_cm = null,
         public ?float $hombros_cm = null,
         public ?float $pantorrilla_cm = null,
-    ) {}
+    ) {
+        if ($this->cedula_cliente) {
+            Validator::cedula($this->cedula_cliente, "cedula_cliente");
+        }
+    }
 
     public function validateInsert(): void
     {
-        if (!$this->cedula_cliente) {
-            throw new InvalidArgumentException('Debe tener una cédula de cliente');
-        }
-        if (!$this->fecha) {
-            throw new InvalidArgumentException('Debe tener una fecha de seguimiento');
-        }
+        Validator::required($this->cedula_cliente, "cedula_cliente");
 
         // Al menos una medida numérica debe existir
         $medidas = [
@@ -61,9 +62,7 @@ readonly class SeguimientoFisicoDTO
 
     public function validateUpdate()
     {
-        if (!$this->id_seguimiento) {
-            throw new InvalidArgumentException('Se requiere id_seguimiento para actualizar');
-        }
+        Validator::required($this->id_seguimiento, "id_seguimiento");
     }
 }
 
@@ -162,7 +161,7 @@ class SegumientoFisicoModel extends BaseModel
     private function dtoToArray(SeguimientoFisicoDTO $dto): array
     {
         $array = (array) $dto;
-        $array["fecha"] = Validator::dateToString($dto->fecha);
+        $array["fecha"] = toDbDate($dto->fecha);
         return $array;
     }
 }

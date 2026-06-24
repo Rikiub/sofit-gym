@@ -201,9 +201,8 @@ export function modalFormComponent({
                         body: body,
                     });
                 } catch (error) {
-                    if (error.cause.status !== 500) {
-                        alert(error.cause.message);
-                    }
+                    alert(error.cause.message);
+                    throw error;
                 } finally {
                     this.loading = false;
                 }

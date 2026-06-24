@@ -9,6 +9,8 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use PDO;
 
+use function App\Helpers\toDbDate;
+
 enum EstadoClase: string
 {
     case PROGRAMADO = "Programado";
@@ -44,17 +46,26 @@ readonly class ClaseGrupalDTO
     ) {
         foreach ($this->clientes as $cliente) {
             if ($cliente instanceof ClaseClienteDTO && !$cliente->cedula) {
-                throw new InvalidArgumentException("Cada cliente debe tener una cédula.");
+                throw new InvalidArgumentException("Cada cliente debe tener una cédula");
             }
 
             if ((is_string($cliente)) && empty($cliente)) {
-                throw new InvalidArgumentException("El ID del cliente no puede estar vacío.");
+                throw new InvalidArgumentException("El ID del cliente no puede estar vacío");
             }
         }
     }
 
-    public function validateInsert() {}
-    public function validateUpdate() {}
+    public function validateInsert()
+    {
+        Validator::required($this->cedula_trabajador, "cedula_trabajador");
+        Validator::required($this->nombre, "nombre");
+        Validator::required($this->descripcion, "descripcion");
+
+        Validator::required($this->capacidad_maxima, "capacidad_maxima");
+        if ($this->capacidad_maxima <= 0) {
+            throw new InvalidArgumentException("Se requiere como minimo una capacidad maxima mayor a 1");
+        }
+    }
 }
 
 class ClasesGrupalesModel extends BaseModel
@@ -147,9 +158,6 @@ class ClasesGrupalesModel extends BaseModel
 
     public function update(ClaseGrupalDTO $clase): ClaseGrupalDTO
     {
-        $clase->validateUpdate();
-        $this->pdo->beginTransaction();
-
         return $this->pdoTransaction(function () use ($clase) {
             $array = $this->dtoToArray($clase);
             unset($array[$this->primaryKey]);
@@ -206,8 +214,8 @@ class ClasesGrupalesModel extends BaseModel
             'descripcion'       => $dto->descripcion,
             'capacidad_maxima'  => $dto->capacidad_maxima,
             'estado'            => $dto->estado->value,
-            'fecha_inicio'      => Validator::dateToString($dto->fecha_inicio),
-            'fecha_fin'         => Validator::dateToString($dto->fecha_fin),
+            'fecha_inicio'      => toDbDate($dto->fecha_inicio),
+            'fecha_fin'         => toDbDate($dto->fecha_fin),
         ];
     }
 }

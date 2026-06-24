@@ -9,6 +9,8 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use PDO;
 
+use function App\Helpers\toDbDate;
+
 readonly class SeguimientoNutricionalDTO
 {
     public function __construct(
@@ -18,23 +20,39 @@ readonly class SeguimientoNutricionalDTO
         public ?float $proteinas_g = null,
         public ?float $carbohidratos_g = null,
         public ?float $grasas_g = null,
-    ) {}
+    ) {
+        if ($this->cedula_cliente) {
+            Validator::cedula($this->cedula_cliente, "cedula_cliente");
+        }
+    }
 
     public function validateInsert(): void
     {
-        if (!$this->cedula_cliente) {
-            throw new InvalidArgumentException('Debe tener una cédula de cliente');
+        Validator::required($this->cedula_cliente, "cedula_cliente");
+
+        // Al menos un valor debe existir
+        $medidas = [
+            $this->proteinas_g,
+            $this->carbohidratos_g,
+            $this->grasas_g,
+        ];
+
+        $todasVacias = true;
+        foreach ($medidas as $medida) {
+            if ($medida !== null) {
+                $todasVacias = false;
+                break;
+            }
         }
-        if (!$this->fecha) {
-            throw new InvalidArgumentException('Debe tener una fecha de seguimiento');
+
+        if ($todasVacias) {
+            throw new InvalidArgumentException('Debe proporcionar al menos un valor');
         }
     }
 
     public function validateUpdate(): void
     {
-        if (!$this->id_seguimiento) {
-            throw new InvalidArgumentException('Se requiere id_seguimiento para actualizar');
-        }
+        Validator::required($this->id_seguimiento, "id_seguimiento");
     }
 }
 
@@ -132,7 +150,7 @@ class SegumientoNutricionalModel extends BaseModel
     private function dtoToArray(SeguimientoNutricionalDTO $dto): array
     {
         $array = (array) $dto;
-        $array["fecha"] = Validator::dateToString($dto->fecha);
+        $array["fecha"] = toDbDate($dto->fecha);
         return $array;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\Validator;
 use App\Models\BaseModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
@@ -18,7 +19,11 @@ readonly class NotificacionDTO
         public ?DateTimeImmutable $fecha_leido = null,
     ) {}
 
-    public function validateInsert() {}
+    public function validateInsert()
+    {
+        Validator::required($this->titulo, "titulo");
+        Validator::required($this->contenido, "contenido");
+    }
 }
 
 class NotificacionesModel extends BaseModel
