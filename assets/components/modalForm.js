@@ -200,6 +200,10 @@ export function modalFormComponent({
                         method: "POST",
                         body: body,
                     });
+                } catch (error) {
+                    if (error.cause.status !== 500) {
+                        alert(error.cause.message);
+                    }
                 } finally {
                     this.loading = false;
                 }
