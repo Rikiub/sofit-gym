@@ -8,6 +8,8 @@ use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use PDO;
 
+use function App\Helpers\toDbDate;
+
 readonly class BitacoraDTO
 {
     public function __construct(
@@ -128,5 +130,15 @@ class BitacoraModel extends BaseModel
             $id = (int)$this->pdo->lastInsertId();
             return $this->find($id);
         });
+    }
+
+    public function limpiarRegistros(int $dias_retencion): void
+    {
+        $this->pdoQuery(
+            <<<SQL
+                CALL {$this->dbSeguridad}.sp_limpiar_registros(?)
+            SQL,
+            [$dias_retencion]
+        );
     }
 }

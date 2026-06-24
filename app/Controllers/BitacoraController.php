@@ -24,4 +24,14 @@ class BitacoraController extends BaseController
         $logs = $this->bitacoraModel->query();
         return $this->response->json($logs);
     }
+
+    public function limpiarRegistros(): null
+    {
+        $this->protect("bitacora:editar");
+
+        $diasRetencion = (int)($_GET["dias"] ?? 30);
+        $this->bitacoraModel->limpiarRegistros($diasRetencion);
+
+        return $this->response->empty(204);
+    }
 }

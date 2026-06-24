@@ -63,7 +63,7 @@ class ClientesController extends BaseController
         // Verificar que el cliente no exista
         $oldCliente = $this->clientesModelo->find($cliente->cedula);
         if ($oldCliente) {
-            return $this->conflict(true, 400);
+            return $this->conflict(true, $oldCliente->cedula, 400);
         }
 
         $cliente = $this->clientesModelo->insert($cliente);
@@ -122,11 +122,11 @@ class ClientesController extends BaseController
         return $this->response->empty(204);
     }
 
-    private function conflict(bool $exists, int $id, ?int $code = 400): string
+    private function conflict(bool $exists, string $id, ?int $code = 400): string
     {
         $message = match ($exists) {
-            true => "El cliente {cedula_cliente} ya existe",
-            false => "El cliente {cedula_cliente} no existe",
+            true => "El cliente {$id} ya existe",
+            false => "El cliente {$id} no existe",
         };
 
         $this->logger->error($message, ["cedula_cliente" => $id]);

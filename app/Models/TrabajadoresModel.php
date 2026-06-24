@@ -9,6 +9,7 @@ use App\Models\BaseModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use PDO;
+use PDOException;
 
 use function App\Helpers\toDbDate;
 
@@ -145,6 +146,10 @@ class TrabajadoresModel extends BaseModel
     public function insert(TrabajadorDTO $trabajador): TrabajadorDTO
     {
         $trabajador->validateInsert();
+
+        if ($this->personasModel->find($trabajador->cedula)) {
+            throw new PDOException("Ya existe una persona con la cedula {$trabajador->cedula}");
+        }
 
         return $this->pdoTransaction(function () use ($trabajador) {
             $this->personasModel->insert($trabajador);

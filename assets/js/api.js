@@ -33,7 +33,13 @@ export async function fetchApi(params = "", options = {}) {
         body,
         ...restOptions,
     });
+    return await handleResponse(response);
+}
 
+/** 
+ * @param {Response} response
+ * @returns {Object|null} */
+async function handleResponse(response) {
     // Lanzar error si la respuesta no es OK
     if (!response.ok) {
         let errorBody;

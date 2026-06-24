@@ -6,6 +6,7 @@ use App\Models\BaseModel;
 use App\Models\Personas\PersonasModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use PDO;
+use PDOException;
 
 class ClientesModel extends BaseModel
 {
@@ -161,6 +162,10 @@ class ClientesModel extends BaseModel
     public function insert(ClienteDTO $cliente): ClienteDTO
     {
         $cliente->validateInsert();
+
+        if ($this->personasModel->find($cliente->cedula)) {
+            throw new PDOException("Ya existe una persona con la cedula {$cliente->cedula}");
+        }
 
         return $this->pdoTransaction(function () use ($cliente) {
             $this->personasModel->insert($cliente);

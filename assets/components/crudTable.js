@@ -1,5 +1,6 @@
 import { createGrid } from "@/js/grid.js";
 import { openModal } from "@/components/modalForm.js";
+import { fetchApi } from "@/js/api.js";
 import Alpine from "alpinejs";
 
 /**
@@ -29,15 +30,9 @@ export function crudTableComponent({
                 ...restOptions
             } = gridOptions;
 
-            const query = new URLSearchParams(params);
-            const url = `?${query.toString()}`;
-
             this.grid = createGrid({
                 columns: columns,
-                server: {
-                    url,
-                    then: (data) => data.map((item) => item),
-                },
+                data: async () => await fetchApi(params),
                 crud: {
                     onAdd: () => {
                         openModal(this, {
