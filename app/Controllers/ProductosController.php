@@ -3,6 +3,8 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Helpers\Reportes\reporteInventario;
+use App\Helpers\Reportes\reporteProductosMasVendidos;
 use App\Helpers\Response;
 use App\Models\ProductosModel;
 
@@ -261,5 +263,93 @@ class ProductosController extends BaseController
         header('Content-Type: application/json');
         echo json_encode($resultado);
         exit;
+    }
+
+    // Reportes
+
+    /**
+     * Muestra exclusivamente la interfaz visual del formulario de reportes
+     * Invocado mediante ?url=productos&action=vistaReporte
+     */
+    public function vistaReporte()
+    {
+        // Renderiza el formulario usando el motor Plates cargando tu nueva vista
+        $this->protect("productos:ver");
+        echo $this->templates->render('reportes/productos');
+        exit;
+    }
+
+    /**
+     * Genera y descarga el reporte en formato PDF de los productos más vendidos.
+     * Guiado de la lógica de negocio y control de flujo de formacionControl.php
+     */
+    public function generarReporteMasVendidos()
+    {
+        $this->protect("productos:ver");
+        // Soporte para filtros opcionales de rango de fecha desde la URL (?fecha_inicio= & fecha_fin=)
+        $fechaInicio = !empty($_GET['fecha_inicio']) ? strip_tags(trim($_GET['fecha_inicio'])) : null;
+        $fechaFin    = !empty($_GET['fecha_fin'])    ? strip_tags(trim($_GET['fecha_fin']))    : null;
+
+        // 1. Consultar los datos al Modelo estructurado
+        $productosData = $this->model->obtenerProductosMasVendidos($fechaInicio, $fechaFin);
+
+        // 2. Control de flujo adaptado de formacionControl (Verificar si es un array con datos)
+        if (is_array($productosData) && count($productosData) > 0) {
+
+            // Instanciar el helper del reporte PDF
+            $pdf = new reporteProductosMasVendidos();
+
+            // Establecer metadatos básicos del documento PDF
+            $pdf->SetTitle(utf8_decode('Reporte de Productos Más Vendidos - SOFIT GYM'));
+            $pdf->SetAuthor('Sistema SOFIT GYM');
+
+            // Invocar el renderizado de la tabla con los parámetros correspondientes
+            $pdf->crearReporte($productosData, $fechaInicio, $fechaFin);
+
+            // Enviar los headers HTTP correspondientes e imprimir el flujo binario del PDF en el navegador
+            // I: Envía el fichero al navegador de forma limpia para previsualización / descarga
+            $pdf->Output('I', 'reporte_productos_mas_vendidos.pdf');
+            exit;
+        } else {
+            // Si es falso o vacío, preparamos la alerta de SweetAlert como en formacionControl
+            $_SESSION['mensaje'] = "No se encontraron registros de ventas para generar el reporte de productos.";
+            $_SESSION['tipo_mensaje'] = "warning"; // Usado para disparar tus Toasts/Alertas en la vista
+
+            // Redireccionar de vuelta al catálogo/inventario general de productos
+            header("Location: ?page=productos");
+            exit;
+        }
+    }
+
+    public function vistaInventario()
+    {
+        $this->protect("productos:ver");
+        // Renderiza el formulario usando el motor Plates cargando tu nueva vista
+        echo $this->templates->render('reportes/inventario');
+        exit;
+    }
+
+    /**
+     * Generar reporte PDF del inventario general actual del catálogo de productos
+     */
+    public function reporteInventario()
+    {
+        $this->protect("productos:ver");
+
+        // Solicitar al modelo los productos activos con sus uniones de categoría y unidad
+        $inventarioData = $this->model->obtenerReporteInventario();
+
+        // Instanciar el helper específico de inventario que creamos
+        $pdf = new reporteInventario();
+
+        // Establecer los metadatos obligatorios de FPDF
+        $pdf->SetTitle(utf8_decode('Reporte General de Inventario - SOFIT GYM'));
+        $pdf->SetAuthor('Sistema SOFIT GYM');
+
+        // Construir el cuerpo de las páginas y la tabla del reporte
+        $pdf->crearReporte($inventarioData);
+
+        // Renderizar y forzar la visualización en el navegador de manera limpia
+        $pdf->Output('I', 'reporte_general_inventario.pdf');
     }
 }

@@ -63,34 +63,6 @@ function cardEstadistica(string $titulo, int|string $valor, string $footer)
         <nav class="d-flex justify-content-end mb-4">
             <div class="d-flex gap-3 align-items-center">
 
-                <div class="position-relative" x-data="{ show: false }" @click.outside="show = false">
-                    <button class="btn btn-link text-decoration-none text-white fw-semibold" @click="show = !show">
-                        Generar reporte
-                    </button>
-
-                    <div class="dropdown-menu end-0 shadow border-0 p-2 rounded-4" :class="{ show: show }" style="width: 240px; max-width: 85vw;">
-                        <a class="dropdown-item d-flex align-items-center gap-2 py-2 rounded-3" href="#">
-                            <i class="fas fa-clipboard-list text-danger fs-5 text-center" style="width: 24px;"></i>
-                            Reporte de asistencia
-                        </a>
-
-                        <a class="dropdown-item d-flex align-items-center gap-2 py-2 rounded-3" href="#">
-                            <i class="fas fa-chart-line text-danger fs-5 text-center" style="width: 24px;"></i>
-                            Reporte financiero
-                        </a>
-
-                        <a class="dropdown-item d-flex align-items-center gap-2 py-2 rounded-3" href="#">
-                            <i class="fas fa-users text-danger fs-5 text-center" style="width: 24px;"></i>
-                            Reporte de clientes
-                        </a>
-
-                        <a class="dropdown-item d-flex align-items-center gap-2 py-2 rounded-3" href="#">
-                            <i class="fas fa-boxes text-danger fs-5 text-center" style="width: 24px;"></i>
-                            Reporte de inventario
-                        </a>
-                    </div>
-                </div>
-
                 <div
                     class="position-relative"
                     x-data="{ unreadCount: 0, show: false }"

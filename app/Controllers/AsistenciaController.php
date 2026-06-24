@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Helpers\Reportes\reporteAsistencia;
 use App\Models\AsistenciaModel;
 
 class AsistenciaController extends BaseController
@@ -127,5 +128,43 @@ class AsistenciaController extends BaseController
         $id = intval($_POST['id']);
         $ok = $this->model->eliminarEntrada($id);
         echo json_encode(['success' => $ok]);
+    }
+
+    // Reportes
+    public function vistaAsistencia()
+    {
+        // Renderiza el formulario usando el motor Plates cargando tu nueva vista
+        $this->protect("clientes:ver");
+        echo $this->templates->render('reportes/asistencia');
+        exit;
+    }
+
+    /**
+     * Generar reporte PDF del histórico de asistencias (opcionalmente filtrado por rango de fechas)
+     */
+    public function generarReporte()
+    {
+        // 1. Proteger la ruta bajo el permiso correspondiente
+        $this->protect("asistencia:ver");
+
+        // 2. Capturar los filtros opcionales de fecha desde la URL ($_GET)
+        $fechaInicio = $_GET['inicio'] ?? null;
+        $fechaFin = $_GET['fin'] ?? null;
+
+        // 3. Solicitar los datos procesados al modelo
+        $asistenciasData = $this->model->obtenerAsistenciasParaReporte($fechaInicio, $fechaFin);
+
+        // Instanciar la clase FPDF del reporte de asistencia
+        $pdf = new reporteAsistencia();
+
+        // Establecer metadatos del documento PDF
+        $pdf->SetTitle(utf8_decode('Reporte de Asistencias - SOFIT GYM'));
+        $pdf->SetAuthor('Sistema SOFIT GYM');
+
+        // Procesar y estructurar el cuerpo del reporte con los datos provistos
+        $pdf->crearReporte($asistenciasData, $fechaInicio, $fechaFin);
+
+        // Renderizar y forzar la visualización limpia en el navegador ('I')
+        $pdf->Output('I', 'reporte_asistencias.pdf');
     }
 }

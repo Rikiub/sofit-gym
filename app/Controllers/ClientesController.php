@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Helpers\Reportes\reporteClientes;
 use App\Helpers\Response;
 use App\Models\Clientes\ClienteDTO;
 use App\Models\Clientes\ClientesModel;
@@ -139,5 +140,39 @@ class ClientesController extends BaseController
             ?? $_GET['id']
             ?? throw new Exception("'id' or 'cedula' param is required");
         return $cedula;
+    }
+
+    // REPORTES
+    public function reporteVista()
+    {
+        $this->protect("clientes:ver");
+        return $this->templates->render('reportes/clientes');
+    }
+
+    /**
+     * Generar reporte PDF del listado general de clientes y sus estados de membresía.
+     */
+    public function reporteGeneral()
+    {
+        $this->protect("clientes:ver");
+
+        // Opcional: Permitir filtrar desde la URL por estado (ej: ?page=clientes&action=reporte&estado=Activo)
+        $estadoFiltro = $_GET['estado'] ?? null;
+
+        // Solicitar al modelo los datos estructurados en array asociativo
+        $clientesData = $this->clientesModelo->obtenerClientesParaReporte($estadoFiltro);
+
+        // Instanciar la clase FPDF encargada del reporte de clientes
+        $pdf = new reporteClientes();
+
+        // Establecer los metadatos obligatorios para el documento PDF
+        $pdf->SetTitle(utf8_decode('Reporte General de Clientes - SOFIT GYM'));
+        $pdf->SetAuthor('Sistema SOFIT GYM');
+
+        // Construir el cuerpo de las páginas pasando la data obtenida del modelo
+        $pdf->crearReporte($clientesData);
+
+        // Renderizar y forzar la visualización directa en el navegador de manera limpia
+        $pdf->Output('I', 'reporte_general_clientes.pdf');
     }
 }

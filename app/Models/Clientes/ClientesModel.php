@@ -183,4 +183,66 @@ class ClientesModel extends BaseModel
     {
         $this->pdoDelete($this->table, [$this->primaryKey => $cedula]);
     }
+
+    // REPORTES
+
+    /**
+     * Obtiene los datos limpios y estructurados de los clientes para el reporte general.
+     * Reutiliza la lógica relacional de la persona con su membresía más reciente.
+     * Diseñado de manera homóloga a ProductosModel para integrarse con reporteClientes.
+     *
+     * @param string|null $estado Filtro opcional por el nombre del estado (ej: 'Activo', 'Inactivo')
+     * @return array Listado de clientes como arreglos asociativos
+     */
+    public function obtenerClientesParaReporte(?string $estado = null): array
+    {
+        // Reutilizamos la estructura limpia de consulta con la subquery nativa de membresía y estado
+        $sql = "SELECT
+                    p.cedula,
+                    p.nombre,
+                    p.apellido,
+                    p.correo,
+                    p.telefono,
+                    JSON_OBJECT(
+                        'tipo', mt.nombre,
+                        'estado', me.nombre
+                    ) AS membresia
+                FROM cliente c
+                LEFT JOIN persona p ON p.cedula = c.cedula
+                LEFT JOIN membresia m ON m.id_membresia = (
+                    SELECT m2.id_membresia 
+                    FROM membresia m2 
+                    WHERE m2.cedula_cliente = c.cedula 
+                    ORDER BY m2.id_membresia DESC \n                    LIMIT 1
+                )
+                LEFT JOIN tipo_membresia mt ON m.id_tipo = mt.id_tipo
+                LEFT JOIN estado_membresia me ON m.id_estado = me.id_estado";
+
+        $where = [];
+        $params = [];
+
+        // Permite opcionalmente filtrar en el reporte solo los activos, vencidos, etc.
+        if (!empty($estado)) {
+            $where[] = "me.nombre = :estado";
+            $params['estado'] = $estado;
+        }
+
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode(" AND ", $where);
+        }
+
+        // Ordenamos alfabéticamente por apellido y nombre
+        $sql .= " ORDER BY p.apellido ASC, p.nombre ASC";
+
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute($params);
+
+            // Retorna un array asociativo crudo idéntico a lo esperado en reporteClientes
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            error_log("Error en ClientesModel::obtenerClientesParaReporte: " . $e->getMessage());
+            return [];
+        }
+    }
 }

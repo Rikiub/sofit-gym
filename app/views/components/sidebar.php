@@ -3,14 +3,14 @@
 /** @var \App\Helpers\Auth\UsuarioSessionDTO $sesion_usuario */
 
 $link = function (
-	string $page,
+	string $url,
 	string $icon,
 	string $title,
 	string|null $permiso = null,
 ) use ($sesion_usuario): string {
 	if ($permiso === null || $sesion_usuario->hasPermiso($permiso)) {
 		return <<<HTML
-            <a href="?page={$page}" class="nav-single">
+            <a href="{$url}" class="nav-single">
                 <i class="fas {$icon}"></i>
                 <span>{$title}</span>
             </a>
@@ -28,13 +28,13 @@ $dropdown = function (
 	$htmlItems = "";
 	foreach ($items as $i) {
 		$itemPermiso = $i["permiso"] ?? null;
-		$itemPage = $i["page"] ?? "";
+		$itemUrl = $i["url"] ?? "";
 		$itemIcon = $i["icon"] ?? "";
 		$itemTitle = $i["title"] ?? "";
 
 		if ($itemPermiso === null || $sesion_usuario->hasPermiso($itemPermiso)) {
 			$htmlItems .= <<<HTML
-                <a href="?page={$itemPage}">
+                <a href="{$itemUrl}">
                     <i class="fas {$itemIcon}"></i>
                     <span>{$itemTitle}</span>
                 </a>
@@ -109,14 +109,14 @@ $dropdown = function (
 
 		<?= $link(
 			permiso: "clientes:ver",
-			page: "clientes",
+			url: "?page=clientes",
 			icon: "fa-id-card",
 			title: "Gestión de Clientes"
 		) ?>
 
 		<?= $link(
 			permiso: "trabajadores:ver",
-			page: "trabajadores",
+			url: "?page=trabajadores",
 			icon: "fa-id-card",
 			title: "Gestión de Trabajadores"
 		) ?>
@@ -125,21 +125,21 @@ $dropdown = function (
 
 		<?= $link(
 			permiso: "facturacion:ver",
-			page: "facturacion",
+			url: "?page=facturacion",
 			icon: "fa-coins",
 			title: "Facturación y Control de Pagos"
 		) ?>
 
 		<?= $link(
 			permiso: "asistencia:ver",
-			page: "asistencia",
+			url: "?page=asistencia",
 			icon: "fa-fingerprint",
 			title: "Control de Asistencia"
 		) ?>
 
 		<?= $link(
 			permiso: "clasesGrupales:ver",
-			page: "clasesGrupales",
+			url: "?page=clasesGrupales",
 			icon: "fa-calendar",
 			title: "Horarios de clases"
 		) ?>
@@ -150,13 +150,13 @@ $dropdown = function (
 			items: [
 				[
 					"permiso" => "rutinas:ver",
-					"page" => "rutinas&action=index",
+					"url" => "?page=rutinas&action=index",
 					"icon" => "fa-pen-ruler",
 					"title" => "Planes de entrenamiento"
 				],
 				[
 					"permiso" => "rutinas:ver",
-					"page" => "rutinas&action=asignadas",
+					"url" => "?page=rutinas&action=asignadas",
 					"icon" => "fa-user-check",
 					"title" => "Asignación de rutinas"
 				]
@@ -171,13 +171,13 @@ $dropdown = function (
 			items: [
 				[
 					"permiso" => "equipos:ver",
-					"page" => "equipos",
+					"url" => "?page=equipos",
 					"icon" => "fa-tools",
 					"title" => "Inventario de equipos"
 				],
 				[
 					"permiso" => "equipos:ver",
-					"page" => "equiposMantenimiento",
+					"url" => "?page=equiposMantenimiento",
 					"icon" => "fa-history",
 					"title" => "Historial de mantenimientos"
 				]
@@ -186,14 +186,51 @@ $dropdown = function (
 
 		<?= $link(
 			permiso: "productos:ver",
-			page: "productos",
+			url: "?page=productos",
 			icon: "fa-boxes",
 			title: "Inventario de Productos"
 		) ?>
 
+		<?= $dropdown(
+			icon: "fa-chart-bar",
+			title: "Reportes estadisticos",
+			items: [
+				[
+					"permiso" => "asistencia:ver",
+					"url" => "?page=asistencia&action=vistaAsistencia",
+					"icon" => "fa-chart-bar",
+					"title" => "Historial de Asistencias"
+				],
+				[
+					"permiso" => "facturacion:ver",
+					"url" => "?page=facturacion&action=reporteVista",
+					"icon" => "fa-chart-bar",
+					"title" => "Estado Financiero"
+				],
+				[
+					"permiso" => "clientes:ver",
+					"url" => "?page=clientes&action=reporteVista",
+					"icon" => "fa-chart-bar",
+					"title" => "Clientes Generales"
+				],
+				[
+					"permiso" => "productos:ver",
+					"url" => "?page=productos&action=vistaReporte",
+					"icon" => "fa-chart-bar",
+					"title" => "Productos Más Vendidos"
+				],
+				[
+					"permiso" => "productos:ver",
+					"url" => "?page=productos&action=vistaInventario",
+					"icon" => "fa-chart-bar",
+					"title" => "Inventario General"
+				],
+			]
+		) ?>
+
 		<?= $link(
 			permiso: "asistente:ver",
-			page: "asistente",
+			url: "?page=asistente",
 			icon: "fa-robot",
 			title: "Asistente de Entrenamiento"
 		) ?>
@@ -206,19 +243,19 @@ $dropdown = function (
 			items: [
 				[
 					"permiso" => "usuarios:ver",
-					"page" => "usuarios",
+					"url" => "?page=usuarios",
 					"icon" => "fa-user",
 					"title" => "Usuarios"
 				],
 				[
 					"permiso" => "roles:ver",
-					"page" => "roles",
+					"url" => "?page=roles",
 					"icon" => "fa-lock",
 					"title" => "Roles y Permisos"
 				],
 				[
 					"permiso" => "bitacora:ver",
-					"page" => "bitacora",
+					"url" => "?page=bitacora",
 					"icon" => "fa-history",
 					"title" => "Bitácora"
 				]
@@ -231,13 +268,13 @@ $dropdown = function (
 			items: [
 				[
 					"permiso" => "reportes:ver",
-					"page" => "reportes",
+					"url" => "?page=reportes",
 					"icon" => "fa-chart-bar",
 					"title" => "Reportes estadísticos"
 				],
 				[
 					"permiso" => "respaldos:ver",
-					"page" => "sistema",
+					"url" => "?page=sistema",
 					"icon" => "fa-database",
 					"title" => "Mantenimiento del sistema"
 				],
@@ -248,7 +285,7 @@ $dropdown = function (
 
 		<?= $link(
 			permiso: "disabled",
-			page: "ayuda",
+			url: "?page=ayuda",
 			icon: "fa-question-circle",
 			title: "Manual de usuario"
 		) ?>

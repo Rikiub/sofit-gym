@@ -178,4 +178,44 @@ class AsistenciaModel extends BaseModel
         $stmt->execute([$fechaInicio, $fechaFin]);
         return $stmt->fetchAll();
     }
+
+    // Reportes
+
+    /**
+     * Obtener el listado de asistencias filtrado por un rango de fechas
+     * diseñado específicamente para el reporte PDF.
+     * * @param string|null $fechaInicio Fecha inicial (YYYY-MM-DD)
+     * @param string|null $fechaFin Fecha final (YYYY-MM-DD)
+     * @return array Listado de asistencias con datos de persona concatenados
+     */
+    public function obtenerAsistenciasParaReporte(?string $fechaInicio = null, ?string $fechaFin = null): array
+    {
+        // 1. Estructura base de la consulta SQL (Hace JOIN con cliente y persona para traer los nombres)
+        $sql = "SELECT 
+                    a.id_asistencia, 
+                    a.cedula_persona AS `cedula_cliente`, 
+                    a.fecha,
+                    CONCAT(p.nombre, ' ', p.apellido) AS nombre_cliente
+                FROM asistencia_gimnasio a
+                INNER JOIN cliente c ON a.cedula_persona = c.cedula
+                INNER JOIN persona p ON c.cedula = p.cedula
+                WHERE a.tipo = 'Entrada'";
+
+        $params = [];
+
+        // 2. Si se pasan ambas fechas, aplicamos el filtro de rango al campo DATE(fecha)
+        if (!empty($fechaInicio) && !empty($fechaFin)) {
+            $sql .= " AND DATE(a.fecha) BETWEEN ? AND ?";
+            $params[] = $fechaInicio;
+            $params[] = $fechaFin;
+        }
+
+        // 3. Ordenamos cronológicamente de forma descendente (más recientes primero)
+        $sql .= " ORDER BY a.fecha DESC";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll();
+    }
 }

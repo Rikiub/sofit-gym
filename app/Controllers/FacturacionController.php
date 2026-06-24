@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Helpers\Reportes\reporteFinanciero;
 use App\Helpers\Response;
 use App\Models\FacturacionPagosModel;
 use Exception;
@@ -157,5 +158,53 @@ class FacturacionController extends BaseController
 
         $ingresos = $this->model->obtenerIngresosMesActual();
         return $this->response->json($ingresos);
+    }
+
+    // REPORTES
+    public function reporteVista()
+    {
+        $this->protect("facturacion:ver");
+        return $this->templates->render('reportes/facturacion');
+    }
+
+    /**
+     * Genera el reporte financiero en PDF para los pagos registrados.
+     * Soporta filtrado por mes y año a través de parámetros GET.
+     */
+    public function reporte()
+    {
+        $this->protect("facturacion:ver");
+
+        // Capturar los parámetros de filtro del reporte desde la URL
+        $mes = $_GET['mes'] ?? null;
+        $anio = $_GET['anio'] ?? null;
+
+        // Si ambos parámetros están vacíos, por defecto generamos el reporte del mes y año actual
+        if (empty($mes) && empty($anio)) {
+            $mes = date('m');
+            $anio = date('Y');
+        }
+
+        // 1. Obtener la data filtrada desde el modelo de pagos
+        $pagosData = $this->model->obtenerPagosPorPeriodo($mes, $anio);
+
+        // Instanciar el helper del reporte financiero FPDF
+        $pdf = new reporteFinanciero();
+
+        // Establecer metadatos básicos del documento PDF
+        $pdf->SetTitle(utf8_decode('Reporte Financiero - SOFIT GYM'));
+        $pdf->SetAuthor('Sistema SOFIT GYM');
+
+        // Determinar si el reporte es mensual o anual para la cabecera
+        $tipoReporte = (!empty($mes)) ? 'MENSUAL' : 'ANUAL';
+        $pdf->setPeriodo($mes, $anio, $tipoReporte);
+
+        // Invocar el renderizado de la tabla con los pagos correspondientes
+        $pdf->generar($pagosData);
+
+        // Enviar los headers HTTP correspondientes e imprimir el flujo binario del PDF en el navegador
+        // I: Envía el fichero al navegador de forma limpia para previsualización / descarga
+        $nombreArchivo = 'reporte_financiero_' . ($mes ? $mes . '_' : '') . $anio . '.pdf';
+        $pdf->Output('I', $nombreArchivo);
     }
 }

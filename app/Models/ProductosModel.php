@@ -334,4 +334,60 @@ class ProductosModel extends BaseModel
             return ['success' => false, 'message' => '❌ Error de base de datos al procesar la venta. Contacte soporte técnico.'];
         }
     }
+
+    // REPORTES
+
+    /**
+     * Obtiene los productos más vendidos para el módulo de reportes.
+     */
+    public function obtenerProductosMasVendidos(?string $fechaInicio = null, ?string $fechaFin = null): array
+    {
+        $sql = "SELECT 
+                    vp.codigo_producto, 
+                    p.nombre AS nombre_producto, 
+                    SUM(vp.cantidad_vendida) AS total_vendido, 
+                    AVG(vp.monto_total / vp.cantidad_vendida) AS precio_unitario_promedio,
+                    SUM(vp.monto_total) AS ingreso_total
+                FROM venta_producto vp
+                INNER JOIN producto p ON vp.codigo_producto = p.codigo_producto";
+
+        $where = [];
+        $params = [];
+
+        // 2. CORRECCIÓN: Se añaden las horas límites (00:00:00 y 23:59:59) para garantizar 
+        // que las ventas del último día no se queden por fuera de la consulta SQL.
+        if (!empty($fechaInicio) && !empty($fechaFin)) {
+            $where[] = "vp.fecha BETWEEN :fechaInicio AND :fechaFin";
+            $params['fechaInicio'] = $fechaInicio . " 00:00:00";
+            $params['fechaFin'] = $fechaFin . " 23:59:59";
+        }
+
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode(" AND ", $where);
+        }
+
+        $sql .= " GROUP BY vp.codigo_producto, p.nombre
+                  ORDER BY total_vendido DESC";
+
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute($params);
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error en ProductosModel::obtenerProductosMasVendidos: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Obtener los datos limpios y ordenados para el reporte de inventario general.
+     * Reutiliza la estructura de consulta general sin necesidad de duplicar código SQL.
+     *
+     * @return array Listado completo de productos activos
+     */
+    public function obtenerReporteInventario(): array
+    {
+        return $this->obtenerTodos();
+    }
 }

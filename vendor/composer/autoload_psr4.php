@@ -30,6 +30,7 @@ return array(
     'GuzzleHttp\\Promise\\' => array($vendorDir . '/guzzlehttp/promises/src'),
     'GuzzleHttp\\' => array($vendorDir . '/guzzlehttp/guzzle/src'),
     'GrahamCampbell\\ResultType\\' => array($vendorDir . '/graham-campbell/result-type/src'),
+    'Fpdf\\' => array($vendorDir . '/fpdf/fpdf/src/Fpdf'),
     'Dotenv\\' => array($vendorDir . '/vlucas/phpdotenv/src'),
     'DI\\' => array($vendorDir . '/php-di/php-di/src'),
     'CuyZ\\Valinor\\' => array($vendorDir . '/cuyz/valinor/src'),

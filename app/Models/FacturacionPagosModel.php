@@ -225,4 +225,61 @@ class FacturacionPagosModel extends BaseModel
         $stmt->execute([$id]);
         return $stmt->fetch() ?: null;
     }
+
+    // REPORTES
+
+    /**
+     * Obtiene el listado de pagos filtrado por período para la generación de reportes.
+     * Estructurado de acuerdo a los requerimientos del reporteFinanciero de FPDF.
+     *
+     * @param string|null $mes Número de mes con formato de dos dígitos (ej. '06' para Junio)
+     * @param string|null $anio Año de 4 dígitos (ej. '2026')
+     * @return array Listado de pagos con cliente y método de pago unificados
+     */
+    public function obtenerPagosPorPeriodo(?string $mes = null, ?string $anio = null): array
+    {
+        $sql = "SELECT 
+                    p.fecha_pago,
+                    m.cedula_cliente,
+                    CONCAT(per.nombre, ' ', per.apellido) AS nombre_cliente,
+                    mp.nombre AS metodo_pago,
+                    p.monto
+                FROM pago p
+                INNER JOIN membresia m ON p.id_membresia = m.id_membresia
+                INNER JOIN cliente c ON m.cedula_cliente = c.cedula
+                INNER JOIN persona per ON c.cedula = per.cedula
+                LEFT JOIN metodo_pago mp ON p.id_metodo = mp.id_metodo";
+
+        $where = [];
+        $params = [];
+
+        // Filtro por año
+        if (!empty($anio)) {
+            $where[] = "YEAR(p.fecha_pago) = :anio";
+            $params['anio'] = $anio;
+        }
+
+        // Filtro por mes
+        if (!empty($mes)) {
+            $where[] = "MONTH(p.fecha_pago) = :mes";
+            $params['mes'] = $mes;
+        }
+
+        // Aplicamos cláusula WHERE si existen filtros definidos
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode(" AND ", $where);
+        }
+
+        // Ordenamos por fecha de pago de forma cronológica para el flujo del reporte financiero
+        $sql .= " ORDER BY p.fecha_pago ASC, p.id_pago ASC";
+
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute($params);
+            return $stmt->fetchAll();
+        } catch (\PDOException $e) {
+            error_log("Error: " . $e->getMessage());
+            return [];
+        }
+    }
 }

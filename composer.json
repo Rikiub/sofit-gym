@@ -15,7 +15,8 @@
         "psr/log": "^3.0",
         "theodo-group/llphant": "^0.11.21",
         "vlucas/phpdotenv": "^5.6",
-        "phpmailer/phpmailer": "^7.1"
+        "phpmailer/phpmailer": "^7.1",
+        "fpdf/fpdf": "^1.86"
     },
     "config": {
         "allow-plugins": {
