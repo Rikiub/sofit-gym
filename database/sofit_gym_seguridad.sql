@@ -51,30 +51,6 @@ INSERT INTO `bitacora` VALUES (2439,2,19,'update','Cliente V-10556291 actualizad
 UNLOCK TABLES;
 
 --
--- Table structure for table `canal`
---
-
-DROP TABLE IF EXISTS `canal`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `canal` (
-  `id_canal` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(100) NOT NULL,
-  PRIMARY KEY (`id_canal`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `canal`
---
-
-LOCK TABLES `canal` WRITE;
-/*!40000 ALTER TABLE `canal` DISABLE KEYS */;
-INSERT INTO `canal` VALUES (1,'Aplicación'),(2,'Email'),(3,'WhatsApp');
-/*!40000 ALTER TABLE `canal` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `estado_usuario`
 --
 
@@ -160,18 +136,11 @@ DROP TABLE IF EXISTS `notificacion`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `notificacion` (
   `id_notificacion` int(11) NOT NULL AUTO_INCREMENT,
-  `id_usuario` int(11) NOT NULL,
-  `id_canal` int(11) NOT NULL DEFAULT 1,
-  `titulo` text NOT NULL,
-  `mensaje` text NOT NULL,
-  `leido` tinyint(1) NOT NULL DEFAULT 0,
+  `titulo` text DEFAULT NULL,
+  `contenido` text DEFAULT NULL,
   `fecha_envio` datetime NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id_notificacion`),
-  KEY `notificacion_canal_FK` (`id_canal`),
-  KEY `notificacion_usuario_FK` (`id_usuario`),
-  CONSTRAINT `notificacion_canal_FK` FOREIGN KEY (`id_canal`) REFERENCES `canal` (`id_canal`) ON UPDATE CASCADE,
-  CONSTRAINT `notificacion_usuario_FK` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  PRIMARY KEY (`id_notificacion`)
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -180,7 +149,38 @@ CREATE TABLE `notificacion` (
 
 LOCK TABLES `notificacion` WRITE;
 /*!40000 ALTER TABLE `notificacion` DISABLE KEYS */;
+INSERT INTO `notificacion` VALUES (38,'Stock bajo en productos','Comprueba el stock actual.','2026-06-24 00:54:04');
 /*!40000 ALTER TABLE `notificacion` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `notificacion_usuario`
+--
+
+DROP TABLE IF EXISTS `notificacion_usuario`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `notificacion_usuario` (
+  `id_notificacion` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `leido` tinyint(1) NOT NULL DEFAULT 0,
+  `fecha_leido` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id_notificacion`,`id_usuario`),
+  KEY `notificacion_usuario_usuario_FK` (`id_usuario`),
+  KEY `notificacion_usuario_id_notificacion_IDX` (`id_notificacion`,`id_usuario`) USING BTREE,
+  CONSTRAINT `notificacion_usuario_notificacion_FK` FOREIGN KEY (`id_notificacion`) REFERENCES `notificacion` (`id_notificacion`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `notificacion_usuario_usuario_FK` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `notificacion_usuario`
+--
+
+LOCK TABLES `notificacion_usuario` WRITE;
+/*!40000 ALTER TABLE `notificacion_usuario` DISABLE KEYS */;
+INSERT INTO `notificacion_usuario` VALUES (38,2,0,'2026-06-24 00:55:06');
+/*!40000 ALTER TABLE `notificacion_usuario` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -338,4 +338,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-06-23 21:24:57
+-- Dump completed on 2026-06-24  1:40:54

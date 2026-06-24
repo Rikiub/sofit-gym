@@ -91,7 +91,29 @@ function cardEstadistica(string $titulo, int|string $valor, string $footer)
                     </div>
                 </div>
 
-                <i class="fas fa-bell text-white fs-5 cursor-pointer hover-lift"></i>
+                <div
+                    class="position-relative"
+                    x-data="{ unreadCount: 0, show: false }"
+                    @update-notifications="unreadCount = $event.detail.unreaded"
+                    @click.outside="show = false">
+
+                    <button class="btn btn-link text-decoration-none text-white fw-semibold position-relative" @click="show = !show">
+                        <i class="fas fa-bell text-white fs-5 cursor-pointer hover-lift"></i>
+
+                        <!-- Badge de notificaciones no leídas -->
+                        <span x-show="unreadCount > 0"
+                            x-text="unreadCount"
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                            style="font-size: 0.6rem; padding: 0.2rem 0.4rem; margin-top: -6px; margin-left: -2px;">
+                        </span>
+                    </button>
+
+                    <div
+                        class="dropdown-menu end-0 shadow border-0 p-2 rounded-4"
+                        :class="{ show: show }" style="width: 350px; max-width: 85vw;">
+                        <?= $this->insert("panelNotificaciones") ?>
+                    </div>
+                </div>
 
                 <div class="position-relative" x-data="menu('<?= $usuario->id ?>')" @click.outside="show = false" @form-success="refresh()">
                     <?= $this->insert("usuarios/modalForm", ["id" => "usuarios"]) ?>

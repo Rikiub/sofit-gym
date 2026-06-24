@@ -90,9 +90,9 @@ class BitacoraModel extends BaseModel
             [$id]
         )->fetch();
 
-        if (!$row)
-            return null;
-        return $this->mapper->map(BitacoraDTO::class, $row);
+        return $row
+            ? $this->mapper->map(BitacoraDTO::class, $row)
+            : null;
     }
 
     public function insert(BitacoraDTO $bitacora): BitacoraDTO
