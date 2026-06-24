@@ -170,6 +170,7 @@ Alpine.data("crudSegFisico", () =>
             { name: "Pecho", id: "pecho_cm" },
             { name: "Muslo", id: "muslo_cm" },
             { name: "Hombros", id: "hombros_cm" },
+            { name: "Registrado por", id: "registrado_por" },
         ],
         gridOptions: {
             search: false,
@@ -224,6 +225,7 @@ Alpine.data("crudSegNutricional", () =>
             { name: "Carbohidratos (g)", id: "carbohidratos_g" },
             { name: "Grasas (g)", id: "grasas_g" },
             { name: "Calorias Diarias", id: "calorias_diarias" },
+            { name: "Registrado por", id: "registrado_por" },
         ],
         gridOptions: {
             search: false,

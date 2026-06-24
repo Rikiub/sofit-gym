@@ -16,6 +16,7 @@ readonly class SeguimientoFisicoDTO
     public function __construct(
         public ?int $id_seguimiento = null,
         public ?string $cedula_cliente = null,
+        public ?string $registrado_por = null,
         public ?DateTimeImmutable $fecha = null,
         public ?float $altura_cm = null,
         public ?float $peso_kg = null,
@@ -81,7 +82,8 @@ class SegumientoFisicoModel extends BaseModel
     private function sqlSelect(): string
     {
         return <<<SQL
-                SELECT * FROM {$this->table}
+                SELECT *
+                FROM {$this->table}
             SQL;
     }
 

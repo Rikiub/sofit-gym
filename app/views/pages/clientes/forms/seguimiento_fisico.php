@@ -8,6 +8,16 @@
     </label>
 </fieldset>
 
+<fieldset class="row">
+    <label class="col">
+        <span class="form-label">Registrado por</span>
+        <?= $this->insert("select/trabajadores", [
+            "input" => ["name" => "registrado_por"],
+        ]) ?>
+        <small class="text-danger" x-text="errors.registrado_por"></small>
+    </label>
+</fieldset>
+
 <hr>
 
 <fieldset class="row">

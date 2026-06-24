@@ -16,6 +16,7 @@ readonly class SeguimientoNutricionalDTO
     public function __construct(
         public ?int $id_seguimiento = null,
         public ?string $cedula_cliente = null,
+        public ?string $registrado_por = null,
         public ?DateTimeImmutable $fecha = null,
         public ?float $proteinas_g = null,
         public ?float $carbohidratos_g = null,
