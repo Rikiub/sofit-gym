@@ -43,6 +43,8 @@ readonly class AsistenteSesionDTO
 
 class AsistenteModel extends BaseModel
 {
+    private string $dbSeguridad = "sofit_gym_seguridad";
+
     public function __construct(
         PDO $pdo,
         private TreeMapper $mapper,
@@ -59,7 +61,7 @@ class AsistenteModel extends BaseModel
 
     public function insertSesion(AsistenteSesionDTO $sesion): AsistenteSesionDTO
     {
-        $table = "asistente_sesion";
+        $table = "{$this->dbSeguridad}.asistente_sesion";
 
         $array = (array) $sesion;
         unset($array["fecha_creacion"]);
@@ -73,7 +75,7 @@ class AsistenteModel extends BaseModel
 
     public function insertMensaje(AsistenteMensajeDTO $mensaje): void
     {
-        $table = "asistente_mensaje";
+        $table = "{$this->dbSeguridad}.asistente_mensaje";
 
         $array = (array) $mensaje;
         unset($array["fecha_creacion"]);
@@ -87,7 +89,7 @@ class AsistenteModel extends BaseModel
     {
         $rows = $this->pdoQuery(
             <<<SQL
-                SELECT * FROM asistente_sesion
+                SELECT * FROM {$this->dbSeguridad}.asistente_sesion
             SQL,
         )->fetchAll();
 
@@ -101,7 +103,7 @@ class AsistenteModel extends BaseModel
     {
         $sesion = $this->pdoQuery(
             <<<SQL
-                SELECT * FROM asistente_sesion
+                SELECT * FROM {$this->dbSeguridad}.asistente_sesion
                 WHERE id_sesion = ?
             SQL,
             [$id_sesion]
@@ -110,7 +112,7 @@ class AsistenteModel extends BaseModel
 
         $mensajes = $this->pdoQuery(
             <<<SQL
-                SELECT * FROM asistente_mensaje
+                SELECT * FROM {$this->dbSeguridad}.asistente_mensaje
                 WHERE id_sesion = ?
             SQL,
             [$id_sesion]
@@ -123,7 +125,7 @@ class AsistenteModel extends BaseModel
     public function getLastSesion(int $id_usuario): ?AsistenteSesionDTO
     {
         $sesion = $this->pdoQuery(<<<SQL
-            SELECT id_sesion FROM asistente_sesion
+            SELECT id_sesion FROM {$this->dbSeguridad}.asistente_sesion
             WHERE id_usuario = ?
             ORDER BY fecha_creacion DESC
             LIMIT 1

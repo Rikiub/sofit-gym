@@ -45,63 +45,6 @@ INSERT INTO `asistencia_gimnasio` VALUES (4,'V-11111111','Entrada','2026-05-17 1
 UNLOCK TABLES;
 
 --
--- Table structure for table `asistente_mensaje`
---
-
-DROP TABLE IF EXISTS `asistente_mensaje`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `asistente_mensaje` (
-  `id_mensaje` int(11) NOT NULL AUTO_INCREMENT,
-  `id_sesion` int(11) NOT NULL,
-  `rol` enum('asistente','usuario') NOT NULL,
-  `contenido` text NOT NULL,
-  `fecha_creacion` datetime NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id_mensaje`),
-  KEY `idx_consultas_fecha` (`fecha_creacion`),
-  KEY `asistente_mensaje_asistente_sesion_FK` (`id_sesion`),
-  CONSTRAINT `asistente_mensaje_asistente_sesion_FK` FOREIGN KEY (`id_sesion`) REFERENCES `asistente_sesion` (`id_sesion`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `asistente_mensaje`
---
-
-LOCK TABLES `asistente_mensaje` WRITE;
-/*!40000 ALTER TABLE `asistente_mensaje` DISABLE KEYS */;
-INSERT INTO `asistente_mensaje` VALUES (46,9,'usuario','hola!','2026-06-07 14:03:14'),(47,9,'asistente','¡Hola! ¿En qué puedo ayudarte hoy?','2026-06-07 14:03:16'),(48,9,'usuario','Podrias decirme cual es la cedula del cliente: Luis	Martínez','2026-06-07 14:03:35'),(49,9,'asistente','No se encontró ningún cliente con el nombre \"Luis Martínez\". ¿Podrías verificar el nombre o proporcionarme algún otro dato como su número de cédula o correo electrónico para poder ayudarte mejor?','2026-06-07 14:03:37'),(50,9,'usuario','Podrias intentar buscar a Luis Martínez nuevamente?','2026-06-07 14:15:51'),(51,9,'asistente','La cédula del cliente Luis Martínez es V-22222222. ¿Necesitas algo más?','2026-06-07 14:15:54'),(52,9,'usuario','Podrias darme un seguimiento de como va su seguimiento fisico?','2026-06-07 14:16:17'),(53,9,'asistente','No puedo darte un seguimiento de su progreso físico, ya que no tengo acceso a esa información. Mi función es ayudarte con la gestión del gimnasio, como información de clientes, trabajadores, finanzas, clases, equipos y rutinas de entrenamiento.\n\n¿Te gustaría que te ayude a revisar su historial de asistencia, estado de membresía o si tiene alguna rutina de entrenamiento asignada?','2026-06-07 14:16:18'),(54,9,'usuario','Podrias darme un seguimiento de como va su seguimiento fisico?','2026-06-07 14:17:43'),(55,9,'asistente','Lamento informarte que no tengo la capacidad de acceder o proporcionar seguimientos físicos de los clientes. Mi funcionalidad se limita a la gestión de la información del gimnasio, como datos de clientes, membresías, finanzas, clases, equipos y rutinas de entrenamiento.\n\nSi necesitas información sobre el progreso físico de Luis Martínez, te sugiero que consultes directamente con el entrenador o el personal encargado de su seguimiento.\n\n¿Puedo ayudarte con alguna otra consulta relacionada con la gestión del gimnasio? Por ejemplo, ¿quieres revisar su historial de asistencia, estado de membresía, o asignarle una nueva rutina de entrenamiento?','2026-06-07 14:17:45'),(56,9,'usuario','Podrias darme un seguimiento de como va su seguimiento fisico?','2026-06-07 14:18:01'),(57,9,'asistente','Como te mencioné anteriormente, no tengo acceso a la información de seguimiento físico de los clientes. Mi rol es facilitar la gestión administrativa y operativa del gimnasio.\n\nPara obtener información sobre el progreso físico de Luis Martínez, por favor, contacta directamente a su entrenador o al personal responsable de su seguimiento.\n\n¿Hay algo más en lo que pueda asistirte con respecto a las funcionalidades del sistema de gestión del gimnasio?','2026-06-07 14:18:03'),(58,10,'usuario','Podrias decirme','2026-06-07 14:18:24'),(59,10,'asistente','Claro, ¿qué necesitas consultar o qué acción deseas realizar?','2026-06-07 14:18:25'),(60,10,'usuario','Podrias decirme como va el seguimiento fisico del cliente Luis Martínez?','2026-06-07 14:21:09'),(61,10,'asistente','Lo siento, no se ha encontrado información sobre el seguimiento físico del cliente Luis Martínez. ¿Podrías verificar si el nombre y/o la cédula son correctos? Si deseas, puedo buscarlo en la base de datos para confirmar su existencia.','2026-06-07 14:21:12'),(62,10,'usuario','Buscalo!','2026-06-07 14:21:30'),(63,10,'asistente','Perfecto. Para poder buscar a Luis Martínez en la base de datos, necesitaría que me proporciones su número de cédula.','2026-06-07 14:21:32'),(64,11,'usuario','Podrias decirme como va el seguimiento fisico del cliente Luis Martínez?','2026-06-07 14:26:13'),(65,11,'usuario','Podrias decirme como va el seguimiento fisico del cliente Luis Martínez?','2026-06-07 14:32:26'),(66,11,'usuario','hola!','2026-06-07 18:54:58'),(67,12,'usuario','Podrias decirme como va el seguimiento fisico del cliente Luis Martínez?','2026-06-08 21:36:30'),(68,12,'asistente','Aquí tienes el historial de seguimientos físicos de **Luis Martínez** (C.I. V-22222222):\n\n**Seguimiento del 24 de Mayo de 2026:**\n*   Altura: 210 cm\n*   Peso: No registrado\n*   Cintura: No registrada\n*   Cadera: No registrada\n*   Pecho: No registrado\n*   Muslo: No registrado\n*   Hombros: No registrado\n*   Pantorrilla: No registrado\n\n**Seguimiento del 20 de Mayo de 2026:**\n*   Altura: 111 cm\n*   Peso: No registrado\n*   Cintura: No registrada\n*   Cadera: No registrada\n*   Pecho: No registrado\n*   Muslo: No registrado\n*   Hombros: No registrado\n*   Pantorrilla: No registrado\n\n**Seguimiento del 30 de Mayo de 2026:**\n*   Altura: 200 cm\n*   Peso: 50 kg\n*   Cintura: 50 cm\n*   Cadera: 50 cm\n*   Pecho: 50 cm\n*   Muslo: 50 cm\n*   Hombros: 50 cm\n*   Pantorrilla: 50 cm','2026-06-08 21:36:36'),(69,13,'usuario','Dame el seguimiento fisico del cliente Luis Martinez','2026-06-11 21:58:15'),(70,13,'asistente','Aquí tienes el seguimiento físico del cliente Luis Martínez (V-22222222):\n\n### Seguimiento Físico - Luis Martínez\n\n| Fecha        | Altura (cm) | Peso (kg) | Cintura (cm) | Cadera (cm) | Pecho (cm) | Muslo (cm) | Hombros (cm) | Pantorrilla (cm) |\n|--------------|-------------|-----------|--------------|-------------|------------|------------|--------------|------------------|\n| 2026-05-30   | 200         | 50        | 50           | 50          | 50         | 50         | 50           | 50               |\n| 2026-05-24   | 210         | N/A       | N/A          | N/A         | N/A        | N/A        | N/A          | N/A              |\n| 2026-05-20   | 111         | N/A       | N/A          | N/A         | N/A        | N/A        | N/A          | N/A              |\n\n**Nota:** \"N/A\" indica que el dato no fue registrado en esa fecha.','2026-06-11 21:58:20');
-/*!40000 ALTER TABLE `asistente_mensaje` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `asistente_sesion`
---
-
-DROP TABLE IF EXISTS `asistente_sesion`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `asistente_sesion` (
-  `id_sesion` int(11) NOT NULL AUTO_INCREMENT,
-  `id_usuario` int(11) NOT NULL,
-  `titulo` varchar(100) DEFAULT NULL,
-  `modelo_usado` varchar(100) DEFAULT NULL,
-  `fecha_creacion` datetime NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id_sesion`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `asistente_sesion`
---
-
-LOCK TABLES `asistente_sesion` WRITE;
-/*!40000 ALTER TABLE `asistente_sesion` DISABLE KEYS */;
-INSERT INTO `asistente_sesion` VALUES (9,2,NULL,'gemini-2.5-flash-lite','2026-06-07 14:02:34'),(10,2,NULL,'gemini-2.5-flash-lite','2026-06-07 14:18:17'),(11,2,NULL,'gemini-2.5-flash-lite','2026-06-07 14:26:11'),(12,2,NULL,'gemini-2.5-flash-lite','2026-06-08 21:36:28'),(13,2,NULL,'gemini-2.5-flash-lite','2026-06-11 21:57:55'),(14,14,NULL,'gemini-2.5-flash-lite','2026-06-16 22:20:57'),(15,2,NULL,'gemini-2.5-flash-lite','2026-06-20 19:35:54');
-/*!40000 ALTER TABLE `asistente_sesion` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `categoria_producto`
 --
 
@@ -662,7 +605,7 @@ CREATE TABLE `seguimiento_fisico` (
   KEY `seguimiento_fisico_trabajador_FK` (`registrado_por`),
   CONSTRAINT `seguimiento_fisico_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `seguimiento_fisico_trabajador_FK` FOREIGN KEY (`registrado_por`) REFERENCES `trabajador` (`cedula`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -671,7 +614,7 @@ CREATE TABLE `seguimiento_fisico` (
 
 LOCK TABLES `seguimiento_fisico` WRITE;
 /*!40000 ALTER TABLE `seguimiento_fisico` DISABLE KEYS */;
-INSERT INTO `seguimiento_fisico` VALUES (3,'V-11111111',NULL,'2026-05-17',2.00,4.00,NULL,NULL,NULL,NULL,NULL,NULL),(14,'V-22222222',NULL,'2026-05-20',111.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(17,'V-22222222',NULL,'2026-05-24',210.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(20,'V-22222222',NULL,'2026-05-30',200.00,50.00,50.00,50.00,50.00,50.00,50.00,50.00),(24,'V-11773948',NULL,'2026-06-22',200.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `seguimiento_fisico` VALUES (3,'V-11111111',NULL,'2026-05-17',2.00,4.00,NULL,NULL,NULL,NULL,NULL,NULL),(14,'V-22222222',NULL,'2026-05-20',111.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(17,'V-22222222',NULL,'2026-05-24',210.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(20,'V-22222222',NULL,'2026-05-30',200.00,50.00,50.00,50.00,50.00,50.00,50.00,50.00),(24,'V-11773948',NULL,'2026-06-22',200.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(25,'V-11773948','V-00000002','2026-06-24',120.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `seguimiento_fisico` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1063,4 +1006,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-06-24  1:40:53
+-- Dump completed on 2026-06-24 13:45:06
