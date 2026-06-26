@@ -9,46 +9,8 @@ use App\Models\BaseModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use PDO;
-use PDOException;
 
 use function App\Helpers\toDbDate;
-
-readonly class TrabajadorDTO extends PersonaDTO
-{
-    public function __construct(
-        ?string $cedula = null,
-        ?string $nombre = null,
-        ?string $apellido = null,
-        ?string $correo = null,
-        ?string $telefono = null,
-        ?string $direccion = null,
-        ?bool $activo = true,
-        ?DateTimeImmutable $fecha_nacimiento = null,
-        ?DateTimeImmutable $fecha_creacion = null,
-        public ?int $id_rol = null,
-        public ?string $rol = null,
-        public ?float $salario = null,
-        public ?DateTimeImmutable $fecha_contratacion = null,
-    ) {
-        parent::__construct(
-            cedula: $cedula,
-            nombre: $nombre,
-            apellido: $apellido,
-            correo: $correo,
-            telefono: $telefono,
-            direccion: $direccion,
-            activo: $activo,
-            fecha_nacimiento: $fecha_nacimiento,
-            fecha_creacion: $fecha_creacion,
-        );
-    }
-
-    public function validateInsert()
-    {
-        parent::validateInsert();
-        Validator::required($this->id_rol, "id_rol");
-    }
-}
 
 class TrabajadoresModel extends BaseModel
 {
@@ -143,13 +105,18 @@ class TrabajadoresModel extends BaseModel
         return $this->mapper->map(TrabajadorDTO::class, $row);
     }
 
+    /** Comprobar si la cedula ya esta asignada a una persona */
+    public function checkDuplicate(string $cedula): bool
+    {
+        if ($this->personasModel->find($cedula)) {
+            return true;
+        }
+        return false;
+    }
+
     public function insert(TrabajadorDTO $trabajador): TrabajadorDTO
     {
         $trabajador->validateInsert();
-
-        if ($this->personasModel->find($trabajador->cedula)) {
-            throw new PDOException("Ya existe una persona con la cedula {$trabajador->cedula}");
-        }
 
         return $this->pdoTransaction(function () use ($trabajador) {
             $this->personasModel->insert($trabajador);
@@ -192,5 +159,43 @@ class TrabajadoresModel extends BaseModel
             'salario' => $dto->salario,
             'fecha_contratacion' => toDbDate($dto->fecha_contratacion),
         ];
+    }
+}
+
+// DTO
+readonly class TrabajadorDTO extends PersonaDTO
+{
+    public function __construct(
+        ?string $cedula = null,
+        ?string $nombre = null,
+        ?string $apellido = null,
+        ?string $correo = null,
+        ?string $telefono = null,
+        ?string $direccion = null,
+        ?bool $activo = true,
+        ?DateTimeImmutable $fecha_nacimiento = null,
+        ?DateTimeImmutable $fecha_creacion = null,
+        public ?int $id_rol = null,
+        public ?string $rol = null,
+        public ?float $salario = null,
+        public ?DateTimeImmutable $fecha_contratacion = null,
+    ) {
+        parent::__construct(
+            cedula: $cedula,
+            nombre: $nombre,
+            apellido: $apellido,
+            correo: $correo,
+            telefono: $telefono,
+            direccion: $direccion,
+            activo: $activo,
+            fecha_nacimiento: $fecha_nacimiento,
+            fecha_creacion: $fecha_creacion,
+        );
+    }
+
+    public function validateInsert()
+    {
+        parent::validateInsert();
+        Validator::required($this->id_rol, "id_rol");
     }
 }

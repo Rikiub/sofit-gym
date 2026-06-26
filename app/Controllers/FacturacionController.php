@@ -3,15 +3,14 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Helpers\Http\Response;
 use App\Helpers\Reportes\reporteFinanciero;
-use App\Helpers\Response;
 use App\Models\FacturacionPagosModel;
 use Exception;
 
 class FacturacionController extends BaseController
 {
     public function __construct(
-        private Response $response,
         private FacturacionPagosModel $model,
     ) {}
 
@@ -34,7 +33,7 @@ class FacturacionController extends BaseController
         $this->protect("facturacion:crear");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->response->redirect([
+            Response::redirect([
                 'page' => 'facturacion',
                 'action' => 'index',
                 'tab' => 'tab-lista',
@@ -57,7 +56,7 @@ class FacturacionController extends BaseController
             $_SESSION['tipo_mensaje'] = 'danger';
         }
 
-        $this->response->redirect([
+        Response::redirect([
             'page' => 'facturacion',
             'action' => 'index',
             'tab' => 'tab-lista',
@@ -69,7 +68,7 @@ class FacturacionController extends BaseController
         $this->protect("facturacion:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->response->redirect([
+            Response::redirect([
                 'page' => 'facturacion',
                 'action' => 'index',
                 'tab' => 'tab-lista',
@@ -97,7 +96,7 @@ class FacturacionController extends BaseController
             $_SESSION['tipo_mensaje'] = 'danger';
         }
 
-        $this->response->redirect([
+        Response::redirect([
             'page' => 'facturacion',
             'action' => 'index',
             'tab' => 'tab-lista',
@@ -109,7 +108,7 @@ class FacturacionController extends BaseController
         $this->protect("facturacion:eliminar");
 
         if (!isset($_GET['eliminar_pago'])) {
-            $this->response->redirect([
+            Response::redirect([
                 'page' => 'facturacion',
                 'action' => 'index',
                 'tab' => 'tab-lista',
@@ -131,7 +130,7 @@ class FacturacionController extends BaseController
             $_SESSION['tipo_mensaje'] = 'danger';
         }
 
-        $this->response->redirect([
+        Response::redirect([
             'page' => 'facturacion',
             'action' => 'index',
             'tab' => 'tab-lista',
@@ -149,7 +148,7 @@ class FacturacionController extends BaseController
         $termino = $_GET['termino'] ?? '';
         $resultados = $this->model->buscarPagos($termino);
 
-        return $this->response->json($resultados);
+        return $this->json($resultados);
     }
 
     public function ingresos_mensuales()
@@ -157,7 +156,7 @@ class FacturacionController extends BaseController
         $this->protect("facturacion:ver");
 
         $ingresos = $this->model->obtenerIngresosMesActual();
-        return $this->response->json($ingresos);
+        return $this->json($ingresos);
     }
 
     // REPORTES

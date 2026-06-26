@@ -3,7 +3,8 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Helpers\Response;
+use App\Helpers\Http\Request;
+use App\Helpers\Http\Response;
 use App\Models\Equipos\MantenimientoEquipoDTO;
 use App\Models\Equipos\MantenimientoEquipoModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -12,7 +13,6 @@ use Exception;
 class EquiposMantenimientoController extends BaseController
 {
     public function __construct(
-        private Response $response,
         private TreeMapper $mapper,
         private MantenimientoEquipoModel $model,
     ) {}
@@ -27,7 +27,7 @@ class EquiposMantenimientoController extends BaseController
     {
         $this->protect("equipos:ver");
         $data = $this->model->query();
-        return $this->response->json($data);
+        return $this->json($data);
     }
 
     public function find(): ?string
@@ -38,34 +38,34 @@ class EquiposMantenimientoController extends BaseController
         $data = $this->model->find($id);
 
         return $data
-            ? $this->response->json($data)
-            : $this->response->empty(404);
+            ? $this->json($data)
+            : $this->json(null, 404);
     }
 
     public function insert(): string
     {
         $this->protect("equipos:crear");
 
-        $body = $this->response->getParsedBody();
+        $body = Request::getParsedBody();
         $data = $this->mapper->map(MantenimientoEquipoDTO::class, $body);
 
         $data = $this->model->insert($data);
-        return $this->response->json($data, 201);
+        return $this->json($data, 201);
     }
 
     public function update(): string
     {
         $this->protect("equipos:editar");
 
-        $body = $this->response->getParsedBody();
+        $body = Request::getParsedBody();
         $data = $this->mapper->map(MantenimientoEquipoDTO::class, $body);
 
         if (!$this->model->find($data->id_mantenimiento)) {
-            return $this->response->json(['message' => 'El mantenimiento no existe'], 404);
+            return $this->json(['message' => 'El mantenimiento no existe'], 404);
         }
 
         $data = $this->model->update($data);
-        return $this->response->json($data, 201);
+        return $this->json($data, 201);
     }
 
     public function delete(): string|null
@@ -74,11 +74,11 @@ class EquiposMantenimientoController extends BaseController
         $id = $this->getParamId();
 
         if (!$this->model->find($id)) {
-            return $this->response->json(['message' => 'El mantenimiento no existe'], 404);
+            return $this->json(['message' => 'El mantenimiento no existe'], 404);
         }
 
         $this->model->delete($id);
-        return $this->response->empty(204);
+        return $this->json(null, 204);
     }
 
     private function getParamId(): int

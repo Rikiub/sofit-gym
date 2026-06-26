@@ -3,16 +3,14 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Helpers\Response;
+use App\Helpers\Http\Request;
 use App\Models\ClaseGrupalDTO;
 use App\Models\ClasesGrupalesModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
-use Exception;
 
 class ClasesGrupalesController extends BaseController
 {
     public function __construct(
-        private Response $response,
         private TreeMapper $mapper,
         private ClasesGrupalesModel $clasesModel,
     ) {}
@@ -27,7 +25,7 @@ class ClasesGrupalesController extends BaseController
     {
         $this->protect("clasesGrupales:ver");
         $clases = $this->clasesModel->query();
-        return $this->response->json($clases);
+        return $this->json($clases);
     }
 
     public function find(): ?string
@@ -38,33 +36,34 @@ class ClasesGrupalesController extends BaseController
         $clase = $this->clasesModel->find($cedula);
 
         return $clase
-            ? $this->response->json($clase)
-            : $this->response->empty(404);
+            ? $this->json($clase)
+            : $this->json(null, 404);
     }
 
     public function insert(): string
     {
         $this->protect("clasesGrupales:crear");
-        $body = $this->response->getParsedBody();
+
+        $body = Request::getParsedBody();
         $clase = $this->mapper->map(ClaseGrupalDTO::class, $body);
 
         $clase = $this->clasesModel->insert($clase);
-        return $this->response->json($clase, 201);
+        return $this->json($clase, 201);
     }
 
     public function update(): string
     {
         $this->protect("clasesGrupales:editar");
 
-        $body = $this->response->getParsedBody();
+        $body = Request::getParsedBody();
         $clase = $this->mapper->map(ClaseGrupalDTO::class, $body);
 
         if (!$this->clasesModel->find($clase->id_clase)) {
-            return $this->response->json(['message' => 'No existe'], 400);
+            return $this->json(['message' => 'No existe'], 400);
         }
 
         $clase = $this->clasesModel->update($clase);
-        return $this->response->json($clase, 201);
+        return $this->json($clase, 201);
     }
 
     public function delete(): string|null
@@ -73,19 +72,15 @@ class ClasesGrupalesController extends BaseController
         $id = $this->getParamId();
 
         if (!$this->clasesModel->find($id)) {
-            return $this->response->json(['message' => 'No existe'], 404);
+            return $this->json(['message' => 'No existe'], 404);
         }
 
         $this->clasesModel->delete($id);
-        return $this->response->empty(204);
+        return $this->json(null, 204);
     }
 
     private function getParamId(): int
     {
-        $id = (int)(
-            $_GET['id']
-            ?? throw new Exception("'id' param is required")
-        );
-        return (int) $id;
+        return (int) Request::requiredParam("id");
     }
 }

@@ -5,7 +5,8 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Helpers\Auth\UsuarioSession;
 use App\Helpers\Auth\UsuarioSessionDto;
-use App\Helpers\Response;
+use App\Helpers\Http\Request;
+use App\Helpers\Http\Response;
 use App\Models\NotificacionDTO;
 use App\Models\NotificacionesModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -16,7 +17,6 @@ class NotificacionesController extends BaseController
     private UsuarioSessionDto $usuario;
 
     public function __construct(
-        private Response $response,
         private TreeMapper $mapper,
         private NotificacionesModel $notificacionesModel,
     ) {
@@ -27,7 +27,7 @@ class NotificacionesController extends BaseController
     {
         $id_usuario = (int)($_GET["id_usuario"] ?? $this->usuario->id);
         $results = $this->notificacionesModel->query($id_usuario);
-        return $this->response->json($results);
+        return $this->json($results);
     }
 
     public function find(): ?string
@@ -36,8 +36,8 @@ class NotificacionesController extends BaseController
         $data = $this->notificacionesModel->find($this->usuario->id, $id);
 
         return $data
-            ? $this->response->json($data)
-            : $this->response->empty(404);
+            ? $this->json($data)
+            : $this->json(null, 404);
     }
 
     public function leido()
@@ -46,18 +46,18 @@ class NotificacionesController extends BaseController
         $leido = (bool)($_GET["leido"] ?? true);
 
         $this->notificacionesModel->setLeido($this->usuario->id, $id, $leido);
-        return $this->response->empty(204);
+        return $this->json(null, 204);
     }
 
     public function leerTodas()
     {
         $this->notificacionesModel->setLeidoTodas($this->usuario->id);
-        return $this->response->empty(204);
+        return $this->json(null, 204);
     }
 
     public function sendMultiple(): null
     {
-        $body = $this->response->getParsedBody();
+        $body = Request::getParsedBody();
 
         $id_usuarios =
             $body["id_usuarios"]
@@ -69,7 +69,7 @@ class NotificacionesController extends BaseController
             $id_usuarios,
             notificacion: $data,
         );
-        return $this->response->empty(204);
+        return $this->json(null, 204);
     }
 
     private function getParamId(): int

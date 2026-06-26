@@ -2,13 +2,12 @@
 
 namespace App\Controllers;
 
-use App\Helpers\Response;
+use App\Helpers\Http\Response;
 use App\Models\BitacoraModel;
 
 class BitacoraController extends BaseController
 {
     public function __construct(
-        private Response $response,
         private BitacoraModel $bitacoraModel
     ) {}
 
@@ -22,7 +21,7 @@ class BitacoraController extends BaseController
     {
         $this->protect("bitacora:ver");
         $logs = $this->bitacoraModel->query();
-        return $this->response->json($logs);
+        return $this->json($logs);
     }
 
     public function limpiarRegistros(): null
@@ -32,6 +31,6 @@ class BitacoraController extends BaseController
         $diasRetencion = (int)($_GET["dias"] ?? 30);
         $this->bitacoraModel->limpiarRegistros($diasRetencion);
 
-        return $this->response->empty(204);
+        return $this->json(null, 204);
     }
 }

@@ -3,7 +3,8 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Helpers\Response;
+use App\Helpers\Http\Request;
+use App\Helpers\Http\Response;
 use App\Models\Clientes\ClientesModel;
 use App\Models\Clientes\SeguimientoFisicoDTO;
 use App\Models\Clientes\SeguimientoNutricionalDTO;
@@ -15,7 +16,6 @@ use Exception;
 class ClientesItemController extends BaseController
 {
     public function __construct(
-        private Response $response,
         private TreeMapper $mapper,
         private ClientesModel $clientesModel,
         private SegumientoFisicoModel $fisicoModel,
@@ -30,7 +30,7 @@ class ClientesItemController extends BaseController
         $cedula = $this->getCedulaParam();
 
         if (!$this->clientesModel->find($cedula)) {
-            Response::redirectToError();
+            $this->redirectToError();
         }
 
         $templates = $this->templates->addData(
@@ -58,31 +58,27 @@ class ClientesItemController extends BaseController
         $cedula = $this->getCedulaParam();
 
         if (!$this->clientesModel->find($cedula)) {
-            return $this->response->empty(404);
+            return $this->json(null, 404);
         }
 
         $registros = $this->fisicoModel->queryByCliente($cedula);
-        return $this->response->json($registros);
+        return $this->json($registros);
     }
 
     public function insertSegFisico(): string
     {
         $this->protect("clientes:crear");
-        $body = $this->response->getParsedBody();
 
-        // Valida el POST
+        $body = Request::getParsedBody();
         $registro = $this->mapper->map(SeguimientoFisicoDTO::class, $body);
 
         // Verificar que el cliente exista
         if (!$this->clientesModel->find($registro->cedula_cliente)) {
-            return $this->response->json(['message' => 'El cliente no existe'], 404);
+            return $this->json(['message' => 'El cliente no existe'], 404);
         }
 
-        // Crea el cliente
         $cliente = $this->fisicoModel->insert($registro);
-
-        // Enviar JSON
-        return $this->response->json($cliente, 201);
+        return $this->json($cliente, 201);
     }
 
     public function updateSegFisico(): string
@@ -90,17 +86,17 @@ class ClientesItemController extends BaseController
         $this->protect("clientes:editar");
         $cedula = $this->getCedulaParam();
 
-        $body = $this->response->getParsedBody();
+        $body = Request::getParsedBody();
         $body['cedula_cliente'] = $cedula;
 
         $registro = $this->mapper->map(SeguimientoFisicoDTO::class, $body);
 
         if (!$this->clientesModel->find($cedula)) {
-            return $this->response->json(['message' => 'El cliente no existe'], 400);
+            return $this->json(['message' => 'El cliente no existe'], 400);
         }
 
         $registro = $this->fisicoModel->update($registro);
-        return $this->response->json($registro, 201);
+        return $this->json($registro, 201);
     }
 
     public function deleteSegFisico(): string|null
@@ -109,11 +105,11 @@ class ClientesItemController extends BaseController
         $idSeguimiento = isset($_GET['id']) ? intval($_GET['id']) : null;
 
         if (!$this->fisicoModel->find($idSeguimiento)) {
-            return $this->response->json(['message' => 'Seguimiento no existe'], 404);
+            return $this->json(['message' => 'Seguimiento no existe'], 404);
         }
 
         $this->fisicoModel->delete($idSeguimiento);
-        return $this->response->empty(204);
+        return $this->json(null, 204);
     }
 
     // SEGUMIENTO NUTRICIONAL: JSON API
@@ -124,31 +120,27 @@ class ClientesItemController extends BaseController
         $cedula = $this->getCedulaParam();
 
         if (!$this->clientesModel->find($cedula)) {
-            return $this->response->empty(404);
+            return $this->json(null, 404);
         }
 
         $registros = $this->nutricionalModel->queryByCliente($cedula);
-        return $this->response->json($registros);
+        return $this->json($registros);
     }
 
     public function insertSegNutricional(): string
     {
         $this->protect("clientes:crear");
-        $body = $this->response->getParsedBody();
 
-        // Valida el POST
+        $body = Request::getParsedBody();
         $registro = $this->mapper->map(SeguimientoNutricionalDTO::class, $body);
 
         // Verificar que el cliente exista
         if (!$this->clientesModel->find($registro->cedula_cliente)) {
-            return $this->response->json(['message' => 'El cliente no existe'], 404);
+            return $this->json(['message' => 'El cliente no existe'], 404);
         }
 
-        // Crea el cliente
         $cliente = $this->nutricionalModel->insert($registro);
-
-        // Enviar JSON
-        return $this->response->json($cliente, 201);
+        return $this->json($cliente, 201);
     }
 
     public function updateSegNutricional(): string
@@ -156,17 +148,17 @@ class ClientesItemController extends BaseController
         $this->protect("clientes:editar");
         $cedula = $this->getCedulaParam();
 
-        $body = $this->response->getParsedBody();
+        $body = Request::getParsedBody();
         $body['cedula_cliente'] = $cedula;
 
         $registro = $this->mapper->map(SeguimientoNutricionalDTO::class, $body);
 
         if (!$this->clientesModel->find($cedula)) {
-            return $this->response->json(['message' => 'El cliente no existe'], 400);
+            return $this->json(['message' => 'El cliente no existe'], 400);
         }
 
         $registro = $this->nutricionalModel->update($registro);
-        return $this->response->json($registro, 201);
+        return $this->json($registro, 201);
     }
 
     public function deleteSegNutricional(): string|null
@@ -175,10 +167,10 @@ class ClientesItemController extends BaseController
         $idSeguimiento = isset($_GET['id']) ? intval($_GET['id']) : null;
 
         if (!$this->nutricionalModel->find($idSeguimiento)) {
-            return $this->response->json(['message' => 'Seguimiento no existe'], 404);
+            return $this->json(['message' => 'Seguimiento no existe'], 404);
         }
 
         $this->nutricionalModel->delete($idSeguimiento);
-        return $this->response->empty(204);
+        return $this->json(null, 204);
     }
 }

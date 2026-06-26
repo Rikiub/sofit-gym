@@ -33,7 +33,6 @@ abstract class BaseModel
 
     /**
      * Busca y devuelve una sola fila.
-     * Si `$primaryKey = $id` entonces obtienes la fila encontrada.
      *
      * @param $sql Codigo SQL a agregar.
      * @param $conditions Array asociativo que sera convertido en `column = value`.
@@ -53,9 +52,7 @@ abstract class BaseModel
             )
         )->fetch();
 
-        if (!$row)
-            return null;
-        return $row;
+        return $row ?? null;
     }
 
     /**
@@ -153,11 +150,11 @@ abstract class BaseModel
             $result = $callback($this->pdo);
             $this->pdo->commit();
             return $result;
-        } catch (Throwable $e) {
+        } catch (Throwable $error) {
             if ($this->pdo->inTransaction()) {
                 $this->pdo->rollBack();
             }
-            throw $e;
+            throw $error;
         }
     }
 }

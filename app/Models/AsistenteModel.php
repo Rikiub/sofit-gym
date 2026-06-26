@@ -10,37 +10,6 @@ use CuyZ\Valinor\Normalizer\Normalizer;
 use DateTimeImmutable;
 use PDO;
 
-enum RolAsistente: string
-{
-    case Asistente = "asistente";
-    case Usuario = "usuario";
-}
-
-readonly class AsistenteMensajeDTO
-{
-    public function __construct(
-        public ?int $id_mensaje = null,
-        public ?int $id_sesion = null,
-        public ?RolAsistente $rol = null,
-        public ?string $contenido = null,
-        public ?DateTimeImmutable $fecha_creacion = null,
-    ) {}
-}
-
-readonly class AsistenteSesionDTO
-{
-    public function __construct(
-        public ?int $id_sesion = null,
-        public ?int $id_usuario = null,
-        public ?string $titulo = null,
-        public ?string $modelo_usado = null,
-        public ?DateTimeImmutable $fecha_creacion = new DateTimeImmutable(),
-
-        /** @var AsistenteMensajeDTO[] */
-        public ?array $mensajes = [],
-    ) {}
-}
-
 class AsistenteModel extends BaseModel
 {
     private string $dbSeguridad = "sofit_gym_seguridad";
@@ -225,4 +194,36 @@ class AsistenteModel extends BaseModel
         $items = $this->rutinasModel->obtenerAsignacionesPorCliente($cedula_cliente);
         return $this->normalizer->normalize($items);
     }
+}
+
+// DTO
+enum RolAsistente: string
+{
+    case Asistente = "asistente";
+    case Usuario = "usuario";
+}
+
+readonly class AsistenteMensajeDTO
+{
+    public function __construct(
+        public ?int $id_mensaje = null,
+        public ?int $id_sesion = null,
+        public ?RolAsistente $rol = null,
+        public ?string $contenido = null,
+        public ?DateTimeImmutable $fecha_creacion = null,
+    ) {}
+}
+
+readonly class AsistenteSesionDTO
+{
+    public function __construct(
+        public ?int $id_sesion = null,
+        public ?int $id_usuario = null,
+        public ?string $titulo = null,
+        public ?string $modelo_usado = null,
+        public ?DateTimeImmutable $fecha_creacion = new DateTimeImmutable(),
+
+        /** @var AsistenteMensajeDTO[] */
+        public ?array $mensajes = [],
+    ) {}
 }

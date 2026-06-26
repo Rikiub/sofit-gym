@@ -6,39 +6,7 @@ use App\Helpers\Validator;
 use App\Models\BaseModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
-use InvalidArgumentException;
 use PDO;
-
-enum EstadoEquipo: string
-{
-    case Operativo = 'Operativo';
-    case Mantenimiento = 'Mantenimiento';
-    case FueraDeServicio = 'Fuera de Servicio';
-}
-
-readonly class EquipoDTO
-{
-    public function __construct(
-        public ?string $codigo = null,
-        public ?string $nombre = null,
-        public ?string $tipo = null,
-        public ?EstadoEquipo $estado = null,
-        public ?string $ubicacion = null,
-        public ?bool $activo = true,
-        public ?DateTimeImmutable $fecha_creacion = null,
-    ) {}
-
-    public function validateInsert(): void
-    {
-        Validator::required($this->codigo, "codigo");
-        Validator::required($this->nombre, "nombre");
-        Validator::required($this->estado, "estado");
-    }
-    public function validateUpdate(): void
-    {
-        Validator::required($this->codigo, "codigo");
-    }
-}
 
 class EquiposModel extends BaseModel
 {
@@ -127,5 +95,37 @@ class EquiposModel extends BaseModel
             'ubicacion' => $dto->ubicacion,
             'activo' => $dto->activo,
         ];
+    }
+}
+
+// DTO
+enum EstadoEquipo: string
+{
+    case Operativo = 'Operativo';
+    case Mantenimiento = 'Mantenimiento';
+    case FueraDeServicio = 'Fuera de Servicio';
+}
+
+readonly class EquipoDTO
+{
+    public function __construct(
+        public ?string $codigo = null,
+        public ?string $nombre = null,
+        public ?string $tipo = null,
+        public ?EstadoEquipo $estado = null,
+        public ?string $ubicacion = null,
+        public ?bool $activo = true,
+        public ?DateTimeImmutable $fecha_creacion = null,
+    ) {}
+
+    public function validateInsert(): void
+    {
+        Validator::required($this->codigo, "codigo");
+        Validator::required($this->nombre, "nombre");
+        Validator::required($this->estado, "estado");
+    }
+    public function validateUpdate(): void
+    {
+        Validator::required($this->codigo, "codigo");
     }
 }

@@ -4,8 +4,9 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Helpers\Auth\UsuarioSession;
+use App\Helpers\Http\Request;
+use App\Helpers\Http\Response;
 use App\Helpers\ImagesManager;
-use App\Helpers\Response;
 use App\Models\UsuarioDTO;
 use App\Models\UsuariosModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -14,7 +15,6 @@ use Exception;
 class UsuariosController extends BaseController
 {
     public function __construct(
-        private Response $response,
         private TreeMapper $mapper,
         private UsuariosModel $usuariosModel,
     ) {}
@@ -33,7 +33,7 @@ class UsuariosController extends BaseController
     {
         $this->protect("usuarios:ver");
         $usuarios = $this->usuariosModel->query();
-        return $this->response->json($usuarios);
+        return $this->json($usuarios);
     }
 
     public function find(): ?string
@@ -42,7 +42,7 @@ class UsuariosController extends BaseController
         $usuario = $this->usuariosModel->find($id);
 
         if (!$usuario) {
-            return $this->response->empty(404);
+            return $this->json(null, 404);
         }
 
         // Si no es administrador y trata de buscar otro perfil que no sea el suyo
@@ -52,21 +52,21 @@ class UsuariosController extends BaseController
             !$usuarioSesion->hasPermiso("usuarios:ver")
             && $usuarioSesion->id !== $usuario->id_usuario
         ) {
-            return $this->response->json(["message" => "No esta autorizado"], 403);
+            return  $this->json(["message" => "No esta autorizado"], 403);
         }
 
-        return $this->response->json($usuario);
+        return $this->json($usuario);
     }
 
     public function insert(): string
     {
         $this->protect("usuarios:crear");
-        $body = $this->response->getParsedBody();
+        $body = Request::getParsedBody();
 
         // Verificar que no exista
         $nombre_usuario = $body["nombre_usuario"] ?? "";
         if ($this->usuariosModel->find($nombre_usuario)) {
-            return $this->response->json(['message' => 'El usuario ya existe'], 400);
+            return $this->json(['message' => 'El usuario ya existe'], 400);
         }
 
         // Ajustar foto de perfil
@@ -80,18 +80,18 @@ class UsuariosController extends BaseController
         $usuario = $this->usuariosModel->insert($usuario);
 
         // Devolver respuesta
-        return $this->response->json($usuario, 201);
+        return $this->json($usuario, 201);
     }
 
     public function update(): string
     {
-        $body = $this->response->getParsedBody();
+        $body = Request::getParsedBody();
 
         // Verificar que exista
         $nombre_usuario = $body["nombre_usuario"] ?? "";
         $oldUsuario = $this->usuariosModel->find($nombre_usuario);
         if (!$oldUsuario) {
-            return $this->response->json(['message' => 'El usuario no existe'], 400);
+            return $this->json(['message' => 'El usuario no existe'], 400);
         }
 
         // Si no es administrador y trata de editar otro perfil que no sea el suyo
@@ -101,7 +101,7 @@ class UsuariosController extends BaseController
             !$usuarioSesion->hasPermiso("usuarios:editar")
             && $usuarioSesion->id !== $oldUsuario->id_usuario
         ) {
-            return $this->response->json(["message" => "No esta autorizado"], 403);
+            return $this->json(["message" => "No esta autorizado"], 403);
         }
 
         // Actualizar foto de perfil
@@ -116,7 +116,7 @@ class UsuariosController extends BaseController
         $usuario = $this->usuariosModel->update($usuario);
 
         // Devolver respuesta
-        return $this->response->json($usuario, 201);
+        return $this->json($usuario, 201);
     }
 
     public function delete(): string|null
@@ -127,7 +127,7 @@ class UsuariosController extends BaseController
         $usuario = $this->usuariosModel->find($id);
 
         if (!$usuario) {
-            return $this->response->json(['message' => 'El usuario no existe'], 404);
+            return $this->json(['message' => 'El usuario no existe'], 404);
         }
 
         $this->usuariosModel->delete($usuario->id_usuario);
@@ -135,7 +135,7 @@ class UsuariosController extends BaseController
             ImagesManager::delete($usuario->imagen_url);
         }
 
-        return $this->response->empty(204);
+        return $this->json(null, 204);
     }
 
     public function uploadImage(): string
@@ -143,13 +143,11 @@ class UsuariosController extends BaseController
         $image = $_FILES['image'] ?? null;
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !$image) {
-            return $this->response->json(['error' => 'Petición inválida'], 400);
+            return $this->json(['error' => 'Petición inválida'], 400);
         }
 
         $filename = ImagesManager::saveTemp($image);
-
-        // Devolvemos el nombre generado
-        return $this->response->json([
+        return $this->json([
             'temp_filename' => $filename
         ]);
     }

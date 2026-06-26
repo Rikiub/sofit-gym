@@ -6,16 +6,6 @@ use App\Models\BaseModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use PDO;
 
-readonly class RolDTO
-{
-    public function __construct(
-        public ?int $id_rol = null,
-        public ?string $nombre = null,
-        /** @var string[] */
-        public array $permisos = [],
-    ) {}
-}
-
 class RolesModel extends BaseModel
 {
     private string $dbSeguridad = "sofit_gym_seguridad";
@@ -144,4 +134,15 @@ class RolesModel extends BaseModel
             ]);
         }
     }
+}
+
+// DTO
+readonly class RolDTO
+{
+    public function __construct(
+        public ?int $id_rol = null,
+        public ?string $nombre = null,
+        /** @var string[] */
+        public array $permisos = [],
+    ) {}
 }

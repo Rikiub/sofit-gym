@@ -3,7 +3,8 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Helpers\Response;
+use App\Helpers\Http\Request;
+use App\Helpers\Http\Response;
 use App\Models\RolDTO;
 use App\Models\RolesModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -12,7 +13,6 @@ use Exception;
 class RolesController extends BaseController
 {
     public function __construct(
-        private Response $response,
         private TreeMapper $mapper,
         private RolesModel $rolesModel,
     ) {}
@@ -29,7 +29,7 @@ class RolesController extends BaseController
     {
         $this->protect("roles:ver");
         $roles = $this->rolesModel->query();
-        return $this->response->json($roles);
+        return $this->json($roles);
     }
 
     public function find(): ?string
@@ -40,40 +40,40 @@ class RolesController extends BaseController
         $rol = $this->rolesModel->find($id);
 
         if (!$rol) {
-            return $this->response->empty(404);
+            return $this->json(null, 404);
         }
 
-        return $this->response->json($rol);
+        return $this->json($rol);
     }
 
     public function insert(): string
     {
         $this->protect("roles:crear");
 
-        $body = $this->response->getParsedBody();
+        $body = Request::getParsedBody();
         $permiso = $this->mapper->map(RolDTO::class, $body);
 
         if ($this->rolesModel->find($permiso->nombre)) {
-            return $this->response->json(['message' => 'El rol ya existe'], 400);
+            return $this->json(['message' => 'El rol ya existe'], 400);
         }
 
         $permiso = $this->rolesModel->insert($permiso);
-        return $this->response->json($permiso, 201);
+        return $this->json($permiso, 201);
     }
 
     public function update(): string
     {
         $this->protect("roles:editar");
 
-        $body = $this->response->getParsedBody();
+        $body = Request::getParsedBody();
         $permiso = $this->mapper->map(RolDTO::class, $body);
 
         if (!$this->rolesModel->find($permiso->id_rol)) {
-            return $this->response->json(['message' => 'El rol no existe'], 404);
+            return $this->json(['message' => 'El rol no existe'], 404);
         }
 
         $permiso = $this->rolesModel->update($permiso);
-        return $this->response->json($permiso, 201);
+        return $this->json($permiso, 201);
     }
 
     public function delete(): string|null
@@ -84,11 +84,11 @@ class RolesController extends BaseController
         $permiso = $this->rolesModel->find($id);
 
         if (!$permiso) {
-            return $this->response->json(['message' => 'El rol no existe'], 404);
+            return $this->json(['message' => 'El rol no existe'], 404);
         }
 
         $this->rolesModel->delete($permiso->id_rol);
-        return $this->response->empty(204);
+        return $this->json(null, 204);
     }
 
     private function getParamId(): string

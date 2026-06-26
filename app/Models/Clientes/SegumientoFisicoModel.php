@@ -11,62 +11,6 @@ use PDO;
 
 use function App\Helpers\toDbDate;
 
-readonly class SeguimientoFisicoDTO
-{
-    public function __construct(
-        public ?int $id_seguimiento = null,
-        public ?string $cedula_cliente = null,
-        public ?string $registrado_por = null,
-        public ?DateTimeImmutable $fecha = null,
-        public ?float $altura_cm = null,
-        public ?float $peso_kg = null,
-        public ?float $cintura_cm = null,
-        public ?float $cadera_cm = null,
-        public ?float $pecho_cm = null,
-        public ?float $muslo_cm = null,
-        public ?float $hombros_cm = null,
-        public ?float $pantorrilla_cm = null,
-    ) {
-        if ($this->cedula_cliente) {
-            Validator::cedula($this->cedula_cliente, "cedula_cliente");
-        }
-    }
-
-    public function validateInsert(): void
-    {
-        Validator::required($this->cedula_cliente, "cedula_cliente");
-
-        // Al menos una medida numérica debe existir
-        $medidas = [
-            $this->altura_cm,
-            $this->peso_kg,
-            $this->cintura_cm,
-            $this->cadera_cm,
-            $this->pecho_cm,
-            $this->muslo_cm,
-            $this->hombros_cm,
-            $this->pantorrilla_cm,
-        ];
-
-        $todasVacias = true;
-        foreach ($medidas as $medida) {
-            if ($medida !== null) {
-                $todasVacias = false;
-                break;
-            }
-        }
-
-        if ($todasVacias) {
-            throw new InvalidArgumentException('Debe proporcionar al menos una medida');
-        }
-    }
-
-    public function validateUpdate()
-    {
-        Validator::required($this->id_seguimiento, "id_seguimiento");
-    }
-}
-
 class SegumientoFisicoModel extends BaseModel
 {
     private string $table = 'seguimiento_fisico';
@@ -165,5 +109,62 @@ class SegumientoFisicoModel extends BaseModel
         $array = (array) $dto;
         $array["fecha"] = toDbDate($dto->fecha);
         return $array;
+    }
+}
+
+// DTO
+readonly class SeguimientoFisicoDTO
+{
+    public function __construct(
+        public ?int $id_seguimiento = null,
+        public ?string $cedula_cliente = null,
+        public ?string $registrado_por = null,
+        public ?DateTimeImmutable $fecha = null,
+        public ?float $altura_cm = null,
+        public ?float $peso_kg = null,
+        public ?float $cintura_cm = null,
+        public ?float $cadera_cm = null,
+        public ?float $pecho_cm = null,
+        public ?float $muslo_cm = null,
+        public ?float $hombros_cm = null,
+        public ?float $pantorrilla_cm = null,
+    ) {
+        if ($this->cedula_cliente) {
+            Validator::cedula($this->cedula_cliente, "cedula_cliente");
+        }
+    }
+
+    public function validateInsert(): void
+    {
+        Validator::required($this->cedula_cliente, "cedula_cliente");
+
+        // Al menos una medida numérica debe existir
+        $medidas = [
+            $this->altura_cm,
+            $this->peso_kg,
+            $this->cintura_cm,
+            $this->cadera_cm,
+            $this->pecho_cm,
+            $this->muslo_cm,
+            $this->hombros_cm,
+            $this->pantorrilla_cm,
+        ];
+
+        $todasVacias = true;
+        foreach ($medidas as $medida) {
+            if ($medida !== null) {
+                $todasVacias = false;
+                break;
+            }
+        }
+
+        if ($todasVacias) {
+            throw new InvalidArgumentException('Debe proporcionar al menos una medida');
+        }
+    }
+
+    public function validateUpdate()
+    {
+        Validator::required($this->id_seguimiento, "id_seguimiento");
     }
 }

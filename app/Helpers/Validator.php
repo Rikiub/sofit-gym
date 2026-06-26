@@ -48,7 +48,7 @@ class Validator
         $valid = (bool) filter_var($value, FILTER_VALIDATE_EMAIL);
 
         if (!$valid) {
-            throw new InvalidArgumentException("El campo '{$fieldName}' tiene un formtato invalido de email");
+            throw new InvalidArgumentException("El campo '{$fieldName}' tiene un formato invalido de email");
         }
 
         return $value;

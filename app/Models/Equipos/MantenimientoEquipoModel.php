@@ -11,48 +11,6 @@ use PDO;
 
 use function App\Helpers\toDbDate;
 
-enum TipoMantenimiento: string
-{
-    case Preventivo = 'Preventivo';
-    case Correctivo = 'Correctivo';
-}
-
-readonly class MantenimientoEquipoDTO
-{
-    public function __construct(
-        public ?int $id_mantenimiento = null,
-        public ?string $codigo_equipo = null,
-        public ?string $cedula_trabajador = null,
-        public ?DateTimeImmutable $fecha = null,
-        public ?TipoMantenimiento $tipo = null,
-        public ?string $descripcion = null,
-        public ?float $costo = null,
-        public ?EquipoDTO $equipo = null,
-    ) {}
-
-    public function validateInsert(): void
-    {
-        $this->validateShared();
-        Validator::required($this->tipo, "tipo");
-        Validator::required($this->costo, "costo");
-
-        if ($this->costo !== null && $this->costo < 0) {
-            throw new InvalidArgumentException('El costo no puede ser negativo');
-        }
-    }
-
-    public function validateUpdate()
-    {
-        $this->validateShared();
-        Validator::required($this->id_mantenimiento, "id_mantenimiento");
-    }
-
-    private function validateShared()
-    {
-        Validator::required($this->codigo_equipo, "codigo_equipo");
-    }
-}
-
 class MantenimientoEquipoModel extends BaseModel
 {
     private string $table = 'mantenimiento_equipo';
@@ -134,11 +92,9 @@ class MantenimientoEquipoModel extends BaseModel
             throw new InvalidArgumentException("El equipo con código {$mantenimiento->codigo_equipo} no existe o está inactivo");
         }
 
-        $array = $this->dtoToArray($mantenimiento);
-
         $this->pdoUpdate(
             $this->table,
-            $array,
+            $this->dtoToArray($mantenimiento),
             [$this->primaryKey => $mantenimiento->id_mantenimiento],
         );
 
@@ -160,5 +116,48 @@ class MantenimientoEquipoModel extends BaseModel
             'descripcion' => $dto->descripcion,
             'costo' => $dto->costo,
         ];
+    }
+}
+
+// DTO
+enum TipoMantenimiento: string
+{
+    case Preventivo = 'Preventivo';
+    case Correctivo = 'Correctivo';
+}
+
+readonly class MantenimientoEquipoDTO
+{
+    public function __construct(
+        public ?int $id_mantenimiento = null,
+        public ?string $codigo_equipo = null,
+        public ?string $cedula_trabajador = null,
+        public ?DateTimeImmutable $fecha = null,
+        public ?TipoMantenimiento $tipo = null,
+        public ?string $descripcion = null,
+        public ?float $costo = null,
+        public ?EquipoDTO $equipo = null,
+    ) {}
+
+    public function validateInsert(): void
+    {
+        $this->validateShared();
+        Validator::required($this->tipo, "tipo");
+        Validator::required($this->costo, "costo");
+
+        if ($this->costo !== null && $this->costo < 0) {
+            throw new InvalidArgumentException('El costo no puede ser negativo');
+        }
+    }
+
+    public function validateUpdate()
+    {
+        $this->validateShared();
+        Validator::required($this->id_mantenimiento, "id_mantenimiento");
+    }
+
+    private function validateShared()
+    {
+        Validator::required($this->codigo_equipo, "codigo_equipo");
     }
 }

@@ -11,63 +11,6 @@ use PDO;
 
 use function App\Helpers\toDbDate;
 
-enum EstadoClase: string
-{
-    case PROGRAMADO = "Programado";
-    case EN_CURSO = "En curso";
-    case FINALIZADO = "Finalizado";
-    case CANCELADO = "Cancelado";
-}
-
-readonly class ClaseClienteDTO
-{
-    public function __construct(
-        public string $cedula,
-        public string $nombre,
-        public string $apellido,
-        public bool $asistio = false,
-    ) {}
-}
-
-readonly class ClaseGrupalDTO
-{
-    public function __construct(
-        public ?int $id_clase = null,
-        public ?string $cedula_trabajador = null,
-        /** @var ClaseClienteDTO[]|string[] */
-        public array $clientes = [],
-        public ?string $nombre = null,
-        public ?string $descripcion = null,
-        public ?int $capacidad_actual = 0,
-        public ?int $capacidad_maxima = null,
-        public ?EstadoClase $estado = null,
-        public ?DateTimeImmutable $fecha_inicio = null,
-        public ?DateTimeImmutable $fecha_fin = null,
-    ) {
-        foreach ($this->clientes as $cliente) {
-            if ($cliente instanceof ClaseClienteDTO && !$cliente->cedula) {
-                throw new InvalidArgumentException("Cada cliente debe tener una cédula");
-            }
-
-            if ((is_string($cliente)) && empty($cliente)) {
-                throw new InvalidArgumentException("El ID del cliente no puede estar vacío");
-            }
-        }
-    }
-
-    public function validateInsert()
-    {
-        Validator::required($this->cedula_trabajador, "cedula_trabajador");
-        Validator::required($this->nombre, "nombre");
-        Validator::required($this->descripcion, "descripcion");
-
-        Validator::required($this->capacidad_maxima, "capacidad_maxima");
-        if ($this->capacidad_maxima <= 0) {
-            throw new InvalidArgumentException("Se requiere como minimo una capacidad maxima mayor a 1");
-        }
-    }
-}
-
 class ClasesGrupalesModel extends BaseModel
 {
     private string $table = 'clase';
@@ -217,5 +160,63 @@ class ClasesGrupalesModel extends BaseModel
             'fecha_inicio'      => toDbDate($dto->fecha_inicio),
             'fecha_fin'         => toDbDate($dto->fecha_fin),
         ];
+    }
+}
+
+// DTOs
+enum EstadoClase: string
+{
+    case PROGRAMADO = "Programado";
+    case EN_CURSO = "En curso";
+    case FINALIZADO = "Finalizado";
+    case CANCELADO = "Cancelado";
+}
+
+readonly class ClaseClienteDTO
+{
+    public function __construct(
+        public string $cedula,
+        public string $nombre,
+        public string $apellido,
+        public bool $asistio = false,
+    ) {}
+}
+
+readonly class ClaseGrupalDTO
+{
+    public function __construct(
+        public ?int $id_clase = null,
+        public ?string $cedula_trabajador = null,
+        /** @var ClaseClienteDTO[]|string[] */
+        public array $clientes = [],
+        public ?string $nombre = null,
+        public ?string $descripcion = null,
+        public ?int $capacidad_actual = 0,
+        public ?int $capacidad_maxima = null,
+        public ?EstadoClase $estado = null,
+        public ?DateTimeImmutable $fecha_inicio = null,
+        public ?DateTimeImmutable $fecha_fin = null,
+    ) {
+        foreach ($this->clientes as $cliente) {
+            if ($cliente instanceof ClaseClienteDTO && !$cliente->cedula) {
+                throw new InvalidArgumentException("Cada cliente debe tener una cédula");
+            }
+
+            if ((is_string($cliente)) && empty($cliente)) {
+                throw new InvalidArgumentException("El ID del cliente no puede estar vacío");
+            }
+        }
+    }
+
+    public function validateInsert()
+    {
+        Validator::required($this->cedula_trabajador, "cedula_trabajador");
+        Validator::required($this->nombre, "nombre");
+        Validator::required($this->descripcion, "descripcion");
+
+        Validator::required($this->capacidad_maxima, "capacidad_maxima");
+        if ($this->capacidad_maxima <= 0) {
+            throw new InvalidArgumentException("Se requiere como minimo una capacidad maxima mayor a 1");
+        }
     }
 }

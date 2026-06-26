@@ -3,17 +3,15 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Helpers\Http\Request;
 use App\Helpers\Reportes\reporteClientes;
-use App\Helpers\Response;
 use App\Models\Clientes\ClienteDTO;
 use App\Models\Clientes\ClientesModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
-use Exception;
 
 class ClientesController extends BaseController
 {
     public function __construct(
-        private Response $response,
         private TreeMapper $mapper,
         private ClientesModel $clientesModelo,
     ) {}
@@ -38,32 +36,31 @@ class ClientesController extends BaseController
         $filters = $_GET["filters"] ?? [];
 
         $clientes = $this->clientesModelo->query($search, $filters);
-        return $this->response->json($clientes);
+        return $this->json($clientes);
     }
 
     public function find(): ?string
     {
         $this->protect("clientes:ver");
 
-        $cedula = $this->getCedulaParam();
+        $cedula = $this->requiredCedula();
         $cliente = $this->clientesModelo->find($cedula);
 
         return $cliente
-            ? $this->response->json($cliente)
-            : $this->response->empty(404);
+            ? $this->json($cliente)
+            : $this->json(null, 404);
     }
 
     public function insert(): string
     {
         $this->protect("clientes:crear");
 
-        $body = $this->response->getParsedBody();
+        $body = Request::getParsedBody();
         $cliente = $this->mapper->map(ClienteDTO::class, $body);
 
         // Verificar que el cliente no exista
-        $oldCliente = $this->clientesModelo->find($cliente->cedula);
-        if ($oldCliente) {
-            return $this->conflict(true, $oldCliente->cedula, 400);
+        if ($this->clientesModelo->checkDuplicate($cliente->cedula)) {
+            return $this->conflict(true, $cliente->cedula, 400);
         }
 
         $cliente = $this->clientesModelo->insert($cliente);
@@ -71,19 +68,18 @@ class ClientesController extends BaseController
             "Cliente {cedula_cliente} creado",
             [
                 "cedula_cliente" => $cliente->cedula,
-                "datos_previos" => $oldCliente,
                 "datos_nuevos" => $cliente,
             ],
         );
 
-        return $this->response->json($cliente, 201);
+        return $this->json($cliente, 201);
     }
 
     public function update(): string
     {
         $this->protect("clientes:editar");
 
-        $body = $this->response->getParsedBody();
+        $body = Request::getParsedBody();
         $cliente = $this->mapper->map(ClienteDTO::class, $body);
 
         $oldCliente = $this->clientesModelo->find($cliente->cedula);
@@ -101,13 +97,13 @@ class ClientesController extends BaseController
             ],
         );
 
-        return $this->response->json($cliente, 201);
+        return $this->json($cliente, 201);
     }
 
     public function delete(): string|null
     {
         $this->protect("clientes:eliminar");
-        $cedula = $this->getCedulaParam();
+        $cedula = $this->requiredCedula();
 
         if (!$this->clientesModelo->find($cedula)) {
             return $this->conflict(false, 404);
@@ -119,7 +115,7 @@ class ClientesController extends BaseController
             ["cedula_cliente" => $cedula]
         );
 
-        return $this->response->empty(204);
+        return $this->json(null, 204);
     }
 
     private function conflict(bool $exists, string $id, ?int $code = 400): string
@@ -130,16 +126,12 @@ class ClientesController extends BaseController
         };
 
         $this->logger->error($message, ["cedula_cliente" => $id]);
-        return $this->response->json(['message' => $message], $code);
+        return $this->json(['message' => $message], $code);
     }
 
-    private function getCedulaParam(): string
+    private function requiredCedula(): string
     {
-        $cedula =
-            $_GET['cedula']
-            ?? $_GET['id']
-            ?? throw new Exception("'id' or 'cedula' param is required");
-        return $cedula;
+        return Request::requiredParam("cedula");
     }
 
     // REPORTES

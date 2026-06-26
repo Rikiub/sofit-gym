@@ -1,10 +1,11 @@
 <?php
 
 use App\Helpers\Auth\UsuarioSession;
-use App\Helpers\Response;
+use App\Helpers\BitacoraLogger;
+use App\Helpers\Http\Request;
+use App\Helpers\Http\Response;
 use CuyZ\Valinor\Mapper\MappingError;
 use DI\ContainerBuilder;
-use Psr\Log\LoggerInterface;
 
 // Constantes locales
 const CONTROLLERS_NAMESPACE = 'App\Controllers';
@@ -16,9 +17,6 @@ $action = $_GET['action'] ?? 'index';
 // Construir clase a partir de los query params
 $className = ucfirst($page) . 'Controller';
 $classPath = '\\' . CONTROLLERS_NAMESPACE . "\\$className";
-
-// Response
-$response = new Response(normalizer: null);
 
 // FRONT CONTROLLER
 try {
@@ -36,22 +34,22 @@ try {
     $container = $builder->build();
 
     // Set contexto inicial del logger
-    $logger = $container->get(LoggerInterface::class);
+    $logger = $container->get(BitacoraLogger::class);
     if (method_exists($logger, 'setRouteContext')) {
         $logger->setRouteContext($page, $action);
     }
 
     if (!class_exists($classPath)) {
-        if ($response->wantsJson()) {
+        if (Request::wantsJson()) {
             // Si no se encuentra la pagina, devolver error como JSON
-            echo $response->json([
+            echo Response::json([
                 'error' => 'Not Found',
                 'message' => "Controller {$className} not founded",
                 ...(DEBUG ? ['controller' => $classPath] : [])
             ], 404);
         } else {
             // Si no se encuentra la pagina, redirigir a pagina de error.
-            $response->redirect([
+            Response::redirect([
                 'page' => 'error',
                 'status' => 404,
             ]);
@@ -98,7 +96,7 @@ try {
         ];
     }
 
-    echo $response->json([
+    echo Response::json([
         'error' => 'Validation Error',
         'message' => 'The request contains invalid data',
         'errors' => $errors
@@ -109,7 +107,7 @@ try {
     // Registrar error en los logs del servidor en producción
     error_log(sprintf("Error: %s en %s:%d", $error->getMessage(), $error->getFile(), $error->getLine()));
 
-    if (DEBUG || $response->wantsJson()) {
+    if (DEBUG || Request::wantsJson()) {
         $res = [
             'error' => 'Internal Server Error',
             'message' => DEBUG ? $error->getMessage() : 'An unexpected error occurred on the server'
@@ -122,8 +120,8 @@ try {
             $res['trace'] = $error->getTrace();
         }
 
-        echo $response->json($res, 500);
+        echo Response::json($res, 500);
     } else {
-        $response->redirect(['page' => 'error', 'status' => 500]);
+        Response::redirect(['page' => 'error', 'status' => 500]);
     }
 }

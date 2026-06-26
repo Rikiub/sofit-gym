@@ -3,7 +3,8 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Helpers\Response;
+use App\Helpers\Http\Request;
+use App\Helpers\Http\Response;
 use App\Models\TrabajadorDTO;
 use App\Models\TrabajadoresModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -12,7 +13,6 @@ use Exception;
 class TrabajadoresController extends BaseController
 {
     public function __construct(
-        private Response $response,
         private TreeMapper $mapper,
         private TrabajadoresModel $trabajadoresModel,
     ) {}
@@ -40,7 +40,7 @@ class TrabajadoresController extends BaseController
         $id_rol = (int)($_GET["id_rol"] ?? 0);
 
         $trabajadores = $this->trabajadoresModel->query($search, $id_rol);
-        return $this->response->json($trabajadores);
+        return $this->json($trabajadores);
     }
 
     public function find(): ?string
@@ -51,40 +51,40 @@ class TrabajadoresController extends BaseController
         $trabajador = $this->trabajadoresModel->find($cedula);
 
         if (!$trabajador) {
-            return $this->response->empty(404);
+            return $this->json(null, 404);
         }
 
-        return $this->response->json($trabajador);
+        return $this->json($trabajador);
     }
 
     public function insert(): string
     {
         $this->protect("trabajadores:crear");
 
-        $body = $this->response->getParsedBody();
+        $body = Request::getParsedBody();
         $trabajador = $this->mapper->map(TrabajadorDTO::class, $body);
 
-        if ($this->trabajadoresModel->find($trabajador->cedula)) {
-            return $this->response->json(['message' => 'El trabajador ya existe'], 400);
+        if ($this->trabajadoresModel->checkDuplicate($trabajador->cedula)) {
+            return $this->json(['message' => 'El trabajador ya existe'], 400);
         }
 
         $trabajador = $this->trabajadoresModel->insert($trabajador);
-        return $this->response->json($trabajador, 201);
+        return $this->json($trabajador, 201);
     }
 
     public function update(): string
     {
         $this->protect("trabajadores:editar");
 
-        $body = $this->response->getParsedBody();
+        $body = Request::getParsedBody();
         $trabajador = $this->mapper->map(TrabajadorDTO::class, $body);
 
         if (!$this->trabajadoresModel->find($trabajador->cedula)) {
-            return $this->response->json(['message' => 'El trabajador no existe'], 400);
+            return $this->json(['message' => 'El trabajador no existe'], 400);
         }
 
         $trabajador = $this->trabajadoresModel->update($trabajador);
-        return $this->response->json($trabajador, 201);
+        return $this->json($trabajador, 201);
     }
 
     public function delete(): string|null
@@ -93,10 +93,10 @@ class TrabajadoresController extends BaseController
         $cedula = $this->getCedulaParam();
 
         if (!$this->trabajadoresModel->find($cedula)) {
-            return $this->response->json(['message' => 'El trabajador no existe'], 404);
+            return $this->json(['message' => 'El trabajador no existe'], 404);
         }
 
         $this->trabajadoresModel->delete($cedula);
-        return $this->response->empty(204);
+        return $this->json(null, 204);
     }
 }

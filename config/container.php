@@ -1,22 +1,17 @@
 <?php
 
 use App\Helpers\Auth\UsuarioSession;
-use App\Helpers\BitacoraLogger;
 use App\Helpers\Plates\AssetExtension;
 use CuyZ\Valinor\Cache\FileSystemCache;
 use CuyZ\Valinor\Cache\FileWatchingCache;
 use CuyZ\Valinor\Mapper\TreeMapper;
-use CuyZ\Valinor\Normalizer\Format;
-use CuyZ\Valinor\Normalizer\Normalizer;
 use CuyZ\Valinor\MapperBuilder;
 use CuyZ\Valinor\NormalizerBuilder;
 use League\Plates\Template\Theme;
 use League\Plates\Engine;
 use LLPhant\GeminiOpenAIConfig;
 use PHPMailer\PHPMailer\PHPMailer;
-use Psr\Log\LoggerInterface;
-
-use function DI\get;
+use DI\Container;
 
 /** Configuración de PHP-DI
  * Aqui se definen los objetos a instanciar en los controladores automaticamente.
@@ -50,8 +45,6 @@ return [
             throw new RuntimeException('Failed database connection: ' . $e->getMessage());
         }
     },
-    // Logger de la bitacora
-    LoggerInterface::class => get(BitacoraLogger::class),
 
     // Configuración Gemini
     GeminiOpenAIConfig::class => function () {
@@ -109,7 +102,7 @@ return [
     // Valinor: Mapper
     // Utilizado para convertir arrays en DTOs
     // y validarlos en el proceso
-    TreeMapper::class => function () {
+    MapperBuilder::class => function () {
         $cache = new FileSystemCache(CACHE_DIR . '/valinor');
         if (DEBUG) {
             $cache = new FileWatchingCache($cache);
@@ -125,13 +118,16 @@ return [
                 'Y-m-d\TH:i',
                 'Y-m-d H:i:s',
                 'Y-m-d',
-            )
-            ->mapper();
+            );
     },
+    TreeMapper::class => function (Container $c) {
+        return ($c->get(MapperBuilder::class))->mapper();
+    },
+
     // Valinor: Normalizer
     // Utilizado para convertir arrays en JSON
     // y convertir tipos como DateTime en texto
-    Normalizer::class => function () {
+    NormalizerBuilder::class => function () {
         $cache = new FileSystemCache(CACHE_DIR . '/valinor');
         if (DEBUG) {
             $cache = new FileWatchingCache($cache);
@@ -139,7 +135,6 @@ return [
 
         return (new NormalizerBuilder())
             ->withCache($cache)
-            ->registerTransformer(fn(DateTimeInterface $date) => $date->format(DateTimeInterface::ATOM))
-            ->normalizer(Format::json());
+            ->registerTransformer(fn(DateTimeInterface $date) => $date->format(DateTimeInterface::ATOM));
     },
 ];

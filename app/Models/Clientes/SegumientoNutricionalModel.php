@@ -11,52 +11,6 @@ use PDO;
 
 use function App\Helpers\toDbDate;
 
-readonly class SeguimientoNutricionalDTO
-{
-    public function __construct(
-        public ?int $id_seguimiento = null,
-        public ?string $cedula_cliente = null,
-        public ?string $registrado_por = null,
-        public ?DateTimeImmutable $fecha = null,
-        public ?float $proteinas_g = null,
-        public ?float $carbohidratos_g = null,
-        public ?float $grasas_g = null,
-    ) {
-        if ($this->cedula_cliente) {
-            Validator::cedula($this->cedula_cliente, "cedula_cliente");
-        }
-    }
-
-    public function validateInsert(): void
-    {
-        Validator::required($this->cedula_cliente, "cedula_cliente");
-
-        // Al menos un valor debe existir
-        $medidas = [
-            $this->proteinas_g,
-            $this->carbohidratos_g,
-            $this->grasas_g,
-        ];
-
-        $todasVacias = true;
-        foreach ($medidas as $medida) {
-            if ($medida !== null) {
-                $todasVacias = false;
-                break;
-            }
-        }
-
-        if ($todasVacias) {
-            throw new InvalidArgumentException('Debe proporcionar al menos un valor');
-        }
-    }
-
-    public function validateUpdate(): void
-    {
-        Validator::required($this->id_seguimiento, "id_seguimiento");
-    }
-}
-
 class SegumientoNutricionalModel extends BaseModel
 {
     private string $table = 'seguimiento_nutricional';
@@ -153,5 +107,52 @@ class SegumientoNutricionalModel extends BaseModel
         $array = (array) $dto;
         $array["fecha"] = toDbDate($dto->fecha);
         return $array;
+    }
+}
+
+// DTO
+readonly class SeguimientoNutricionalDTO
+{
+    public function __construct(
+        public ?int $id_seguimiento = null,
+        public ?string $cedula_cliente = null,
+        public ?string $registrado_por = null,
+        public ?DateTimeImmutable $fecha = null,
+        public ?float $proteinas_g = null,
+        public ?float $carbohidratos_g = null,
+        public ?float $grasas_g = null,
+    ) {
+        if ($this->cedula_cliente) {
+            Validator::cedula($this->cedula_cliente, "cedula_cliente");
+        }
+    }
+
+    public function validateInsert(): void
+    {
+        Validator::required($this->cedula_cliente, "cedula_cliente");
+
+        // Al menos un valor debe existir
+        $medidas = [
+            $this->proteinas_g,
+            $this->carbohidratos_g,
+            $this->grasas_g,
+        ];
+
+        $todasVacias = true;
+        foreach ($medidas as $medida) {
+            if ($medida !== null) {
+                $todasVacias = false;
+                break;
+            }
+        }
+
+        if ($todasVacias) {
+            throw new InvalidArgumentException('Debe proporcionar al menos un valor');
+        }
+    }
+
+    public function validateUpdate(): void
+    {
+        Validator::required($this->id_seguimiento, "id_seguimiento");
     }
 }

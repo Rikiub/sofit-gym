@@ -8,8 +8,6 @@ use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use PDO;
 
-use function App\Helpers\toDbDate;
-
 readonly class BitacoraDTO
 {
     public function __construct(

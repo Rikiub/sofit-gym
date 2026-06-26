@@ -5,7 +5,8 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Helpers\Auth\UsuarioSession;
 use App\Helpers\Auth\UsuarioSessionDto;
-use App\Helpers\Response;
+use App\Helpers\Http\Request;
+use App\Helpers\Http\Response;
 use App\Models\AsistenteMensajeDTO;
 use App\Models\AsistenteModel;
 use App\Models\AsistenteSesionDTO;
@@ -27,7 +28,6 @@ class AsistenteController extends BaseController
     private array $messages;
 
     public function __construct(
-        private Response $response,
         private GeminiOpenAIConfig $config,
         private AsistenteModel $asistenteModel,
     ) {
@@ -102,10 +102,10 @@ class AsistenteController extends BaseController
         $this->initSesion();
 
         // Obtener mensaje desde el parametro
-        $body = $this->response->getParsedBody();
+        $body = Request::getParsedBody();
         $content = $body["message"];
         if (!$content)
-            return $this->response->json(["message" => "Se debe proporcionar el parametro 'message'"], 400);
+            return $this->json(["message" => "Se debe proporcionar el parametro 'message'"], 400);
 
         // Almacenar mensaje del usuario
         $this->asistenteModel->insertMensaje(new AsistenteMensajeDTO(
@@ -132,7 +132,7 @@ class AsistenteController extends BaseController
                     rol: RolAsistente::Asistente,
                     contenido: $result,
                 ));
-                return $this->response->json([
+                return $this->json([
                     "message" => $result,
                 ]);
             }
@@ -147,13 +147,13 @@ class AsistenteController extends BaseController
             }
         }
 
-        return $this->response->json(["message" => "Excedido el límite de vueltas."], 500);
+        return $this->json(["message" => "Excedido el límite de vueltas."], 500);
     }
 
     public function querySesiones()
     {
         $sesiones = $this->asistenteModel->querySesiones();
-        return $this->response->json($sesiones);
+        return $this->json($sesiones);
     }
 
     public function findSesion(): string
@@ -162,10 +162,10 @@ class AsistenteController extends BaseController
         $sesion = $this->asistenteModel->findSesion($id);
 
         if (!$sesion || $sesion->id_usuario !== $this->usuario->id) {
-            return $this->response->json(["message" => "Sesion no encontrada o no autorizada"], 403);
+            return $this->json(["message" => "Sesion no encontrada o no autorizada"], 403);
         }
 
-        return $this->response->json($sesion);
+        return $this->json($sesion);
     }
 
     public function newSesion(): string
@@ -176,6 +176,6 @@ class AsistenteController extends BaseController
         ));
         $this->messages = [];
 
-        return $this->response->json($this->sesion);
+        return $this->json($this->sesion);
     }
 }

@@ -8,24 +8,6 @@ use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use PDO;
 
-readonly class NotificacionDTO
-{
-    public function __construct(
-        public ?int $id_notificacion = null,
-        public ?string $titulo = null,
-        public ?string $contenido = null,
-        public ?bool $leido = false,
-        public ?DateTimeImmutable $fecha_envio = null,
-        public ?DateTimeImmutable $fecha_leido = null,
-    ) {}
-
-    public function validateInsert()
-    {
-        Validator::required($this->titulo, "titulo");
-        Validator::required($this->contenido, "contenido");
-    }
-}
-
 class NotificacionesModel extends BaseModel
 {
     private string $dbSeguridad = "sofit_gym_seguridad";
@@ -130,5 +112,24 @@ class NotificacionesModel extends BaseModel
             ["leido" => true],
             ["id_usuario" => $id_usuario]
         );
+    }
+}
+
+// DTO
+readonly class NotificacionDTO
+{
+    public function __construct(
+        public ?int $id_notificacion = null,
+        public ?string $titulo = null,
+        public ?string $contenido = null,
+        public ?bool $leido = false,
+        public ?DateTimeImmutable $fecha_envio = null,
+        public ?DateTimeImmutable $fecha_leido = null,
+    ) {}
+
+    public function validateInsert()
+    {
+        Validator::required($this->titulo, "titulo");
+        Validator::required($this->contenido, "contenido");
     }
 }

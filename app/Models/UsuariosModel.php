@@ -13,30 +13,6 @@ use Throwable;
 
 use function App\Helpers\toDbDate;
 
-readonly class UsuarioDTO
-{
-    public function __construct(
-        public ?int $id_usuario = null,
-        public ?int $id_rol = null,
-        public ?string $rol = null,
-        public ?string $nombre_usuario = null,
-        public ?string $contrasena_hash = null,
-        public ?string $imagen_url = null,
-        public ?string $email = null,
-        public ?DateTimeImmutable $fecha_creacion = null,
-        public ?DateTimeImmutable $ultimo_acceso = null,
-        /** @var string[] */
-        public array $permisos = [],
-    ) {}
-
-    public function validateInsert()
-    {
-        Validator::required($this->id_rol, "id_rol");
-        Validator::required($this->nombre_usuario, "nombre_usuario");
-        Validator::required($this->nombre_usuario, "contrasena_hash");
-    }
-}
-
 class UsuariosModel extends BaseModel
 {
     private string $dbSeguridad = "sofit_gym_seguridad";
@@ -283,5 +259,30 @@ class UsuariosModel extends BaseModel
             $this->pdo->rollBack();
             throw $e;
         }
+    }
+}
+
+// DTO
+readonly class UsuarioDTO
+{
+    public function __construct(
+        public ?int $id_usuario = null,
+        public ?int $id_rol = null,
+        public ?string $rol = null,
+        public ?string $nombre_usuario = null,
+        public ?string $contrasena_hash = null,
+        public ?string $imagen_url = null,
+        public ?string $email = null,
+        public ?DateTimeImmutable $fecha_creacion = null,
+        public ?DateTimeImmutable $ultimo_acceso = null,
+        /** @var string[] */
+        public array $permisos = [],
+    ) {}
+
+    public function validateInsert()
+    {
+        Validator::required($this->id_rol, "id_rol");
+        Validator::required($this->nombre_usuario, "nombre_usuario");
+        Validator::required($this->nombre_usuario, "contrasena_hash");
     }
 }

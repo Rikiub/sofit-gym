@@ -5,7 +5,8 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Helpers\Auth\UsuarioSession;
 use App\Helpers\Auth\UsuarioSessionDto;
-use App\Helpers\Response;
+use App\Helpers\Http\Request;
+use App\Helpers\Http\Response;
 use App\Models\LoginModel;
 use App\Models\UsuariosModel;
 use DateTimeImmutable;
@@ -13,7 +14,6 @@ use DateTimeImmutable;
 class LoginController extends BaseController
 {
     public function __construct(
-        private Response $response,
         private UsuariosModel $usuariosModel,
         private LoginModel $loginModel,
     ) {}
@@ -22,7 +22,7 @@ class LoginController extends BaseController
     {
         if (UsuarioSession::getUsuario()) {
             // Si el usuario ya inicio sesión, redirigir a pagina de inicio.
-            $this->response->redirect(["page" => "dashboard"]);
+            Response::redirect(["page" => "dashboard"]);
             exit;
         }
 
@@ -31,7 +31,7 @@ class LoginController extends BaseController
 
     public function login(): string
     {
-        $body = $this->response->getParsedBody();
+        $body = Request::getParsedBody();
         $nombre_usuario = $body["nombre_usuario"] ?? null;
         $contrasena = $body["contrasena"] ?? null;
 
@@ -55,7 +55,7 @@ class LoginController extends BaseController
                 $usuario->id_usuario,
                 $duracion,
             ) >= $maximoIntentos) {
-                return $this->response->json(
+                return $this->json(
                     ["message" => "Numero de intentos excedidos. Vuelva a intentarlo en {$minutosBloqueo} minutos."],
                     401
                 );
@@ -86,8 +86,8 @@ class LoginController extends BaseController
         );
 
         // Devolver respuesta con la direccion donde deberia redireccionar
-        return $this->response->json([
-            "redirect" => "?" . $this->response->buildQueryParams(["page" => "dashboard"])
+        return $this->json([
+            "redirect" => "?" . Request::buildQuery(["page" => "dashboard"])
         ]);
     }
 
@@ -100,26 +100,26 @@ class LoginController extends BaseController
         );
         UsuarioSession::logout();
 
-        $this->response->redirect(["page" => "login"]);
+        Response::redirect(["page" => "login"]);
         exit;
     }
 
     /** Mensaje de error generico en caso de ingresar datos incorrectos */
     private function invalidInput(): string
     {
-        return $this->response->json(["message" => "Usuario o contraseña incorrectos"], 401);
+        return $this->json(["message" => "Usuario o contraseña incorrectos"], 401);
     }
 
     // --- MÓDULO RECUPERACIÓN ---
     public function recover(): string
     {
-        $body = $this->response->getParsedBody();
+        $body = Request::getParsedBody();
         $email = $body["email"] ?? null;
 
         $usuario = $this->usuariosModel->findByEmail($email);
 
         if (!$usuario) {
-            return $this->response->json(["message" => "Correo no registrado"], 404);
+            return $this->json(["message" => "Correo no registrado"], 404);
         }
 
         $codigo = sprintf("%06d", mt_rand(100000, 999999));
@@ -129,33 +129,33 @@ class LoginController extends BaseController
 
         // AQUÍ LLAMAMOS AL MODELO, NO CONFIGURAMOS EL CORREO AQUÍ
         if ($this->loginModel->enviarCorreo($email, $codigo)) {
-            return $this->response->json(["success" => true]);
+            return $this->json(["success" => true]);
         } else {
-            return $this->response->json(["message" => "Error al enviar correo, revise el log."], 500);
+            return $this->json(["message" => "Error al enviar correo, revise el log."], 500);
         }
     }
 
     public function verify(): string
     {
-        $body = $this->response->getParsedBody();
+        $body = Request::getParsedBody();
         $codigo = $body["codigo"] ?? '';
         $usuario = $this->usuariosModel->verifyRecoveryCode($codigo);
 
         if (!$usuario) {
-            return $this->response->json(["message" => "Código inválido o expirado"], 401);
+            return $this->json(["message" => "Código inválido o expirado"], 401);
         }
 
         $_SESSION['recover_user_id'] = $usuario->id_usuario;
-        return $this->response->json(["success" => true]);
+        return $this->json(["success" => true]);
     }
 
     public function reset(): string
     {
-        $body = $this->response->getParsedBody();
+        $body = Request::getParsedBody();
         $new_pass = $body["new_pass"] ?? '';
 
         if (!isset($_SESSION['recover_user_id'])) {
-            return $this->response->json(["message" => "Sesión expirada"], 401);
+            return $this->json(["message" => "Sesión expirada"], 401);
         }
 
         $this->usuariosModel->updatePasswordAndClearCode(
@@ -164,6 +164,6 @@ class LoginController extends BaseController
         );
 
         unset($_SESSION['recover_user_id']);
-        return $this->response->json(["success" => true]);
+        return $this->json(["success" => true]);
     }
 }
