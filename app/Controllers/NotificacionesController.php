@@ -6,7 +6,6 @@ use App\Controllers\BaseController;
 use App\Helpers\Auth\UsuarioSession;
 use App\Helpers\Auth\UsuarioSessionDto;
 use App\Helpers\Http\Request;
-use App\Helpers\Http\Response;
 use App\Models\NotificacionDTO;
 use App\Models\NotificacionesModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -57,7 +56,7 @@ class NotificacionesController extends BaseController
 
     public function sendMultiple(): null
     {
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
 
         $id_usuarios =
             $body["id_usuarios"]

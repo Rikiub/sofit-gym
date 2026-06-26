@@ -61,7 +61,7 @@ class TrabajadoresController extends BaseController
     {
         $this->protect("trabajadores:crear");
 
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
         $trabajador = $this->mapper->map(TrabajadorDTO::class, $body);
 
         if ($this->trabajadoresModel->checkDuplicate($trabajador->cedula)) {
@@ -76,7 +76,7 @@ class TrabajadoresController extends BaseController
     {
         $this->protect("trabajadores:editar");
 
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
         $trabajador = $this->mapper->map(TrabajadorDTO::class, $body);
 
         if (!$this->trabajadoresModel->find($trabajador->cedula)) {

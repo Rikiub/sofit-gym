@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Helpers\Http\Request;
-use App\Helpers\Http\Response;
 use App\Models\Clientes\ClientesModel;
 use App\Models\Clientes\SeguimientoFisicoDTO;
 use App\Models\Clientes\SeguimientoNutricionalDTO;
@@ -69,7 +68,7 @@ class ClientesItemController extends BaseController
     {
         $this->protect("clientes:crear");
 
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
         $registro = $this->mapper->map(SeguimientoFisicoDTO::class, $body);
 
         // Verificar que el cliente exista
@@ -86,7 +85,7 @@ class ClientesItemController extends BaseController
         $this->protect("clientes:editar");
         $cedula = $this->getCedulaParam();
 
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
         $body['cedula_cliente'] = $cedula;
 
         $registro = $this->mapper->map(SeguimientoFisicoDTO::class, $body);
@@ -131,7 +130,7 @@ class ClientesItemController extends BaseController
     {
         $this->protect("clientes:crear");
 
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
         $registro = $this->mapper->map(SeguimientoNutricionalDTO::class, $body);
 
         // Verificar que el cliente exista
@@ -148,7 +147,7 @@ class ClientesItemController extends BaseController
         $this->protect("clientes:editar");
         $cedula = $this->getCedulaParam();
 
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
         $body['cedula_cliente'] = $cedula;
 
         $registro = $this->mapper->map(SeguimientoNutricionalDTO::class, $body);

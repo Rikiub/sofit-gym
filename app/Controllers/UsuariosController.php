@@ -61,7 +61,7 @@ class UsuariosController extends BaseController
     public function insert(): string
     {
         $this->protect("usuarios:crear");
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
 
         // Verificar que no exista
         $nombre_usuario = $body["nombre_usuario"] ?? "";
@@ -85,7 +85,7 @@ class UsuariosController extends BaseController
 
     public function update(): string
     {
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
 
         // Verificar que exista
         $nombre_usuario = $body["nombre_usuario"] ?? "";

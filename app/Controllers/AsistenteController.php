@@ -102,7 +102,7 @@ class AsistenteController extends BaseController
         $this->initSesion();
 
         // Obtener mensaje desde el parametro
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
         $content = $body["message"];
         if (!$content)
             return $this->json(["message" => "Se debe proporcionar el parametro 'message'"], 400);

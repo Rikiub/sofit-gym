@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Helpers\Http\Request;
-use App\Helpers\Http\Response;
 use App\Models\Equipos\MantenimientoEquipoDTO;
 use App\Models\Equipos\MantenimientoEquipoModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -46,7 +45,7 @@ class EquiposMantenimientoController extends BaseController
     {
         $this->protect("equipos:crear");
 
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
         $data = $this->mapper->map(MantenimientoEquipoDTO::class, $body);
 
         $data = $this->model->insert($data);
@@ -57,7 +56,7 @@ class EquiposMantenimientoController extends BaseController
     {
         $this->protect("equipos:editar");
 
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
         $data = $this->mapper->map(MantenimientoEquipoDTO::class, $body);
 
         if (!$this->model->find($data->id_mantenimiento)) {

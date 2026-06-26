@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Helpers\Http\Response;
 use App\Models\BitacoraModel;
 
 class BitacoraController extends BaseController

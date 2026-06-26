@@ -31,7 +31,7 @@ class LoginController extends BaseController
 
     public function login(): string
     {
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
         $nombre_usuario = $body["nombre_usuario"] ?? null;
         $contrasena = $body["contrasena"] ?? null;
 
@@ -113,7 +113,7 @@ class LoginController extends BaseController
     // --- MÓDULO RECUPERACIÓN ---
     public function recover(): string
     {
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
         $email = $body["email"] ?? null;
 
         $usuario = $this->usuariosModel->findByEmail($email);
@@ -137,7 +137,7 @@ class LoginController extends BaseController
 
     public function verify(): string
     {
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
         $codigo = $body["codigo"] ?? '';
         $usuario = $this->usuariosModel->verifyRecoveryCode($codigo);
 
@@ -151,7 +151,7 @@ class LoginController extends BaseController
 
     public function reset(): string
     {
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
         $new_pass = $body["new_pass"] ?? '';
 
         if (!isset($_SESSION['recover_user_id'])) {

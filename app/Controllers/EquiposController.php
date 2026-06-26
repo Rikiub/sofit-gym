@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Helpers\Http\Request;
-use App\Helpers\Http\Response;
 use App\Models\Equipos\EquipoDTO;
 use App\Models\Equipos\EquiposModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -47,7 +46,7 @@ class EquiposController extends BaseController
     {
         $this->protect("equipos:crear");
 
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
         $equipo = $this->mapper->map(EquipoDTO::class, $body);
 
         // Verificar que el equipo no exista
@@ -63,7 +62,7 @@ class EquiposController extends BaseController
     {
         $this->protect("equipos:editar");
 
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
         $equipo = $this->mapper->map(EquipoDTO::class, $body);
 
         if (!$this->equiposModel->find($equipo->codigo)) {

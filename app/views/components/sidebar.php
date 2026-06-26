@@ -138,7 +138,7 @@ $dropdown = function (
 		) ?>
 
 		<?= $link(
-			permiso: "clasesGrupales:ver",
+			permiso: "clases:ver",
 			url: "?page=clasesGrupales",
 			icon: "fa-calendar",
 			title: "Horarios de clases"

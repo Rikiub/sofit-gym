@@ -36,7 +36,7 @@ abstract class BaseController
      */
     protected function getParsedBody(?callable $dto = null)
     {
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
 
         if ($dto) {
             // Validar $body segun el objeto pasado

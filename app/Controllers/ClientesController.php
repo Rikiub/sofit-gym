@@ -55,7 +55,7 @@ class ClientesController extends BaseController
     {
         $this->protect("clientes:crear");
 
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
         $cliente = $this->mapper->map(ClienteDTO::class, $body);
 
         // Verificar que el cliente no exista
@@ -79,7 +79,7 @@ class ClientesController extends BaseController
     {
         $this->protect("clientes:editar");
 
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
         $cliente = $this->mapper->map(ClienteDTO::class, $body);
 
         $oldCliente = $this->clientesModelo->find($cliente->cedula);

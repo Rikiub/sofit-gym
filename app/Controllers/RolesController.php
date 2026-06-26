@@ -50,7 +50,7 @@ class RolesController extends BaseController
     {
         $this->protect("roles:crear");
 
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
         $permiso = $this->mapper->map(RolDTO::class, $body);
 
         if ($this->rolesModel->find($permiso->nombre)) {
@@ -65,7 +65,7 @@ class RolesController extends BaseController
     {
         $this->protect("roles:editar");
 
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
         $permiso = $this->mapper->map(RolDTO::class, $body);
 
         if (!$this->rolesModel->find($permiso->id_rol)) {

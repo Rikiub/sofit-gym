@@ -5,7 +5,6 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Helpers\Reportes\reporteInventario;
 use App\Helpers\Reportes\reporteProductosMasVendidos;
-use App\Helpers\Request;
 use App\Models\ProductosModel;
 
 class ProductosController extends BaseController

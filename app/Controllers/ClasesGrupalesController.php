@@ -17,20 +17,20 @@ class ClasesGrupalesController extends BaseController
 
     public function index(): string
     {
-        $this->protect("clasesGrupales:ver");
+        $this->protect("clases:ver");
         return $this->templates->render('clases');
     }
 
     public function query(): string
     {
-        $this->protect("clasesGrupales:ver");
+        $this->protect("clases:ver");
         $clases = $this->clasesModel->query();
         return $this->json($clases);
     }
 
     public function find(): ?string
     {
-        $this->protect("clasesGrupales:ver");
+        $this->protect("clases:ver");
 
         $cedula = $this->getParamId();
         $clase = $this->clasesModel->find($cedula);
@@ -42,9 +42,9 @@ class ClasesGrupalesController extends BaseController
 
     public function insert(): string
     {
-        $this->protect("clasesGrupales:crear");
+        $this->protect("clases:crear");
 
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
         $clase = $this->mapper->map(ClaseGrupalDTO::class, $body);
 
         $clase = $this->clasesModel->insert($clase);
@@ -53,9 +53,9 @@ class ClasesGrupalesController extends BaseController
 
     public function update(): string
     {
-        $this->protect("clasesGrupales:editar");
+        $this->protect("clases:editar");
 
-        $body = Request::getParsedBody();
+        $body = $this->getParsedBody();
         $clase = $this->mapper->map(ClaseGrupalDTO::class, $body);
 
         if (!$this->clasesModel->find($clase->id_clase)) {
@@ -68,7 +68,7 @@ class ClasesGrupalesController extends BaseController
 
     public function delete(): string|null
     {
-        $this->protect("clasesGrupales:eliminar");
+        $this->protect("clases:eliminar");
         $id = $this->getParamId();
 
         if (!$this->clasesModel->find($id)) {
