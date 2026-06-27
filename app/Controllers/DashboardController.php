@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Helpers\Auth\UsuarioSession;
+use App\Core\Auth\UsuarioSession;
 use App\Models\AsistenciaModel;
 use App\Models\Clientes\ClientesModel;
 use App\Models\FacturacionPagosModel;

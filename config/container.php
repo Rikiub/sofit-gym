@@ -1,7 +1,7 @@
 <?php
 
-use App\Helpers\Auth\UsuarioSession;
-use App\Helpers\Plates\AssetExtension;
+use App\Core\Auth\UsuarioSession;
+use App\Core\Plates\AssetExtension;
 use CuyZ\Valinor\Cache\FileSystemCache;
 use CuyZ\Valinor\Cache\FileWatchingCache;
 use CuyZ\Valinor\Mapper\TreeMapper;

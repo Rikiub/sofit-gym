@@ -3,10 +3,8 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Helpers\Auth\UsuarioSession;
-use App\Helpers\Auth\UsuarioSessionDto;
-use App\Helpers\Http\Request;
-use App\Helpers\Http\Response;
+use App\Core\Auth\UsuarioSession;
+use App\Core\Auth\UsuarioSessionDto;
 use App\Models\AsistenteMensajeDTO;
 use App\Models\AsistenteModel;
 use App\Models\AsistenteSesionDTO;

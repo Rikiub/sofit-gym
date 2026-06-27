@@ -2,10 +2,10 @@
 
 namespace App\Controllers;
 
-use App\Helpers\Auth\UsuarioSession;
-use App\Helpers\BitacoraLogger;
-use App\Helpers\Http\Request;
-use App\Helpers\Http\Response;
+use App\Core\Auth\UsuarioSession;
+use App\Core\BitacoraLogger;
+use App\Core\Http\Request;
+use App\Core\Http\Response;
 use CuyZ\Valinor\MapperBuilder;
 use CuyZ\Valinor\Normalizer\Format;
 use CuyZ\Valinor\NormalizerBuilder;
@@ -29,14 +29,15 @@ abstract class BaseController
     #[Inject]
     private NormalizerBuilder $normalizer;
 
-    /**
+    /** Intentar obtener datos desde el POST o JSON input.
+     * 
      * @template T
      * @param ?callable(...): T $dto
      * @return T
      */
     protected function getParsedBody(?callable $dto = null)
     {
-        $body = $this->getParsedBody();
+        $body = Request::getParsedBody();
 
         if ($dto) {
             // Validar $body segun el objeto pasado

@@ -6,7 +6,7 @@ use App\Models\BaseModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use PDO;
 
-use function App\Helpers\toDbDate;
+use function App\Core\toDbDate;
 
 /**
  * Base para realizar operaciones sobre la tabla `persona`.

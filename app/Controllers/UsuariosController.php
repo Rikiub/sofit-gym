@@ -3,10 +3,8 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Helpers\Auth\UsuarioSession;
-use App\Helpers\Http\Request;
-use App\Helpers\Http\Response;
-use App\Helpers\ImagesManager;
+use App\Core\Auth\UsuarioSession;
+use App\Core\ImagesManager;
 use App\Models\UsuarioDTO;
 use App\Models\UsuariosModel;
 use CuyZ\Valinor\Mapper\TreeMapper;

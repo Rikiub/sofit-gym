@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Helpers\Reportes\reporteAsistencia;
+use App\Core\Reportes\reporteAsistencia;
 use App\Models\AsistenciaModel;
 
 class AsistenciaController extends BaseController

@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Helpers\Http\Request;
+use App\Core\Http\Request;
 use App\Models\ClaseGrupalDTO;
 use App\Models\ClasesGrupalesModel;
 use CuyZ\Valinor\Mapper\TreeMapper;

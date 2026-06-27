@@ -3,8 +3,8 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Helpers\Http\Response;
-use App\Helpers\Reportes\reporteFinanciero;
+use App\Core\Http\Response;
+use App\Core\Reportes\reporteFinanciero;
 use App\Models\FacturacionPagosModel;
 use Exception;
 

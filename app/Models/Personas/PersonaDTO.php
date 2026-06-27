@@ -2,7 +2,7 @@
 
 namespace App\Models\Personas;
 
-use App\Helpers\Validator;
+use App\Core\Validator;
 use DateTimeImmutable;
 
 /**

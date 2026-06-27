@@ -1,6 +1,6 @@
 <?php
 
-use function App\Helpers\stringifyAttributes;
+use function App\Core\stringifyAttributes;
 
 $endpoint ??= "";
 $input ??= [];

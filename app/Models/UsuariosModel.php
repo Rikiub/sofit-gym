@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Helpers\Validator;
+use App\Core\Validator;
 use App\Models\BaseModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
@@ -11,7 +11,7 @@ use Exception;
 use PDO;
 use Throwable;
 
-use function App\Helpers\toDbDate;
+use function App\Core\toDbDate;
 
 class UsuariosModel extends BaseModel
 {

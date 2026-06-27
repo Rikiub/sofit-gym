@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Helpers\Http\Request;
 use App\Models\Equipos\EquipoDTO;
 use App\Models\Equipos\EquiposModel;
 use CuyZ\Valinor\Mapper\TreeMapper;

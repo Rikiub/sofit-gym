@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Helpers\Validator;
+use App\Core\Validator;
 use App\Models\Personas\PersonaDTO;
 use App\Models\Personas\PersonasModel;
 use App\Models\BaseModel;
@@ -10,7 +10,7 @@ use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use PDO;
 
-use function App\Helpers\toDbDate;
+use function App\Core\toDbDate;
 
 class TrabajadoresModel extends BaseModel
 {

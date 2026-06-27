@@ -3,8 +3,6 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Helpers\Http\Request;
-use App\Helpers\Http\Response;
 use App\Models\TrabajadorDTO;
 use App\Models\TrabajadoresModel;
 use CuyZ\Valinor\Mapper\TreeMapper;

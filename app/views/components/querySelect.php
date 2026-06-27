@@ -1,7 +1,7 @@
 <?php
 
-use function App\Helpers\encodeToJson;
-use function App\Helpers\stringifyAttributes;
+use function App\Core\encodeToJson;
+use function App\Core\stringifyAttributes;
 
 /// PROPS
 $input ??= []; // Atributos HTML para el input (para definir 'required' o 'name')

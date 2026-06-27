@@ -1,6 +1,6 @@
 <?php
 
-use function App\Helpers\escapeJs;
+use function App\Core\escapeJs;
 
 $form ??= null;
 $xData ??= 'modalForm';

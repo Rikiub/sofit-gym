@@ -3,8 +3,8 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Helpers\Reportes\reporteInventario;
-use App\Helpers\Reportes\reporteProductosMasVendidos;
+use App\Core\Reportes\reporteInventario;
+use App\Core\Reportes\reporteProductosMasVendidos;
 use App\Models\ProductosModel;
 
 class ProductosController extends BaseController

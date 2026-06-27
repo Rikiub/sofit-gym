@@ -1,9 +1,9 @@
 <?php
 
-use App\Helpers\Auth\UsuarioSession;
-use App\Helpers\BitacoraLogger;
-use App\Helpers\Http\Request;
-use App\Helpers\Http\Response;
+use App\Core\Auth\UsuarioSession;
+use App\Core\BitacoraLogger;
+use App\Core\Http\Request;
+use App\Core\Http\Response;
 use CuyZ\Valinor\Mapper\MappingError;
 use DI\ContainerBuilder;
 

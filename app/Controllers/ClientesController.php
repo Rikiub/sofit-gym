@@ -3,8 +3,8 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Helpers\Http\Request;
-use App\Helpers\Reportes\reporteClientes;
+use App\Core\Http\Request;
+use App\Core\Reportes\reporteClientes;
 use App\Models\Clientes\ClienteDTO;
 use App\Models\Clientes\ClientesModel;
 use CuyZ\Valinor\Mapper\TreeMapper;

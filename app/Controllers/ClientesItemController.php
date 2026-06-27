@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Helpers\Http\Request;
 use App\Models\Clientes\ClientesModel;
 use App\Models\Clientes\SeguimientoFisicoDTO;
 use App\Models\Clientes\SeguimientoNutricionalDTO;

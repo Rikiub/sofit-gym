@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-use App\Helpers\Validator;
+use App\Core\Validator;
 use App\Models\BaseModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use PDO;
 
-use function App\Helpers\toDbDate;
+use function App\Core\toDbDate;
 
 class ClasesGrupalesModel extends BaseModel
 {

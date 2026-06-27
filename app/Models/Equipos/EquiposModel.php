@@ -2,7 +2,7 @@
 
 namespace App\Models\Equipos;
 
-use App\Helpers\Validator;
+use App\Core\Validator;
 use App\Models\BaseModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
