@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
+use App\Core\Http\Request;
 use App\Models\Equipos\EquipoDTO;
 use App\Models\Equipos\EquiposModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -31,7 +32,7 @@ class EquiposController extends Controller
     {
         $this->protect("equipos:ver");
 
-        $id = $this->getParamId();
+        $id = Request::query("id") ?? "";
         $equipo = $this->equiposModel->find($id);
 
         if (!$equipo) {
@@ -75,21 +76,13 @@ class EquiposController extends Controller
     public function delete(): string|null
     {
         $this->protect("equipos:eliminar");
-        $codigo = $this->getParamId();
+        $id = Request::query("id") ?? "";
 
-        if (!$this->equiposModel->find($codigo)) {
+        if (!$this->equiposModel->find($id)) {
             return $this->json(['message' => 'El equipo no existe'], 404);
         }
 
-        $this->equiposModel->delete($codigo);
+        $this->equiposModel->delete($id);
         return $this->json(null, 204);
-    }
-
-    private function getParamId(): string
-    {
-        return
-            $_GET['codigo']
-            ?? $_GET['id']
-            ?? throw new Exception("'id' or 'codigo_equipo' param is required");
     }
 }

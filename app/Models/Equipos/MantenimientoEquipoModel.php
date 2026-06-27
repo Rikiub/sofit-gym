@@ -143,7 +143,6 @@ readonly class MantenimientoEquipoDTO
     {
         $this->validateShared();
         Validator::required($this->tipo, "tipo");
-        Validator::required($this->costo, "costo");
 
         if ($this->costo !== null && $this->costo < 0) {
             throw new InvalidArgumentException('El costo no puede ser negativo');

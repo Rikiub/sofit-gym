@@ -32,8 +32,8 @@ class ClasesGrupalesController extends Controller
     {
         $this->protect("clases:ver");
 
-        $cedula = $this->getParamId();
-        $clase = $this->clasesModel->find($cedula);
+        $id = Request::queryInt("id") ?? 0;
+        $clase = $this->clasesModel->find($id);
 
         return $clase
             ? $this->json($clase)
@@ -69,7 +69,7 @@ class ClasesGrupalesController extends Controller
     public function delete(): string|null
     {
         $this->protect("clases:eliminar");
-        $id = $this->getParamId();
+        $id = Request::queryInt("id") ?? 0;
 
         if (!$this->clasesModel->find($id)) {
             return $this->json(['message' => 'No existe'], 404);
@@ -77,10 +77,5 @@ class ClasesGrupalesController extends Controller
 
         $this->clasesModel->delete($id);
         return $this->json(null, 204);
-    }
-
-    private function getParamId(): int
-    {
-        return (int) Request::requiredParam("id");
     }
 }

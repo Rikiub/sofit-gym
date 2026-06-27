@@ -43,8 +43,8 @@ class ClientesController extends Controller
     {
         $this->protect("clientes:ver");
 
-        $cedula = $this->requiredCedula();
-        $cliente = $this->clientesModelo->find($cedula);
+        $id = Request::query("id") ?? "";
+        $cliente = $this->clientesModelo->find($id);
 
         return $cliente
             ? $this->json($cliente)
@@ -60,7 +60,7 @@ class ClientesController extends Controller
 
         // Verificar que el cliente no exista
         if ($this->clientesModelo->checkDuplicate($cliente->cedula)) {
-            return $this->conflict(true, $cliente->cedula, 400);
+            return $this->conflict(true, $cliente->cedula);
         }
 
         $cliente = $this->clientesModelo->insert($cliente);
@@ -84,7 +84,7 @@ class ClientesController extends Controller
 
         $oldCliente = $this->clientesModelo->find($cliente->cedula);
         if (!$oldCliente) {
-            return $this->conflict(true, 400);
+            return $this->conflict(true, $cliente->cedula);
         }
 
         $cliente = $this->clientesModelo->update($cliente);
@@ -103,35 +103,33 @@ class ClientesController extends Controller
     public function delete(): string|null
     {
         $this->protect("clientes:eliminar");
-        $cedula = $this->requiredCedula();
+        $id = Request::query("id") ?? "";
 
-        if (!$this->clientesModelo->find($cedula)) {
-            return $this->conflict(false, 404);
+        if (!$this->clientesModelo->find($id)) {
+            return $this->conflict(false, $id);
         }
 
-        $this->clientesModelo->delete($cedula);
+        $this->clientesModelo->delete($id);
         $this->logger->info(
             "Cliente {cedula_cliente} eliminado",
-            ["cedula_cliente" => $cedula]
+            ["cedula_cliente" => $id]
         );
 
         return $this->json(null, 204);
     }
 
-    private function conflict(bool $exists, string $id, ?int $code = 400): string
+    private function conflict(bool $exists, string $id): string
     {
-        $message = match ($exists) {
-            true => "El cliente {$id} ya existe",
-            false => "El cliente {$id} no existe",
-        };
+        if ($exists) {
+            $message = "El cliente {$id} ya existe";
+            $code = 400;
+        } else {
+            $message = "El cliente {$id} no existe";
+            $code = 404;
+        }
 
         $this->logger->error($message, ["cedula_cliente" => $id]);
         return $this->json(['message' => $message], $code);
-    }
-
-    private function requiredCedula(): string
-    {
-        return Request::requiredParam("id");
     }
 
     // REPORTES

@@ -60,17 +60,6 @@ abstract class Controller
             ->normalize($data);
     }
 
-    /**
-     * Redirigir a pagina de error.
-     */
-    public static function redirectToError(int $status = 404)
-    {
-        Response::redirect([
-            'page' => 'error',
-            'status' => $status,
-        ], 404);
-    }
-
     /** Bloquea el acceso a una ruta y redirige a la pagina de error si el usuario no tiene el permiso. */
     protected function protect(string $permiso)
     {
@@ -82,9 +71,11 @@ abstract class Controller
                 echo Response::json(["message" => "No tienes permiso para usar esta accion"], 403);
             } else {
                 // Redireccionar a pagina de error
-                $this->redirectToError(403);
+                Response::redirect([
+                    "page" => "error",
+                    "status" => 403,
+                ]);
             }
-
             exit;
         }
     }

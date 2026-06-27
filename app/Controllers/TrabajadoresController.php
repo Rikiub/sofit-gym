@@ -3,10 +3,10 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
+use App\Core\Http\Request;
 use App\Models\TrabajadorDTO;
 use App\Models\TrabajadoresModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
-use Exception;
 
 class TrabajadoresController extends Controller
 {
@@ -21,21 +21,12 @@ class TrabajadoresController extends Controller
         return $this->templates->render('trabajadores');
     }
 
-    private function getCedulaParam(): string
-    {
-        $cedula = $_GET['cedula'] ?? $_GET['id'] ?? null;
-        if (!$cedula) {
-            throw new Exception("'id' or 'cedula' param is required");
-        }
-        return $cedula;
-    }
-
     public function query(): string
     {
         $this->protect("trabajadores:ver");
 
-        $search = $_GET["search"] ?? null;
-        $id_rol = (int)($_GET["id_rol"] ?? 0);
+        $search = Request::query("search") ?? null;
+        $id_rol = Request::queryInt("id_rol") ?? 0;
 
         $trabajadores = $this->trabajadoresModel->query($search, $id_rol);
         return $this->json($trabajadores);
@@ -45,8 +36,8 @@ class TrabajadoresController extends Controller
     {
         $this->protect("trabajadores:ver");
 
-        $cedula = $this->getCedulaParam();
-        $trabajador = $this->trabajadoresModel->find($cedula);
+        $id = Request::query("id") ?? "";
+        $trabajador = $this->trabajadoresModel->find($id);
 
         if (!$trabajador) {
             return $this->json(null, 404);
@@ -88,13 +79,13 @@ class TrabajadoresController extends Controller
     public function delete(): string|null
     {
         $this->protect("trabajadores:eliminar");
-        $cedula = $this->getCedulaParam();
+        $id = Request::query("id") ?? "";
 
-        if (!$this->trabajadoresModel->find($cedula)) {
+        if (!$this->trabajadoresModel->find($id)) {
             return $this->json(['message' => 'El trabajador no existe'], 404);
         }
 
-        $this->trabajadoresModel->delete($cedula);
+        $this->trabajadoresModel->delete($id);
         return $this->json(null, 204);
     }
 }

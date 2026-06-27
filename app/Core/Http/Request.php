@@ -2,8 +2,6 @@
 
 namespace App\Core\Http;
 
-use Exception;
-
 const CONTENT_JSON = 'application/json';
 
 /**
@@ -11,9 +9,7 @@ const CONTENT_JSON = 'application/json';
  */
 class Request
 {
-    /**
-     * Intentar obtener datos desde el POST o JSON input.
-     */
+    /** Intenta obtener datos desde el POST o JSON input. */
     public static function getParsedBody(): array
     {
         // Si el contenido es JSON, entonces decodificarlo.
@@ -27,12 +23,46 @@ class Request
         return $_POST;
     }
 
-    /** Obtiene el parametro desde $_GET. Si no lo encuentra, lanzara una excepcion. */
-    public static function requiredParam(string $param): string
+    /** Obtiene un parámetro de la URL como string. */
+    public static function query(string $param): ?string
     {
-        return
-            $_GET[$param]
-            ?? throw new Exception("Parametro '{$param}' es requerido");
+        $value = $_GET[$param] ?? null;
+
+        if ($value === null || is_array($value)) {
+            return null;
+        }
+
+        return trim($value);
+    }
+
+    /** Obtiene un parámetro de la URL y lo convierte en un entero. */
+    public static function queryInt(string $param): ?int
+    {
+        $value = $_GET[$param] ?? null;
+
+        if ($value === null || is_array($value)) {
+            return null;
+        }
+
+        // Valida que sea un entero numérico real
+        $filtered = filter_var($value, FILTER_VALIDATE_INT);
+
+        return $filtered
+            ? $filtered
+            : null;
+    }
+
+    /** Obtiene un parámetro de la URL y lo convierte en un booleano. */
+    public static function queryBool(string $param): bool
+    {
+        $value = $_GET[$param] ?? null;
+
+        if ($value === null || is_array($value)) {
+            return false;
+        }
+
+        $filtered = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        return $filtered ?? false;
     }
 
     public static function wantsJson()

@@ -3,12 +3,13 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
+use App\Core\Http\Request;
 
 class ErrorController extends Controller
 {
     public function index(): string
     {
-        $status = (int)($_GET['status'] ?? 0);
+        $status = Request::queryInt("status") ?? null;
         $message = match ($status) {
             403 => "Forbidden: No tienes permiso para acceder a esta pagina",
             404 => 'Pagina no encontrada',

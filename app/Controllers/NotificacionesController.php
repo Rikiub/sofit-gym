@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\Controller;
 use App\Core\Auth\UsuarioSession;
 use App\Core\Auth\UsuarioSessionDto;
+use App\Core\Http\Request;
 use App\Models\NotificacionDTO;
 use App\Models\NotificacionesModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -23,14 +24,14 @@ class NotificacionesController extends Controller
 
     public function query()
     {
-        $id_usuario = (int)($_GET["id_usuario"] ?? $this->usuario->id);
+        $id_usuario = Request::queryInt("id") ?? $this->usuario->id;
         $results = $this->notificacionesModel->query($id_usuario);
         return $this->json($results);
     }
 
     public function find(): ?string
     {
-        $id = $this->getParamId();
+        $id = Request::queryInt("id") ?? 0;
         $data = $this->notificacionesModel->find($this->usuario->id, $id);
 
         return $data
@@ -40,8 +41,8 @@ class NotificacionesController extends Controller
 
     public function leido()
     {
-        $id = $this->getParamId();
-        $leido = (bool)($_GET["leido"] ?? true);
+        $id = Request::queryInt("id") ?? 0;
+        $leido = Request::queryBool("leido") ?? true;
 
         $this->notificacionesModel->setLeido($this->usuario->id, $id, $leido);
         return $this->json(null, 204);
@@ -68,13 +69,5 @@ class NotificacionesController extends Controller
             notificacion: $data,
         );
         return $this->json(null, 204);
-    }
-
-    private function getParamId(): int
-    {
-        return (int)(
-            $_GET['id']
-            ?? throw new Exception("'id' param is required")
-        );
     }
 }

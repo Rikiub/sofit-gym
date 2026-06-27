@@ -3,13 +3,14 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
+use App\Core\Http\Request;
+use App\Core\Http\Response;
 use App\Models\Clientes\ClientesModel;
 use App\Models\Clientes\SeguimientoFisicoDTO;
 use App\Models\Clientes\SeguimientoNutricionalDTO;
 use App\Models\Clientes\SegumientoFisicoModel;
 use App\Models\Clientes\SegumientoNutricionalModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
-use Exception;
 
 class ClientesItemController extends Controller
 {
@@ -25,27 +26,21 @@ class ClientesItemController extends Controller
     public function index(): string
     {
         $this->protect("clientes:ver");
-        $cedula = $this->getCedulaParam();
+        $id = Request::query("id") ?? "";
 
-        if (!$this->clientesModel->find($cedula)) {
-            $this->redirectToError();
+        if (!$this->clientesModel->find($id)) {
+            Response::redirect([
+                "page" => "error",
+                "status" => 404,
+            ]);
         }
 
         $templates = $this->templates->addData(
             ['formMeta' => $this->clientesModel->queryMembresiaMetadata()]
         );
         return $templates->render('clientes/item', [
-            "cedula" => $cedula,
+            "cedula" => $id,
         ]);
-    }
-
-    private function getCedulaParam(): string
-    {
-        $cedula = $_GET['cedula_cliente'] ?? $_GET['cedula'] ?? $_GET['id'] ?? null;
-        if (!$cedula) {
-            throw new Exception("'id' or 'cedula' param is required");
-        }
-        return $cedula;
     }
 
     // SEGUIMIENTO FISICO: JSON API
@@ -53,13 +48,13 @@ class ClientesItemController extends Controller
     public function getSegFisicoByCliente(): ?string
     {
         $this->protect("clientes:ver");
-        $cedula = $this->getCedulaParam();
+        $id = Request::query("id") ?? "";
 
-        if (!$this->clientesModel->find($cedula)) {
+        if (!$this->clientesModel->find($id)) {
             return $this->json(null, 404);
         }
 
-        $registros = $this->fisicoModel->queryByCliente($cedula);
+        $registros = $this->fisicoModel->queryByCliente($id);
         return $this->json($registros);
     }
 
@@ -82,14 +77,14 @@ class ClientesItemController extends Controller
     public function updateSegFisico(): string
     {
         $this->protect("clientes:editar");
-        $cedula = $this->getCedulaParam();
+        $id = Request::query("id") ?? "";
 
         $body = $this->getParsedBody();
-        $body['cedula_cliente'] = $cedula;
+        $body['cedula_cliente'] = $id;
 
         $registro = $this->mapper->map(SeguimientoFisicoDTO::class, $body);
 
-        if (!$this->clientesModel->find($cedula)) {
+        if (!$this->clientesModel->find($id)) {
             return $this->json(['message' => 'El cliente no existe'], 400);
         }
 
@@ -100,13 +95,13 @@ class ClientesItemController extends Controller
     public function deleteSegFisico(): string|null
     {
         $this->protect("clientes:eliminar");
-        $idSeguimiento = isset($_GET['id']) ? intval($_GET['id']) : null;
+        $id = Request::queryInt("id") ?? 0;
 
-        if (!$this->fisicoModel->find($idSeguimiento)) {
+        if (!$this->fisicoModel->find($id)) {
             return $this->json(['message' => 'Seguimiento no existe'], 404);
         }
 
-        $this->fisicoModel->delete($idSeguimiento);
+        $this->fisicoModel->delete($id);
         return $this->json(null, 204);
     }
 
@@ -115,13 +110,13 @@ class ClientesItemController extends Controller
     public function getSegNutricionalByCliente(): ?string
     {
         $this->protect("clientes:ver");
-        $cedula = $this->getCedulaParam();
+        $id = Request::query("id") ?? "";
 
-        if (!$this->clientesModel->find($cedula)) {
+        if (!$this->clientesModel->find($id)) {
             return $this->json(null, 404);
         }
 
-        $registros = $this->nutricionalModel->queryByCliente($cedula);
+        $registros = $this->nutricionalModel->queryByCliente($id);
         return $this->json($registros);
     }
 
@@ -144,14 +139,14 @@ class ClientesItemController extends Controller
     public function updateSegNutricional(): string
     {
         $this->protect("clientes:editar");
-        $cedula = $this->getCedulaParam();
+        $id = Request::query("id") ?? "";
 
         $body = $this->getParsedBody();
-        $body['cedula_cliente'] = $cedula;
+        $body['cedula_cliente'] = $id;
 
         $registro = $this->mapper->map(SeguimientoNutricionalDTO::class, $body);
 
-        if (!$this->clientesModel->find($cedula)) {
+        if (!$this->clientesModel->find($id)) {
             return $this->json(['message' => 'El cliente no existe'], 400);
         }
 
@@ -162,13 +157,13 @@ class ClientesItemController extends Controller
     public function deleteSegNutricional(): string|null
     {
         $this->protect("clientes:eliminar");
-        $idSeguimiento = isset($_GET['id']) ? intval($_GET['id']) : null;
+        $id = Request::queryInt("id") ?? 0;
 
-        if (!$this->nutricionalModel->find($idSeguimiento)) {
+        if (!$this->nutricionalModel->find($id)) {
             return $this->json(['message' => 'Seguimiento no existe'], 404);
         }
 
-        $this->nutricionalModel->delete($idSeguimiento);
+        $this->nutricionalModel->delete($id);
         return $this->json(null, 204);
     }
 }

@@ -100,9 +100,9 @@ class TrabajadoresModel extends Model
             [$cedula]
         )->fetch();
 
-        if (!$row)
-            return null;
-        return $this->mapper->map(TrabajadorDTO::class, $row);
+        return $row
+            ? $this->mapper->map(TrabajadorDTO::class, $row)
+            : null;
     }
 
     /** Comprobar si la cedula ya esta asignada a una persona */

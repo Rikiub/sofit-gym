@@ -4,11 +4,11 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Core\Auth\UsuarioSession;
+use App\Core\Http\Request;
 use App\Core\ImagesManager;
 use App\Models\UsuarioDTO;
 use App\Models\UsuariosModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
-use Exception;
 
 class UsuariosController extends Controller
 {
@@ -36,7 +36,7 @@ class UsuariosController extends Controller
 
     public function find(): ?string
     {
-        $id = $this->getParamId();
+        $id = Request::queryInt("id") ?? 0;
         $usuario = $this->usuariosModel->find($id);
 
         if (!$usuario) {
@@ -121,7 +121,7 @@ class UsuariosController extends Controller
     {
         $this->protect("usuarios:eliminar");
 
-        $id = $this->getParamId();
+        $id = Request::queryInt("id") ?? 0;
         $usuario = $this->usuariosModel->find($id);
 
         if (!$usuario) {
@@ -148,12 +148,5 @@ class UsuariosController extends Controller
         return $this->json([
             'temp_filename' => $filename
         ]);
-    }
-
-    private function getParamId(): string
-    {
-        return
-            $_GET['id']
-            ?? throw new Exception("'id' param is required");
     }
 }

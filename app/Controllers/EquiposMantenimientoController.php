@@ -3,10 +3,10 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
+use App\Core\Http\Request;
 use App\Models\Equipos\MantenimientoEquipoDTO;
 use App\Models\Equipos\MantenimientoEquipoModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
-use Exception;
 
 class EquiposMantenimientoController extends Controller
 {
@@ -32,7 +32,7 @@ class EquiposMantenimientoController extends Controller
     {
         $this->protect("equipos:ver");
 
-        $id = $this->getParamId();
+        $id = Request::queryInt("id") ?? 0;
         $data = $this->model->find($id);
 
         return $data
@@ -69,7 +69,7 @@ class EquiposMantenimientoController extends Controller
     public function delete(): string|null
     {
         $this->protect("equipos:eliminar");
-        $id = $this->getParamId();
+        $id = Request::queryInt("id") ?? 0;
 
         if (!$this->model->find($id)) {
             return $this->json(['message' => 'El mantenimiento no existe'], 404);
@@ -77,12 +77,5 @@ class EquiposMantenimientoController extends Controller
 
         $this->model->delete($id);
         return $this->json(null, 204);
-    }
-
-    private function getParamId(): int
-    {
-        return
-            $_GET['id']
-            ?? new Exception("'id' param is required");
     }
 }

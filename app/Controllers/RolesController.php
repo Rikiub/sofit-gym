@@ -3,10 +3,10 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
+use App\Core\Http\Request;
 use App\Models\RolDTO;
 use App\Models\RolesModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
-use Exception;
 
 class RolesController extends Controller
 {
@@ -34,7 +34,7 @@ class RolesController extends Controller
     {
         $this->protect("roles:ver");
 
-        $id = $this->getParamId();
+        $id = Request::queryInt("id") ?? 0;
         $rol = $this->rolesModel->find($id);
 
         if (!$rol) {
@@ -78,21 +78,14 @@ class RolesController extends Controller
     {
         $this->protect("roles:eliminar");
 
-        $id = $this->getParamId();
-        $permiso = $this->rolesModel->find($id);
+        $id = Request::queryInt("id") ?? 0;
+        $rol = $this->rolesModel->find($id);
 
-        if (!$permiso) {
+        if (!$rol) {
             return $this->json(['message' => 'El rol no existe'], 404);
         }
 
-        $this->rolesModel->delete($permiso->id_rol);
+        $this->rolesModel->delete($rol->id_rol);
         return $this->json(null, 204);
-    }
-
-    private function getParamId(): string
-    {
-        return
-            $_GET['id']
-            ?? throw new Exception("'id' param is required");
     }
 }
