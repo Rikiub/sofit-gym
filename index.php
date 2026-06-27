@@ -9,5 +9,6 @@ $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->safeLoad();
 require 'config/constants.php';
 
-// Cargar front-controller
-require 'app/bootstrap.php';
+// Iniciar
+$front = new \App\Controllers\FrontController;
+$front->run();
