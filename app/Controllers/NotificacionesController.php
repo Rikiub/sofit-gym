@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
+use App\Controllers\Controller;
 use App\Core\Auth\UsuarioSession;
 use App\Core\Auth\UsuarioSessionDto;
 use App\Models\NotificacionDTO;
@@ -10,7 +10,7 @@ use App\Models\NotificacionesModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use Exception;
 
-class NotificacionesController extends BaseController
+class NotificacionesController extends Controller
 {
     private UsuarioSessionDto $usuario;
 

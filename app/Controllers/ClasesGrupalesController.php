@@ -2,13 +2,13 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
+use App\Controllers\Controller;
 use App\Core\Http\Request;
 use App\Models\ClaseGrupalDTO;
 use App\Models\ClasesGrupalesModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 
-class ClasesGrupalesController extends BaseController
+class ClasesGrupalesController extends Controller
 {
     public function __construct(
         private TreeMapper $mapper,

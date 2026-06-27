@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use App\Models\BaseModel;
+use App\Models\Model;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use PDO;
 
-class LoginModel extends BaseModel
+class LoginModel extends Model
 {
     public function __construct(
         PDO $pdo,

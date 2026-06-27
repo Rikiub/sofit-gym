@@ -10,7 +10,7 @@ use CuyZ\Valinor\Normalizer\Normalizer;
 use DateTimeImmutable;
 use PDO;
 
-class AsistenteModel extends BaseModel
+class AsistenteModel extends Model
 {
     private string $dbSeguridad = "sofit_gym_seguridad";
 

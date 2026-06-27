@@ -12,7 +12,7 @@ use CuyZ\Valinor\NormalizerBuilder;
 use DI\Attribute\Inject;
 use League\Plates\Engine;
 
-abstract class BaseController
+abstract class Controller
 {
     /** 
      * Atributos inyectados por PHP-DI automaticamente.

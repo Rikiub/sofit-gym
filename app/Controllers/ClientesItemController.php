@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
+use App\Controllers\Controller;
 use App\Models\Clientes\ClientesModel;
 use App\Models\Clientes\SeguimientoFisicoDTO;
 use App\Models\Clientes\SeguimientoNutricionalDTO;
@@ -11,7 +11,7 @@ use App\Models\Clientes\SegumientoNutricionalModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use Exception;
 
-class ClientesItemController extends BaseController
+class ClientesItemController extends Controller
 {
     public function __construct(
         private TreeMapper $mapper,

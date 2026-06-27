@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Core\Validator;
-use App\Models\BaseModel;
+use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -13,7 +13,7 @@ use Throwable;
 
 use function App\Core\toDbDate;
 
-class UsuariosModel extends BaseModel
+class UsuariosModel extends Model
 {
     private string $dbSeguridad = "sofit_gym_seguridad";
     private string $table = 'sofit_gym_seguridad.usuario';

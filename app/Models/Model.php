@@ -6,7 +6,7 @@ use PDO;
 use PDOStatement;
 use Throwable;
 
-abstract class BaseModel
+abstract class Model
 {
     public function __construct(
         protected PDO $pdo

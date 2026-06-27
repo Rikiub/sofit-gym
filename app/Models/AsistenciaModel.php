@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-class AsistenciaModel extends BaseModel
+class AsistenciaModel extends Model
 {
     /**
      * Buscar clientes por cédula o nombre (solo primer nombre)

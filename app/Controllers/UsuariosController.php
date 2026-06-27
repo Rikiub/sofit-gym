@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
+use App\Controllers\Controller;
 use App\Core\Auth\UsuarioSession;
 use App\Core\ImagesManager;
 use App\Models\UsuarioDTO;
@@ -10,7 +10,7 @@ use App\Models\UsuariosModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use Exception;
 
-class UsuariosController extends BaseController
+class UsuariosController extends Controller
 {
     public function __construct(
         private TreeMapper $mapper,

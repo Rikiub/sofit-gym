@@ -2,10 +2,10 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
+use App\Controllers\Controller;
 use App\Models\RutinasModel;
 
-class RutinasController extends BaseController
+class RutinasController extends Controller
 {
     public function __construct(
         private RutinasModel $model

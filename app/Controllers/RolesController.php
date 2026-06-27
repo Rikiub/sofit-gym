@@ -2,13 +2,13 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
+use App\Controllers\Controller;
 use App\Models\RolDTO;
 use App\Models\RolesModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use Exception;
 
-class RolesController extends BaseController
+class RolesController extends Controller
 {
     public function __construct(
         private TreeMapper $mapper,

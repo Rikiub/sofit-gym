@@ -4,7 +4,7 @@ namespace App\Models;
 
 use PDO;
 
-class RutinasModel extends BaseModel
+class RutinasModel extends Model
 {
     // =========================================================================
     // CRUD: TABLA `rutina`

@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Models\BitacoraModel;
 
-class BitacoraController extends BaseController
+class BitacoraController extends Controller
 {
     public function __construct(
         private BitacoraModel $bitacoraModel

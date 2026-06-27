@@ -2,11 +2,11 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
+use App\Controllers\Controller;
 use App\Core\Reportes\reporteAsistencia;
 use App\Models\AsistenciaModel;
 
-class AsistenciaController extends BaseController
+class AsistenciaController extends Controller
 {
     public function __construct(
         private AsistenciaModel $model

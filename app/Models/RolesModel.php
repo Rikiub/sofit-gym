@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use App\Models\BaseModel;
+use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use PDO;
 
-class RolesModel extends BaseModel
+class RolesModel extends Model
 {
     private string $dbSeguridad = "sofit_gym_seguridad";
 

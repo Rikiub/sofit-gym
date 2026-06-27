@@ -2,12 +2,12 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
+use App\Controllers\Controller;
 use App\Core\Reportes\reporteInventario;
 use App\Core\Reportes\reporteProductosMasVendidos;
 use App\Models\ProductosModel;
 
-class ProductosController extends BaseController
+class ProductosController extends Controller
 {
     public function __construct(
         private ProductosModel $model
@@ -33,7 +33,7 @@ class ProductosController extends BaseController
         $tipoMensaje = $_SESSION['tipo_mensaje'] ?? '';
         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
-        // Renderizado usando el método heredado de BaseController
+        // Renderizado usando el método heredado de Controller
         echo $this->templates->render('productos', [
             'productos' => $productos,
             'bajoStock' => $bajoStock,

@@ -3,36 +3,12 @@
 namespace App\Models;
 
 use App\Core\Validator;
-use App\Models\BaseModel;
+use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use PDO;
 
-readonly class BitacoraDTO
-{
-    public function __construct(
-        public ?int $id_bitacora = null,
-        public ?int $id_usuario = null,
-        public ?string $nombre_usuario = null,
-        public ?int $id_modulo = null,
-        public ?string $modulo = null,
-        public ?string $accion = null,
-        public ?string $mensaje = null,
-        public ?string $nivel = null,
-        public ?string $datos_previos = null,
-        public ?string $datos_nuevos = null,
-        public ?DateTimeImmutable $fecha = null,
-    ) {}
-
-    public function validateInsert()
-    {
-        Validator::required($this->accion, "accion");
-        Validator::required($this->modulo, "modulo");
-        Validator::required($this->nivel, "nivel");
-    }
-}
-
-class BitacoraModel extends BaseModel
+class BitacoraModel extends Model
 {
     private string $dbSeguridad = "sofit_gym_seguridad";
     private string $table = "sofit_gym_seguridad.bitacora";
@@ -138,5 +114,30 @@ class BitacoraModel extends BaseModel
             SQL,
             [$dias_retencion]
         );
+    }
+}
+
+// DTO
+readonly class BitacoraDTO
+{
+    public function __construct(
+        public ?int $id_bitacora = null,
+        public ?int $id_usuario = null,
+        public ?string $nombre_usuario = null,
+        public ?int $id_modulo = null,
+        public ?string $modulo = null,
+        public ?string $accion = null,
+        public ?string $mensaje = null,
+        public ?string $nivel = null,
+        public ?string $datos_previos = null,
+        public ?string $datos_nuevos = null,
+        public ?DateTimeImmutable $fecha = null,
+    ) {}
+
+    public function validateInsert()
+    {
+        Validator::required($this->accion, "accion");
+        Validator::required($this->modulo, "modulo");
+        Validator::required($this->nivel, "nivel");
     }
 }

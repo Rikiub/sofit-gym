@@ -3,7 +3,7 @@
 namespace App\Models\Equipos;
 
 use App\Core\Validator;
-use App\Models\BaseModel;
+use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use InvalidArgumentException;
@@ -11,7 +11,7 @@ use PDO;
 
 use function App\Core\toDbDate;
 
-class MantenimientoEquipoModel extends BaseModel
+class MantenimientoEquipoModel extends Model
 {
     private string $table = 'mantenimiento_equipo';
     private string $primaryKey = 'id_mantenimiento';

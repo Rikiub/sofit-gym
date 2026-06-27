@@ -2,7 +2,7 @@
 
 namespace App\Models\Personas;
 
-use App\Models\BaseModel;
+use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use PDO;
 
@@ -11,7 +11,7 @@ use function App\Core\toDbDate;
 /**
  * Base para realizar operaciones sobre la tabla `persona`.
  */
-class PersonasModel extends BaseModel
+class PersonasModel extends Model
 {
     public string $table = 'persona';
     public string $primaryKey = 'cedula';

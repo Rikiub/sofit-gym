@@ -2,9 +2,9 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
+use App\Controllers\Controller;
 
-class ErrorController extends BaseController
+class ErrorController extends Controller
 {
     public function index(): string
     {

@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
+use App\Controllers\Controller;
 use App\Core\Auth\UsuarioSession;
 use App\Core\Auth\UsuarioSessionDto;
 use App\Models\AsistenteMensajeDTO;
@@ -15,7 +15,7 @@ use LLPhant\Chat\OpenAIChat;
 use LLPhant\GeminiOpenAIConfig;
 use LLPhant\Tool\HumanInTheLoopTool;
 
-class AsistenteController extends BaseController
+class AsistenteController extends Controller
 {
     private OpenAIChat $chat;
 

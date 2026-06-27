@@ -5,7 +5,7 @@ namespace App\Models;
 use PDO;
 use PDOException;
 
-class ProductosModel extends BaseModel
+class ProductosModel extends Model
 {
     private string $tabla = 'producto';
 

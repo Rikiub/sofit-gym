@@ -3,12 +3,12 @@
 namespace App\Models\Equipos;
 
 use App\Core\Validator;
-use App\Models\BaseModel;
+use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use PDO;
 
-class EquiposModel extends BaseModel
+class EquiposModel extends Model
 {
     private string $table = 'equipo';
     private string $primaryKey = 'codigo_equipo';

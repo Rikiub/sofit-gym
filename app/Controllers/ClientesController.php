@@ -2,14 +2,14 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
+use App\Controllers\Controller;
 use App\Core\Http\Request;
 use App\Core\Reportes\reporteClientes;
 use App\Models\Clientes\ClienteDTO;
 use App\Models\Clientes\ClientesModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 
-class ClientesController extends BaseController
+class ClientesController extends Controller
 {
     public function __construct(
         private TreeMapper $mapper,

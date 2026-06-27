@@ -3,7 +3,7 @@
 namespace App\Models\Clientes;
 
 use App\Core\Validator;
-use App\Models\BaseModel;
+use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use InvalidArgumentException;
@@ -11,7 +11,7 @@ use PDO;
 
 use function App\Core\toDbDate;
 
-class SegumientoFisicoModel extends BaseModel
+class SegumientoFisicoModel extends Model
 {
     private string $table = 'seguimiento_fisico';
     private string $primaryKey = 'id_seguimiento';

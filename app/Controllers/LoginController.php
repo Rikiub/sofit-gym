@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
+use App\Controllers\Controller;
 use App\Core\Auth\UsuarioSession;
 use App\Core\Auth\UsuarioSessionDto;
 use App\Core\Http\Request;
@@ -11,7 +11,7 @@ use App\Models\LoginModel;
 use App\Models\UsuariosModel;
 use DateTimeImmutable;
 
-class LoginController extends BaseController
+class LoginController extends Controller
 {
     public function __construct(
         private UsuariosModel $usuariosModel,

@@ -3,12 +3,12 @@
 namespace App\Models;
 
 use App\Core\Validator;
-use App\Models\BaseModel;
+use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use PDO;
 
-class NotificacionesModel extends BaseModel
+class NotificacionesModel extends Model
 {
     private string $dbSeguridad = "sofit_gym_seguridad";
     private string $table = "sofit_gym_seguridad.notificacion";

@@ -5,14 +5,14 @@ namespace App\Models;
 use App\Core\Validator;
 use App\Models\Personas\PersonaDTO;
 use App\Models\Personas\PersonasModel;
-use App\Models\BaseModel;
+use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use PDO;
 
 use function App\Core\toDbDate;
 
-class TrabajadoresModel extends BaseModel
+class TrabajadoresModel extends Model
 {
     private string $table = 'trabajador';
     private string $primaryKey = 'cedula';

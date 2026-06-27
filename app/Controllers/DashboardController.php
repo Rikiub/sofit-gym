@@ -2,13 +2,13 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
+use App\Controllers\Controller;
 use App\Core\Auth\UsuarioSession;
 use App\Models\AsistenciaModel;
 use App\Models\Clientes\ClientesModel;
 use App\Models\FacturacionPagosModel;
 
-class DashboardController extends BaseController
+class DashboardController extends Controller
 {
     public function __construct(
         private AsistenciaModel $asistenciaModel,

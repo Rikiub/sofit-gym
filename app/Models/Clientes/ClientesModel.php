@@ -2,12 +2,12 @@
 
 namespace App\Models\Clientes;
 
-use App\Models\BaseModel;
+use App\Models\Model;
 use App\Models\Personas\PersonasModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use PDO;
 
-class ClientesModel extends BaseModel
+class ClientesModel extends Model
 {
     public string $table = 'cliente';
     public string $primaryKey = 'cedula';

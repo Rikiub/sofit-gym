@@ -2,13 +2,13 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
+use App\Controllers\Controller;
 use App\Models\Equipos\EquipoDTO;
 use App\Models\Equipos\EquiposModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use Exception;
 
-class EquiposController extends BaseController
+class EquiposController extends Controller
 {
     public function __construct(
         private TreeMapper $mapper,
