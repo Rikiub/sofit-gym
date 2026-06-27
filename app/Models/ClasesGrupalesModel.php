@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
+use App\Core\Database;
 use App\Core\Validator;
 use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use InvalidArgumentException;
-use PDO;
 
 use function App\Core\toDbDate;
 
@@ -17,10 +17,10 @@ class ClasesGrupalesModel extends Model
     private string $primaryKey = 'id_clase';
 
     public function __construct(
-        PDO $pdo,
+        Database $db,
         private TreeMapper $mapper,
     ) {
-        parent::__construct($pdo);
+        parent::__construct($db);
     }
 
     private function sqlSelect(string $where = ""): string
@@ -66,7 +66,7 @@ class ClasesGrupalesModel extends Model
      */
     public function query(): array
     {
-        $rows = $this->pdoQuery($this->sqlSelect())->fetchAll();
+        $rows = $this->db->pdoQuery($this->sqlSelect())->fetchAll();
         return array_map(
             fn($row) => $this->map($row),
             $rows
@@ -75,7 +75,7 @@ class ClasesGrupalesModel extends Model
 
     public function find(int $id): ?ClaseGrupalDTO
     {
-        $row = $this->pdoQuery(
+        $row = $this->db->pdoQuery(
             $this->sqlSelect(" WHERE clase.{$this->primaryKey} = ? "),
             [$id]
         )->fetch();
@@ -89,10 +89,10 @@ class ClasesGrupalesModel extends Model
     {
         $clase->validateInsert();
 
-        return $this->pdoTransaction(function () use ($clase) {
-            $this->pdoInsert($this->table, $this->dtoToArray($clase));
+        return $this->db->pdoTransaction(function () use ($clase) {
+            $this->db->pdoInsert($this->table, $this->dtoToArray($clase));
 
-            $id_clase = (int) $this->pdo->lastInsertId();
+            $id_clase = (int) $this->db->lastInsertId();
             $this->syncClientes($id_clase, $clase->clientes);
 
             return $this->find($id_clase);
@@ -101,11 +101,11 @@ class ClasesGrupalesModel extends Model
 
     public function update(ClaseGrupalDTO $clase): ClaseGrupalDTO
     {
-        return $this->pdoTransaction(function () use ($clase) {
+        return $this->db->pdoTransaction(function () use ($clase) {
             $array = $this->dtoToArray($clase);
             unset($array[$this->primaryKey]);
 
-            $this->pdoUpdate(
+            $this->db->pdoUpdate(
                 $this->table,
                 $array,
                 [$this->primaryKey => $clase->id_clase]
@@ -118,7 +118,7 @@ class ClasesGrupalesModel extends Model
 
     public function delete(int $id): void
     {
-        $this->pdoDelete($this->table, [$this->primaryKey => $id]);
+        $this->db->pdoDelete($this->table, [$this->primaryKey => $id]);
     }
 
     /** @param ClaseClienteDTO[]|array<string> $clientes */
@@ -128,7 +128,7 @@ class ClasesGrupalesModel extends Model
 
         // Eliminar todos los clientes
         foreach ($clientes as $cliente) {
-            $this->pdoDelete($table, ["id_clase" => $id_clase]);
+            $this->db->pdoDelete($table, ["id_clase" => $id_clase]);
         }
 
         // Insertar los nuevos clientes
@@ -140,7 +140,7 @@ class ClasesGrupalesModel extends Model
                 $cedula = $cliente;
             }
 
-            $this->pdoInsert($table, [
+            $this->db->pdoInsert($table, [
                 "id_clase" => $id_clase,
                 "cedula_cliente" => $cedula,
                 "asistio" => $cliente->asistio,

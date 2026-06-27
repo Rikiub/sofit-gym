@@ -40,26 +40,26 @@ class FacturacionPagosModel extends Model
         $fechaPago = date('Y-m-d');
         $nuevaFechaVencimiento = date('Y-m-d', strtotime("+{$duracionDias} days"));
 
-        $this->pdo->beginTransaction();
+        $this->db->beginTransaction();
         try {
-            $stmt = $this->pdo->prepare("INSERT INTO membresia (id_tipo, id_estado, fecha_inicio, fecha_fin, cedula_cliente) VALUES (?, 1, ?, ?, ?)");
+            $stmt = $this->db->prepare("INSERT INTO membresia (id_tipo, id_estado, fecha_inicio, fecha_fin, cedula_cliente) VALUES (?, 1, ?, ?, ?)");
             $stmt->execute([$tipoMembresiaId, $fechaPago, $nuevaFechaVencimiento, $cedulaCliente]);
-            $nuevaId = $this->pdo->lastInsertId();
+            $nuevaId = $this->db->lastInsertId();
 
             if ($membresiaActual && $membresiaActual['id_membresia']) {
-                $stmt = $this->pdo->prepare("UPDATE membresia SET id_estado = 2 WHERE id_membresia = ?");
+                $stmt = $this->db->prepare("UPDATE membresia SET id_estado = 2 WHERE id_membresia = ?");
                 $stmt->execute([$membresiaActual['id_membresia']]);
             }
 
-            $stmtMetodo = $this->pdo->prepare("SELECT id_metodo FROM metodo_pago WHERE nombre LIKE ? LIMIT 1");
+            $stmtMetodo = $this->db->prepare("SELECT id_metodo FROM metodo_pago WHERE nombre LIKE ? LIMIT 1");
             $stmtMetodo->execute(["%" . $metodoPago . "%"]);
             $idMetodo = $stmtMetodo->fetchColumn() ?: 1;
 
-            $stmt = $this->pdo->prepare("INSERT INTO pago (id_membresia, id_metodo, monto, comprobante_url, estado, fecha_pago) VALUES (?, ?, ?, ?, 'Pagado', ?)");
+            $stmt = $this->db->prepare("INSERT INTO pago (id_membresia, id_metodo, monto, comprobante_url, estado, fecha_pago) VALUES (?, ?, ?, ?, 'Pagado', ?)");
             $stmt->execute([$nuevaId, $idMetodo, $monto, $comprobanteUrl, $fechaPago]);
-            $idPago = $this->pdo->lastInsertId();
+            $idPago = $this->db->lastInsertId();
 
-            $this->pdo->commit();
+            $this->db->commit();
             return [
                 'exito' => true,
                 'nueva_fecha_vencimiento' => $nuevaFechaVencimiento,
@@ -67,7 +67,7 @@ class FacturacionPagosModel extends Model
                 'mensaje' => "Pago registrado. Vigencia hasta {$nuevaFechaVencimiento}"
             ];
         } catch (Exception $e) {
-            $this->pdo->rollBack();
+            $this->db->rollBack();
             throw new Exception("Error al registrar pago: " . $e->getMessage());
         }
     }
@@ -99,7 +99,7 @@ class FacturacionPagosModel extends Model
                 JOIN persona per ON c.cedula = per.cedula
                 ORDER BY p.fecha_pago DESC
                 LIMIT 50";
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->db->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -117,7 +117,7 @@ class FacturacionPagosModel extends Model
                     AND MONTH(p.fecha_pago) = MONTH(CURDATE())
         SQL;
 
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->db->prepare($sql);
         $stmt->execute();
         return $stmt->fetch();
     }
@@ -154,7 +154,7 @@ class FacturacionPagosModel extends Model
                    OR per.apellido LIKE ?
                 ORDER BY p.fecha_pago DESC
                 LIMIT 50";
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->db->prepare($sql);
         $stmt->execute([$termino, $termino, $termino, $termino]);
         return $stmt->fetchAll();
     }
@@ -167,21 +167,21 @@ class FacturacionPagosModel extends Model
         string $fechaPago,
         string $fechaVencimiento,
     ): bool {
-        $stmtMetodo = $this->pdo->prepare("SELECT id_metodo FROM metodo_pago WHERE nombre LIKE ? LIMIT 1");
+        $stmtMetodo = $this->db->prepare("SELECT id_metodo FROM metodo_pago WHERE nombre LIKE ? LIMIT 1");
         $stmtMetodo->execute(["%" . $metodoPago . "%"]);
         $idMetodo = $stmtMetodo->fetchColumn() ?: 1;
 
         $sql = "UPDATE pago SET monto = ?, id_metodo = ?, estado = ?, fecha_pago = ? WHERE id_pago = ?";
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->db->prepare($sql);
         $res = $stmt->execute([$monto, $idMetodo, $estado, $fechaPago, $idPago]);
 
         if ($res) {
-            $stmtMem = $this->pdo->prepare("SELECT id_membresia FROM pago WHERE id_pago = ?");
+            $stmtMem = $this->db->prepare("SELECT id_membresia FROM pago WHERE id_pago = ?");
             $stmtMem->execute([$idPago]);
             $idMembresia = $stmtMem->fetchColumn();
 
             if ($idMembresia) {
-                $stmtUpdateMem = $this->pdo->prepare("UPDATE membresia SET fecha_fin = ? WHERE id_membresia = ?");
+                $stmtUpdateMem = $this->db->prepare("UPDATE membresia SET fecha_fin = ? WHERE id_membresia = ?");
                 $stmtUpdateMem->execute([$fechaVencimiento, $idMembresia]);
             }
         }
@@ -191,7 +191,7 @@ class FacturacionPagosModel extends Model
 
     public function eliminarPago(int $idPago): bool
     {
-        $stmt = $this->pdo->prepare("DELETE FROM pago WHERE id_pago = ?");
+        $stmt = $this->db->prepare("DELETE FROM pago WHERE id_pago = ?");
         return $stmt->execute([$idPago]);
     }
 
@@ -201,14 +201,14 @@ class FacturacionPagosModel extends Model
                 FROM cliente c 
                 JOIN persona p ON c.cedula = p.cedula 
                 ORDER BY p.nombre";
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->db->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll();
     }
 
     private function obtenerCliente(string $cedula): ?array
     {
-        $stmt = $this->pdo->prepare("
+        $stmt = $this->db->prepare("
             SELECT 
                 cedula AS cedula_cliente,
                 (SELECT id_membresia FROM membresia WHERE cedula_cliente = cliente.cedula ORDER BY id_membresia DESC LIMIT 1) AS id_membresia 
@@ -221,7 +221,7 @@ class FacturacionPagosModel extends Model
 
     private function obtenerMembresiaPorId(int $id): ?array
     {
-        $stmt = $this->pdo->prepare("SELECT id_membresia, id_tipo, fecha_fin, id_estado FROM membresia WHERE id_membresia = ?");
+        $stmt = $this->db->prepare("SELECT id_membresia, id_tipo, fecha_fin, id_estado FROM membresia WHERE id_membresia = ?");
         $stmt->execute([$id]);
         return $stmt->fetch() ?: null;
     }
@@ -274,7 +274,7 @@ class FacturacionPagosModel extends Model
         $sql .= " ORDER BY p.fecha_pago ASC, p.id_pago ASC";
 
         try {
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = $this->db->prepare($sql);
             $stmt->execute($params);
             return $stmt->fetchAll();
         } catch (\PDOException $e) {

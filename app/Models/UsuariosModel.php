@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
+use App\Core\Database;
 use App\Core\Validator;
 use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Exception;
-use PDO;
 
 use function App\Core\toDbDate;
 
@@ -17,10 +17,10 @@ class UsuariosModel extends Model
     private string $table = self::DB_SECURITY . ".usuario";
 
     public function __construct(
-        PDO $pdo,
+        Database $db,
         private TreeMapper $mapper,
     ) {
-        parent::__construct($pdo);
+        parent::__construct($db);
     }
 
     private function sqlSelect(?string $where = ""): string
@@ -58,13 +58,13 @@ class UsuariosModel extends Model
      */
     public function query(): array
     {
-        $rows = $this->pdoQuery($this->sqlSelect())->fetchAll();
+        $rows = $this->db->pdoQuery($this->sqlSelect())->fetchAll();
         return array_map($this->mapUsuario(...), $rows);
     }
 
     public function find(int|string $nombre_usuario): ?UsuarioDTO
     {
-        $row = $this->pdoQuery(
+        $row = $this->db->pdoQuery(
             $this->sqlSelect(
                 <<<SQL
                 WHERE
@@ -82,7 +82,7 @@ class UsuariosModel extends Model
 
     public function findByEmail(string $email): ?UsuarioDTO
     {
-        $row = $this->pdoQuery(
+        $row = $this->db->pdoQuery(
             $this->sqlSelect("WHERE {$this->table}.email = ?"),
             [$email]
         )->fetch();
@@ -96,12 +96,12 @@ class UsuariosModel extends Model
     {
         $usuario->validateInsert();
 
-        $this->pdoInsert(
+        $this->db->pdoInsert(
             $this->table,
             $this->dtoToArray($usuario),
         );
 
-        $id = (int) $this->pdo->lastInsertId();
+        $id = (int) $this->db->lastInsertId();
         $usuario = $this->find($id);
         return $usuario;
     }
@@ -111,7 +111,7 @@ class UsuariosModel extends Model
         $array = $this->dtoToArray($usuario);
         unset($array["contrasena_hash"]);
 
-        $this->pdoUpdate(
+        $this->db->pdoUpdate(
             $this->table,
             $array,
             ["id_usuario" => $usuario->id_usuario],
@@ -123,7 +123,7 @@ class UsuariosModel extends Model
 
     public function delete(int|string $id): void
     {
-        $this->pdoQuery(
+        $this->db->pdoQuery(
             <<<SQL
                 DELETE FROM {$this->table}
                 WHERE
@@ -136,7 +136,7 @@ class UsuariosModel extends Model
 
     public function actualizarUltimoAcceso(int $id)
     {
-        $this->pdoUpdate(
+        $this->db->pdoUpdate(
             $this->table,
             ["ultimo_acceso" => toDbDate(new DateTimeImmutable())],
             ["id_usuario" => $id]
@@ -163,7 +163,7 @@ class UsuariosModel extends Model
     // Intentos
     public function insertIntentoAcceso(int $id_usuario, bool $exito): void
     {
-        $this->pdoInsert(
+        $this->db->pdoInsert(
             $this->dbSecurity('intento_acceso'),
             [
                 "id_usuario" => $id_usuario,
@@ -174,7 +174,7 @@ class UsuariosModel extends Model
 
     public function intentosFallidos(int $id_usuario, DateTimeImmutable $duracion): int
     {
-        $intentos = $this->pdoQuery(
+        $intentos = $this->db->pdoQuery(
             <<<SQL
                 SELECT COUNT(*)
                 FROM
@@ -198,7 +198,7 @@ class UsuariosModel extends Model
 
     public function saveRecoveryCode(int $id_usuario, string $codigo, DateTimeInterface $expiracion): void
     {
-        $this->pdoInsert(
+        $this->db->pdoInsert(
             $this->dbSecurity("recuperacion_contrasena"),
             [
                 "id_usuario" => $id_usuario,
@@ -211,7 +211,7 @@ class UsuariosModel extends Model
 
     public function verifyRecoveryCode(string $codigo): ?UsuarioDTO
     {
-        $row = $this->pdoQuery(
+        $row = $this->db->pdoQuery(
             <<<SQL
                 SELECT id_usuario
                 FROM {$this->dbSecurity("recuperacion_contrasena")}
@@ -233,15 +233,15 @@ class UsuariosModel extends Model
             throw new Exception("Usuario no encontrado");
         }
 
-        $this->pdoTransaction(function () use ($id_usuario, $new_password) {
+        $this->db->pdoTransaction(function () use ($id_usuario, $new_password) {
             $hashedPassword = password_hash($new_password, PASSWORD_DEFAULT);
 
-            $this->pdoUpdate(
+            $this->db->pdoUpdate(
                 table: $this->table,
                 data: ["contrasena_hash" => $hashedPassword],
                 conditions: ["id_usuario" => $id_usuario],
             );
-            $this->pdoDelete(
+            $this->db->pdoDelete(
                 table: $this->dbSecurity("recuperacion_contrasena"),
                 conditions: ["id_usuario" => $id_usuario],
             );

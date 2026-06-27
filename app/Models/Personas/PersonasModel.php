@@ -2,9 +2,9 @@
 
 namespace App\Models\Personas;
 
+use App\Core\Database;
 use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
-use PDO;
 
 use function App\Core\toDbDate;
 
@@ -17,10 +17,10 @@ class PersonasModel extends Model
     public string $primaryKey = 'cedula';
 
     public function __construct(
-        PDO $pdo,
+        Database $db,
         private TreeMapper $mapper,
     ) {
-        return parent::__construct($pdo);
+        return parent::__construct($db);
     }
 
     private function sqlSelect(): string
@@ -36,7 +36,7 @@ class PersonasModel extends Model
      */
     public function query(): array
     {
-        $rows = $this->pdoQuery($this->sqlSelect())->fetchAll();
+        $rows = $this->db->pdoQuery($this->sqlSelect())->fetchAll();
         return array_map(
             fn($row) => $this->mapper->map(PersonaDTO::class, $row),
             $rows
@@ -45,7 +45,7 @@ class PersonasModel extends Model
 
     public function find(string $cedula): ?PersonaDTO
     {
-        $row = $this->pdoQuery(
+        $row = $this->db->pdoQuery(
             "{$this->sqlSelect()} WHERE {$this->primaryKey} = ?",
             [$cedula]
         )->fetch();
@@ -59,7 +59,7 @@ class PersonasModel extends Model
     {
         $persona->validateInsert();
 
-        $this->pdoInsert(
+        $this->db->pdoInsert(
             $this->table,
             $this->dtoToArray($persona),
         );
@@ -72,7 +72,7 @@ class PersonasModel extends Model
         $array = $this->dtoToArray($persona);
         unset($array['cedula']);
 
-        $this->pdoUpdate(
+        $this->db->pdoUpdate(
             $this->table,
             $array,
             [$this->primaryKey => $persona->cedula],
@@ -83,7 +83,7 @@ class PersonasModel extends Model
 
     public function delete(string $cedula): void
     {
-        $this->pdoDelete($this->table, [$this->primaryKey => $cedula]);
+        $this->db->pdoDelete($this->table, [$this->primaryKey => $cedula]);
     }
 
     private function dtoToArray(PersonaDTO $persona): array

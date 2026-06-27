@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
+use App\Core\Database;
 use App\Core\Validator;
 use App\Models\Personas\PersonaDTO;
 use App\Models\Personas\PersonasModel;
 use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
-use PDO;
 
 use function App\Core\toDbDate;
 
@@ -18,11 +18,11 @@ class TrabajadoresModel extends Model
     private string $primaryKey = 'cedula';
 
     public function __construct(
-        PDO $pdo,
+        Database $db,
         private TreeMapper $mapper,
         private PersonasModel $personasModel,
     ) {
-        return parent::__construct($pdo);
+        return parent::__construct($db);
     }
 
     private function sqlSelect(): string
@@ -85,7 +85,7 @@ class TrabajadoresModel extends Model
             $sql .= " WHERE " . implode(" AND ", $whereClauses);
         }
 
-        $rows = $this->pdoQuery($sql, $params)->fetchAll();
+        $rows = $this->db->pdoQuery($sql, $params)->fetchAll();
 
         return array_map(
             fn($row) => $this->mapper->map(TrabajadorDTO::class, $row),
@@ -95,7 +95,7 @@ class TrabajadoresModel extends Model
 
     public function find(string $cedula): ?TrabajadorDTO
     {
-        $row = $this->pdoQuery(
+        $row = $this->db->pdoQuery(
             "{$this->sqlSelect()} WHERE trabajador.{$this->primaryKey} = ?",
             [$cedula]
         )->fetch();
@@ -118,9 +118,9 @@ class TrabajadoresModel extends Model
     {
         $trabajador->validateInsert();
 
-        return $this->pdoTransaction(function () use ($trabajador) {
+        return $this->db->pdoTransaction(function () use ($trabajador) {
             $this->personasModel->insert($trabajador);
-            $this->pdoInsert(
+            $this->db->pdoInsert(
                 $this->table,
                 $this->dtoToArray($trabajador),
             );
@@ -130,13 +130,13 @@ class TrabajadoresModel extends Model
 
     public function update(TrabajadorDTO $trabajador): TrabajadorDTO
     {
-        return $this->pdoTransaction(function () use ($trabajador) {
+        return $this->db->pdoTransaction(function () use ($trabajador) {
             $this->personasModel->update($trabajador);
 
             $array = $this->dtoToArray($trabajador);
             unset($array['cedula']);
 
-            $this->pdoUpdate(
+            $this->db->pdoUpdate(
                 $this->table,
                 $array,
                 [$this->primaryKey => $trabajador->cedula],
@@ -148,7 +148,7 @@ class TrabajadoresModel extends Model
 
     public function delete(string $cedula): void
     {
-        $this->pdoDelete($this->table, [$this->primaryKey => $cedula]);
+        $this->db->pdoDelete($this->table, [$this->primaryKey => $cedula]);
     }
 
     private function dtoToArray(TrabajadorDTO $dto): array

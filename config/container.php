@@ -1,6 +1,7 @@
 <?php
 
 use App\Core\Auth\UsuarioSession;
+use App\Core\Database;
 use App\Core\Plates\AssetExtension;
 use CuyZ\Valinor\Cache\FileSystemCache;
 use CuyZ\Valinor\Cache\FileWatchingCache;
@@ -17,33 +18,14 @@ use DI\Container;
  * Aqui se definen los objetos a instanciar en los controladores automaticamente.
  */
 return [
-    // Conexion PDO a la base de datos
-    PDO::class => function () {
-        $host = $_ENV['DB_HOST'] ?? 'localhost';
-        $database = $_ENV['DB_DATABASE'] ?? 'sofit_gym';
-        $username = $_ENV['DB_USERNAME'] ?? 'root';
-        $password = $_ENV['DB_PASSWORD'] ?? '';
-        $charset = 'utf8mb4';
-
-        $options = [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES => false,
-            PDO::MYSQL_ATTR_INIT_COMMAND => sprintf("SET time_zone = '%s'", TIMEZONE_OFFSET),
-        ];
-
-        $dsn = "mysql:host={$host};dbname={$database};charset={$charset};";
-
-        try {
-            return new PDO(
-                dsn: $dsn,
-                username: $username,
-                password: $password,
-                options: $options
-            );
-        } catch (PDOException $e) {
-            throw new RuntimeException('Failed database connection: ' . $e->getMessage());
-        }
+    // Conexion a la base de datos
+    Database::class => function () {
+        return new Database(
+            host: $_ENV['DB_HOST'] ?? "localhost",
+            database: $_ENV['DB_DATABASE'] ?? 'sofit_gym',
+            username: $_ENV['DB_USERNAME'] ?? 'root',
+            password: $_ENV['DB_PASSWORD'] ?? '',
+        );
     },
 
     // Configuración Gemini

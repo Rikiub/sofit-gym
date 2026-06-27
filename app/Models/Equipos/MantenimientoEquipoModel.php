@@ -2,12 +2,12 @@
 
 namespace App\Models\Equipos;
 
+use App\Core\Database;
 use App\Core\Validator;
 use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use InvalidArgumentException;
-use PDO;
 
 use function App\Core\toDbDate;
 
@@ -17,11 +17,11 @@ class MantenimientoEquipoModel extends Model
     private string $primaryKey = 'id_mantenimiento';
 
     public function __construct(
-        PDO $pdo,
+        Database $db,
         private TreeMapper $mapper,
         private EquiposModel $equiposModel,
     ) {
-        return parent::__construct($pdo);
+        return parent::__construct($db);
     }
 
     private function sqlSelect(string $where = ""): string
@@ -45,7 +45,7 @@ class MantenimientoEquipoModel extends Model
      */
     public function query(): array
     {
-        $rows = $this->pdoQuery($this->sqlSelect())->fetchAll();
+        $rows = $this->db->pdoQuery($this->sqlSelect())->fetchAll();
         return array_map(
             fn($row) => $this->mapToMantenimiento($row),
             $rows
@@ -54,7 +54,7 @@ class MantenimientoEquipoModel extends Model
 
     public function find(int $id): ?MantenimientoEquipoDTO
     {
-        $row = $this->pdoQuery(
+        $row = $this->db->pdoQuery(
             $this->sqlSelect("WHERE {$this->primaryKey} = ?"),
             [$id]
         )->fetch();
@@ -75,9 +75,9 @@ class MantenimientoEquipoModel extends Model
             throw new InvalidArgumentException("El equipo con código {$mantenimiento->codigo_equipo} no existe o está inactivo");
         }
 
-        $this->pdoInsert($this->table, $this->dtoToArray($mantenimiento));
+        $this->db->pdoInsert($this->table, $this->dtoToArray($mantenimiento));
 
-        $id = (int) $this->pdo->lastInsertId();
+        $id = (int) $this->db->lastInsertId();
         return $this->find($id);
     }
 
@@ -92,7 +92,7 @@ class MantenimientoEquipoModel extends Model
             throw new InvalidArgumentException("El equipo con código {$mantenimiento->codigo_equipo} no existe o está inactivo");
         }
 
-        $this->pdoUpdate(
+        $this->db->pdoUpdate(
             $this->table,
             $this->dtoToArray($mantenimiento),
             [$this->primaryKey => $mantenimiento->id_mantenimiento],
@@ -103,7 +103,7 @@ class MantenimientoEquipoModel extends Model
 
     public function delete(int $id): void
     {
-        $this->pdoDelete($this->table, [$this->primaryKey => $id]);
+        $this->db->pdoDelete($this->table, [$this->primaryKey => $id]);
     }
 
     private function dtoToArray(MantenimientoEquipoDTO $dto): array

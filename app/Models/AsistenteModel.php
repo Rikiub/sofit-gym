@@ -2,18 +2,18 @@
 
 namespace App\Models;
 
+use App\Core\Database;
 use App\Models\Clientes\ClientesModel;
 use App\Models\Clientes\SegumientoFisicoModel;
 use App\Models\Clientes\SegumientoNutricionalModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use CuyZ\Valinor\Normalizer\Normalizer;
 use DateTimeImmutable;
-use PDO;
 
 class AsistenteModel extends Model
 {
     public function __construct(
-        PDO $pdo,
+        Database $db,
         private TreeMapper $mapper,
         private Normalizer $normalizer,
         private AsistenciaModel $asistenciaModel,
@@ -23,7 +23,7 @@ class AsistenteModel extends Model
         private SegumientoFisicoModel $segFisicoModel,
         private SegumientoNutricionalModel $segNutricionalModel,
     ) {
-        parent::__construct($pdo);
+        parent::__construct($db);
     }
 
     public function insertSesion(AsistenteSesionDTO $sesion): AsistenteSesionDTO
@@ -34,8 +34,8 @@ class AsistenteModel extends Model
         unset($array["fecha_creacion"]);
         unset($array["mensajes"]);
 
-        $this->pdoInsert($table, $array);
-        $id = (int) $this->pdo->lastInsertId();
+        $this->db->pdoInsert($table, $array);
+        $id = (int) $this->db->lastInsertId();
 
         return $this->findSesion($id);
     }
@@ -48,13 +48,13 @@ class AsistenteModel extends Model
         unset($array["fecha_creacion"]);
         $array["rol"] = $mensaje->rol ? $mensaje->rol->value : null;
 
-        $this->pdoInsert($table, $array);
+        $this->db->pdoInsert($table, $array);
     }
 
     /** @return AsistenteSesionDTO[] */
     public function querySesiones(): array
     {
-        $rows = $this->pdoQuery(
+        $rows = $this->db->pdoQuery(
             <<<SQL
                 SELECT * FROM {$this->dbSecurity("asistente_sesion")}
             SQL,
@@ -68,7 +68,7 @@ class AsistenteModel extends Model
 
     public function findSesion(int $id_sesion): ?AsistenteSesionDTO
     {
-        $sesion = $this->pdoQuery(
+        $sesion = $this->db->pdoQuery(
             <<<SQL
                 SELECT *
                 FROM {$this->dbSecurity("asistente_sesion")}
@@ -78,7 +78,7 @@ class AsistenteModel extends Model
         )->fetch();
         if (!$sesion) return null;
 
-        $mensajes = $this->pdoQuery(
+        $mensajes = $this->db->pdoQuery(
             <<<SQL
                 SELECT *
                 FROM {$this->dbSecurity("asistente_mensaje")}
@@ -93,7 +93,7 @@ class AsistenteModel extends Model
 
     public function getLastSesion(int $id_usuario): ?AsistenteSesionDTO
     {
-        $sesion = $this->pdoQuery(<<<SQL
+        $sesion = $this->db->pdoQuery(<<<SQL
             SELECT id_sesion
             FROM {$this->dbSecurity("asistente_sesion")}
             WHERE id_usuario = ?

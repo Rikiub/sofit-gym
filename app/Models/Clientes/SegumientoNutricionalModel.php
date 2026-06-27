@@ -2,12 +2,12 @@
 
 namespace App\Models\Clientes;
 
+use App\Core\Database;
 use App\Core\Validator;
 use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use InvalidArgumentException;
-use PDO;
 
 use function App\Core\toDbDate;
 
@@ -17,10 +17,10 @@ class SegumientoNutricionalModel extends Model
     private string $primaryKey = 'id_seguimiento';
 
     public function __construct(
-        PDO $pdo,
+        Database $db,
         private TreeMapper $mapper,
     ) {
-        return parent::__construct($pdo);
+        return parent::__construct($db);
     }
 
     private function sqlSelect(): string
@@ -36,7 +36,7 @@ class SegumientoNutricionalModel extends Model
      */
     public function queryByCliente(string $cedula): array
     {
-        $rows = $this->pdoQuery(
+        $rows = $this->db->pdoQuery(
             <<<SQL
                 {$this->sqlSelect()} 
                 WHERE cedula_cliente = ?
@@ -56,7 +56,7 @@ class SegumientoNutricionalModel extends Model
      */
     public function find(int $id): ?SeguimientoNutricionalDTO
     {
-        $row = $this->pdoQuery(
+        $row = $this->db->pdoQuery(
             "{$this->sqlSelect()} WHERE {$this->primaryKey} = ?",
             [$id]
         )->fetch();
@@ -72,9 +72,9 @@ class SegumientoNutricionalModel extends Model
     public function insert(SeguimientoNutricionalDTO $seguimiento): SeguimientoNutricionalDTO
     {
         $seguimiento->validateInsert();
-        $this->pdoInsert($this->table, $this->dtoToArray($seguimiento));
+        $this->db->pdoInsert($this->table, $this->dtoToArray($seguimiento));
 
-        $id = (int) $this->pdo->lastInsertId();
+        $id = (int) $this->db->lastInsertId();
         return $this->find($id);
     }
 
@@ -84,13 +84,13 @@ class SegumientoNutricionalModel extends Model
     public function update(SeguimientoNutricionalDTO $seguimiento): SeguimientoNutricionalDTO
     {
         $seguimiento->validateUpdate();
-        $this->pdoUpdate(
+        $this->db->pdoUpdate(
             $this->table,
             $this->dtoToArray($seguimiento),
             [$this->primaryKey => $seguimiento->id_seguimiento]
         );
 
-        $id = (int) $this->pdo->lastInsertId();
+        $id = (int) $this->db->lastInsertId();
         return $this->find($id);
     }
 
@@ -99,7 +99,7 @@ class SegumientoNutricionalModel extends Model
      */
     public function delete(int $id): void
     {
-        $this->pdoDelete($this->table, [$this->primaryKey => $id]);
+        $this->db->pdoDelete($this->table, [$this->primaryKey => $id]);
     }
 
     private function dtoToArray(SeguimientoNutricionalDTO $dto): array

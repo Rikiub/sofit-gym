@@ -2,6 +2,7 @@
 
 namespace App\Models\Clientes;
 
+use App\Core\Database;
 use App\Models\Model;
 use App\Models\Personas\PersonasModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -13,11 +14,11 @@ class ClientesModel extends Model
     public string $primaryKey = 'cedula';
 
     public function __construct(
-        PDO $pdo,
+        Database $db,
         private TreeMapper $mapper,
         private PersonasModel $personasModel,
     ) {
-        return parent::__construct($pdo);
+        return parent::__construct($db);
     }
 
     private function sqlSelect(string $where = ""): string
@@ -56,8 +57,8 @@ class ClientesModel extends Model
 
     public function queryMembresiaMetadata(): array
     {
-        $tipos = $this->pdoQuery('SELECT * FROM tipo_membresia')->fetchAll();
-        $estados = $this->pdoQuery('SELECT * FROM estado_membresia')->fetchAll();
+        $tipos = $this->db->pdoQuery('SELECT * FROM tipo_membresia')->fetchAll();
+        $estados = $this->db->pdoQuery('SELECT * FROM estado_membresia')->fetchAll();
 
         return [
             "tipos" => $tipos,
@@ -139,7 +140,7 @@ class ClientesModel extends Model
                 : ""
         );
 
-        $rows = $this->pdoQuery($sql, $params)->fetchAll();
+        $rows = $this->db->pdoQuery($sql, $params)->fetchAll();
         return array_map(
             $this->mapToCliente(...),
             $rows
@@ -148,7 +149,7 @@ class ClientesModel extends Model
 
     public function find(string $cedula): ?ClienteDTO
     {
-        $row = $this->pdoQuery(
+        $row = $this->db->pdoQuery(
             $this->sqlSelect("WHERE cliente.{$this->primaryKey} = ?"),
             [$cedula]
         )->fetch();
@@ -171,9 +172,9 @@ class ClientesModel extends Model
     {
         $cliente->validateInsert();
 
-        return $this->pdoTransaction(function () use ($cliente) {
+        return $this->db->pdoTransaction(function () use ($cliente) {
             $this->personasModel->insert($cliente);
-            $this->pdoInsert($this->table, [
+            $this->db->pdoInsert($this->table, [
                 $this->primaryKey => $cliente->cedula,
             ]);
             return $this->find($cliente->cedula);
@@ -188,7 +189,7 @@ class ClientesModel extends Model
 
     public function delete(string $cedula): void
     {
-        $this->pdoDelete($this->table, [$this->primaryKey => $cedula]);
+        $this->db->pdoDelete($this->table, [$this->primaryKey => $cedula]);
     }
 
     // REPORTES
@@ -242,7 +243,7 @@ class ClientesModel extends Model
         $sql .= " ORDER BY p.apellido ASC, p.nombre ASC";
 
         try {
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = $this->db->prepare($sql);
             $stmt->execute($params);
 
             // Retorna un array asociativo crudo idéntico a lo esperado en reporteClientes

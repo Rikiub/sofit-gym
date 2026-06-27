@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use App\Core\Database;
 use App\Core\Validator;
 use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
-use PDO;
 
 class BitacoraModel extends Model
 {
@@ -14,10 +14,10 @@ class BitacoraModel extends Model
     private string $primaryKey = 'id_bitacora';
 
     public function __construct(
-        PDO $pdo,
+        Database $db,
         private TreeMapper $mapper,
     ) {
-        parent::__construct($pdo);
+        parent::__construct($db);
     }
 
     private function dtoToArray(BitacoraDTO $dto): array
@@ -56,7 +56,7 @@ class BitacoraModel extends Model
      */
     public function query(): array
     {
-        $rows = $this->pdoQuery($this->sqlSelect())->fetchAll();
+        $rows = $this->db->pdoQuery($this->sqlSelect())->fetchAll();
 
         return array_map(
             fn($row) => $this->mapper->map(BitacoraDTO::class, $row),
@@ -66,7 +66,7 @@ class BitacoraModel extends Model
 
     public function find(int $id): ?BitacoraDTO
     {
-        $row = $this->pdoQuery(
+        $row = $this->db->pdoQuery(
             $this->sqlSelect("WHERE {$this->table}.{$this->primaryKey} = ?"),
             [$id]
         )->fetch();
@@ -80,9 +80,9 @@ class BitacoraModel extends Model
     {
         $bitacora->validateInsert();
 
-        return $this->pdoTransaction(function () use ($bitacora) {
+        return $this->db->pdoTransaction(function () use ($bitacora) {
             // Crear modulo dinamicamente si no existe
-            $this->pdoQuery(
+            $this->db->pdoQuery(
                 <<<SQL
                     INSERT INTO
                         {$this->dbSecurity("modulo")} (nombre)
@@ -93,21 +93,21 @@ class BitacoraModel extends Model
                 SQL,
                 [$bitacora->modulo],
             );
-            $idModulo = (int)$this->pdo->lastInsertId();
+            $idModulo = (int)$this->db->lastInsertId();
 
             // Insertar bitacora
             $array = $this->dtoToArray($bitacora);
             $array["id_modulo"] = $idModulo;
-            $this->pdoInsert($this->table, $array);
+            $this->db->pdoInsert($this->table, $array);
 
-            $id = (int)$this->pdo->lastInsertId();
+            $id = (int)$this->db->lastInsertId();
             return $this->find($id);
         });
     }
 
     public function limpiarRegistros(int $dias_retencion): void
     {
-        $this->pdoQuery(
+        $this->db->pdoQuery(
             <<<SQL
                 CALL {$this->dbSecurity("sp_limpiar_registros")}(?)
             SQL,

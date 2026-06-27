@@ -2,21 +2,21 @@
 
 namespace App\Models;
 
+use App\Core\Database;
 use App\Core\Validator;
 use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
-use PDO;
 
 class NotificacionesModel extends Model
 {
     private string $table = self::DB_SECURITY . ".notificacion";
 
     public function __construct(
-        PDO $pdo,
+        Database $db,
         private TreeMapper $mapper,
     ) {
-        parent::__construct($pdo);
+        parent::__construct($db);
     }
 
     private function sqlSelect(string $where = ""): string
@@ -42,7 +42,7 @@ class NotificacionesModel extends Model
      */
     public function query(int $id_usuario): array
     {
-        $rows = $this->pdoQuery(
+        $rows = $this->db->pdoQuery(
             $this->sqlSelect("WHERE id_usuario = ?"),
             [$id_usuario]
         )->fetchAll();
@@ -55,7 +55,7 @@ class NotificacionesModel extends Model
 
     public function find(int $id_usuario, int $id_notificacion): ?NotificacionDTO
     {
-        $row = $this->pdoQuery(
+        $row = $this->db->pdoQuery(
             $this->sqlSelect(
                 <<<SQL
                     WHERE
@@ -75,15 +75,15 @@ class NotificacionesModel extends Model
     {
         $notificacion->validateInsert();
 
-        $this->pdoTransaction(function () use ($id_usuarios, $notificacion) {
-            $this->pdoInsert($this->table, [
+        $this->db->pdoTransaction(function () use ($id_usuarios, $notificacion) {
+            $this->db->pdoInsert($this->table, [
                 'titulo' => $notificacion->titulo,
                 'contenido' => $notificacion->contenido,
             ]);
-            $id_notificacion = (int) $this->pdo->lastInsertId();
+            $id_notificacion = (int) $this->db->lastInsertId();
 
             foreach ($id_usuarios as $id) {
-                $this->pdoInsert(
+                $this->db->pdoInsert(
                     $this->dbSecurity("notificacion_usuario"),
                     [
                         "id_notificacion" => $id_notificacion,
@@ -96,7 +96,7 @@ class NotificacionesModel extends Model
 
     public function setLeido(int $id_usuario, int $id_notificacion, bool $leido)
     {
-        $this->pdoUpdate(
+        $this->db->pdoUpdate(
             $this->dbSecurity("notificacion_usuario"),
             ["leido" => $leido],
             [
@@ -109,7 +109,7 @@ class NotificacionesModel extends Model
 
     public function setLeidoTodas(int $id_usuario)
     {
-        $this->pdoUpdate(
+        $this->db->pdoUpdate(
             $this->dbSecurity("notificacion_usuario"),
             ["leido" => true],
             ["id_usuario" => $id_usuario]

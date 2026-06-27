@@ -2,11 +2,11 @@
 
 namespace App\Models\Equipos;
 
+use App\Core\Database;
 use App\Core\Validator;
 use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
-use PDO;
 
 class EquiposModel extends Model
 {
@@ -14,10 +14,10 @@ class EquiposModel extends Model
     private string $primaryKey = 'codigo_equipo';
 
     public function __construct(
-        PDO $pdo,
+        Database $db,
         private TreeMapper $mapper,
     ) {
-        return parent::__construct($pdo);
+        return parent::__construct($db);
     }
 
     private function sqlSelect(string $where = ""): string
@@ -37,7 +37,7 @@ class EquiposModel extends Model
      */
     public function query(): array
     {
-        $rows = $this->pdoQuery($this->sqlSelect())->fetchAll();
+        $rows = $this->db->pdoQuery($this->sqlSelect())->fetchAll();
         return array_map(
             fn($row) => $this->mapper->map(EquipoDTO::class, $row),
             $rows
@@ -46,7 +46,7 @@ class EquiposModel extends Model
 
     public function find(string $codigo): ?EquipoDTO
     {
-        $row = $this->pdoQuery(
+        $row = $this->db->pdoQuery(
             $this->sqlSelect("WHERE {$this->primaryKey} = ?"),
             [$codigo]
         )->fetch();
@@ -60,7 +60,7 @@ class EquiposModel extends Model
     {
         $equipo->validateInsert();
 
-        $this->pdoInsert($this->table, $this->dtoToArray($equipo));
+        $this->db->pdoInsert($this->table, $this->dtoToArray($equipo));
         return $this->find($equipo->codigo);
     }
 
@@ -71,7 +71,7 @@ class EquiposModel extends Model
         $array = $this->dtoToArray($equipo);
         unset($array['codigo_equipo']);
 
-        $this->pdoUpdate(
+        $this->db->pdoUpdate(
             $this->table,
             $array,
             [$this->primaryKey => $equipo->codigo],
@@ -82,7 +82,7 @@ class EquiposModel extends Model
 
     public function delete(string $codigo): void
     {
-        $this->pdoDelete($this->table, [$this->primaryKey => $codigo]);
+        $this->db->pdoDelete($this->table, [$this->primaryKey => $codigo]);
     }
 
     private function dtoToArray(EquipoDTO $dto): array

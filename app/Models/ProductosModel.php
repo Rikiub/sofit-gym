@@ -30,7 +30,7 @@ class ProductosModel extends Model
                              OR p.nombre LIKE :termino 
                              OR c.nombre LIKE :termino)
                         ORDER BY p.nombre ASC";
-                $stmt = $this->pdo->prepare($sql);
+                $stmt = $this->db->prepare($sql);
                 $stmt->execute(['termino' => "%{$termino}%"]);
             } else {
                 $sql = "SELECT p.*, c.nombre AS nombre_categoria, u.nombre AS nombre_unidad 
@@ -39,7 +39,7 @@ class ProductosModel extends Model
                         LEFT JOIN unidad_medida u ON p.id_unidad = u.id_unidad
                         WHERE p.activo = 1 
                         ORDER BY p.nombre ASC";
-                $stmt = $this->pdo->query($sql);
+                $stmt = $this->db->query($sql);
             }
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -62,7 +62,7 @@ class ProductosModel extends Model
                     LEFT JOIN categoria_producto c ON p.id_categoria = c.id_categoria
                     LEFT JOIN unidad_medida u ON p.id_unidad = u.id_unidad
                     WHERE p.codigo_producto = ? LIMIT 1";
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = $this->db->prepare($sql);
             $stmt->execute([$codigo]);
             $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
             return $resultado ?: null;
@@ -92,7 +92,7 @@ class ProductosModel extends Model
                 'activo'          => isset($datos['activo']) ? intval($datos['activo']) : 1
             ];
 
-            $this->pdoInsert($this->tabla, $nuevoProducto);
+            $this->db->pdoInsert($this->tabla, $nuevoProducto);
             return true;
         } catch (PDOException $e) {
             error_log("Error en ProductosModel::crear: " . $e->getMessage());
@@ -111,7 +111,7 @@ class ProductosModel extends Model
     {
         try {
             unset($datos['codigo_producto']); // Seguridad: No alterar la clave primaria primaria
-            $this->pdoUpdate($this->tabla, $datos, ['codigo_producto' => $codigo]);
+            $this->db->pdoUpdate($this->tabla, $datos, ['codigo_producto' => $codigo]);
             return true;
         } catch (PDOException $e) {
             error_log("Error en ProductosModel::actualizar: " . $e->getMessage());
@@ -130,7 +130,7 @@ class ProductosModel extends Model
     {
         try {
             if ($fisico) {
-                $filasAfectadas = $this->pdoDelete($this->tabla, ['codigo_producto' => $codigo]);
+                $filasAfectadas = $this->db->pdoDelete($this->tabla, ['codigo_producto' => $codigo]);
                 return $filasAfectadas > 0;
             } else {
                 return $this->actualizar($codigo, ['activo' => 0]);
@@ -154,7 +154,7 @@ class ProductosModel extends Model
             $sql = "UPDATE {$this->tabla} 
                     SET stock_actual = stock_actual + ? 
                     WHERE codigo_producto = ? AND (stock_actual + ?) >= 0";
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = $this->db->prepare($sql);
             return $stmt->execute([$cantidad, $codigo, $cantidad]);
         } catch (PDOException $e) {
             error_log("Error en ProductosModel::actualizarStock: " . $e->getMessage());
@@ -177,7 +177,7 @@ class ProductosModel extends Model
                     WHERE p.activo = 1 
                     AND p.stock_actual <= p.stock_minimo 
                     ORDER BY p.stock_actual ASC";
-            $stmt = $this->pdo->query($sql);
+            $stmt = $this->db->query($sql);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Error en ProductosModel::obtenerBajoStock: " . $e->getMessage());
@@ -198,7 +198,7 @@ class ProductosModel extends Model
                     INNER JOIN persona p ON c.cedula = p.cedula 
                     WHERE p.activo = 1 
                     ORDER BY p.nombre ASC, p.apellido ASC";
-            $stmt = $this->pdo->query($sql);
+            $stmt = $this->db->query($sql);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Error en ProductosModel::obtenerClientes: " . $e->getMessage());
@@ -221,7 +221,7 @@ class ProductosModel extends Model
 
         try {
             // Iniciar transacción atómica de base de datos
-            $this->pdo->beginTransaction();
+            $this->db->beginTransaction();
 
             $detallesVenta = [];
             $montoTotalVenta = 0;
@@ -229,10 +229,10 @@ class ProductosModel extends Model
             // Verificar si el cliente existe utilizando la columna física 'cedula'
             if (!empty($cedulaCliente)) {
                 $sqlCliente = "SELECT COUNT(*) FROM cliente WHERE cedula = ?";
-                $stmtCliente = $this->pdo->prepare($sqlCliente);
+                $stmtCliente = $this->db->prepare($sqlCliente);
                 $stmtCliente->execute([$cedulaCliente]);
                 if ($stmtCliente->fetchColumn() == 0) {
-                    $this->pdo->rollBack();
+                    $this->db->rollBack();
                     return ['success' => false, 'message' => "El cliente con cédula '{$cedulaCliente}' no está registrado."];
                 }
             } else {
@@ -242,10 +242,10 @@ class ProductosModel extends Model
             // Validar que el método de pago exista en la tabla maestra
             if (!empty($idMetodo)) {
                 $sqlMetodo = "SELECT COUNT(*) FROM metodo_pago WHERE id_metodo = ?";
-                $stmtMetodo = $this->pdo->prepare($sqlMetodo);
+                $stmtMetodo = $this->db->prepare($sqlMetodo);
                 $stmtMetodo->execute([$idMetodo]);
                 if ($stmtMetodo->fetchColumn() == 0) {
-                    $this->pdo->rollBack();
+                    $this->db->rollBack();
                     return ['success' => false, 'message' => "El método de pago especificado no es válido."];
                 }
             } else {
@@ -258,23 +258,23 @@ class ProductosModel extends Model
                 $cantidad = floatval($item['cantidad']);
 
                 if ($cantidad <= 0) {
-                    $this->pdo->rollBack();
+                    $this->db->rollBack();
                     return ['success' => false, 'message' => 'La cantidad a vender debe ser mayor que cero.'];
                 }
 
                 // Obtener datos del producto directo del estado real de la base de datos
                 $sqlProd = "SELECT nombre, precio_venta, stock_actual, activo FROM {$this->tabla} WHERE codigo_producto = ? LIMIT 1";
-                $stmtProd = $this->pdo->prepare($sqlProd);
+                $stmtProd = $this->db->prepare($sqlProd);
                 $stmtProd->execute([$codigo]);
                 $prod = $stmtProd->fetch(PDO::FETCH_ASSOC);
 
                 if (!$prod || $prod['activo'] == 0) {
-                    $this->pdo->rollBack();
+                    $this->db->rollBack();
                     return ['success' => false, 'message' => "El producto con código '{$codigo}' no existe o está inactivo."];
                 }
 
                 if ($prod['stock_actual'] < $cantidad) {
-                    $this->pdo->rollBack();
+                    $this->db->rollBack();
                     return [
                         'success' => false,
                         'message' => "Stock insuficiente para '{$prod['nombre']}'. Inventario actual: {$prod['stock_actual']}, solicitado: {$cantidad}."
@@ -297,7 +297,7 @@ class ProductosModel extends Model
             // Nota: Tu Trigger 'tg_actualizar_stock_venta' restará de forma automática el stock de la tabla producto
             $sqlInsert = "INSERT INTO venta_producto (id_metodo, codigo_producto, cedula_cliente, cantidad_vendida, monto_total) 
                           VALUES (:id_metodo, :codigo, :cedula, :cantidad, :monto)";
-            $stmtInsert = $this->pdo->prepare($sqlInsert);
+            $stmtInsert = $this->db->prepare($sqlInsert);
 
             $idsVenta = [];
             foreach ($detallesVenta as &$detalle) {
@@ -308,11 +308,11 @@ class ProductosModel extends Model
                     'cantidad'  => $detalle['cantidad_vendida'],
                     'monto'     => $detalle['monto_total']
                 ]);
-                $idsVenta[] = $this->pdo->lastInsertId();
+                $idsVenta[] = $this->db->lastInsertId();
             }
 
             // Confirmar transacción definitiva si todo culminó bien
-            $this->pdo->commit();
+            $this->db->commit();
 
             return [
                 'success' => true,
@@ -327,8 +327,8 @@ class ProductosModel extends Model
                 ]
             ];
         } catch (PDOException $e) {
-            if ($this->pdo->inTransaction()) {
-                $this->pdo->rollBack();
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
             }
             error_log("Error en ProductosModel::registrarVentaMultiplesProductos: " . $e->getMessage());
             return ['success' => false, 'message' => '❌ Error de base de datos al procesar la venta. Contacte soporte técnico.'];
@@ -370,7 +370,7 @@ class ProductosModel extends Model
                   ORDER BY total_vendido DESC";
 
         try {
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = $this->db->prepare($sql);
             $stmt->execute($params);
 
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
