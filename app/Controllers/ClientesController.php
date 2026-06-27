@@ -131,7 +131,7 @@ class ClientesController extends Controller
 
     private function requiredCedula(): string
     {
-        return Request::requiredParam("cedula");
+        return Request::requiredParam("id");
     }
 
     // REPORTES

@@ -9,16 +9,12 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Exception;
 use PDO;
-use Throwable;
 
 use function App\Core\toDbDate;
 
 class UsuariosModel extends Model
 {
-    private string $dbSeguridad = "sofit_gym_seguridad";
-    private string $table = 'sofit_gym_seguridad.usuario';
-    private string $tableRecuperacion = 'sofit_gym_seguridad.recuperacion_contrasena';
-    private string $primaryKey = 'id_usuario';
+    private string $table = self::DB_SECURITY . ".usuario";
 
     public function __construct(
         PDO $pdo,
@@ -36,15 +32,15 @@ class UsuariosModel extends Model
                 (
                     SELECT CONCAT('[', GROUP_CONCAT(CONCAT('"', p.nombre, '"')), ']')
                     FROM
-                        {$this->dbSeguridad}.permiso p
+                        {$this->dbSecurity("permiso")} p
                     JOIN
-                        {$this->dbSeguridad}.rol_permiso rp 
+                        {$this->dbSecurity("rol_permiso")} rp 
                         ON rp.id_permiso = p.id_permiso
                     WHERE rp.id_rol = usuario.id_rol
                 ) AS `permisos`
             FROM {$this->table} usuario
             LEFT JOIN
-                {$this->dbSeguridad}.rol rol
+                {$this->dbSecurity("rol")} rol
                 ON rol.id_rol = usuario.id_rol
             {$where}
         SQL;
@@ -118,7 +114,7 @@ class UsuariosModel extends Model
         $this->pdoUpdate(
             $this->table,
             $array,
-            [$this->primaryKey => $usuario->id_usuario],
+            ["id_usuario" => $usuario->id_usuario],
         );
 
         $usuario = $this->find($usuario->nombre_usuario);
@@ -168,7 +164,7 @@ class UsuariosModel extends Model
     public function insertIntentoAcceso(int $id_usuario, bool $exito): void
     {
         $this->pdoInsert(
-            "{$this->dbSeguridad}.intento_acceso",
+            $this->dbSecurity('intento_acceso'),
             [
                 "id_usuario" => $id_usuario,
                 "exito" => $exito
@@ -182,7 +178,7 @@ class UsuariosModel extends Model
             <<<SQL
                 SELECT COUNT(*)
                 FROM
-                    {$this->dbSeguridad}.intento_acceso
+                    {$this->dbSecurity('intento_acceso')}
                 WHERE
                     id_usuario = ?
                     AND exito = 0
@@ -202,12 +198,15 @@ class UsuariosModel extends Model
 
     public function saveRecoveryCode(int $id_usuario, string $codigo, DateTimeInterface $expiracion): void
     {
-        $this->pdoInsert($this->tableRecuperacion, [
-            "id_usuario" => $id_usuario,
-            "codigo" => $codigo,
-            "creado_en" => toDbDate(new DateTimeImmutable()),
-            "expira_en" => toDbDate($expiracion),
-        ]);
+        $this->pdoInsert(
+            $this->dbSecurity("recuperacion_contrasena"),
+            [
+                "id_usuario" => $id_usuario,
+                "codigo" => $codigo,
+                "creado_en" => toDbDate(new DateTimeImmutable()),
+                "expira_en" => toDbDate($expiracion),
+            ]
+        );
     }
 
     public function verifyRecoveryCode(string $codigo): ?UsuarioDTO
@@ -215,7 +214,7 @@ class UsuariosModel extends Model
         $row = $this->pdoQuery(
             <<<SQL
                 SELECT id_usuario
-                FROM {$this->tableRecuperacion}
+                FROM {$this->dbSecurity("recuperacion_contrasena")}
                 WHERE
                     codigo = ? 
                     AND expira_en > creado_en
@@ -230,35 +229,23 @@ class UsuariosModel extends Model
 
     public function updatePasswordAndClearCode(int $id_usuario, string $new_password): void
     {
-        $hashedPassword = password_hash($new_password, PASSWORD_DEFAULT);
-
         if (!$this->find($id_usuario)) {
             throw new Exception("Usuario no encontrado");
         }
 
-        $this->pdo->beginTransaction();
-        try {
-            $this->pdoQuery(
-                <<<SQL
-                UPDATE {$this->table}
-                SET contrasena_hash = ?
-                WHERE id_usuario = ?
-            SQL,
-                [$hashedPassword, $id_usuario]
-            );
-            $this->pdoQuery(
-                <<<SQL
-                DELETE FROM {$this->tableRecuperacion}
-                WHERE id_usuario = ?
-            SQL,
-                [$id_usuario]
-            );
+        $this->pdoTransaction(function () use ($id_usuario, $new_password) {
+            $hashedPassword = password_hash($new_password, PASSWORD_DEFAULT);
 
-            $this->pdo->commit();
-        } catch (Throwable $e) {
-            $this->pdo->rollBack();
-            throw $e;
-        }
+            $this->pdoUpdate(
+                table: $this->table,
+                data: ["contrasena_hash" => $hashedPassword],
+                conditions: ["id_usuario" => $id_usuario],
+            );
+            $this->pdoDelete(
+                table: $this->dbSecurity("recuperacion_contrasena"),
+                conditions: ["id_usuario" => $id_usuario],
+            );
+        });
     }
 }
 

@@ -12,8 +12,6 @@ use PDO;
 
 class AsistenteModel extends Model
 {
-    private string $dbSeguridad = "sofit_gym_seguridad";
-
     public function __construct(
         PDO $pdo,
         private TreeMapper $mapper,
@@ -30,7 +28,7 @@ class AsistenteModel extends Model
 
     public function insertSesion(AsistenteSesionDTO $sesion): AsistenteSesionDTO
     {
-        $table = "{$this->dbSeguridad}.asistente_sesion";
+        $table = $this->dbSecurity("asistente_sesion");
 
         $array = (array) $sesion;
         unset($array["fecha_creacion"]);
@@ -44,7 +42,7 @@ class AsistenteModel extends Model
 
     public function insertMensaje(AsistenteMensajeDTO $mensaje): void
     {
-        $table = "{$this->dbSeguridad}.asistente_mensaje";
+        $table = $this->dbSecurity("asistente_mensaje");
 
         $array = (array) $mensaje;
         unset($array["fecha_creacion"]);
@@ -58,7 +56,7 @@ class AsistenteModel extends Model
     {
         $rows = $this->pdoQuery(
             <<<SQL
-                SELECT * FROM {$this->dbSeguridad}.asistente_sesion
+                SELECT * FROM {$this->dbSecurity("asistente_sesion")}
             SQL,
         )->fetchAll();
 
@@ -72,7 +70,8 @@ class AsistenteModel extends Model
     {
         $sesion = $this->pdoQuery(
             <<<SQL
-                SELECT * FROM {$this->dbSeguridad}.asistente_sesion
+                SELECT *
+                FROM {$this->dbSecurity("asistente_sesion")}
                 WHERE id_sesion = ?
             SQL,
             [$id_sesion]
@@ -81,7 +80,8 @@ class AsistenteModel extends Model
 
         $mensajes = $this->pdoQuery(
             <<<SQL
-                SELECT * FROM {$this->dbSeguridad}.asistente_mensaje
+                SELECT *
+                FROM {$this->dbSecurity("asistente_mensaje")}
                 WHERE id_sesion = ?
             SQL,
             [$id_sesion]
@@ -94,7 +94,8 @@ class AsistenteModel extends Model
     public function getLastSesion(int $id_usuario): ?AsistenteSesionDTO
     {
         $sesion = $this->pdoQuery(<<<SQL
-            SELECT id_sesion FROM {$this->dbSeguridad}.asistente_sesion
+            SELECT id_sesion
+            FROM {$this->dbSecurity("asistente_sesion")}
             WHERE id_usuario = ?
             ORDER BY fecha_creacion DESC
             LIMIT 1

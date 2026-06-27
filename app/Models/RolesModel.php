@@ -8,8 +8,6 @@ use PDO;
 
 class RolesModel extends Model
 {
-    private string $dbSeguridad = "sofit_gym_seguridad";
-
     public function __construct(
         PDO $pdo,
         private TreeMapper $mapper,
@@ -25,14 +23,14 @@ class RolesModel extends Model
                     (
                         SELECT CONCAT('[', GROUP_CONCAT(CONCAT('"', p.nombre, '"')), ']')
                         FROM
-                            {$this->dbSeguridad}.permiso p
+                            {$this->dbSecurity("permiso")} p
                         JOIN
-                            {$this->dbSeguridad}.rol_permiso rp 
+                            {$this->dbSecurity("rol_permiso")} rp 
                             ON rp.id_permiso = p.id_permiso
                         WHERE rp.id_rol = rol.id_rol
                         ORDER BY p.nombre
                     ) AS `permisos`
-                FROM {$this->dbSeguridad}.rol rol
+                FROM {$this->dbSecurity("rol")} rol
                 {$where}
             SQL;
     }
@@ -51,7 +49,7 @@ class RolesModel extends Model
         $rows = $this->pdoQuery(
             <<<SQL
                 SELECT *
-                FROM {$this->dbSeguridad}.permiso
+                FROM {$this->dbSecurity("permiso")}
                 ORDER BY nombre
             SQL
         )->fetchAll();
@@ -62,7 +60,7 @@ class RolesModel extends Model
         $row = $this->pdoQuery(
             <<<SQL
                 SELECT *
-                FROM {$this->dbSeguridad}.permiso
+                FROM {$this->dbSecurity("permiso")}
                 WHERE nombre = ?
             SQL,
             [$nombre]
@@ -118,7 +116,7 @@ class RolesModel extends Model
 
     private function syncPermisos(int $id_rol, array $permisos): void
     {
-        $table = "{$this->dbSeguridad}.rol_permiso";
+        $table = $this->dbSecurity("rol_permiso");
 
         // Eliminar todos los permisos del rol
         foreach ($permisos as $p) {

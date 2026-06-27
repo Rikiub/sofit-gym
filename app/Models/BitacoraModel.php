@@ -10,8 +10,7 @@ use PDO;
 
 class BitacoraModel extends Model
 {
-    private string $dbSeguridad = "sofit_gym_seguridad";
-    private string $table = "sofit_gym_seguridad.bitacora";
+    private string $table = self::DB_SECURITY . ".bitacora";
     private string $primaryKey = 'id_bitacora';
 
     public function __construct(
@@ -43,9 +42,9 @@ class BitacoraModel extends Model
                     modulo.nombre AS `modulo`
                 FROM
                     {$this->table} bitacora
-                LEFT JOIN {$this->dbSeguridad}.modulo
+                LEFT JOIN {$this->dbSecurity("modulo")}
                     ON bitacora.id_modulo = modulo.id_modulo
-                LEFT JOIN {$this->dbSeguridad}.usuario
+                LEFT JOIN {$this->dbSecurity("usuario")}
                     ON usuario.id_usuario = bitacora.id_usuario
                 {$where}
                 ORDER BY fecha DESC
@@ -86,7 +85,7 @@ class BitacoraModel extends Model
             $this->pdoQuery(
                 <<<SQL
                     INSERT INTO
-                        {$this->dbSeguridad}.modulo (nombre)
+                        {$this->dbSecurity("modulo")} (nombre)
                     VALUES
                         (?)
                     ON DUPLICATE KEY UPDATE
@@ -110,7 +109,7 @@ class BitacoraModel extends Model
     {
         $this->pdoQuery(
             <<<SQL
-                CALL {$this->dbSeguridad}.sp_limpiar_registros(?)
+                CALL {$this->dbSecurity("sp_limpiar_registros")}(?)
             SQL,
             [$dias_retencion]
         );

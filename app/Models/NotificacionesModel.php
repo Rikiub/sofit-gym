@@ -10,8 +10,7 @@ use PDO;
 
 class NotificacionesModel extends Model
 {
-    private string $dbSeguridad = "sofit_gym_seguridad";
-    private string $table = "sofit_gym_seguridad.notificacion";
+    private string $table = self::DB_SECURITY . ".notificacion";
 
     public function __construct(
         PDO $pdo,
@@ -28,7 +27,7 @@ class NotificacionesModel extends Model
                     nu.leido,
                     nu.fecha_leido
                 FROM {$this->table} notif
-                LEFT JOIN {$this->dbSeguridad}.notificacion_usuario nu
+                LEFT JOIN {$this->dbSecurity("notificacion_usuario")} nu
                     ON nu.id_notificacion = notif.id_notificacion
                 {$where}
                 ORDER BY
@@ -84,10 +83,13 @@ class NotificacionesModel extends Model
             $id_notificacion = (int) $this->pdo->lastInsertId();
 
             foreach ($id_usuarios as $id) {
-                $this->pdoInsert("{$this->dbSeguridad}.notificacion_usuario", [
-                    "id_notificacion" => $id_notificacion,
-                    "id_usuario" => $id,
-                ]);
+                $this->pdoInsert(
+                    $this->dbSecurity("notificacion_usuario"),
+                    [
+                        "id_notificacion" => $id_notificacion,
+                        "id_usuario" => $id,
+                    ]
+                );
             }
         });
     }
@@ -95,7 +97,7 @@ class NotificacionesModel extends Model
     public function setLeido(int $id_usuario, int $id_notificacion, bool $leido)
     {
         $this->pdoUpdate(
-            "{$this->dbSeguridad}.notificacion_usuario",
+            $this->dbSecurity("notificacion_usuario"),
             ["leido" => $leido],
             [
                 "id_usuario" => $id_usuario,
@@ -108,7 +110,7 @@ class NotificacionesModel extends Model
     public function setLeidoTodas(int $id_usuario)
     {
         $this->pdoUpdate(
-            "{$this->dbSeguridad}.notificacion_usuario",
+            $this->dbSecurity("notificacion_usuario"),
             ["leido" => true],
             ["id_usuario" => $id_usuario]
         );
