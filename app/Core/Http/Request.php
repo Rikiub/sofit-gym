@@ -9,20 +9,6 @@ const CONTENT_JSON = 'application/json';
  */
 class Request
 {
-    /** Intenta obtener datos desde el POST o JSON input. */
-    public static function getParsedBody(): array
-    {
-        // Si el contenido es JSON, entonces decodificarlo.
-        if (Request::isJson()) {
-            $rawInput = file_get_contents('php://input');
-            $data = json_decode($rawInput, associative: true, flags: JSON_THROW_ON_ERROR);
-            return $data;
-        }
-
-        // Si el contenido es form POST, entonces devolver directamente
-        return $_POST;
-    }
-
     /** Obtiene un parámetro de la URL como string. */
     public static function query(string $param): ?string
     {
@@ -63,6 +49,20 @@ class Request
 
         $filtered = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
         return $filtered ?? false;
+    }
+
+    /** Intenta obtener datos desde el POST o JSON input. */
+    public static function getParsedBody(): array
+    {
+        // Si el contenido es JSON, entonces decodificarlo.
+        if (Request::isJson()) {
+            $rawInput = file_get_contents('php://input');
+            $data = json_decode($rawInput, associative: true, flags: JSON_THROW_ON_ERROR);
+            return $data;
+        }
+
+        // Si el contenido es form POST, entonces devolver directamente
+        return $_POST;
     }
 
     public static function wantsJson()

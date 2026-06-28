@@ -57,8 +57,8 @@ class ClientesModel extends Model
 
     public function queryMembresiaMetadata(): array
     {
-        $tipos = $this->db->pdoQuery('SELECT * FROM tipo_membresia')->fetchAll();
-        $estados = $this->db->pdoQuery('SELECT * FROM estado_membresia')->fetchAll();
+        $tipos = $this->db->dbQuery('SELECT * FROM tipo_membresia')->fetchAll();
+        $estados = $this->db->dbQuery('SELECT * FROM estado_membresia')->fetchAll();
 
         return [
             "tipos" => $tipos,
@@ -140,7 +140,7 @@ class ClientesModel extends Model
                 : ""
         );
 
-        $rows = $this->db->pdoQuery($sql, $params)->fetchAll();
+        $rows = $this->db->dbQuery($sql, $params)->fetchAll();
         return array_map(
             $this->mapToCliente(...),
             $rows
@@ -149,7 +149,7 @@ class ClientesModel extends Model
 
     public function find(string $cedula): ?ClienteDTO
     {
-        $row = $this->db->pdoQuery(
+        $row = $this->db->dbQuery(
             $this->sqlSelect("WHERE cliente.{$this->primaryKey} = ?"),
             [$cedula]
         )->fetch();
@@ -172,9 +172,9 @@ class ClientesModel extends Model
     {
         $cliente->validateInsert();
 
-        return $this->db->pdoTransaction(function () use ($cliente) {
+        return $this->db->dbTransaction(function () use ($cliente) {
             $this->personasModel->insert($cliente);
-            $this->db->pdoInsert($this->table, [
+            $this->db->dbInsert($this->table, [
                 $this->primaryKey => $cliente->cedula,
             ]);
             return $this->find($cliente->cedula);
@@ -189,7 +189,7 @@ class ClientesModel extends Model
 
     public function delete(string $cedula): void
     {
-        $this->db->pdoDelete($this->table, [$this->primaryKey => $cedula]);
+        $this->db->dbDelete($this->table, [$this->primaryKey => $cedula]);
     }
 
     // REPORTES

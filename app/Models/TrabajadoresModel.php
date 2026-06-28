@@ -85,7 +85,7 @@ class TrabajadoresModel extends Model
             $sql .= " WHERE " . implode(" AND ", $whereClauses);
         }
 
-        $rows = $this->db->pdoQuery($sql, $params)->fetchAll();
+        $rows = $this->db->dbQuery($sql, $params)->fetchAll();
 
         return array_map(
             fn($row) => $this->mapper->map(TrabajadorDTO::class, $row),
@@ -95,7 +95,7 @@ class TrabajadoresModel extends Model
 
     public function find(string $cedula): ?TrabajadorDTO
     {
-        $row = $this->db->pdoQuery(
+        $row = $this->db->dbQuery(
             "{$this->sqlSelect()} WHERE trabajador.{$this->primaryKey} = ?",
             [$cedula]
         )->fetch();
@@ -118,9 +118,9 @@ class TrabajadoresModel extends Model
     {
         $trabajador->validateInsert();
 
-        return $this->db->pdoTransaction(function () use ($trabajador) {
+        return $this->db->dbTransaction(function () use ($trabajador) {
             $this->personasModel->insert($trabajador);
-            $this->db->pdoInsert(
+            $this->db->dbInsert(
                 $this->table,
                 $this->dtoToArray($trabajador),
             );
@@ -130,13 +130,13 @@ class TrabajadoresModel extends Model
 
     public function update(TrabajadorDTO $trabajador): TrabajadorDTO
     {
-        return $this->db->pdoTransaction(function () use ($trabajador) {
+        return $this->db->dbTransaction(function () use ($trabajador) {
             $this->personasModel->update($trabajador);
 
             $array = $this->dtoToArray($trabajador);
             unset($array['cedula']);
 
-            $this->db->pdoUpdate(
+            $this->db->dbUpdate(
                 $this->table,
                 $array,
                 [$this->primaryKey => $trabajador->cedula],
@@ -148,7 +148,7 @@ class TrabajadoresModel extends Model
 
     public function delete(string $cedula): void
     {
-        $this->db->pdoDelete($this->table, [$this->primaryKey => $cedula]);
+        $this->db->dbDelete($this->table, [$this->primaryKey => $cedula]);
     }
 
     private function dtoToArray(TrabajadorDTO $dto): array

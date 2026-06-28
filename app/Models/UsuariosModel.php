@@ -58,13 +58,13 @@ class UsuariosModel extends Model
      */
     public function query(): array
     {
-        $rows = $this->db->pdoQuery($this->sqlSelect())->fetchAll();
+        $rows = $this->db->dbQuery($this->sqlSelect())->fetchAll();
         return array_map($this->mapUsuario(...), $rows);
     }
 
     public function find(int|string $nombre_usuario): ?UsuarioDTO
     {
-        $row = $this->db->pdoQuery(
+        $row = $this->db->dbQuery(
             $this->sqlSelect(
                 <<<SQL
                 WHERE
@@ -82,7 +82,7 @@ class UsuariosModel extends Model
 
     public function findByEmail(string $email): ?UsuarioDTO
     {
-        $row = $this->db->pdoQuery(
+        $row = $this->db->dbQuery(
             $this->sqlSelect("WHERE {$this->table}.email = ?"),
             [$email]
         )->fetch();
@@ -96,7 +96,7 @@ class UsuariosModel extends Model
     {
         $usuario->validateInsert();
 
-        $this->db->pdoInsert(
+        $this->db->dbInsert(
             $this->table,
             $this->dtoToArray($usuario),
         );
@@ -111,7 +111,7 @@ class UsuariosModel extends Model
         $array = $this->dtoToArray($usuario);
         unset($array["contrasena_hash"]);
 
-        $this->db->pdoUpdate(
+        $this->db->dbUpdate(
             $this->table,
             $array,
             ["id_usuario" => $usuario->id_usuario],
@@ -123,7 +123,7 @@ class UsuariosModel extends Model
 
     public function delete(int|string $id): void
     {
-        $this->db->pdoQuery(
+        $this->db->dbQuery(
             <<<SQL
                 DELETE FROM {$this->table}
                 WHERE
@@ -136,7 +136,7 @@ class UsuariosModel extends Model
 
     public function actualizarUltimoAcceso(int $id)
     {
-        $this->db->pdoUpdate(
+        $this->db->dbUpdate(
             $this->table,
             ["ultimo_acceso" => toDbDate(new DateTimeImmutable())],
             ["id_usuario" => $id]
@@ -163,7 +163,7 @@ class UsuariosModel extends Model
     // Intentos
     public function insertIntentoAcceso(int $id_usuario, bool $exito): void
     {
-        $this->db->pdoInsert(
+        $this->db->dbInsert(
             $this->dbSecurity('intento_acceso'),
             [
                 "id_usuario" => $id_usuario,
@@ -174,7 +174,7 @@ class UsuariosModel extends Model
 
     public function intentosFallidos(int $id_usuario, DateTimeImmutable $duracion): int
     {
-        $intentos = $this->db->pdoQuery(
+        $intentos = $this->db->dbQuery(
             <<<SQL
                 SELECT COUNT(*)
                 FROM
@@ -198,7 +198,7 @@ class UsuariosModel extends Model
 
     public function saveRecoveryCode(int $id_usuario, string $codigo, DateTimeInterface $expiracion): void
     {
-        $this->db->pdoInsert(
+        $this->db->dbInsert(
             $this->dbSecurity("recuperacion_contrasena"),
             [
                 "id_usuario" => $id_usuario,
@@ -211,7 +211,7 @@ class UsuariosModel extends Model
 
     public function verifyRecoveryCode(string $codigo): ?UsuarioDTO
     {
-        $row = $this->db->pdoQuery(
+        $row = $this->db->dbQuery(
             <<<SQL
                 SELECT id_usuario
                 FROM {$this->dbSecurity("recuperacion_contrasena")}
@@ -233,15 +233,15 @@ class UsuariosModel extends Model
             throw new Exception("Usuario no encontrado");
         }
 
-        $this->db->pdoTransaction(function () use ($id_usuario, $new_password) {
+        $this->db->dbTransaction(function () use ($id_usuario, $new_password) {
             $hashedPassword = password_hash($new_password, PASSWORD_DEFAULT);
 
-            $this->db->pdoUpdate(
+            $this->db->dbUpdate(
                 table: $this->table,
                 data: ["contrasena_hash" => $hashedPassword],
                 conditions: ["id_usuario" => $id_usuario],
             );
-            $this->db->pdoDelete(
+            $this->db->dbDelete(
                 table: $this->dbSecurity("recuperacion_contrasena"),
                 conditions: ["id_usuario" => $id_usuario],
             );

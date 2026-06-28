@@ -73,7 +73,7 @@ class ProductosModel extends Model
     }
 
     /**
-     * Insertar un nuevo producto utilizando pdoInsert de la clase abstracta
+     * Insertar un nuevo producto utilizando dbInsert de la clase abstracta
      *
      * @param array $datos Estructura asociativa con los campos del producto
      * @return bool True si se completó con éxito
@@ -92,7 +92,7 @@ class ProductosModel extends Model
                 'activo'          => isset($datos['activo']) ? intval($datos['activo']) : 1
             ];
 
-            $this->db->pdoInsert($this->tabla, $nuevoProducto);
+            $this->db->dbInsert($this->tabla, $nuevoProducto);
             return true;
         } catch (PDOException $e) {
             error_log("Error en ProductosModel::crear: " . $e->getMessage());
@@ -101,7 +101,7 @@ class ProductosModel extends Model
     }
 
     /**
-     * Actualizar los datos de un producto utilizando pdoUpdate
+     * Actualizar los datos de un producto utilizando dbUpdate
      *
      * @param string $codigo Código del producto a editar
      * @param array $datos Campos modificados a actualizar
@@ -111,7 +111,7 @@ class ProductosModel extends Model
     {
         try {
             unset($datos['codigo_producto']); // Seguridad: No alterar la clave primaria primaria
-            $this->db->pdoUpdate($this->tabla, $datos, ['codigo_producto' => $codigo]);
+            $this->db->dbUpdate($this->tabla, $datos, ['codigo_producto' => $codigo]);
             return true;
         } catch (PDOException $e) {
             error_log("Error en ProductosModel::actualizar: " . $e->getMessage());
@@ -130,7 +130,7 @@ class ProductosModel extends Model
     {
         try {
             if ($fisico) {
-                $filasAfectadas = $this->db->pdoDelete($this->tabla, ['codigo_producto' => $codigo]);
+                $filasAfectadas = $this->db->dbDelete($this->tabla, ['codigo_producto' => $codigo]);
                 return $filasAfectadas > 0;
             } else {
                 return $this->actualizar($codigo, ['activo' => 0]);

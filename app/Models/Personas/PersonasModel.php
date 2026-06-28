@@ -36,7 +36,7 @@ class PersonasModel extends Model
      */
     public function query(): array
     {
-        $rows = $this->db->pdoQuery($this->sqlSelect())->fetchAll();
+        $rows = $this->db->dbQuery($this->sqlSelect())->fetchAll();
         return array_map(
             fn($row) => $this->mapper->map(PersonaDTO::class, $row),
             $rows
@@ -45,7 +45,7 @@ class PersonasModel extends Model
 
     public function find(string $cedula): ?PersonaDTO
     {
-        $row = $this->db->pdoQuery(
+        $row = $this->db->dbQuery(
             "{$this->sqlSelect()} WHERE {$this->primaryKey} = ?",
             [$cedula]
         )->fetch();
@@ -59,7 +59,7 @@ class PersonasModel extends Model
     {
         $persona->validateInsert();
 
-        $this->db->pdoInsert(
+        $this->db->dbInsert(
             $this->table,
             $this->dtoToArray($persona),
         );
@@ -72,7 +72,7 @@ class PersonasModel extends Model
         $array = $this->dtoToArray($persona);
         unset($array['cedula']);
 
-        $this->db->pdoUpdate(
+        $this->db->dbUpdate(
             $this->table,
             $array,
             [$this->primaryKey => $persona->cedula],
@@ -83,7 +83,7 @@ class PersonasModel extends Model
 
     public function delete(string $cedula): void
     {
-        $this->db->pdoDelete($this->table, [$this->primaryKey => $cedula]);
+        $this->db->dbDelete($this->table, [$this->primaryKey => $cedula]);
     }
 
     private function dtoToArray(PersonaDTO $persona): array

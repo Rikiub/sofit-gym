@@ -34,7 +34,7 @@ class AsistenteModel extends Model
         unset($array["fecha_creacion"]);
         unset($array["mensajes"]);
 
-        $this->db->pdoInsert($table, $array);
+        $this->db->dbInsert($table, $array);
         $id = (int) $this->db->lastInsertId();
 
         return $this->findSesion($id);
@@ -48,13 +48,13 @@ class AsistenteModel extends Model
         unset($array["fecha_creacion"]);
         $array["rol"] = $mensaje->rol ? $mensaje->rol->value : null;
 
-        $this->db->pdoInsert($table, $array);
+        $this->db->dbInsert($table, $array);
     }
 
     /** @return AsistenteSesionDTO[] */
     public function querySesiones(): array
     {
-        $rows = $this->db->pdoQuery(
+        $rows = $this->db->dbQuery(
             <<<SQL
                 SELECT * FROM {$this->dbSecurity("asistente_sesion")}
             SQL,
@@ -68,7 +68,7 @@ class AsistenteModel extends Model
 
     public function findSesion(int $id_sesion): ?AsistenteSesionDTO
     {
-        $sesion = $this->db->pdoQuery(
+        $sesion = $this->db->dbQuery(
             <<<SQL
                 SELECT *
                 FROM {$this->dbSecurity("asistente_sesion")}
@@ -78,7 +78,7 @@ class AsistenteModel extends Model
         )->fetch();
         if (!$sesion) return null;
 
-        $mensajes = $this->db->pdoQuery(
+        $mensajes = $this->db->dbQuery(
             <<<SQL
                 SELECT *
                 FROM {$this->dbSecurity("asistente_mensaje")}
@@ -93,7 +93,7 @@ class AsistenteModel extends Model
 
     public function getLastSesion(int $id_usuario): ?AsistenteSesionDTO
     {
-        $sesion = $this->db->pdoQuery(<<<SQL
+        $sesion = $this->db->dbQuery(<<<SQL
             SELECT id_sesion
             FROM {$this->dbSecurity("asistente_sesion")}
             WHERE id_usuario = ?

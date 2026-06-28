@@ -37,7 +37,7 @@ class SegumientoFisicoModel extends Model
      */
     public function queryByCliente(string $cedula): array
     {
-        $rows = $this->db->pdoQuery(
+        $rows = $this->db->dbQuery(
             <<<SQL
                 {$this->sqlSelect()} 
                 WHERE cedula_cliente = ?
@@ -57,7 +57,7 @@ class SegumientoFisicoModel extends Model
      */
     public function find(int $id): ?SeguimientoFisicoDTO
     {
-        $row = $this->db->pdoQuery(
+        $row = $this->db->dbQuery(
             "{$this->sqlSelect()} WHERE {$this->primaryKey} = ?",
             [$id],
         )->fetch();
@@ -73,7 +73,7 @@ class SegumientoFisicoModel extends Model
     public function insert(SeguimientoFisicoDTO $seguimiento): SeguimientoFisicoDTO
     {
         $seguimiento->validateInsert();
-        $this->db->pdoInsert($this->table, $this->dtoToArray($seguimiento),);
+        $this->db->dbInsert($this->table, $this->dtoToArray($seguimiento),);
 
         $id = (int) $this->db->lastInsertId();
         return $this->find($id);
@@ -86,7 +86,7 @@ class SegumientoFisicoModel extends Model
     {
         $seguimiento->validateUpdate();
 
-        $this->db->pdoUpdate(
+        $this->db->dbUpdate(
             $this->table,
             $this->dtoToArray($seguimiento),
             [$this->primaryKey => $seguimiento->id_seguimiento]
@@ -101,7 +101,7 @@ class SegumientoFisicoModel extends Model
      */
     public function delete(int $id): void
     {
-        $this->db->pdoDelete($this->table, [$this->primaryKey => $id]);
+        $this->db->dbDelete($this->table, [$this->primaryKey => $id]);
     }
 
     private function dtoToArray(SeguimientoFisicoDTO $dto): array

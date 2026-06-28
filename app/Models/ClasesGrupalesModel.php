@@ -66,7 +66,7 @@ class ClasesGrupalesModel extends Model
      */
     public function query(): array
     {
-        $rows = $this->db->pdoQuery($this->sqlSelect())->fetchAll();
+        $rows = $this->db->dbQuery($this->sqlSelect())->fetchAll();
         return array_map(
             fn($row) => $this->map($row),
             $rows
@@ -75,7 +75,7 @@ class ClasesGrupalesModel extends Model
 
     public function find(int $id): ?ClaseGrupalDTO
     {
-        $row = $this->db->pdoQuery(
+        $row = $this->db->dbQuery(
             $this->sqlSelect(" WHERE clase.{$this->primaryKey} = ? "),
             [$id]
         )->fetch();
@@ -89,8 +89,8 @@ class ClasesGrupalesModel extends Model
     {
         $clase->validateInsert();
 
-        return $this->db->pdoTransaction(function () use ($clase) {
-            $this->db->pdoInsert($this->table, $this->dtoToArray($clase));
+        return $this->db->dbTransaction(function () use ($clase) {
+            $this->db->dbInsert($this->table, $this->dtoToArray($clase));
 
             $id_clase = (int) $this->db->lastInsertId();
             $this->syncClientes($id_clase, $clase->clientes);
@@ -101,11 +101,11 @@ class ClasesGrupalesModel extends Model
 
     public function update(ClaseGrupalDTO $clase): ClaseGrupalDTO
     {
-        return $this->db->pdoTransaction(function () use ($clase) {
+        return $this->db->dbTransaction(function () use ($clase) {
             $array = $this->dtoToArray($clase);
             unset($array[$this->primaryKey]);
 
-            $this->db->pdoUpdate(
+            $this->db->dbUpdate(
                 $this->table,
                 $array,
                 [$this->primaryKey => $clase->id_clase]
@@ -118,7 +118,7 @@ class ClasesGrupalesModel extends Model
 
     public function delete(int $id): void
     {
-        $this->db->pdoDelete($this->table, [$this->primaryKey => $id]);
+        $this->db->dbDelete($this->table, [$this->primaryKey => $id]);
     }
 
     /** @param ClaseClienteDTO[]|array<string> $clientes */
@@ -128,7 +128,7 @@ class ClasesGrupalesModel extends Model
 
         // Eliminar todos los clientes
         foreach ($clientes as $cliente) {
-            $this->db->pdoDelete($table, ["id_clase" => $id_clase]);
+            $this->db->dbDelete($table, ["id_clase" => $id_clase]);
         }
 
         // Insertar los nuevos clientes
@@ -140,7 +140,7 @@ class ClasesGrupalesModel extends Model
                 $cedula = $cliente;
             }
 
-            $this->db->pdoInsert($table, [
+            $this->db->dbInsert($table, [
                 "id_clase" => $id_clase,
                 "cedula_cliente" => $cedula,
                 "asistio" => $cliente->asistio,

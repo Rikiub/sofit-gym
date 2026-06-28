@@ -49,7 +49,7 @@ class Database extends PDO
      * @param $sql Codigo SQL a preparar.
      * @param $params Parametros a remplazar en el SQL.
      */
-    public function pdoQuery(string $sql, array $params = []): PDOStatement
+    public function dbQuery(string $sql, array $params = []): PDOStatement
     {
         $stmt = $this->prepare($sql);
         $stmt->execute($params);
@@ -62,14 +62,14 @@ class Database extends PDO
      * @param $sql Codigo SQL a agregar.
      * @param $conditions Array asociativo que sera convertido en `column = value`.
      */
-    public function pdoFetch(string $sql, array $conditions): ?array
+    public function dbFetch(string $sql, array $conditions): ?array
     {
         $whereParts = [];
         foreach ($conditions as $col => $val) {
             $whereParts[] = "$col = :{$col}";
         }
 
-        $row = $this->pdoQuery(
+        $row = $this->dbQuery(
             sprintf(
                 "%s WHERE %s",
                 $sql,
@@ -86,7 +86,7 @@ class Database extends PDO
      * @param $table Tabla a seleccionar.
      * @param $data Array asociativo donde cada key-value debe corresponder a una columna.
      */
-    public function pdoInsert(string $table, array $data): PDOStatement
+    public function dbInsert(string $table, array $data): PDOStatement
     {
         $columns = array_keys($data);
         $placeholders = array_map(fn($col) => ":$col", $columns);
@@ -98,7 +98,7 @@ class Database extends PDO
             join(', ', $placeholders),
         );
 
-        return $this->pdoQuery($sql, $data);
+        return $this->dbQuery($sql, $data);
     }
 
     /**
@@ -108,7 +108,7 @@ class Database extends PDO
      * @param $data Array asociativo donde cada key-value debe corresponder a una columna.
      * @param $conditions Array asociativo que sera convertido en `column = value`.
      */
-    public function pdoUpdate(string $table, array $data, array $conditions): PDOStatement
+    public function dbUpdate(string $table, array $data, array $conditions): PDOStatement
     {
         $params = [];
 
@@ -136,7 +136,7 @@ class Database extends PDO
         );
 
         // Ejecutar consulta
-        return $this->pdoQuery($sql, $params);
+        return $this->dbQuery($sql, $params);
     }
 
     /**
@@ -145,7 +145,7 @@ class Database extends PDO
      * @param $table Tabla a seleccionar.
      * @param $conditions Array asociativo que sera convertido en `column = value`.
      */
-    public function pdoDelete(string $table, array $conditions): PDOStatement
+    public function dbDelete(string $table, array $conditions): PDOStatement
     {
         $whereParts = [];
         foreach ($conditions as $col => $val) {
@@ -158,7 +158,7 @@ class Database extends PDO
             join(' AND ', $whereParts),
         );
 
-        return $this->pdoQuery($sql, $conditions);
+        return $this->dbQuery($sql, $conditions);
     }
 
     /** Inicia una transacción, hace commit en exito y rollback en excepciones automaticamente.
@@ -167,7 +167,7 @@ class Database extends PDO
      * @param callable(PDO): T $callback
      * @return T
      */
-    public function pdoTransaction(callable $callback)
+    public function dbTransaction(callable $callback)
     {
         $this->beginTransaction();
 

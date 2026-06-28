@@ -56,7 +56,7 @@ class BitacoraModel extends Model
      */
     public function query(): array
     {
-        $rows = $this->db->pdoQuery($this->sqlSelect())->fetchAll();
+        $rows = $this->db->dbQuery($this->sqlSelect())->fetchAll();
 
         return array_map(
             fn($row) => $this->mapper->map(BitacoraDTO::class, $row),
@@ -66,7 +66,7 @@ class BitacoraModel extends Model
 
     public function find(int $id): ?BitacoraDTO
     {
-        $row = $this->db->pdoQuery(
+        $row = $this->db->dbQuery(
             $this->sqlSelect("WHERE {$this->table}.{$this->primaryKey} = ?"),
             [$id]
         )->fetch();
@@ -80,9 +80,9 @@ class BitacoraModel extends Model
     {
         $bitacora->validateInsert();
 
-        return $this->db->pdoTransaction(function () use ($bitacora) {
+        return $this->db->dbTransaction(function () use ($bitacora) {
             // Crear modulo dinamicamente si no existe
-            $this->db->pdoQuery(
+            $this->db->dbQuery(
                 <<<SQL
                     INSERT INTO
                         {$this->dbSecurity("modulo")} (nombre)
@@ -98,7 +98,7 @@ class BitacoraModel extends Model
             // Insertar bitacora
             $array = $this->dtoToArray($bitacora);
             $array["id_modulo"] = $idModulo;
-            $this->db->pdoInsert($this->table, $array);
+            $this->db->dbInsert($this->table, $array);
 
             $id = (int)$this->db->lastInsertId();
             return $this->find($id);
@@ -107,7 +107,7 @@ class BitacoraModel extends Model
 
     public function limpiarRegistros(int $dias_retencion): void
     {
-        $this->db->pdoQuery(
+        $this->db->dbQuery(
             <<<SQL
                 CALL {$this->dbSecurity("sp_limpiar_registros")}(?)
             SQL,

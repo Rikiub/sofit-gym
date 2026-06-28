@@ -40,13 +40,13 @@ class RolesModel extends Model
      */
     public function query(): array
     {
-        $rows = $this->db->pdoQuery($this->sqlSelect())->fetchAll();
+        $rows = $this->db->dbQuery($this->sqlSelect())->fetchAll();
         return array_map($this->mapRol(...), $rows);
     }
 
     public function queryPermisos(): array
     {
-        $rows = $this->db->pdoQuery(
+        $rows = $this->db->dbQuery(
             <<<SQL
                 SELECT *
                 FROM {$this->dbSecurity("permiso")}
@@ -57,7 +57,7 @@ class RolesModel extends Model
     }
     public function findPermiso(string $nombre): array
     {
-        $row = $this->db->pdoQuery(
+        $row = $this->db->dbQuery(
             <<<SQL
                 SELECT *
                 FROM {$this->dbSecurity("permiso")}
@@ -70,7 +70,7 @@ class RolesModel extends Model
 
     public function find(int $id): ?RolDTO
     {
-        $row = $this->db->pdoQuery(
+        $row = $this->db->dbQuery(
             $this->sqlSelect("WHERE id_rol = ?"),
             [$id]
         )->fetch();
@@ -88,8 +88,8 @@ class RolesModel extends Model
 
     public function insert(RolDTO $rol): RolDTO
     {
-        return $this->db->pdoTransaction(function () use ($rol) {
-            $this->db->pdoInsert(
+        return $this->db->dbTransaction(function () use ($rol) {
+            $this->db->dbInsert(
                 "rol",
                 ["nombre" => $rol->nombre],
             );
@@ -103,7 +103,7 @@ class RolesModel extends Model
 
     public function update(RolDTO $rol): RolDTO
     {
-        return $this->db->pdoTransaction(function () use ($rol) {
+        return $this->db->dbTransaction(function () use ($rol) {
             $this->syncPermisos($rol->id_rol, $rol->permisos);
             return $this->find($rol->id_rol);
         });
@@ -111,7 +111,7 @@ class RolesModel extends Model
 
     public function delete(int $id): void
     {
-        $this->db->pdoDelete("rol", ["id_rol" => $id]);
+        $this->db->dbDelete("rol", ["id_rol" => $id]);
     }
 
     private function syncPermisos(int $id_rol, array $permisos): void
@@ -120,13 +120,13 @@ class RolesModel extends Model
 
         // Eliminar todos los permisos del rol
         foreach ($permisos as $p) {
-            $this->db->pdoDelete($table, ["id_rol" => $id_rol]);
+            $this->db->dbDelete($table, ["id_rol" => $id_rol]);
         }
 
         foreach ($permisos as $p) {
             $permiso = $this->findPermiso($p);
 
-            $this->db->pdoInsert($table, [
+            $this->db->dbInsert($table, [
                 "id_rol" => $id_rol,
                 "id_permiso" => $permiso["id_permiso"],
             ]);

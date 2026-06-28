@@ -68,7 +68,7 @@ class RutinasModel extends Model
     public function crearRutina(array $datos): bool
     {
         try {
-            $this->db->pdoInsert('rutina', [
+            $this->db->dbInsert('rutina', [
                 'id_dificultad'    => $datos['id_dificultad'],
                 'nombre'           => $datos['nombre'],
                 'descripcion'      => $datos['descripcion'] ?? null,
@@ -99,7 +99,7 @@ class RutinasModel extends Model
 
             if (empty($columnasAActualizar)) return false;
 
-            $this->db->pdoUpdate('rutina', $columnasAActualizar, ['id_rutina' => $id]);
+            $this->db->dbUpdate('rutina', $columnasAActualizar, ['id_rutina' => $id]);
             return true;
         } catch (\PDOException $e) {
             return false;
@@ -114,7 +114,7 @@ class RutinasModel extends Model
     public function eliminarRutina(int $id): bool
     {
         try {
-            $this->db->pdoDelete('rutina', ['id_rutina' => $id]);
+            $this->db->dbDelete('rutina', ['id_rutina' => $id]);
             return true;
         } catch (\PDOException $e) {
             return false;
@@ -206,7 +206,7 @@ class RutinasModel extends Model
                 return false;
             }
 
-            $this->db->pdoInsert('rutina_asignada', [
+            $this->db->dbInsert('rutina_asignada', [
                 'cedula_cliente'   => $datos['cedula_cliente'],
                 'id_rutina'        => $datos['id_rutina'],
                 'fecha_asignacion' => $datos['fecha_asignacion'] ?? date('Y-m-d'),
@@ -241,7 +241,7 @@ class RutinasModel extends Model
 
             if (empty($columnasAActualizar)) return false;
 
-            $this->db->pdoUpdate('rutina_asignada', $columnasAActualizar, ['id_asignacion' => $idAsignacion]);
+            $this->db->dbUpdate('rutina_asignada', $columnasAActualizar, ['id_asignacion' => $idAsignacion]);
             return true;
         } catch (\PDOException $e) {
             return false;
@@ -256,7 +256,7 @@ class RutinasModel extends Model
     public function eliminarAsignacion(int $idAsignacion): bool
     {
         try {
-            $filasAfectadas = $this->db->pdoDelete('rutina_asignada', ['id_asignacion' => $idAsignacion]);
+            $filasAfectadas = $this->db->dbDelete('rutina_asignada', ['id_asignacion' => $idAsignacion]);
             return $filasAfectadas > 0;
         } catch (\PDOException $e) {
             return false;
