@@ -20,7 +20,7 @@ class LoginController extends Controller
 
     public function index()
     {
-        if (UsuarioSession::getUsuario()) {
+        if (UsuarioSession::getCurrent()) {
             // Si el usuario ya inicio sesión, redirigir a pagina de inicio.
             Response::redirect(["page" => "dashboard"]);
             exit;
@@ -93,7 +93,7 @@ class LoginController extends Controller
 
     public function logout(): void
     {
-        $usuario = UsuarioSession::getUsuario();
+        $usuario = UsuarioSession::getCurrent();
         $this->logger->info(
             "Usuario {nombre_usuario} ha cerrado sesión",
             ["nombre_usuario" => $usuario->nombre]

@@ -30,7 +30,7 @@ class AsistenteController extends Controller
         private AsistenteModel $asistenteModel,
     ) {
         $this->chat = new OpenAIChat($config);
-        $this->usuario =  UsuarioSession::getUsuario();
+        $this->usuario =  UsuarioSession::getCurrent();
     }
 
     public function index()

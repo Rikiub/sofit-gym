@@ -47,7 +47,7 @@ return [
         ]))
             ->loadExtension(new AssetExtension(ASSETS_DIR));
 
-        $usuario = UsuarioSession::getUsuario();
+        $usuario = UsuarioSession::getCurrent();
         $engine->addData(["sesion_usuario" => $usuario]);
         return $engine;
     },

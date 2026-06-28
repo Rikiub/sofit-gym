@@ -81,7 +81,7 @@ class FrontController
             }
 
             // Autentificar al usuario
-            $usuario = UsuarioSession::getUsuario();
+            $usuario = UsuarioSession::getCurrent();
             if ($page !== "login" && !$usuario) {
                 Response::redirect(["page" => "login"]);
                 return;

@@ -19,7 +19,7 @@ class NotificacionesController extends Controller
         private TreeMapper $mapper,
         private NotificacionesModel $notificacionesModel,
     ) {
-        $this->usuario = UsuarioSession::getUsuario();
+        $this->usuario = UsuarioSession::getCurrent();
     }
 
     public function query()

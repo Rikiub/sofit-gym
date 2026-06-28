@@ -38,7 +38,7 @@ class BitacoraLogger extends AbstractLogger
         $datosNuevos = $context["datos_nuevos"] ?? null;
 
         $this->bitacoraModel->insert(new BitacoraDTO(
-            id_usuario: UsuarioSession::getUsuario()->id ?? null,
+            id_usuario: UsuarioSession::getCurrent()->id ?? null,
             modulo: $modulo,
             accion: $accion,
             mensaje: $message,

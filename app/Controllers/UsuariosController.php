@@ -21,7 +21,7 @@ class UsuariosController extends Controller
     {
         $this->protect("usuarios:ver");
 
-        $usuario = UsuarioSession::getUsuario();
+        $usuario = UsuarioSession::getCurrent();
         return $this->templates->render('usuarios/index', [
             "usuario" => $usuario,
         ]);
@@ -45,7 +45,7 @@ class UsuariosController extends Controller
 
         // Si no es administrador y trata de buscar otro perfil que no sea el suyo
         // entonces pararlo
-        $usuarioSesion = UsuarioSession::getUsuario();
+        $usuarioSesion = UsuarioSession::getCurrent();
         if (
             !$usuarioSesion->hasPermiso("usuarios:ver")
             && $usuarioSesion->id !== $usuario->id_usuario
@@ -94,7 +94,7 @@ class UsuariosController extends Controller
 
         // Si no es administrador y trata de editar otro perfil que no sea el suyo
         // entonces pararlo
-        $usuarioSesion = UsuarioSession::getUsuario();
+        $usuarioSesion = UsuarioSession::getCurrent();
         if (
             !$usuarioSesion->hasPermiso("usuarios:editar")
             && $usuarioSesion->id !== $oldUsuario->id_usuario
