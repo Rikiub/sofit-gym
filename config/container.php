@@ -14,7 +14,6 @@ use League\Plates\Template\Theme;
 use League\Plates\Engine;
 use LLPhant\GeminiOpenAIConfig;
 use PHPMailer\PHPMailer\PHPMailer;
-use DI\Container;
 
 /** Configuración de PHP-DI
  * Aqui se definen los objetos a instanciar en los controladores automaticamente.
