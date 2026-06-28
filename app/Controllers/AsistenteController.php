@@ -43,7 +43,7 @@ class AsistenteController extends Controller
     {
         if (isset($this->sesion)) return;
 
-        $systemPrompt = file_get_contents(ROOT_DIR . "/app/system_prompt.md");
+        $systemPrompt = file_get_contents(ROOT_DIR . "/config/system_prompt.md");
         $this->chat->setSystemMessage($systemPrompt);
 
         // Recuperar historial de mensajes

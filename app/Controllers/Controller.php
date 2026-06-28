@@ -6,9 +6,7 @@ use App\Core\Auth\UsuarioSession;
 use App\Core\BitacoraLogger;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
-use CuyZ\Valinor\MapperBuilder;
-use CuyZ\Valinor\Normalizer\Format;
-use CuyZ\Valinor\NormalizerBuilder;
+use CuyZ\Valinor\Normalizer\Normalizer;
 use DI\Attribute\Inject;
 use League\Plates\Engine;
 
@@ -25,26 +23,12 @@ abstract class Controller
 
     /** Dependencias para helpers internos. */
     #[Inject]
-    private MapperBuilder $mapper;
-    #[Inject]
-    private NormalizerBuilder $normalizer;
+    private Normalizer $normalizer;
 
-    /** Intentar obtener datos desde el POST o JSON input.
-     * 
-     * @template T
-     * @param ?callable(...): T $dto
-     * @return T
-     */
-    protected function getParsedBody(?callable $dto = null)
+    /** Intentar obtener datos desde el POST o JSON input. */
+    protected function getParsedBody()
     {
-        $body = Request::getParsedBody();
-
-        if ($dto) {
-            // Validar $body segun el objeto pasado
-            return $this->mapper->argumentsMapper()
-                ->mapArguments($dto, $body);
-        }
-        return $body;
+        return Request::getParsedBody();
     }
 
     protected function json(mixed $data, int $status = 200): string|null
@@ -56,8 +40,7 @@ abstract class Controller
 
         // JSON
         Response::withJsonHeaders();
-        return $this->normalizer->normalizer(Format::json())
-            ->normalize($data);
+        return $this->normalizer->normalize($data);
     }
 
     /** Bloquea el acceso a una ruta y redirige a la pagina de error si el usuario no tiene el permiso. */

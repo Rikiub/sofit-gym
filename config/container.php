@@ -7,6 +7,8 @@ use CuyZ\Valinor\Cache\FileSystemCache;
 use CuyZ\Valinor\Cache\FileWatchingCache;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use CuyZ\Valinor\MapperBuilder;
+use CuyZ\Valinor\Normalizer\Format;
+use CuyZ\Valinor\Normalizer\Normalizer;
 use CuyZ\Valinor\NormalizerBuilder;
 use League\Plates\Template\Theme;
 use League\Plates\Engine;
@@ -84,7 +86,7 @@ return [
     // Valinor: Mapper
     // Utilizado para convertir arrays en DTOs
     // y validarlos en el proceso
-    MapperBuilder::class => function () {
+    TreeMapper::class => function () {
         $cache = new FileSystemCache(CACHE_DIR . '/valinor');
         if (DEBUG) {
             $cache = new FileWatchingCache($cache);
@@ -100,16 +102,14 @@ return [
                 'Y-m-d\TH:i',
                 'Y-m-d H:i:s',
                 'Y-m-d',
-            );
-    },
-    TreeMapper::class => function (Container $c) {
-        return ($c->get(MapperBuilder::class))->mapper();
+            )
+            ->mapper();
     },
 
     // Valinor: Normalizer
     // Utilizado para convertir arrays en JSON
     // y convertir tipos como DateTime en texto
-    NormalizerBuilder::class => function () {
+    Normalizer::class => function () {
         $cache = new FileSystemCache(CACHE_DIR . '/valinor');
         if (DEBUG) {
             $cache = new FileWatchingCache($cache);
@@ -117,6 +117,7 @@ return [
 
         return (new NormalizerBuilder())
             ->withCache($cache)
-            ->registerTransformer(fn(DateTimeInterface $date) => $date->format(DateTimeInterface::ATOM));
+            ->registerTransformer(fn(DateTimeInterface $date) => $date->format(DateTimeInterface::ATOM))
+            ->normalizer(Format::json());
     },
 ];
