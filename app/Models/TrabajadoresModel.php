@@ -25,24 +25,6 @@ class TrabajadoresModel extends Model
         return parent::__construct($db);
     }
 
-    private function sqlSelect(): string
-    {
-        $pTable = $this->personasModel->table;
-        $pKey = $this->personasModel->primaryKey;
-
-        return <<<SQL
-                SELECT
-                    trabajador.*,
-                    persona.*,
-                    rol.nombre AS `rol`
-                FROM {$this->table} trabajador
-                LEFT JOIN {$pTable} persona
-                    ON persona.{$pKey} = trabajador.{$this->primaryKey}
-                LEFT JOIN rol_trabajador rol
-                    ON trabajador.id_rol = rol.id_rol
-            SQL;
-    }
-
     /**
      * @return TrabajadorDTO[]
      */
@@ -96,7 +78,7 @@ class TrabajadoresModel extends Model
     public function find(string $cedula): ?TrabajadorDTO
     {
         $row = $this->db->dbQuery(
-            "{$this->sqlSelect()} WHERE trabajador.{$this->primaryKey} = ?",
+            $this->sqlSelect(where: "WHERE trabajador.{$this->primaryKey} = ?"),
             [$cedula]
         )->fetch();
 
@@ -108,10 +90,7 @@ class TrabajadoresModel extends Model
     /** Comprobar si la cedula ya esta asignada a una persona */
     public function checkDuplicate(string $cedula): bool
     {
-        if ($this->personasModel->find($cedula)) {
-            return true;
-        }
-        return false;
+        return (bool)$this->personasModel->find($cedula);
     }
 
     public function insert(TrabajadorDTO $trabajador): TrabajadorDTO
@@ -122,27 +101,24 @@ class TrabajadoresModel extends Model
             $this->personasModel->insert($trabajador);
             $this->db->dbInsert(
                 $this->table,
-                $this->dtoToArray($trabajador),
+                $this->mapToColumns($trabajador, includeId: true),
             );
             return $this->find($trabajador->cedula);
         });
     }
 
-    public function update(TrabajadorDTO $trabajador): TrabajadorDTO
+    public function update(string $cedula, TrabajadorDTO $trabajador): TrabajadorDTO
     {
-        return $this->db->dbTransaction(function () use ($trabajador) {
-            $this->personasModel->update($trabajador);
-
-            $array = $this->dtoToArray($trabajador);
-            unset($array['cedula']);
+        return $this->db->dbTransaction(function () use ($cedula, $trabajador) {
+            $this->personasModel->update($cedula, $trabajador);
 
             $this->db->dbUpdate(
                 $this->table,
-                $array,
-                [$this->primaryKey => $trabajador->cedula],
+                $this->mapToColumns($trabajador),
+                [$this->primaryKey => $cedula],
             );
 
-            return $this->find($trabajador->cedula);
+            return $this->find($cedula);
         });
     }
 
@@ -151,14 +127,38 @@ class TrabajadoresModel extends Model
         $this->db->dbDelete($this->table, [$this->primaryKey => $cedula]);
     }
 
-    private function dtoToArray(TrabajadorDTO $dto): array
+    private function mapToColumns(TrabajadorDTO $dto, bool $includeId = false): array
     {
-        return [
-            'cedula' => $dto->cedula,
+        $data = [
             'id_rol' => $dto->id_rol,
             'salario' => $dto->salario,
             'fecha_contratacion' => toDbDate($dto->fecha_contratacion),
         ];
+
+        if ($includeId) {
+            $data[$this->primaryKey] = $dto->cedula;
+        }
+
+        return $data;
+    }
+
+    private function sqlSelect(string $where = ""): string
+    {
+        $pTable = $this->personasModel->table;
+        $pKey = $this->personasModel->primaryKey;
+
+        return <<<SQL
+                SELECT
+                    trabajador.*,
+                    persona.*,
+                    rol.nombre AS `rol`
+                FROM {$this->table} trabajador
+                LEFT JOIN {$pTable} persona
+                    ON persona.{$pKey} = trabajador.{$this->primaryKey}
+                LEFT JOIN rol_trabajador rol
+                    ON trabajador.id_rol = rol.id_rol
+                {$where}
+            SQL;
     }
 }
 

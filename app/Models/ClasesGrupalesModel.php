@@ -23,44 +23,6 @@ class ClasesGrupalesModel extends Model
         parent::__construct($db);
     }
 
-    private function sqlSelect(string $where = ""): string
-    {
-        return <<<SQL
-            SELECT
-                clase.*,
-                COUNT(cc.id_clase) AS `capacidad_actual`,
-                COALESCE(
-                (
-                    SELECT CONCAT('[', GROUP_CONCAT(
-                        JSON_OBJECT(
-                            'cedula', cliente.cedula,
-                            'nombre', cliente.nombre,
-                            'apellido', cliente.apellido,
-                            'asistio', cc_sub.asistio
-                        )
-                    ), ']')
-                    FROM clase_cliente cc_sub
-                    LEFT JOIN persona cliente
-                        ON cliente.cedula = cc_sub.cedula_cliente
-                    WHERE cc_sub.id_clase = clase.id_clase
-                ),
-                '[]'
-                ) AS clientes
-            FROM {$this->table} clase
-            LEFT JOIN clase_cliente cc
-                ON clase.id_clase = cc.id_clase
-            {$where}
-            GROUP BY clase.id_clase
-        SQL;
-    }
-
-    private function map(array $row): ClaseGrupalDTO
-    {
-        $clientes = json_decode($row["clientes"], true);
-        $row["clientes"] = $clientes;
-        return $this->mapper->map(ClaseGrupalDTO::class, $row);
-    }
-
     /**
      * @return ClaseGrupalDTO[]
      */
@@ -68,7 +30,7 @@ class ClasesGrupalesModel extends Model
     {
         $rows = $this->db->dbQuery($this->sqlSelect())->fetchAll();
         return array_map(
-            fn($row) => $this->map($row),
+            fn($row) => $this->mapToClase($row),
             $rows
         );
     }
@@ -76,12 +38,12 @@ class ClasesGrupalesModel extends Model
     public function find(int $id): ?ClaseGrupalDTO
     {
         $row = $this->db->dbQuery(
-            $this->sqlSelect(" WHERE clase.{$this->primaryKey} = ? "),
+            $this->sqlSelect(where: "WHERE clase.{$this->primaryKey} = ? "),
             [$id]
         )->fetch();
 
         return $row
-            ? $this->map($row)
+            ? $this->mapToClase($row)
             : null;
     }
 
@@ -90,7 +52,10 @@ class ClasesGrupalesModel extends Model
         $clase->validateInsert();
 
         return $this->db->dbTransaction(function () use ($clase) {
-            $this->db->dbInsert($this->table, $this->dtoToArray($clase));
+            $this->db->dbInsert(
+                $this->table,
+                $this->mapToColumns($clase)
+            );
 
             $id_clase = (int) $this->db->lastInsertId();
             $this->syncClientes($id_clase, $clase->clientes);
@@ -99,18 +64,15 @@ class ClasesGrupalesModel extends Model
         });
     }
 
-    public function update(ClaseGrupalDTO $clase): ClaseGrupalDTO
+    public function update(int $id, ClaseGrupalDTO $clase): ClaseGrupalDTO
     {
-        return $this->db->dbTransaction(function () use ($clase) {
-            $array = $this->dtoToArray($clase);
-            unset($array[$this->primaryKey]);
-
+        return $this->db->dbTransaction(function () use ($id, $clase) {
             $this->db->dbUpdate(
                 $this->table,
-                $array,
-                [$this->primaryKey => $clase->id_clase]
+                $this->mapToColumns($clase),
+                [$this->primaryKey => $id]
             );
-            $this->syncClientes($clase->id_clase, $clase->clientes);
+            $this->syncClientes($id, $clase->clientes);
 
             return $this->find($clase->id_clase);
         });
@@ -148,10 +110,16 @@ class ClasesGrupalesModel extends Model
         }
     }
 
-    private function dtoToArray(ClaseGrupalDTO $dto): array
+    private function mapToClase(array $row): ClaseGrupalDTO
+    {
+        $clientes = json_decode($row["clientes"], true);
+        $row["clientes"] = $clientes;
+        return $this->mapper->map(ClaseGrupalDTO::class, $row);
+    }
+
+    private function mapToColumns(ClaseGrupalDTO $dto): array
     {
         return [
-            'id_clase'          => $dto->id_clase,
             'cedula_trabajador' => $dto->cedula_trabajador,
             'nombre'            => $dto->nombre,
             'descripcion'       => $dto->descripcion,
@@ -160,6 +128,37 @@ class ClasesGrupalesModel extends Model
             'fecha_inicio'      => toDbDate($dto->fecha_inicio),
             'fecha_fin'         => toDbDate($dto->fecha_fin),
         ];
+    }
+
+    private function sqlSelect(string $where = ""): string
+    {
+        return <<<SQL
+            SELECT
+                clase.*,
+                COUNT(cc.id_clase) AS `capacidad_actual`,
+                COALESCE(
+                (
+                    SELECT CONCAT('[', GROUP_CONCAT(
+                        JSON_OBJECT(
+                            'cedula', cliente.cedula,
+                            'nombre', cliente.nombre,
+                            'apellido', cliente.apellido,
+                            'asistio', cc_sub.asistio
+                        )
+                    ), ']')
+                    FROM clase_cliente cc_sub
+                    LEFT JOIN persona cliente
+                        ON cliente.cedula = cc_sub.cedula_cliente
+                    WHERE cc_sub.id_clase = clase.id_clase
+                ),
+                '[]'
+                ) AS clientes
+            FROM {$this->table} clase
+            LEFT JOIN clase_cliente cc
+                ON clase.id_clase = cc.id_clase
+            {$where}
+            GROUP BY clase.id_clase
+        SQL;
     }
 }
 

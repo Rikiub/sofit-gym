@@ -10,7 +10,7 @@ Alpine.data("crudEquipos", () => (
             action: "query",
         },
         columns: [
-            "Codigo",
+            { id: "codigo_equipo", name: "Codigo"},
             "Nombre",
             "Tipo",
             "Estado",

@@ -23,11 +23,12 @@ class SegumientoFisicoModel extends Model
         return parent::__construct($db);
     }
 
-    private function sqlSelect(): string
+    private function sqlSelect(string $where = ""): string
     {
         return <<<SQL
                 SELECT *
                 FROM {$this->table}
+                {$where}
             SQL;
     }
 
@@ -38,11 +39,10 @@ class SegumientoFisicoModel extends Model
     public function queryByCliente(string $cedula): array
     {
         $rows = $this->db->dbQuery(
-            <<<SQL
-                {$this->sqlSelect()} 
+            $this->sqlSelect(where: <<<SQL
                 WHERE cedula_cliente = ?
                 ORDER BY fecha DESC
-            SQL,
+            SQL),
             [$cedula],
         )->fetchAll();
 
@@ -58,22 +58,29 @@ class SegumientoFisicoModel extends Model
     public function find(int $id): ?SeguimientoFisicoDTO
     {
         $row = $this->db->dbQuery(
-            "{$this->sqlSelect()} WHERE {$this->primaryKey} = ?",
+            $this->sqlSelect(where: "WHERE {$this->primaryKey} = ?"),
             [$id],
         )->fetch();
 
-        if (!$row)
-            return null;
-        return $this->mapper->map(SeguimientoFisicoDTO::class, $row);
+        return $row
+            ? $this->mapper->map(SeguimientoFisicoDTO::class, $row)
+            : null;
     }
 
     /**
      * Inserta un nuevo seguimiento.
      */
-    public function insert(SeguimientoFisicoDTO $seguimiento): SeguimientoFisicoDTO
+    public function insert(string $cedula_cliente, SeguimientoFisicoDTO $seguimiento): SeguimientoFisicoDTO
     {
         $seguimiento->validateInsert();
-        $this->db->dbInsert($this->table, $this->dtoToArray($seguimiento),);
+
+        $this->db->dbInsert(
+            $this->table,
+            [
+                ...$this->mapToColumns($seguimiento),
+                "cedula_cliente" => $cedula_cliente,
+            ],
+        );
 
         $id = (int) $this->db->lastInsertId();
         return $this->find($id);
@@ -82,14 +89,12 @@ class SegumientoFisicoModel extends Model
     /**
      * Actualiza un seguimiento existente.
      */
-    public function update(SeguimientoFisicoDTO $seguimiento): SeguimientoFisicoDTO
+    public function update(int $id, SeguimientoFisicoDTO $seguimiento): SeguimientoFisicoDTO
     {
-        $seguimiento->validateUpdate();
-
         $this->db->dbUpdate(
             $this->table,
-            $this->dtoToArray($seguimiento),
-            [$this->primaryKey => $seguimiento->id_seguimiento]
+            $this->mapToColumns($seguimiento),
+            [$this->primaryKey => $id]
         );
 
         $id = (int) $this->db->lastInsertId();
@@ -104,10 +109,11 @@ class SegumientoFisicoModel extends Model
         $this->db->dbDelete($this->table, [$this->primaryKey => $id]);
     }
 
-    private function dtoToArray(SeguimientoFisicoDTO $dto): array
+    private function mapToColumns(SeguimientoFisicoDTO $dto): array
     {
         $array = (array) $dto;
         $array["fecha"] = toDbDate($dto->fecha);
+        unset($array["cedula_cliente"]);
         return $array;
     }
 }
@@ -128,16 +134,10 @@ readonly class SeguimientoFisicoDTO
         public ?float $muslo_cm = null,
         public ?float $hombros_cm = null,
         public ?float $pantorrilla_cm = null,
-    ) {
-        if ($this->cedula_cliente) {
-            Validator::cedula($this->cedula_cliente, "cedula_cliente");
-        }
-    }
+    ) {}
 
     public function validateInsert(): void
     {
-        Validator::required($this->cedula_cliente, "cedula_cliente");
-
         // Al menos una medida numérica debe existir
         $medidas = [
             $this->altura_cm,
@@ -161,10 +161,5 @@ readonly class SeguimientoFisicoDTO
         if ($todasVacias) {
             throw new InvalidArgumentException('Debe proporcionar al menos una medida');
         }
-    }
-
-    public function validateUpdate()
-    {
-        Validator::required($this->id_seguimiento, "id_seguimiento");
     }
 }

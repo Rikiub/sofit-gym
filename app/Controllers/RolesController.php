@@ -34,58 +34,44 @@ class RolesController extends Controller
     {
         $this->protect("roles:ver");
 
-        $id = Request::queryInt("id") ?? 0;
+        $id = $this->getId();
         $rol = $this->rolesModel->find($id);
 
         if (!$rol) {
-            return $this->json(null, 404);
+            return $this->notFound();
         }
 
         return $this->json($rol);
-    }
-
-    public function insert(): string
-    {
-        $this->protect("roles:crear");
-
-        $body = $this->getParsedBody();
-        $permiso = $this->mapper->map(RolDTO::class, $body);
-
-        if ($this->rolesModel->find($permiso->nombre)) {
-            return $this->json(['message' => 'El rol ya existe'], 400);
-        }
-
-        $permiso = $this->rolesModel->insert($permiso);
-        return $this->json($permiso, 201);
     }
 
     public function update(): string
     {
         $this->protect("roles:editar");
 
-        $body = $this->getParsedBody();
-        $permiso = $this->mapper->map(RolDTO::class, $body);
+        $id = $this->getId();
+        $rol = $this->validateBody();
 
-        if (!$this->rolesModel->find($permiso->id_rol)) {
-            return $this->json(['message' => 'El rol no existe'], 404);
+        if (!$this->rolesModel->find($id)) {
+            $this->notFound();
         }
 
-        $permiso = $this->rolesModel->update($permiso);
-        return $this->json($permiso, 201);
+        $rol = $this->rolesModel->update($id, $rol);
+        return $this->json($rol, 201);
     }
 
-    public function delete(): string|null
+    private function notFound(): string
     {
-        $this->protect("roles:eliminar");
+        return $this->json(["message" => "El rol no existe"], 404);
+    }
 
-        $id = Request::queryInt("id") ?? 0;
-        $rol = $this->rolesModel->find($id);
+    private function getId(): int
+    {
+        return Request::queryInt("id") ?? 0;
+    }
 
-        if (!$rol) {
-            return $this->json(['message' => 'El rol no existe'], 404);
-        }
-
-        $this->rolesModel->delete($rol->id_rol);
-        return $this->json(null, 204);
+    private function validateBody(): RolDTO
+    {
+        $body = Request::getParsedBody();
+        return $this->mapper->map(RolDTO::class, $body);
     }
 }

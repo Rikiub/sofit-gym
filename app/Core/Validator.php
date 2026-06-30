@@ -2,6 +2,8 @@
 
 namespace App\Core;
 
+use DateTimeImmutable;
+use Exception;
 use InvalidArgumentException;
 
 /**
@@ -9,24 +11,15 @@ use InvalidArgumentException;
  */
 class Validator
 {
-    public static function required(mixed $value, string $fieldName = 'field'): mixed
+    public static function required(mixed $value, string $key): mixed
     {
-        if (is_array($value) && count($value) === 0) {
-            throw new InvalidArgumentException("El campo '{$fieldName}' es un array vacío y no tiene contenido");
+        if (empty($value)) {
+            throw new InvalidArgumentException("El campo '{$key}' es requerido y no puede estar vacío");
         }
-
-        if (is_string($value) && $value === '') {
-            throw new InvalidArgumentException("El campo '{$fieldName} no puede estar vacio");
-        }
-
-        if (!$value) {
-            throw new InvalidArgumentException("El campo '{$fieldName}' es requerido");
-        }
-
         return $value;
     }
 
-    public static function cedula(mixed $value, string $fieldName = 'cedula'): string
+    public static function cedula(string $value, string $key): string
     {
         // Limpiar espacios y convertir la letra a mayúscula automáticamente
         $cleanValue = strtoupper(trim((string)$value));
@@ -36,35 +29,48 @@ class Validator
 
         if (preg_match($pattern, $cleanValue) !== 1) {
             throw new InvalidArgumentException(
-                "El campo '{$fieldName}' no tiene un formato de cédula válido"
+                "El campo '{$key}' no tiene un formato de cédula válido"
             );
         }
 
         return $cleanValue;
     }
 
-    public static function email(mixed $value, string $fieldName = 'email'): string
+    public static function email(string $value, string $key): string
     {
         $valid = (bool) filter_var($value, FILTER_VALIDATE_EMAIL);
 
         if (!$valid) {
-            throw new InvalidArgumentException("El campo '{$fieldName}' tiene un formato invalido de email");
+            throw new InvalidArgumentException("El campo '{$key}' tiene un formato invalido de email");
         }
 
         return $value;
     }
 
-    public static function telefono(mixed $value, string $fieldName = 'telefono'): string
+    public static function telefono(string $value, string $key): string
     {
         $cleanValue = trim((string)$value);
         $pattern = '/^04(12|14|16|24|26)-\d{7}$/';
 
         if (preg_match($pattern, $cleanValue) !== 1) {
             throw new InvalidArgumentException(
-                "El campo '{$fieldName}' no tiene un formato de teléfono válido"
+                "El campo '{$key}' no tiene un formato de teléfono válido"
             );
         }
 
         return $cleanValue;
+    }
+
+    public static function date(string $value, string $key): string
+    {
+        $value = Validator::required($value, $key);
+        $outputFormat = "YYYY-MM-DD HH:mm:ss";
+
+        try {
+            $date = new DateTimeImmutable($value);
+            return $date->format($outputFormat);
+        } catch (Exception) {
+            throw new InvalidArgumentException("El campo '{$key}' no es una fecha válida");
+        }
     }
 }

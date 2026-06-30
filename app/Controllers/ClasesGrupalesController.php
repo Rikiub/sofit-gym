@@ -32,7 +32,7 @@ class ClasesGrupalesController extends Controller
     {
         $this->protect("clases:ver");
 
-        $id = Request::queryInt("id") ?? 0;
+        $id = $this->getId();
         $clase = $this->clasesModel->find($id);
 
         return $clase
@@ -43,9 +43,7 @@ class ClasesGrupalesController extends Controller
     public function insert(): string
     {
         $this->protect("clases:crear");
-
-        $body = $this->getParsedBody();
-        $clase = $this->mapper->map(ClaseGrupalDTO::class, $body);
+        $clase = $this->validateBody();
 
         $clase = $this->clasesModel->insert($clase);
         return $this->json($clase, 201);
@@ -55,27 +53,43 @@ class ClasesGrupalesController extends Controller
     {
         $this->protect("clases:editar");
 
-        $body = $this->getParsedBody();
-        $clase = $this->mapper->map(ClaseGrupalDTO::class, $body);
+        $clase = $this->validateBody();
+        $id = $this->getId();
 
-        if (!$this->clasesModel->find($clase->id_clase)) {
-            return $this->json(['message' => 'No existe'], 400);
+        if (!$this->clasesModel->find($id)) {
+            return $this->notFound();
         }
 
-        $clase = $this->clasesModel->update($clase);
+        $clase = $this->clasesModel->update($id, $clase);
         return $this->json($clase, 201);
     }
 
     public function delete(): string|null
     {
         $this->protect("clases:eliminar");
-        $id = Request::queryInt("id") ?? 0;
+        $id = $this->getId();
 
         if (!$this->clasesModel->find($id)) {
-            return $this->json(['message' => 'No existe'], 404);
+            return $this->notFound();
         }
 
         $this->clasesModel->delete($id);
         return $this->json(null, 204);
+    }
+
+    private function getId(): int
+    {
+        return Request::queryInt("id") ?? 0;
+    }
+
+    private function notFound(): string
+    {
+        return $this->json(["message" => "Clase no encontrada"], 404);
+    }
+
+    private function validateBody(): ClaseGrupalDTO
+    {
+        $body = Request::getParsedBody();
+        return $this->mapper->map(ClaseGrupalDTO::class, $body);
     }
 }

@@ -23,10 +23,12 @@ class SegumientoNutricionalModel extends Model
         return parent::__construct($db);
     }
 
-    private function sqlSelect(): string
+    private function sqlSelect(string $where = ""): string
     {
         return <<<SQL
-                SELECT * FROM {$this->table}
+                SELECT *
+                FROM {$this->table}
+                {$where}
             SQL;
     }
 
@@ -37,11 +39,10 @@ class SegumientoNutricionalModel extends Model
     public function queryByCliente(string $cedula): array
     {
         $rows = $this->db->dbQuery(
-            <<<SQL
-                {$this->sqlSelect()} 
+            $this->sqlSelect(where: <<<SQL
                 WHERE cedula_cliente = ?
                 ORDER BY fecha DESC
-            SQL,
+            SQL),
             [$cedula]
         )->fetchAll();
 
@@ -57,22 +58,29 @@ class SegumientoNutricionalModel extends Model
     public function find(int $id): ?SeguimientoNutricionalDTO
     {
         $row = $this->db->dbQuery(
-            "{$this->sqlSelect()} WHERE {$this->primaryKey} = ?",
+            $this->sqlSelect(where: "WHERE {$this->primaryKey} = ?"),
             [$id]
         )->fetch();
 
-        if (!$row)
-            return null;
-        return $this->mapper->map(SeguimientoNutricionalDTO::class, $row);
+        return $row
+            ? $this->mapper->map(SeguimientoNutricionalDTO::class, $row)
+            : null;
     }
 
     /**
      * Inserta un nuevo seguimiento.
      */
-    public function insert(SeguimientoNutricionalDTO $seguimiento): SeguimientoNutricionalDTO
+    public function insert(string $cedula_cliente, SeguimientoNutricionalDTO $seguimiento): SeguimientoNutricionalDTO
     {
         $seguimiento->validateInsert();
-        $this->db->dbInsert($this->table, $this->dtoToArray($seguimiento));
+
+        $this->db->dbInsert(
+            $this->table,
+            [
+                ...$this->mapToColumns($seguimiento),
+                "cedula_cliente" => $cedula_cliente
+            ]
+        );
 
         $id = (int) $this->db->lastInsertId();
         return $this->find($id);
@@ -81,13 +89,12 @@ class SegumientoNutricionalModel extends Model
     /**
      * Actualiza un seguimiento existente.
      */
-    public function update(SeguimientoNutricionalDTO $seguimiento): SeguimientoNutricionalDTO
+    public function update(int $id, SeguimientoNutricionalDTO $seguimiento): SeguimientoNutricionalDTO
     {
-        $seguimiento->validateUpdate();
         $this->db->dbUpdate(
             $this->table,
-            $this->dtoToArray($seguimiento),
-            [$this->primaryKey => $seguimiento->id_seguimiento]
+            $this->mapToColumns($seguimiento),
+            [$this->primaryKey => $id]
         );
 
         $id = (int) $this->db->lastInsertId();
@@ -102,10 +109,11 @@ class SegumientoNutricionalModel extends Model
         $this->db->dbDelete($this->table, [$this->primaryKey => $id]);
     }
 
-    private function dtoToArray(SeguimientoNutricionalDTO $dto): array
+    private function mapToColumns(SeguimientoNutricionalDTO $dto): array
     {
         $array = (array) $dto;
         $array["fecha"] = toDbDate($dto->fecha);
+        unset($array["cedula_cliente"]);
         return $array;
     }
 }
@@ -121,16 +129,10 @@ readonly class SeguimientoNutricionalDTO
         public ?float $proteinas_g = null,
         public ?float $carbohidratos_g = null,
         public ?float $grasas_g = null,
-    ) {
-        if ($this->cedula_cliente) {
-            Validator::cedula($this->cedula_cliente, "cedula_cliente");
-        }
-    }
+    ) {}
 
     public function validateInsert(): void
     {
-        Validator::required($this->cedula_cliente, "cedula_cliente");
-
         // Al menos un valor debe existir
         $medidas = [
             $this->proteinas_g,
@@ -149,10 +151,5 @@ readonly class SeguimientoNutricionalDTO
         if ($todasVacias) {
             throw new InvalidArgumentException('Debe proporcionar al menos un valor');
         }
-    }
-
-    public function validateUpdate(): void
-    {
-        Validator::required($this->id_seguimiento, "id_seguimiento");
     }
 }

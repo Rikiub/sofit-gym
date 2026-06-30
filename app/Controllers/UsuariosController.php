@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Core\Auth\UsuarioSession;
+use App\Core\Auth\UsuarioSessionDto;
 use App\Core\Http\Request;
 use App\Core\ImagesManager;
 use App\Models\UsuarioDTO;
@@ -12,18 +13,20 @@ use CuyZ\Valinor\Mapper\TreeMapper;
 
 class UsuariosController extends Controller
 {
+    private UsuarioSessionDto $usuarioSesion;
+
     public function __construct(
         private TreeMapper $mapper,
         private UsuariosModel $usuariosModel,
-    ) {}
+    ) {
+        $this->usuarioSesion = UsuarioSession::getCurrent();
+    }
 
     public function index(): string
     {
         $this->protect("usuarios:ver");
-
-        $usuario = UsuarioSession::getCurrent();
         return $this->templates->render('usuarios/index', [
-            "usuario" => $usuario,
+            "usuario" => $this->usuarioSesion,
         ]);
     }
 
@@ -36,84 +39,67 @@ class UsuariosController extends Controller
 
     public function find(): ?string
     {
-        $id = Request::queryInt("id") ?? 0;
-        $usuario = $this->usuariosModel->find($id);
+        $id = $this->getId();
+        $usuario = $this->usuariosModel->findById($id);
 
         if (!$usuario) {
-            return $this->json(null, 404);
+            $this->notFound();
         }
 
-        // Si no es administrador y trata de buscar otro perfil que no sea el suyo
-        // entonces pararlo
-        $usuarioSesion = UsuarioSession::getCurrent();
-        if (
-            !$usuarioSesion->hasPermiso("usuarios:ver")
-            && $usuarioSesion->id !== $usuario->id_usuario
-        ) {
-            return  $this->json(["message" => "No esta autorizado"], 403);
-        }
-
+        $this->protectAccess("usuarios:ver", $usuario);
         return $this->json($usuario);
     }
 
     public function insert(): string
     {
         $this->protect("usuarios:crear");
-        $body = $this->getParsedBody();
+        $usuario = $this->validateBody();
 
-        // Verificar que no exista
-        $nombre_usuario = $body["nombre_usuario"] ?? "";
-        if ($this->usuariosModel->find($nombre_usuario)) {
+        // Preparar foto de perfil
+        $imagenUrl = null;
+        if ($usuario->imagen_url) {
+            $imagenUrl = ImagesManager::moveFromTemp($usuario->imagen_url, "/usuarios");
+        }
+
+        // Validar existencia
+        if ($this->usuariosModel->findByUsername($usuario->nombre_usuario)) {
             return $this->json(['message' => 'El usuario ya existe'], 400);
         }
 
-        // Ajustar foto de perfil
-        $imagen_url = $body["imagen_url"] ?? null;
-        if ($imagen_url) {
-            $body["imagen_url"] = ImagesManager::moveFromTemp($imagen_url, "/usuarios");
-        }
-
-        // Insertar en base de datos
-        $usuario = $this->mapper->map(UsuarioDTO::class, $body);
+        // Crear
         $usuario = $this->usuariosModel->insert($usuario);
 
-        // Devolver respuesta
+        // Actualizar foto de perfil
+        if ($imagenUrl) {
+            $usuario = $this->usuariosModel->updateImagen(
+                $usuario->id_usuario,
+                $imagenUrl
+            );
+        }
+
         return $this->json($usuario, 201);
     }
 
     public function update(): string
     {
-        $body = $this->getParsedBody();
+        $usuario = $this->validateBody();
+        $id = $this->getId();
 
         // Verificar que exista
-        $nombre_usuario = $body["nombre_usuario"] ?? "";
-        $oldUsuario = $this->usuariosModel->find($nombre_usuario);
+        $oldUsuario = $this->usuariosModel->findById($id);
         if (!$oldUsuario) {
-            return $this->json(['message' => 'El usuario no existe'], 400);
+            return $this->notFound();
         }
-
-        // Si no es administrador y trata de editar otro perfil que no sea el suyo
-        // entonces pararlo
-        $usuarioSesion = UsuarioSession::getCurrent();
-        if (
-            !$usuarioSesion->hasPermiso("usuarios:editar")
-            && $usuarioSesion->id !== $oldUsuario->id_usuario
-        ) {
-            return $this->json(["message" => "No esta autorizado"], 403);
-        }
+        $this->protectAccess("usuarios:editar", $oldUsuario);
 
         // Actualizar foto de perfil
-        $imagen_url = $body["imagen_url"] ?? null;
-        if ($imagen_url !== $oldUsuario->imagen_url) {
+        if ($usuario->imagen_url !== $oldUsuario->imagen_url) {
             ImagesManager::delete($oldUsuario->imagen_url ?? "");
-            $body["imagen_url"] = ImagesManager::moveFromTemp($imagen_url, "/usuarios");
+            $imagenUrl = ImagesManager::moveFromTemp($usuario->imagen_url, "/usuarios");
+            $this->usuariosModel->updateImagen($id, $imagenUrl);
         }
 
-        // Actualizar base de datos
-        $usuario = $this->mapper->map(UsuarioDTO::class, $body);
-        $usuario = $this->usuariosModel->update($usuario);
-
-        // Devolver respuesta
+        $usuario = $this->usuariosModel->update($id, $usuario);
         return $this->json($usuario, 201);
     }
 
@@ -121,11 +107,11 @@ class UsuariosController extends Controller
     {
         $this->protect("usuarios:eliminar");
 
-        $id = Request::queryInt("id") ?? 0;
-        $usuario = $this->usuariosModel->find($id);
+        $id = $this->getId();
+        $usuario = $this->usuariosModel->findById($id);
 
         if (!$usuario) {
-            return $this->json(['message' => 'El usuario no existe'], 404);
+            return $this->notFound();
         }
 
         $this->usuariosModel->delete($usuario->id_usuario);
@@ -148,5 +134,37 @@ class UsuariosController extends Controller
         return $this->json([
             'temp_filename' => $filename
         ]);
+    }
+
+    // Helpers
+    private function getId(): int
+    {
+        return Request::queryInt("id") ?? 0;
+    }
+
+    private function validateBody(): UsuarioDTO
+    {
+        $body = Request::getParsedBody();
+        return $this->mapper->map(UsuarioDTO::class, $body);
+    }
+
+    private function notFound(): string
+    {
+        return $this->json(['message' => 'El usuario no existe'], 404);
+    }
+
+    /**
+     * Si no es administrador y trata de editar otro perfil que no sea el suyo
+     * entonces evitar el acceso.
+     */
+    protected function protectAccess(string $permiso, UsuarioDTO $usuario): void
+    {
+        if (
+            !$this->usuarioSesion->hasPermiso($permiso)
+            && $this->usuarioSesion->id !== $usuario->id_usuario
+        ) {
+            echo $this->json(["message" => "No esta autorizado"], 403);
+            exit;
+        }
     }
 }

@@ -14,11 +14,14 @@ class Request
     {
         $value = $_GET[$param] ?? null;
 
-        if ($value === null || is_array($value)) {
-            return null;
+        if (is_string($value)) {
+            $value = trim($value);
+        }
+        if ($value === null) {
+            $value = null;
         }
 
-        return trim($value);
+        return $value;
     }
 
     /** Obtiene un parámetro de la URL y lo convierte en un entero. */

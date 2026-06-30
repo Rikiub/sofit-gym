@@ -31,11 +31,11 @@ class LoginController extends Controller
 
     public function login(): string
     {
-        $body = $this->getParsedBody();
+        $body = Request::getParsedBody();
         $nombre_usuario = $body["nombre_usuario"] ?? null;
         $contrasena = $body["contrasena"] ?? null;
 
-        $usuario = $this->usuariosModel->find($nombre_usuario);
+        $usuario = $this->usuariosModel->findByUsername($nombre_usuario);
         if (!$usuario) {
             return $this->invalidInput();
         };

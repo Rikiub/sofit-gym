@@ -20,18 +20,6 @@ class EquiposModel extends Model
         return parent::__construct($db);
     }
 
-    private function sqlSelect(string $where = ""): string
-    {
-        return <<<SQL
-                SELECT
-                    codigo_equipo AS `codigo`,
-                    equipo.*
-                FROM {$this->table} equipo
-                {$where}
-                ORDER BY fecha_creacion DESC
-            SQL;
-    }
-
     /**
      * @return EquipoDTO[]
      */
@@ -51,33 +39,31 @@ class EquiposModel extends Model
             [$codigo]
         )->fetch();
 
-        if (!$row)
-            return null;
-        return $this->mapper->map(EquipoDTO::class, $row);
+        return $row
+            ? $this->mapper->map(EquipoDTO::class, $row)
+            : null;
     }
 
     public function insert(EquipoDTO $equipo): EquipoDTO
     {
         $equipo->validateInsert();
 
-        $this->db->dbInsert($this->table, $this->dtoToArray($equipo));
-        return $this->find($equipo->codigo);
-    }
-
-    public function update(EquipoDTO $equipo): EquipoDTO
-    {
-        $equipo->validateUpdate();
-
-        $array = $this->dtoToArray($equipo);
-        unset($array['codigo_equipo']);
-
-        $this->db->dbUpdate(
+        $this->db->dbInsert(
             $this->table,
-            $array,
-            [$this->primaryKey => $equipo->codigo],
+            $this->mapToColumns($equipo, includeId: true),
         );
 
-        return $this->find($equipo->codigo);
+        return $this->find($equipo->codigo_equipo);
+    }
+
+    public function update(string $codigo, EquipoDTO $equipo): EquipoDTO
+    {
+        $this->db->dbUpdate(
+            $this->table,
+            $this->mapToColumns($equipo),
+            [$this->primaryKey => $codigo],
+        );
+        return $this->find($codigo);
     }
 
     public function delete(string $codigo): void
@@ -85,16 +71,31 @@ class EquiposModel extends Model
         $this->db->dbDelete($this->table, [$this->primaryKey => $codigo]);
     }
 
-    private function dtoToArray(EquipoDTO $dto): array
+    private function mapToColumns(EquipoDTO $dto, bool $includeId = false): array
     {
-        return [
-            'codigo_equipo' => $dto->codigo,
+        $data = [
             'nombre' => $dto->nombre,
             'tipo' => $dto->tipo,
             'estado' => $dto->estado->value,
             'ubicacion' => $dto->ubicacion,
             'activo' => $dto->activo,
         ];
+
+        if ($includeId) {
+            $data[$this->primaryKey] = $dto->codigo_equipo;
+        }
+
+        return $data;
+    }
+
+    private function sqlSelect(string $where = ""): string
+    {
+        return <<<SQL
+                SELECT *
+                FROM {$this->table}
+                {$where}
+                ORDER BY fecha_creacion DESC
+            SQL;
     }
 }
 
@@ -109,7 +110,7 @@ enum EstadoEquipo: string
 readonly class EquipoDTO
 {
     public function __construct(
-        public ?string $codigo = null,
+        public ?string $codigo_equipo = null,
         public ?string $nombre = null,
         public ?string $tipo = null,
         public ?EstadoEquipo $estado = null,
@@ -120,12 +121,8 @@ readonly class EquipoDTO
 
     public function validateInsert(): void
     {
-        Validator::required($this->codigo, "codigo");
+        Validator::required($this->codigo_equipo, "codigo_equipo");
         Validator::required($this->nombre, "nombre");
         Validator::required($this->estado, "estado");
-    }
-    public function validateUpdate(): void
-    {
-        Validator::required($this->codigo, "codigo");
     }
 }

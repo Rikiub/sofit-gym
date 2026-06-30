@@ -24,6 +24,58 @@ class MantenimientoEquipoModel extends Model
         return parent::__construct($db);
     }
 
+    /**
+     * @return MantenimientoEquipoDTO[]
+     */
+    public function query(): array
+    {
+        $rows = $this->db->dbQuery($this->sqlSelect())->fetchAll();
+        return array_map(
+            fn($row) => $this->mapToMantenimiento($row),
+            $rows
+        );
+    }
+
+    public function find(int $id): ?MantenimientoEquipoDTO
+    {
+        $row = $this->db->dbQuery(
+            $this->sqlSelect(where: "WHERE {$this->primaryKey} = ?"),
+            [$id]
+        )->fetch();
+
+        return $row
+            ? $this->mapToMantenimiento($row)
+            : null;
+    }
+
+    public function insert(MantenimientoEquipoDTO $mantenimiento): MantenimientoEquipoDTO
+    {
+        $mantenimiento->validateInsert();
+
+        $this->db->dbInsert(
+            table: $this->table,
+            data: $this->mapToColumns($mantenimiento),
+        );
+
+        $id = (int) $this->db->lastInsertId();
+        return $this->find($id);
+    }
+
+    public function update(string $id, MantenimientoEquipoDTO $mantenimiento): MantenimientoEquipoDTO
+    {
+        $this->db->dbUpdate(
+            table: $this->table,
+            data: $this->mapToColumns($mantenimiento),
+            conditions: [$this->primaryKey => $mantenimiento->id_mantenimiento],
+        );
+        return $this->find($id);
+    }
+
+    public function delete(int $id): void
+    {
+        $this->db->dbDelete($this->table, [$this->primaryKey => $id]);
+    }
+
     private function sqlSelect(string $where = ""): string
     {
         return <<<SQL
@@ -40,73 +92,7 @@ class MantenimientoEquipoModel extends Model
         return $mantenimiento;
     }
 
-    /**
-     * @return MantenimientoEquipoDTO[]
-     */
-    public function query(): array
-    {
-        $rows = $this->db->dbQuery($this->sqlSelect())->fetchAll();
-        return array_map(
-            fn($row) => $this->mapToMantenimiento($row),
-            $rows
-        );
-    }
-
-    public function find(int $id): ?MantenimientoEquipoDTO
-    {
-        $row = $this->db->dbQuery(
-            $this->sqlSelect("WHERE {$this->primaryKey} = ?"),
-            [$id]
-        )->fetch();
-
-        return $row
-            ? $this->mapToMantenimiento($row)
-            : null;
-    }
-
-    public function insert(MantenimientoEquipoDTO $mantenimiento): MantenimientoEquipoDTO
-    {
-        $mantenimiento->validateInsert();
-
-        // Verificar que el equipo exista
-        $equipo = $this->equiposModel->find($mantenimiento->codigo_equipo);
-
-        if (!$equipo || !$equipo->activo) {
-            throw new InvalidArgumentException("El equipo con código {$mantenimiento->codigo_equipo} no existe o está inactivo");
-        }
-
-        $this->db->dbInsert($this->table, $this->dtoToArray($mantenimiento));
-
-        $id = (int) $this->db->lastInsertId();
-        return $this->find($id);
-    }
-
-    public function update(MantenimientoEquipoDTO $mantenimiento): MantenimientoEquipoDTO
-    {
-        $mantenimiento->validateUpdate();
-
-        // Verificar que el equipo exista
-        $equipo = $this->equiposModel->find($mantenimiento->codigo_equipo);
-
-        if (!$equipo || !$equipo->activo) {
-            throw new InvalidArgumentException("El equipo con código {$mantenimiento->codigo_equipo} no existe o está inactivo");
-        }
-
-        $this->db->dbUpdate(
-            $this->table,
-            $this->dtoToArray($mantenimiento),
-            [$this->primaryKey => $mantenimiento->id_mantenimiento],
-        );
-
-        return $this->find($mantenimiento->id_mantenimiento);
-    }
-
-    public function delete(int $id): void
-    {
-        $this->db->dbDelete($this->table, [$this->primaryKey => $id]);
-    }
-
-    private function dtoToArray(MantenimientoEquipoDTO $dto): array
+    private function mapToColumns(MantenimientoEquipoDTO $dto): array
     {
         return [
             'codigo_equipo' => $dto->codigo_equipo,
@@ -141,22 +127,11 @@ readonly class MantenimientoEquipoDTO
 
     public function validateInsert(): void
     {
-        $this->validateShared();
+        Validator::required($this->codigo_equipo, "codigo_equipo");
         Validator::required($this->tipo, "tipo");
 
         if ($this->costo !== null && $this->costo < 0) {
             throw new InvalidArgumentException('El costo no puede ser negativo');
         }
-    }
-
-    public function validateUpdate()
-    {
-        $this->validateShared();
-        Validator::required($this->id_mantenimiento, "id_mantenimiento");
-    }
-
-    private function validateShared()
-    {
-        Validator::required($this->codigo_equipo, "codigo_equipo");
     }
 }

@@ -36,24 +36,22 @@ class TrabajadoresController extends Controller
     {
         $this->protect("trabajadores:ver");
 
-        $id = Request::query("id") ?? "";
+        $id = $this->getId();
         $trabajador = $this->trabajadoresModel->find($id);
 
-        if (!$trabajador) {
-            return $this->json(null, 404);
-        }
-
-        return $this->json($trabajador);
+        return $trabajador
+            ? $this->json($trabajador)
+            : $this->json(null, 404);
     }
 
     public function insert(): string
     {
         $this->protect("trabajadores:crear");
 
-        $body = $this->getParsedBody();
-        $trabajador = $this->mapper->map(TrabajadorDTO::class, $body);
+        $trabajador = $this->validateBody();
+        $id = $this->getId();
 
-        if ($this->trabajadoresModel->checkDuplicate($trabajador->cedula)) {
+        if ($this->trabajadoresModel->checkDuplicate($id)) {
             return $this->json(['message' => 'El trabajador ya existe'], 400);
         }
 
@@ -65,27 +63,43 @@ class TrabajadoresController extends Controller
     {
         $this->protect("trabajadores:editar");
 
-        $body = $this->getParsedBody();
-        $trabajador = $this->mapper->map(TrabajadorDTO::class, $body);
+        $trabajador = $this->validateBody();
+        $id = $this->getId();
 
-        if (!$this->trabajadoresModel->find($trabajador->cedula)) {
-            return $this->json(['message' => 'El trabajador no existe'], 400);
+        if (!$this->trabajadoresModel->find($id)) {
+            return $this->notFound();
         }
 
-        $trabajador = $this->trabajadoresModel->update($trabajador);
+        $trabajador = $this->trabajadoresModel->update($id, $trabajador);
         return $this->json($trabajador, 201);
     }
 
     public function delete(): string|null
     {
         $this->protect("trabajadores:eliminar");
-        $id = Request::query("id") ?? "";
+        $id = $this->getId();
 
         if (!$this->trabajadoresModel->find($id)) {
-            return $this->json(['message' => 'El trabajador no existe'], 404);
+            return $this->notFound();
         }
 
         $this->trabajadoresModel->delete($id);
         return $this->json(null, 204);
+    }
+
+    private function notFound(): string
+    {
+        return $this->json(["message" => "Trabajador no encontrado"], 404);
+    }
+
+    private function getId(): string
+    {
+        return Request::query("id") ?? "";
+    }
+
+    private function validateBody(): TrabajadorDTO
+    {
+        $body = Request::getParsedBody();
+        return $this->mapper->map(TrabajadorDTO::class, $body);
     }
 }

@@ -94,9 +94,9 @@ $this->pushJs('pages/clientes/clientes.js');
     </summary>
 
     <div class="card-body">
-        <?= $this->insert('crudTable', ['xData' => 'crudSegFisico']) ?>
+        <?= $this->insert('crudTable', ['xData' => 'crudFisico']) ?>
         <?= $this->insert('modalForm', [
-            'xData' => 'modalSegFisico',
+            'xData' => 'modalFisico',
             'form' => $this->fetch('clientes/forms/seguimiento_fisico'),
         ]) ?>
     </div>
@@ -110,9 +110,9 @@ $this->pushJs('pages/clientes/clientes.js');
     </summary>
 
     <div class="card-body">
-        <?= $this->insert('crudTable', ['xData' => 'crudSegNutricional']) ?>
+        <?= $this->insert('crudTable', ['xData' => 'crudNutricion']) ?>
         <?= $this->insert('modalForm', [
-            'xData' => 'modalSegNutricional',
+            'xData' => 'modalNutricion',
             'form' => $this->fetch('clientes/forms/seguimiento_nutricional'),
         ]) ?>
     </div>

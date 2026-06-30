@@ -46,8 +46,8 @@ export function setFormValidity(data, detail) {
  * @param {{
  * page: string,
  * actions: Actions,
- * extraPostBody: object?,
  * elementName: string?,
+ * transformParams?: (currentId: number|string) => Object,
  * prepareAddData?: Object,
  * editDisableFields?: string[],
  * afterSubmit?: (mode: string) => void,
@@ -62,8 +62,8 @@ export function modalFormComponent({
         onEditFind: "find",
         onDelete: "delete",
     },
-    extraPostBody = {},
     elementName = "",
+    transformParams = (currentId) => {},
     prepareAddData = {},
     editDisableFields = [],
     afterSubmit = () => null,
@@ -157,14 +157,15 @@ export function modalFormComponent({
 
             if (this.mode === "delete" || valid) {
                 this.loading = true;
+
                 let body = null;
                 let actionParam = {
                     "add": this.actions.onAdd,
                     "edit": this.actions.onEdit,
                     "delete": this.actions.onDelete,
                 }[this.mode];
-                let params = { action: actionParam };
-
+                let params = {};
+                
                 if (this.mode == "edit" || this.mode == "delete") {
                     params = {
                         ...params,
@@ -189,26 +190,37 @@ export function modalFormComponent({
                         }
                     });
 
-                    body = { ...body, ...customPayload, ...extraPostBody };
+                    body = { ...body, ...customPayload };
+                }
 
-                    // Mostrar datos a enviar
-                    if (self.DEBUG) console.log("BODY: ", body);
+                params = { ...params, ...transformParams(this.currentDataId) };
+                params = {
+                    ...params,
+                    page: this.page,
+                    action: actionParam,
+                };
+
+                // Debug info
+                if (self.DEBUG) {
+                    console.log("Request", {
+                        params: params,
+                        body: body,
+                    });
                 }
 
                 try {
-                    await fetchApi({ page: this.page, ...params }, {
+                    await fetchApi(params, {
                         method: "POST",
                         body: body,
                     });
                 } catch (error) {
-                    alert(error.cause.message);
+                    alert(error.cause?.message ?? error);
                     throw error;
                 } finally {
                     this.loading = false;
                 }
 
                 this.closeModal();
-
                 this.$dispatch("form-success", {
                     id: componentId,
                     action: "refresh",

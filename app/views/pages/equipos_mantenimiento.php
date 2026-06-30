@@ -6,14 +6,14 @@ $this->pushJs('pages/equipos/equipos_mantenimiento.js');
 $querySelect = $this->fetch("querySelect", [
     "input" => ["name" => "codigo_equipo", "required" => true],
     "columns" => [
-        ["name" => "Codigo", "id" => 'codigo'],
+        ["name" => "Codigo", "id" => 'codigo_equipo'],
         ["name" => "Nombre", "id" => 'nombre'],
     ],
     "params" => [
         "page" => "equipos",
         "action" => "query",
     ],
-    "itemKey" => "codigo",
+    "itemKey" => "codigo_equipo",
 ]);
 
 $modalForm = $this->fetch('modalForm', [

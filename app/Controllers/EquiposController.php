@@ -7,7 +7,6 @@ use App\Core\Http\Request;
 use App\Models\Equipos\EquipoDTO;
 use App\Models\Equipos\EquiposModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
-use Exception;
 
 class EquiposController extends Controller
 {
@@ -24,33 +23,30 @@ class EquiposController extends Controller
     public function query()
     {
         $this->protect("equipos:ver");
-        $results = $this->equiposModel->query();
-        return $this->json($results);
+        $equipos = $this->equiposModel->query();
+        return $this->json($equipos);
     }
 
     public function find(): ?string
     {
         $this->protect("equipos:ver");
 
-        $id = Request::query("id") ?? "";
+        $id = $this->getId();
         $equipo = $this->equiposModel->find($id);
 
-        if (!$equipo) {
-            return $this->json(null, 404);
-        }
-
-        return $this->json($equipo);
+        return $equipo
+            ? $this->json($equipo)
+            : $this->json(null, 404);
     }
 
     public function insert(): string
     {
         $this->protect("equipos:crear");
 
-        $body = $this->getParsedBody();
-        $equipo = $this->mapper->map(EquipoDTO::class, $body);
+        $equipo = $this->validateBody();
+        $id = $equipo->codigo_equipo ?? "";
 
-        // Verificar que el equipo no exista
-        if ($this->equiposModel->find($equipo->codigo)) {
+        if ($this->equiposModel->find($id)) {
             return $this->json(['message' => 'El equipo ya existe'], 400);
         }
 
@@ -62,27 +58,43 @@ class EquiposController extends Controller
     {
         $this->protect("equipos:editar");
 
-        $body = $this->getParsedBody();
-        $equipo = $this->mapper->map(EquipoDTO::class, $body);
+        $equipo = $this->validateBody();
+        $id = $this->getId();
 
-        if (!$this->equiposModel->find($equipo->codigo)) {
-            return $this->json(['message' => 'El equipo no existe'], 404);
+        if (!$this->equiposModel->find($id)) {
+            return $this->notFound();
         }
 
-        $equipo = $this->equiposModel->update($equipo);
+        $equipo = $this->equiposModel->update($id, $equipo);
         return $this->json($equipo, 201);
     }
 
     public function delete(): string|null
     {
         $this->protect("equipos:eliminar");
-        $id = Request::query("id") ?? "";
+        $id = $this->getId();
 
         if (!$this->equiposModel->find($id)) {
-            return $this->json(['message' => 'El equipo no existe'], 404);
+            return $this->notFound();
         }
 
         $this->equiposModel->delete($id);
         return $this->json(null, 204);
+    }
+
+    private function getId(): string
+    {
+        return Request::query("id") ?? "";
+    }
+
+    private function validateBody(): EquipoDTO
+    {
+        $body = Request::getParsedBody();
+        return $this->mapper->map(EquipoDTO::class, $body);
+    }
+
+    private function notFound(): string
+    {
+        return $this->json(['message' => 'El equipo no existe'], 404);
     }
 }

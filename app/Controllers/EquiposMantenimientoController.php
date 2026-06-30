@@ -32,7 +32,7 @@ class EquiposMantenimientoController extends Controller
     {
         $this->protect("equipos:ver");
 
-        $id = Request::queryInt("id") ?? 0;
+        $id = $this->getId();
         $data = $this->model->find($id);
 
         return $data
@@ -44,10 +44,9 @@ class EquiposMantenimientoController extends Controller
     {
         $this->protect("equipos:crear");
 
-        $body = $this->getParsedBody();
-        $data = $this->mapper->map(MantenimientoEquipoDTO::class, $body);
-
+        $data = $this->validateBody();
         $data = $this->model->insert($data);
+
         return $this->json($data, 201);
     }
 
@@ -55,27 +54,43 @@ class EquiposMantenimientoController extends Controller
     {
         $this->protect("equipos:editar");
 
-        $body = $this->getParsedBody();
-        $data = $this->mapper->map(MantenimientoEquipoDTO::class, $body);
+        $data = $this->validateBody();
+        $id = $this->getId();
 
-        if (!$this->model->find($data->id_mantenimiento)) {
-            return $this->json(['message' => 'El mantenimiento no existe'], 404);
+        if (!$this->model->find($id)) {
+            return $this->notFound();
         }
 
-        $data = $this->model->update($data);
+        $data = $this->model->update($id, $data);
         return $this->json($data, 201);
     }
 
     public function delete(): string|null
     {
         $this->protect("equipos:eliminar");
-        $id = Request::queryInt("id") ?? 0;
+        $id = $this->getId();
 
         if (!$this->model->find($id)) {
-            return $this->json(['message' => 'El mantenimiento no existe'], 404);
+            return $this->notFound();
         }
 
         $this->model->delete($id);
         return $this->json(null, 204);
+    }
+
+    private function notFound(): int
+    {
+        return $this->json(['message' => 'El mantenimiento no existe'], 404);
+    }
+
+    private function getId(): int
+    {
+        return Request::queryInt("id") ?? 0;
+    }
+
+    private function validateBody(): MantenimientoEquipoDTO
+    {
+        $body = Request::getParsedBody();
+        return $this->mapper->map(MantenimientoEquipoDTO::class, $body);
     }
 }

@@ -23,14 +23,6 @@ class PersonasModel extends Model
         return parent::__construct($db);
     }
 
-    private function sqlSelect(): string
-    {
-        return <<<SQL
-                SELECT persona.*
-                FROM {$this->table} persona
-            SQL;
-    }
-
     /**
      * @return PersonaDTO[]
      */
@@ -50,9 +42,9 @@ class PersonasModel extends Model
             [$cedula]
         )->fetch();
 
-        if (!$row)
-            return null;
-        return $this->mapper->map(PersonaDTO::class, $row);
+        return $row
+            ? $this->mapper->map(PersonaDTO::class, $row)
+            : null;
     }
 
     public function insert(PersonaDTO $persona): PersonaDTO
@@ -61,24 +53,19 @@ class PersonasModel extends Model
 
         $this->db->dbInsert(
             $this->table,
-            $this->dtoToArray($persona),
+            $this->mapToColumns($persona, includeId: true),
         );
-
         return $this->find($persona->cedula);
     }
 
-    public function update(PersonaDTO $persona): PersonaDTO
+    public function update(string $cedula, PersonaDTO $persona): PersonaDTO
     {
-        $array = $this->dtoToArray($persona);
-        unset($array['cedula']);
-
         $this->db->dbUpdate(
             $this->table,
-            $array,
-            [$this->primaryKey => $persona->cedula],
+            $this->mapToColumns($persona),
+            [$this->primaryKey => $cedula],
         );
-
-        return $this->find($persona->cedula);
+        return $this->find($cedula);
     }
 
     public function delete(string $cedula): void
@@ -86,17 +73,30 @@ class PersonasModel extends Model
         $this->db->dbDelete($this->table, [$this->primaryKey => $cedula]);
     }
 
-    private function dtoToArray(PersonaDTO $persona): array
+    private function mapToColumns(PersonaDTO $dto, bool $includeId = false): array
     {
-        return [
-            'cedula' => $persona->cedula,
-            'nombre' => $persona->nombre,
-            'apellido' => $persona->apellido,
-            'correo' => $persona->correo,
-            'telefono' => $persona->telefono,
-            'direccion' => $persona->direccion,
-            'fecha_nacimiento' => toDbDate($persona->fecha_nacimiento),
-            'activo' => $persona->activo,
+        $data = [
+            'nombre' => $dto->nombre,
+            'apellido' => $dto->apellido,
+            'correo' => $dto->correo,
+            'telefono' => $dto->telefono,
+            'direccion' => $dto->direccion,
+            'fecha_nacimiento' => toDbDate($dto->fecha_nacimiento),
+            'activo' => $dto->activo,
         ];
+
+        if ($includeId) {
+            $data[$this->primaryKey] = $dto->cedula;
+        }
+
+        return $data;
+    }
+
+    private function sqlSelect(): string
+    {
+        return <<<SQL
+                SELECT *
+                FROM {$this->table}
+            SQL;
     }
 }

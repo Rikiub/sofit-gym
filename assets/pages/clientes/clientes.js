@@ -38,7 +38,7 @@ Alpine.data("crudClientes", () =>
                     const cedula = row.cells[0].data;
                     return h(
                         "a",
-                        { href: `?page=clientesItem&id=${cedula}` },
+                        { href: `?page=clienteInfo&cedula=${cedula}` },
                         cedula,
                     );
                 },
@@ -103,7 +103,7 @@ Alpine.data("modalClientes", () => ({
 }));
 
 // CLIENTES ITEM
-const clientesItemPage = "ClientesItem";
+const clienteInfoPage = "clienteInfo";
 
 Alpine.data("clienteInfo", () => ({
     cliente: {},
@@ -112,7 +112,7 @@ Alpine.data("clienteInfo", () => ({
         this.cliente = await fetchApi({
             page: "clientes",
             action: "find",
-            id: new URLSearchParams(location.search).get("id"),
+            id: new URLSearchParams(location.search).get("cedula"),
         });
     },
 
@@ -140,15 +140,15 @@ Alpine.data("clienteInfo", () => ({
 }));
 
 // SEGUIMIENTO FISICO
-const idSegFisico = "seg_fisico";
+const idSegFisico = "fisico";
 
-Alpine.data("crudSegFisico", () =>
+Alpine.data("crudFisico", () =>
     crudTableComponent({
         id: idSegFisico,
         params: {
-            page: clientesItemPage,
-            action: "getSegFisicoByCliente",
-            id: new URLSearchParams(location.search).get("id")
+            page: clienteInfoPage,
+            action: "queryFisico",
+            cedula: new URLSearchParams(location.search).get("cedula")
         },
         columns: [
             {
@@ -181,32 +181,34 @@ Alpine.data("crudSegFisico", () =>
         },
     }));
 
-Alpine.data("modalSegFisico", () => modalFormComponent({
+Alpine.data("modalFisico", () => modalFormComponent({
     id: idSegFisico,
-    page: clientesItemPage,
+    page: clienteInfoPage,
+    transformParams: (currentId) => ({
+        id_seguimiento: currentId,
+        cedula: new URLSearchParams(location.href).get("cedula"),
+    }),
     actions: {
-        onAdd: "insertSegFisico",
-        onEdit: "updateSegFisico",
-        onDelete: "deleteSegFisico",
+        onAdd: "insertFisico",
+        onEdit: "updateFisico",
+        onDelete: "deleteFisico",
     },
+    elementName: "Seguimiento Fisico",
     prepareAddData: {
         fecha: new Date(),
     },
-    extraPostBody: {
-        cedula_cliente: new URLSearchParams(location.search).get("id"),
-    }
 }));
 
 // SEGUIMIENTO NUTRICIONAL
-const idSegNutricional = "seg_nutricional";
+const idNutricion = "nutricion";
 
-Alpine.data("crudSegNutricional", () =>
+Alpine.data("crudNutricion", () =>
     crudTableComponent({
-        id: idSegNutricional,
+        id: idNutricion,
         params: {
-            page: clientesItemPage,
-            action: "getSegNutricionalByCliente",
-            id: new URLSearchParams(location.search).get("id")
+            page: clienteInfoPage,
+            action: "queryNutricion",
+            cedula: new URLSearchParams(location.search).get("cedula")
         },
         columns: [
             {
@@ -236,18 +238,20 @@ Alpine.data("crudSegNutricional", () =>
         },
     }));
 
-Alpine.data("modalSegNutricional", () => modalFormComponent({
-    id: idSegNutricional,
-    page: clientesItemPage,
+Alpine.data("modalNutricion", () => modalFormComponent({
+    id: idNutricion,
+    page: clienteInfoPage,
+    transformParams: (currentId) => ({
+        id_seguimiento: currentId,
+        cedula: new URLSearchParams(location.href).get("cedula"),
+    }),
     actions: {
-        onAdd: "insertSegNutricional",
-        onEdit: "updateSegNutricional",
-        onDelete: "deleteSegNutricional",
+        onAdd: "insertNutricion",
+        onEdit: "updateNutricion",
+        onDelete: "deleteNutricion",
     },
+    elementName: "Seguimiento Nutricional",
     prepareAddData: {
         fecha: new Date(),
     },
-    extraPostBody: {
-        cedula_cliente: new URLSearchParams(location.search).get("id"),
-    }
 }));

@@ -16,24 +16,18 @@ class ClientesController extends Controller
         private ClientesModel $clientesModelo,
     ) {}
 
-    // CLIENTES
-
     public function index(): string
     {
         $this->protect("clientes:ver");
-
-        $templates = $this->templates->addData(
-            ['formMeta' => $this->clientesModelo->queryMembresiaMetadata()]
-        );
-        return $templates->render('clientes/index');
+        return $this->templates->render('clientes/index');
     }
 
     public function query(): string
     {
         $this->protect("clientes:ver");
 
-        $search = $_GET["search"] ?? null;
-        $filters = $_GET["filters"] ?? [];
+        $search = Request::query("search");
+        $filters = Request::query("filters") ?? [];
 
         $clientes = $this->clientesModelo->query($search, $filters);
         return $this->json($clientes);
@@ -43,7 +37,7 @@ class ClientesController extends Controller
     {
         $this->protect("clientes:ver");
 
-        $id = Request::query("id") ?? "";
+        $id = $this->getId();
         $cliente = $this->clientesModelo->find($id);
 
         return $cliente
@@ -55,45 +49,44 @@ class ClientesController extends Controller
     {
         $this->protect("clientes:crear");
 
-        $body = $this->getParsedBody();
-        $cliente = $this->mapper->map(ClienteDTO::class, $body);
+        $cliente = $this->validateBody();
+        $id = $cliente->cedula;
 
-        // Verificar que el cliente no exista
-        if ($this->clientesModelo->checkDuplicate($cliente->cedula)) {
-            return $this->conflict(true, $cliente->cedula);
+        if ($this->clientesModelo->checkDuplicate($id)) {
+            return $this->conflict(true, $id);
         }
 
-        $cliente = $this->clientesModelo->insert($cliente);
+        $newCliente = $this->clientesModelo->insert($cliente);
         $this->logger->info(
             "Cliente {cedula_cliente} creado",
             [
-                "cedula_cliente" => $cliente->cedula,
-                "datos_nuevos" => $cliente,
+                "cedula_cliente" => $id,
+                "datos_nuevos" => $newCliente,
             ],
         );
 
-        return $this->json($cliente, 201);
+        return $this->json($newCliente, 201);
     }
 
     public function update(): string
     {
         $this->protect("clientes:editar");
 
-        $body = $this->getParsedBody();
-        $cliente = $this->mapper->map(ClienteDTO::class, $body);
+        $cliente = $this->validateBody();
+        $id = $this->getId();
 
-        $oldCliente = $this->clientesModelo->find($cliente->cedula);
+        $oldCliente = $this->clientesModelo->find($id);
         if (!$oldCliente) {
-            return $this->conflict(true, $cliente->cedula);
+            return $this->conflict(false, $id);
         }
 
-        $cliente = $this->clientesModelo->update($cliente);
+        $newCliente = $this->clientesModelo->update($id, $cliente);
         $this->logger->info(
             "Cliente {cedula_cliente} actualizado",
             [
-                "cedula_cliente" => $cliente->cedula,
+                "cedula_cliente" => $oldCliente->cedula,
                 "datos_previos" => $oldCliente,
-                "datos_nuevos" => $cliente,
+                "datos_nuevos" => $newCliente,
             ],
         );
 
@@ -103,7 +96,7 @@ class ClientesController extends Controller
     public function delete(): string|null
     {
         $this->protect("clientes:eliminar");
-        $id = Request::query("id") ?? "";
+        $id = $this->getId();
 
         if (!$this->clientesModelo->find($id)) {
             return $this->conflict(false, $id);
@@ -128,8 +121,18 @@ class ClientesController extends Controller
             $code = 404;
         }
 
-        $this->logger->error($message, ["cedula_cliente" => $id]);
         return $this->json(['message' => $message], $code);
+    }
+
+    private function getId()
+    {
+        return Request::query("id") ?? "";
+    }
+
+    private function validateBody(): ClienteDTO
+    {
+        $body = Request::getParsedBody();
+        return $this->mapper->map(ClienteDTO::class, $body);
     }
 
     // REPORTES

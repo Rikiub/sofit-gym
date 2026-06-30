@@ -15,12 +15,105 @@ use function App\Core\toDbDate;
 class UsuariosModel extends Model
 {
     private string $table = self::DB_SECURITY . ".usuario";
+    private string $primaryKey = "id_usuario";
 
     public function __construct(
         Database $db,
         private TreeMapper $mapper,
     ) {
         parent::__construct($db);
+    }
+
+    /**
+     * @return UsuarioDTO[]
+     */
+    public function query(): array
+    {
+        $rows = $this->db->dbQuery($this->sqlSelect())->fetchAll();
+        return array_map($this->mapUsuario(...), $rows);
+    }
+
+    public function findById(int $id): ?UsuarioDTO
+    {
+        $row = $this->db->dbQuery(
+            $this->sqlSelect(where: "WHERE {$this->primaryKey} = ?"),
+            [$id],
+        )->fetch();
+
+        return $row
+            ? $this->mapUsuario($row)
+            : null;
+    }
+
+    public function findByUsername(string $username): ?UsuarioDTO
+    {
+        $row = $this->db->dbQuery(
+            $this->sqlSelect(where: "WHERE nombre_usuario = ?"),
+            [$username],
+        )->fetch();
+
+        return $row
+            ? $this->mapUsuario($row)
+            : null;
+    }
+
+    public function findByEmail(string $email): ?UsuarioDTO
+    {
+        $row = $this->db->dbQuery(
+            $this->sqlSelect(where: "WHERE {$this->table}.email = ?"),
+            [$email]
+        )->fetch();
+
+        return $row
+            ? $this->mapUsuario($row)
+            : null;
+    }
+
+    public function insert(UsuarioDTO $usuario): UsuarioDTO
+    {
+        $usuario->validateInsert();
+
+        $this->db->dbInsert(
+            $this->table,
+            $this->mapToColumns($usuario, insertMode: true),
+        );
+
+        $id = (int) $this->db->lastInsertId();
+        return $this->findById($id);
+    }
+
+    public function update(int $id, UsuarioDTO $usuario): UsuarioDTO
+    {
+        $this->db->dbUpdate(
+            $this->table,
+            $this->mapToColumns($usuario),
+            [$this->primaryKey => $id],
+        );
+        return $this->findById($id);
+    }
+
+    public function updateImagen(int $id, string $imagen_url): UsuarioDTO
+    {
+        $this->db->dbUpdate(
+            $this->table,
+            ["imagen_url" => $imagen_url],
+            [$this->primaryKey => $id],
+        );
+        return $this->findById($id);
+    }
+
+    public function delete(int|string $id): void
+    {
+        $this->db->dbDelete($this->table, [$this->primaryKey => $id]);
+    }
+
+    public function actualizarUltimoAcceso(int $id): void
+    {
+        $this->db->dbUpdate(
+            $this->table,
+            ["ultimo_acceso" => toDbDate(new DateTimeImmutable())],
+            [$this->primaryKey => $id]
+        );
     }
 
     private function sqlSelect(?string $where = ""): string
@@ -53,108 +146,19 @@ class UsuariosModel extends Model
         return $usuario;
     }
 
-    /**
-     * @return UsuarioDTO[]
-     */
-    public function query(): array
+    private function mapToColumns(UsuarioDTO $dto, bool $insertMode = true): array
     {
-        $rows = $this->db->dbQuery($this->sqlSelect())->fetchAll();
-        return array_map($this->mapUsuario(...), $rows);
-    }
-
-    public function find(int|string $nombre_usuario): ?UsuarioDTO
-    {
-        $row = $this->db->dbQuery(
-            $this->sqlSelect(
-                <<<SQL
-                WHERE
-                    {$this->table}.id_usuario = ?
-                    OR {$this->table}.nombre_usuario = ?
-                SQL
-            ),
-            [$nombre_usuario, $nombre_usuario]
-        )->fetch();
-
-        return $row
-            ? $this->mapUsuario($row)
-            : null;
-    }
-
-    public function findByEmail(string $email): ?UsuarioDTO
-    {
-        $row = $this->db->dbQuery(
-            $this->sqlSelect("WHERE {$this->table}.email = ?"),
-            [$email]
-        )->fetch();
-
-        return $row
-            ?  $this->mapUsuario($row)
-            : null;
-    }
-
-    public function insert(UsuarioDTO $usuario): UsuarioDTO
-    {
-        $usuario->validateInsert();
-
-        $this->db->dbInsert(
-            $this->table,
-            $this->dtoToArray($usuario),
-        );
-
-        $id = (int) $this->db->lastInsertId();
-        $usuario = $this->find($id);
-        return $usuario;
-    }
-
-    public function update(UsuarioDTO $usuario): UsuarioDTO
-    {
-        $array = $this->dtoToArray($usuario);
-        unset($array["contrasena_hash"]);
-
-        $this->db->dbUpdate(
-            $this->table,
-            $array,
-            ["id_usuario" => $usuario->id_usuario],
-        );
-
-        $usuario = $this->find($usuario->nombre_usuario);
-        return $usuario;
-    }
-
-    public function delete(int|string $id): void
-    {
-        $this->db->dbQuery(
-            <<<SQL
-                DELETE FROM {$this->table}
-                WHERE
-                    id_usuario = ?
-                    OR nombre_usuario = ?
-            SQL,
-            [$id, $id],
-        );
-    }
-
-    public function actualizarUltimoAcceso(int $id)
-    {
-        $this->db->dbUpdate(
-            $this->table,
-            ["ultimo_acceso" => toDbDate(new DateTimeImmutable())],
-            ["id_usuario" => $id]
-        );
-    }
-
-    private function dtoToArray(UsuarioDTO $dto): array
-    {
-        $hashedPassword = password_hash($dto->contrasena_hash, PASSWORD_DEFAULT);
-
         $data = [
             'nombre_usuario' => $dto->nombre_usuario,
-            'contrasena_hash' => $hashedPassword,
-            'imagen_url' => $dto->imagen_url,
             'email' => $dto->email,
         ];
         if ($dto->id_rol) {
             $data["id_rol"] = $dto->id_rol;
+        }
+
+        if ($insertMode) {
+            $hashedPassword = password_hash($dto->contrasena_hash, PASSWORD_DEFAULT);
+            $data['contrasena_hash'] = $hashedPassword;
         }
 
         return $data;
@@ -223,16 +227,12 @@ class UsuariosModel extends Model
         )->fetch();
 
         return $row
-            ? $this->find($row["id_usuario"])
+            ? $this->findById($row["id_usuario"])
             : null;
     }
 
     public function updatePasswordAndClearCode(int $id_usuario, string $new_password): void
     {
-        if (!$this->find($id_usuario)) {
-            throw new Exception("Usuario no encontrado");
-        }
-
         $this->db->dbTransaction(function () use ($id_usuario, $new_password) {
             $hashedPassword = password_hash($new_password, PASSWORD_DEFAULT);
 

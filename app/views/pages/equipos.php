@@ -10,8 +10,8 @@ $modalForm = $this->fetch('modalForm', [
             <fieldset class="row">
                 <label class="col">
                     <span class="form-label">Código</span>
-                    <input class="form-control" type="text" name="codigo" required placeholder="Código del equipo">
-                    <small class="text-danger" x-text="errors.codigo"></small>
+                    <input class="form-control" type="text" name="codigo_equipo" required placeholder="Código del equipo">
+                    <small class="text-danger" x-text="errors.codigo_equipo"></small>
                 </label>
 
                 <label class="col">

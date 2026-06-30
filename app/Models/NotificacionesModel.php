@@ -19,31 +19,13 @@ class NotificacionesModel extends Model
         parent::__construct($db);
     }
 
-    private function sqlSelect(string $where = ""): string
-    {
-        return <<<SQL
-                SELECT
-                    notif.*,
-                    nu.leido,
-                    nu.fecha_leido
-                FROM {$this->table} notif
-                LEFT JOIN {$this->dbSecurity("notificacion_usuario")} nu
-                    ON nu.id_notificacion = notif.id_notificacion
-                {$where}
-                ORDER BY
-                    nu.leido = 0 DESC,
-                    notif.fecha_envio DESC
-                LIMIT 25
-            SQL;
-    }
-
     /**
      * @return NotificacionDTO[]
      */
     public function query(int $id_usuario): array
     {
         $rows = $this->db->dbQuery(
-            $this->sqlSelect("WHERE id_usuario = ?"),
+            $this->sqlSelect(where: "WHERE id_usuario = ?"),
             [$id_usuario]
         )->fetchAll();
 
@@ -57,10 +39,10 @@ class NotificacionesModel extends Model
     {
         $row = $this->db->dbQuery(
             $this->sqlSelect(
-                <<<SQL
+                where: <<<SQL
                     WHERE
                         nu.id_usuario = ?
-                        nu.id_notificacion = ?
+                        AND nu.id_notificacion = ?
                 SQL
             ),
             [$id_usuario, $id_notificacion]
@@ -114,6 +96,24 @@ class NotificacionesModel extends Model
             ["leido" => true],
             ["id_usuario" => $id_usuario]
         );
+    }
+
+    private function sqlSelect(string $where = ""): string
+    {
+        return <<<SQL
+                SELECT
+                    notif.*,
+                    nu.leido,
+                    nu.fecha_leido
+                FROM {$this->table} notif
+                LEFT JOIN {$this->dbSecurity("notificacion_usuario")} nu
+                    ON nu.id_notificacion = notif.id_notificacion
+                {$where}
+                ORDER BY
+                    nu.leido = 0 DESC,
+                    notif.fecha_envio DESC
+                LIMIT 25
+            SQL;
     }
 }
 

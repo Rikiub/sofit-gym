@@ -15,26 +15,6 @@ class RolesModel extends Model
         parent::__construct($db);
     }
 
-    private function sqlSelect(string $where = ""): string
-    {
-        return <<<SQL
-                SELECT
-                    rol.*,
-                    (
-                        SELECT CONCAT('[', GROUP_CONCAT(CONCAT('"', p.nombre, '"')), ']')
-                        FROM
-                            {$this->dbSecurity("permiso")} p
-                        JOIN
-                            {$this->dbSecurity("rol_permiso")} rp 
-                            ON rp.id_permiso = p.id_permiso
-                        WHERE rp.id_rol = rol.id_rol
-                        ORDER BY p.nombre
-                    ) AS `permisos`
-                FROM {$this->dbSecurity("rol")} rol
-                {$where}
-            SQL;
-    }
-
     /**
      * @return RolDTO[]
      */
@@ -71,19 +51,13 @@ class RolesModel extends Model
     public function find(int $id): ?RolDTO
     {
         $row = $this->db->dbQuery(
-            $this->sqlSelect("WHERE id_rol = ?"),
+            $this->sqlSelect(where: "WHERE id_rol = ?"),
             [$id]
         )->fetch();
 
         return $row
             ? $this->mapRol($row)
             : null;
-    }
-
-    private function mapRol(array $row): RolDTO
-    {
-        $row["permisos"] = json_decode($row["permisos"], true);
-        return $this->mapper->map(RolDTO::class, $row);
     }
 
     public function insert(RolDTO $rol): RolDTO
@@ -101,10 +75,10 @@ class RolesModel extends Model
         });
     }
 
-    public function update(RolDTO $rol): RolDTO
+    public function update(int $id, RolDTO $rol): RolDTO
     {
-        return $this->db->dbTransaction(function () use ($rol) {
-            $this->syncPermisos($rol->id_rol, $rol->permisos);
+        return $this->db->dbTransaction(function () use ($id, $rol) {
+            $this->syncPermisos($id, $rol->permisos);
             return $this->find($rol->id_rol);
         });
     }
@@ -131,6 +105,32 @@ class RolesModel extends Model
                 "id_permiso" => $permiso["id_permiso"],
             ]);
         }
+    }
+
+    private function mapRol(array $row): RolDTO
+    {
+        $row["permisos"] = json_decode($row["permisos"], true);
+        return $this->mapper->map(RolDTO::class, $row);
+    }
+
+    private function sqlSelect(string $where = ""): string
+    {
+        return <<<SQL
+                SELECT
+                    rol.*,
+                    (
+                        SELECT CONCAT('[', GROUP_CONCAT(CONCAT('"', p.nombre, '"')), ']')
+                        FROM
+                            {$this->dbSecurity("permiso")} p
+                        JOIN
+                            {$this->dbSecurity("rol_permiso")} rp 
+                            ON rp.id_permiso = p.id_permiso
+                        WHERE rp.id_rol = rol.id_rol
+                        ORDER BY p.nombre
+                    ) AS `permisos`
+                FROM {$this->dbSecurity("rol")} rol
+                {$where}
+            SQL;
     }
 }
 

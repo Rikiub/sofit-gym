@@ -1,5 +1,3 @@
-<input name="id_seguimiento" hidden>
-
 <fieldset class="row">
     <label class="col">
         <span class="form-label">Fecha de seguimiento</span>
