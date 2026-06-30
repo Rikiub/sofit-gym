@@ -20,6 +20,15 @@ class ClientesModel extends Model
         return parent::__construct($db);
     }
 
+    public function getSummary(): array
+    {
+        $rows = $this->db->dbQuery(<<<SQL
+            SELECT COUNT(*) AS total_clientes
+            FROM {$this->table}
+        SQL)->fetch();
+        return $rows;
+    }
+
     /**
      * @return ClienteDTO[]
      */

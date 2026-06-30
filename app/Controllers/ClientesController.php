@@ -33,6 +33,13 @@ class ClientesController extends Controller
         return $this->json($clientes);
     }
 
+    public function summary(): string
+    {
+        $this->protect("clientes:ver");
+        $clientes = $this->clientesModelo->getSummary();
+        return $this->json($clientes);
+    }
+
     public function find(): ?string
     {
         $this->protect("clientes:ver");
