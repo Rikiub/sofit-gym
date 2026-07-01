@@ -38,7 +38,7 @@ $this->layout("layout", ["title" => $title, "sidebar" => false]);
             try {
                 clearTimeout(this.timeout);
 
-                const json = await fetchApi({
+                const data = await fetchApi({
                     page: "login",
                     action: "login"
                 }, {
@@ -46,7 +46,9 @@ $this->layout("layout", ["title" => $title, "sidebar" => false]);
                     body: FormDataJson.toJson(this.$refs.form),
                 });
 
-                self.location.href = json.redirect;
+                if (data?.redirect) {
+                    self.location.href = data.redirect;
+                }
             } catch (e) {
                 this.error = e.cause.message;
                 this.timeout = setTimeout(() => {

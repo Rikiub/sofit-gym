@@ -34,6 +34,7 @@ abstract class Controller
 
         // JSON
         Response::withJsonHeaders();
+        Response::withStatus($status);
         return $this->normalizer->normalize($data);
     }
 

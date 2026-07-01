@@ -5,9 +5,14 @@ namespace App\Core\Http;
 /** Helpers para devolver respuestas HTTP, principalmente como JSON. */
 class Response
 {
-    public static function withJsonHeaders()
+    public static function withJsonHeaders(): void
     {
         header('Content-Type: application/json');
+    }
+
+    public static function withStatus(int $code): void
+    {
+        http_response_code($code);
     }
 
     /**
