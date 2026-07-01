@@ -28,60 +28,59 @@ $this->layout("layout", ["title" => "Facturacion"]);
 
     <!-- TAB Registrar Pago -->
     <div id="tab-pagos" class="tab-content <?= $activeTab == 'tab-pagos' ? 'active' : '' ?>">
-        <div class="card">
-            <div class="card-header"><i class="fas fa-hand-holding-usd"></i> Nuevo Pago de Membresía</div>
-            <div class="card-body">
-                <form method="POST" action="?page=facturacion&action=registrar" id="formRegistroPago">
-                    <input type="hidden" name="action" value="registrar_pago">
-                    <input type="hidden" name="cedula" id="selected_cliente_id">
-                    <input type="hidden" name="metodo_pago" id="selected_metodo" value="Efectivo">
-                    <input type="hidden" name="plan_tipo" id="selected_plan" value="">
+        <div class="card-header"><i class="fas fa-hand-holding-usd"></i> Nuevo Pago de Membresía</div>
 
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label><i class="fas fa-user"></i> Cliente</label>
-                            <div class="modal-select-btn" data-bs-toggle="modal" data-bs-target="#clienteModal">
-                                <span id="cliente_selected_text">Seleccione cliente</span>
-                                <span><i class="fas fa-chevron-right"></i></span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-id-card"></i> Cédula</label>
-                            <input type="text" id="cliente_cedula" class="form-control" readonly placeholder="Seleccionar cliente primero" style="background:#f1f5f9;">
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-dollar-sign"></i> Monto (USD)</label>
-                            <input class="form-control" type="number" step="0.01" id="monto_input" required>
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-credit-card"></i> Método de pago</label>
-                            <div class="modal-select-btn" data-bs-toggle="modal" data-bs-target="#metodoModal">
-                                <span id="metodo_selected_text">Efectivo</span>
-                                <span><i class="fas fa-chevron-right"></i></span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-link"></i> URL comprobante (opcional)</label>
-                            <input class="form-control" type="url" name="comprobante_url" placeholder="https://ejemplo.com/comprobante.jpg">
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-calendar-alt"></i> Fecha de pago</label>
-                            <input type="text" value="<?= date('d/m/Y') ?>" readonly disabled style="background:#f1f5f9;">
-                            <small class="text-muted">Se registrará automáticamente</small>
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-tags"></i> Tipo de plan (solo primer pago)</label>
-                            <div class="modal-select-btn" data-bs-toggle="modal" data-bs-target="#planModal">
-                                <span id="plan_selected_text">Cliente ya tiene membresía</span>
-                                <span><i class="fas fa-chevron-right"></i></span>
-                            </div>
-                        </div>
-                        <div class="form-group" style="justify-content: flex-end;">
-                            <button type="submit"><i class="fas fa-save"></i> Registrar Pago</button>
+        <div class="card-body">
+            <form method="POST" action="?page=facturacion&action=registrar" id="formRegistroPago">
+                <input type="hidden" name="action" value="registrar_pago">
+                <input type="hidden" name="cedula" id="selected_cliente_id">
+                <input type="hidden" name="metodo_pago" id="selected_metodo" value="Efectivo">
+                <input type="hidden" name="plan_tipo" id="selected_plan" value="">
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Cliente</label>
+                        <div class="modal-select-btn" data-bs-toggle="modal" data-bs-target="#clienteModal">
+                            <span id="cliente_selected_text">Seleccione cliente</span>
+                            <span><i class="fas fa-chevron-right"></i></span>
                         </div>
                     </div>
-                </form>
-            </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-id-card"></i> Cédula</label>
+                        <input type="text" id="cliente_cedula" class="form-control" readonly placeholder="Seleccionar cliente primero" style="background:#f1f5f9;">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-dollar-sign"></i> Monto (USD)</label>
+                        <input class="form-control" type="number" step="0.01" id="monto_input" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-credit-card"></i> Método de pago</label>
+                        <div class="modal-select-btn" data-bs-toggle="modal" data-bs-target="#metodoModal">
+                            <span id="metodo_selected_text">Efectivo</span>
+                            <span><i class="fas fa-chevron-right"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-link"></i> URL comprobante (opcional)</label>
+                        <input class="form-control" type="url" name="comprobante_url" placeholder="https://ejemplo.com/comprobante.jpg">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar-alt"></i> Fecha de pago</label>
+                        <input type="text" value="<?= date('d/m/Y') ?>" readonly disabled style="background:#f1f5f9;">
+                        <small class="text-muted">Se registrará automáticamente</small>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-tags"></i> Tipo de plan (solo primer pago)</label>
+                        <div class="modal-select-btn" data-bs-toggle="modal" data-bs-target="#planModal">
+                            <span id="plan_selected_text">Cliente ya tiene membresía</span>
+                            <span><i class="fas fa-chevron-right"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group" style="justify-content: flex-end;">
+                        <button type="submit"><i class="fas fa-save"></i> Registrar Pago</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -414,7 +413,7 @@ $this->layout("layout", ["title" => "Facturacion"]);
 
     .tab-content {
         display: none;
-        padding: 2rem;
+        padding-bottom: 2rem;
         animation: fade 0.25s ease;
     }
 
@@ -435,9 +434,7 @@ $this->layout("layout", ["title" => "Facturacion"]);
     .card {
         background: white;
         border-radius: 20px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03), 0 4px 12px rgba(0, 0, 0, 0.05);
-        margin-bottom: 1.8rem;
-        border: 1px solid #edf2f7;
+        border: unset;
     }
 
     .card-header {
