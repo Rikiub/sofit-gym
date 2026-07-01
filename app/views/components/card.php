@@ -37,6 +37,7 @@ $body ??= '';
             border-radius: 28px;
             box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
             overflow: hidden;
+            border: none;
         }
 
         >.card>.card-header {
