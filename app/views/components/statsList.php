@@ -6,18 +6,25 @@ $this->pushJs("components/statsList.js");
 
 // Props
 $items ??= [];
+$itemsCount = count($items);
+
 $mapKey ??= "";
 $params = encodeToJson(["params" => $params ?? []]);
 $xData = htmlspecialchars("stat({$params})");
 
 $statCard = function (
+    int $listLength,
     string $title = "",
     string $mapKey = "",
     string $iconClass = "",
     string $iconContainer = "",
 ) {
+    $class = $listLength === 2
+        ? "col-lg-6"
+        : "col-lg-4";
+
     return <<<HTML
-        <article class="col-12 col-md-4">
+        <article class="col-12 col-sm-6 {$class}">
             <div class="card shadow-sm border-0">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center">
@@ -27,7 +34,7 @@ $statCard = function (
                         </div>
                         
                         <div class="rounded-3 p-3 {$iconContainer}">
-                            <i class="fa {$iconClass}"></i>
+                            <i class="fa {$iconClass} fs-3"></i>
                         </div>
                     </div>
                 </div>
@@ -40,7 +47,7 @@ $statCard = function (
 <div class="container py-3" x-data="<?= $xData ?>" x-init="refresh()">
     <div class="row g-4">
         <?php foreach ($items as $i): ?>
-            <?= $statCard(...$i) ?>
+            <?= $statCard($itemsCount, ...$i) ?>
         <?php endforeach ?>
     </div>
 </div>

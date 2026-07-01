@@ -32,6 +32,13 @@ class TrabajadoresController extends Controller
         return $this->json($trabajadores);
     }
 
+    public function summary(): string
+    {
+        $this->protect("trabajadores:ver");
+        $summary = $this->trabajadoresModel->getSummary();
+        return $this->json($summary);
+    }
+
     public function find(): ?string
     {
         $this->protect("trabajadores:ver");

@@ -25,6 +25,18 @@ class TrabajadoresModel extends Model
         return parent::__construct($db);
     }
 
+    /** Resumen estadisticos */
+    public function getSummary(): array
+    {
+        $rows = $this->db->dbQuery(<<<SQL
+            SELECT 
+                COUNT(*) AS total_trabajadores,
+                COALESCE(SUM(salario), 0) AS salario_total_pagado
+            FROM trabajador;
+        SQL)->fetch();
+        return $rows;
+    }
+
     /**
      * @return TrabajadorDTO[]
      */

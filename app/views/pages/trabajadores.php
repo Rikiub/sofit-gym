@@ -1,8 +1,35 @@
 <?php
 $this->pushJs('pages/trabajadores/trabajadores.js');
 $this->layout('layout', ['title' => 'Trabajadores']);
+?>
 
-$modalForm = $this->fetch('modalForm', [
+<?php ob_start() ?>
+<?= $this->insert("statsList", [
+    "params" => [
+        "page" => "trabajadores",
+        "action" => "summary",
+    ],
+    "items" => [
+        [
+            "mapKey" => "data.total_trabajadores",
+            "title" => "Trabajadores Totales",
+            "iconClass" => "fa-user",
+            "iconContainer" => "bg-warning-subtle text-warning",
+        ],
+        [
+            "mapKey" => "`\$\${data.salario_total_pagado}`",
+            "title" => "Gastos en Salario",
+            "iconClass" => "fa-money-bill",
+            "iconContainer" => "bg-success-subtle text-success",
+        ],
+    ]
+]) ?>
+
+<main>
+    <?= $this->insert('crudTable', ['xData' => 'crudTable']) ?>
+</main>
+
+<?= $this->insert('modalForm', [
     'xData' => 'modalForm',
     'form' => <<<HTML
             {$this->fetch('persona/form')}
@@ -36,16 +63,10 @@ $modalForm = $this->fetch('modalForm', [
                 </label>
             </fieldset>
         HTML,
-]);
-?>
+]); ?>
+<?php $BODY = ob_get_clean() ?>
 
 <?= $this->insert('card', [
     'title' => 'Trabajadores',
-    'body' => <<<HTML
-            <main>
-                {$this->fetch('crudTable', ['xData' => 'crudTable'])}
-            </main>
-            
-            {$modalForm}
-        HTML
+    'body' => $BODY,
 ]) ?>
