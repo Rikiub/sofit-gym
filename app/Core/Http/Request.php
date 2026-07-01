@@ -17,9 +17,6 @@ class Request
         if (is_string($value)) {
             $value = trim($value);
         }
-        if ($value === null) {
-            $value = null;
-        }
 
         return $value;
     }
