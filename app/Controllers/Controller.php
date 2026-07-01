@@ -25,12 +25,6 @@ abstract class Controller
     #[Inject]
     private Normalizer $normalizer;
 
-    /** Intentar obtener datos desde el POST o JSON input. */
-    protected function getParsedBody()
-    {
-        return Request::getParsedBody();
-    }
-
     protected function json(mixed $data, int $status = 200): string|null
     {
         // No Content
@@ -40,6 +34,7 @@ abstract class Controller
 
         // JSON
         Response::withJsonHeaders();
+        Response::withStatus($status);
         return $this->normalizer->normalize($data);
     }
 

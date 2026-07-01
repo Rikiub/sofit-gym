@@ -55,51 +55,26 @@ class UsuariosController extends Controller
         $this->protect("usuarios:crear");
         $usuario = $this->validateBody();
 
-        // Preparar foto de perfil
-        $imagenUrl = null;
-        if ($usuario->imagen_url) {
-            $imagenUrl = ImagesManager::moveFromTemp($usuario->imagen_url, "/usuarios");
-        }
-
-        // Validar existencia
         if ($this->usuariosModel->findByUsername($usuario->nombre_usuario)) {
             return $this->json(['message' => 'El usuario ya existe'], 400);
         }
 
-        // Crear
         $usuario = $this->usuariosModel->insert($usuario);
-
-        // Actualizar foto de perfil
-        if ($imagenUrl) {
-            $usuario = $this->usuariosModel->updateImagen(
-                $usuario->id_usuario,
-                $imagenUrl
-            );
-        }
-
         return $this->json($usuario, 201);
     }
 
     public function update(): string
     {
-        $usuario = $this->validateBody();
+        $newUsuario = $this->validateBody();
         $id = $this->getId();
 
-        // Verificar que exista
         $oldUsuario = $this->usuariosModel->findById($id);
         if (!$oldUsuario) {
             return $this->notFound();
         }
         $this->protectAccess("usuarios:editar", $oldUsuario);
 
-        // Actualizar foto de perfil
-        if ($usuario->imagen_url !== $oldUsuario->imagen_url) {
-            ImagesManager::delete($oldUsuario->imagen_url ?? "");
-            $imagenUrl = ImagesManager::moveFromTemp($usuario->imagen_url, "/usuarios");
-            $this->usuariosModel->updateImagen($id, $imagenUrl);
-        }
-
-        $usuario = $this->usuariosModel->update($id, $usuario);
+        $usuario = $this->usuariosModel->update($id, $newUsuario);
         return $this->json($usuario, 201);
     }
 
@@ -114,11 +89,7 @@ class UsuariosController extends Controller
             return $this->notFound();
         }
 
-        $this->usuariosModel->delete($usuario->id_usuario);
-        if ($usuario->imagen_url) {
-            ImagesManager::delete($usuario->imagen_url);
-        }
-
+        $this->usuariosModel->delete($id);
         return $this->json(null, 204);
     }
 

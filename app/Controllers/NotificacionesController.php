@@ -56,7 +56,7 @@ class NotificacionesController extends Controller
 
     public function sendMultiple(): null
     {
-        $body = $this->getParsedBody();
+        $body = Request::getParsedBody();
 
         $id_usuarios =
             $body["id_usuarios"]

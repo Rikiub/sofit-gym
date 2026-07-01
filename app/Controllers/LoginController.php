@@ -68,7 +68,7 @@ class LoginController extends Controller
 
         // Actualizar estado
         $this->usuariosModel->insertIntentoAcceso($usuario->id_usuario, exito: true);
-        $this->usuariosModel->actualizarUltimoAcceso($usuario->id_usuario);
+        $this->usuariosModel->updateUltimoAcceso($usuario->id_usuario);
 
         // Guardar la sesión utilizando un helper
         UsuarioSession::login(new UsuarioSessionDto(
@@ -113,11 +113,10 @@ class LoginController extends Controller
     // --- MÓDULO RECUPERACIÓN ---
     public function recover(): string
     {
-        $body = $this->getParsedBody();
+        $body = Request::getParsedBody();
         $email = $body["email"] ?? null;
 
         $usuario = $this->usuariosModel->findByEmail($email);
-
         if (!$usuario) {
             return $this->json(["message" => "Correo no registrado"], 404);
         }
@@ -131,16 +130,16 @@ class LoginController extends Controller
         if ($this->loginModel->enviarCorreo($email, $codigo)) {
             return $this->json(["success" => true]);
         } else {
-            return $this->json(["message" => "Error al enviar correo, revise el log."], 500);
+            return $this->json(["message" => "Error al enviar correo"], 500);
         }
     }
 
     public function verify(): string
     {
-        $body = $this->getParsedBody();
+        $body = Request::getParsedBody();
         $codigo = $body["codigo"] ?? '';
-        $usuario = $this->usuariosModel->verifyRecoveryCode($codigo);
 
+        $usuario = $this->usuariosModel->verifyRecoveryCode($codigo);
         if (!$usuario) {
             return $this->json(["message" => "Código inválido o expirado"], 401);
         }
@@ -151,7 +150,7 @@ class LoginController extends Controller
 
     public function reset(): string
     {
-        $body = $this->getParsedBody();
+        $body = Request::getParsedBody();
         $new_pass = $body["new_pass"] ?? '';
 
         if (!isset($_SESSION['recover_user_id'])) {

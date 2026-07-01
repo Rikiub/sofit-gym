@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\Controller;
 use App\Core\Auth\UsuarioSession;
 use App\Core\Auth\UsuarioSessionDto;
+use App\Core\Http\Request;
 use App\Models\AsistenteMensajeDTO;
 use App\Models\AsistenteModel;
 use App\Models\AsistenteSesionDTO;
@@ -100,7 +101,7 @@ class AsistenteController extends Controller
         $this->initSesion();
 
         // Obtener mensaje desde el parametro
-        $body = $this->getParsedBody();
+        $body = Request::getParsedBody();
         $content = $body["message"];
         if (!$content)
             return $this->json(["message" => "Se debe proporcionar el parametro 'message'"], 400);

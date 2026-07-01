@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use App\Core\Database;
+use App\Core\ImagesManager;
 use App\Core\Validator;
 use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Exception;
+use Throwable;
 
 use function App\Core\toDbDate;
 
@@ -69,6 +71,13 @@ class UsuariosModel extends Model
             : null;
     }
 
+    private function getById(int $id): UsuarioDTO
+    {
+        return
+            $this->findById($id)
+            ?? throw new Exception("Usuario '{$id}' no encontrado");
+    }
+
     public function insert(UsuarioDTO $usuario): UsuarioDTO
     {
         $usuario->validateInsert();
@@ -79,41 +88,58 @@ class UsuariosModel extends Model
         );
 
         $id = (int) $this->db->lastInsertId();
+        $this->syncImage($id, $usuario->imagen_url);
+
         return $this->findById($id);
     }
 
     public function update(int $id, UsuarioDTO $usuario): UsuarioDTO
     {
-        $this->db->dbUpdate(
-            $this->table,
-            $this->mapToColumns($usuario),
-            [$this->primaryKey => $id],
-        );
-        return $this->findById($id);
+        return $this->db->dbTransaction(function () use ($id, $usuario) {
+            $this->db->dbUpdate(
+                $this->table,
+                $this->mapToColumns($usuario),
+                [$this->primaryKey => $id],
+            );
+            $usuario = $this->syncImage($id, $usuario->imagen_url);
+            return $usuario;
+        });
     }
 
-    public function updateImagen(int $id, string $imagen_url): UsuarioDTO
-    {
-        $this->db->dbUpdate(
-            $this->table,
-            ["imagen_url" => $imagen_url],
-            [$this->primaryKey => $id],
-        );
-        return $this->findById($id);
-    }
-
-    public function delete(int|string $id): void
-    {
-        $this->db->dbDelete($this->table, [$this->primaryKey => $id]);
-    }
-
-    public function actualizarUltimoAcceso(int $id): void
+    public function updateUltimoAcceso(int $id): void
     {
         $this->db->dbUpdate(
             $this->table,
             ["ultimo_acceso" => toDbDate(new DateTimeImmutable())],
             [$this->primaryKey => $id]
         );
+    }
+
+    public function delete(int $id): void
+    {
+        $usuario = $this->getById($id);
+
+        $this->db->dbDelete($this->table, [$this->primaryKey => $id]);
+        ImagesManager::delete($usuario->imagen_url);
+    }
+
+    private function syncImage(int $id, string $imagen_url = null): UsuarioDTO
+    {
+        $oldUsuario = $this->getById($id);
+
+        if ($imagen_url && $imagen_url !== $oldUsuario->imagen_url) {
+            $imagen_url = ImagesManager::moveFromTemp($imagen_url, "/usuarios");
+
+            $this->db->dbUpdate(
+                $this->table,
+                ["imagen_url" => $imagen_url],
+                [$this->primaryKey => $id],
+            );
+
+            ImagesManager::delete($oldUsuario->imagen_url ?? "");
+            return $this->findById($id);
+        }
+        return $oldUsuario;
     }
 
     private function sqlSelect(?string $where = ""): string
@@ -146,25 +172,28 @@ class UsuariosModel extends Model
         return $usuario;
     }
 
-    private function mapToColumns(UsuarioDTO $dto, bool $insertMode = true): array
+    private function mapToColumns(UsuarioDTO $dto, bool $insertMode = false): array
     {
-        $data = [
-            'nombre_usuario' => $dto->nombre_usuario,
-            'email' => $dto->email,
-        ];
+        $data["email"] = $dto->email;
         if ($dto->id_rol) {
             $data["id_rol"] = $dto->id_rol;
         }
 
         if ($insertMode) {
-            $hashedPassword = password_hash($dto->contrasena_hash, PASSWORD_DEFAULT);
-            $data['contrasena_hash'] = $hashedPassword;
+            $data['nombre_usuario'] = $dto->nombre_usuario;
+            $data['contrasena_hash'] = $this->hashPassword($dto->contrasena_hash);
         }
 
         return $data;
     }
 
+    private function hashPassword(string $password): string
+    {
+        return password_hash($password, PASSWORD_DEFAULT);
+    }
+
     // Intentos
+
     public function insertIntentoAcceso(int $id_usuario, bool $exito): void
     {
         $this->db->dbInsert(
@@ -196,9 +225,7 @@ class UsuariosModel extends Model
         return (int)$intentos;
     }
 
-    // ====================================================================
-    // MÉTODOS AÑADIDOS PARA LA RECUPERACIÓN DE CONTRASEÑA
-    // ====================================================================
+    // Recuperación Contraseña
 
     public function saveRecoveryCode(int $id_usuario, string $codigo, DateTimeInterface $expiracion): void
     {
@@ -234,11 +261,9 @@ class UsuariosModel extends Model
     public function updatePasswordAndClearCode(int $id_usuario, string $new_password): void
     {
         $this->db->dbTransaction(function () use ($id_usuario, $new_password) {
-            $hashedPassword = password_hash($new_password, PASSWORD_DEFAULT);
-
             $this->db->dbUpdate(
                 table: $this->table,
-                data: ["contrasena_hash" => $hashedPassword],
+                data: ["contrasena_hash" => $this->hashPassword($new_password)],
                 conditions: ["id_usuario" => $id_usuario],
             );
             $this->db->dbDelete(
