@@ -1,15 +1,10 @@
 import { fetchApi } from "@/js/api.js";
 import Alpine from "alpinejs";
 
-Alpine.data("stat", ({
-    page,
-    action,
-    valueKey,
-}) => ({
+Alpine.data("stat", ({ params }) => ({
     data: {},
-    valueKey,
 
     async refresh() {
-        this.data = await fetchApi({ page, action });
+        this.data = await fetchApi(params);
     },
 }));

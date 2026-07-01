@@ -4,17 +4,15 @@ use function App\Core\encodeToJson;
 
 $this->pushJs("components/statsList.js");
 
+// Props
 $items ??= [];
-$params = encodeToJson([
-    "page" => $paramPage ?? "",
-    "action" => $paramAction ?? "",
-    "valueKey" => $valueKey ?? "",
-]);
+$mapKey ??= "";
+$params = encodeToJson(["params" => $params ?? []]);
 $xData = htmlspecialchars("stat({$params})");
 
 $statCard = function (
     string $title = "",
-    string $valueKey = "",
+    string $mapKey = "",
     string $iconClass = "",
     string $iconContainer = "",
 ) {
@@ -25,7 +23,7 @@ $statCard = function (
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted text-uppercase fw-semibold small mb-1">{$title}</h6>
-                            <h2 class="fw-bold mb-0" x-text="data[<?= $valueKey ?>]"></h2>
+                            <h2 class="fw-bold mb-0" x-text="{$mapKey}"></h2>
                         </div>
                         
                         <div class="rounded-3 p-3 {$iconContainer}">
@@ -39,22 +37,10 @@ $statCard = function (
 }
 ?>
 
-<div class="container py-3" x-data="{$xData}" x-init="refresh()">
-    <?php foreach ($items as $i): ?>
-        <div class="row g-4">
-            <?= $statCard(
-                valueKey: "total_clientes",
-                title: "Clientes Totales",
-                iconClass: "fa-user",
-                iconContainer: "bg-success-subtle text-success",
-            ) ?>
-
-            <?= $statCard(
-                valueKey: "total_clientes",
-                title: "Suscripciones Mensuales",
-                iconClass: "fa-user",
-                iconContainer: "bg-primary-subtle text-primary",
-            ) ?>
-        </div>
-    <?php endforeach ?>
+<div class="container py-3" x-data="<?= $xData ?>" x-init="refresh()">
+    <div class="row g-4">
+        <?php foreach ($items as $i): ?>
+            <?= $statCard(...$i) ?>
+        <?php endforeach ?>
+    </div>
 </div>

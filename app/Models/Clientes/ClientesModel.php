@@ -20,11 +20,25 @@ class ClientesModel extends Model
         return parent::__construct($db);
     }
 
+    /** Resumen estadisticos */
     public function getSummary(): array
     {
         $rows = $this->db->dbQuery(<<<SQL
-            SELECT COUNT(*) AS total_clientes
-            FROM {$this->table}
+            SELECT 
+                -- Cantidad de clientes totales
+                (SELECT COUNT(*) FROM cliente) AS total_clientes,
+
+                -- Número de membresías activas
+                (SELECT COUNT(*) FROM membresia WHERE fecha_fin >= CURDATE()) AS membresias_activas,
+
+                -- Ganancias totales de estas membresías activas en el mes actual
+                (SELECT COALESCE(SUM(p.monto), 0)
+                    FROM pago p
+                    JOIN membresia m ON p.id_membresia = m.id_membresia
+                    WHERE m.fecha_fin >= CURDATE()
+                    AND YEAR(p.fecha_pago) = YEAR(CURDATE())
+                    AND MONTH(p.fecha_pago) = MONTH(CURDATE())
+                ) AS ganancias_totales;
         SQL)->fetch();
         return $rows;
     }
