@@ -2,23 +2,6 @@ import Alpine from "alpinejs";
 import { fetchApi } from "@/js/api.js";
 import dayjs from "dayjs";
 
-Alpine.data("menu", (id) => ({
-    show: false,
-    usuario: null,
-
-    async init() {
-        this.refresh();
-    },
-
-    async refresh() {
-        this.usuario = await fetchApi({
-            page: "usuarios",
-            action: "find",
-            id: id,
-        })
-    }
-}));
-
 Alpine.data("asistenciasChart", () => ({
     async init() {
         const ctx = this.$refs.canvas.getContext("2d");

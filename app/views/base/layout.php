@@ -18,7 +18,6 @@ $this->layout('base', ['title' => $title]);
 ?>
 
 <div class="layout-root <?= $sidebar ? 'layout-sidebar' : '' ?>">
-
     <?php if ($sidebar): ?>
         <?= $this->insert('sidebar') ?>
     <?php endif ?>
