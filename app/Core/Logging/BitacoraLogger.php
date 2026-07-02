@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Core;
+namespace App\Core\Logging;
 
 use App\Core\Auth\UsuarioSession;
+use App\Core\Logging\LogLevel;
 use App\Models\BitacoraDTO;
 use App\Models\BitacoraModel;
 use Psr\Log\AbstractLogger;
 use Stringable;
 
-/** Logger que registra eventos en la base de datos.
+/** Logger para registrar eventos del sistema.
  * 
  * Sigue la interfaz PSR-3 para facil extensibilidad con futuras herramientas. */
 class BitacoraLogger extends AbstractLogger
@@ -43,7 +44,7 @@ class BitacoraLogger extends AbstractLogger
             modulo: $modulo,
             accion: $accion,
             mensaje: $message,
-            nivel: strtoupper((string)$level),
+            nivel: strtolower((string)$level),
             datos_previos: $datosPrevios ? json_encode($datosPrevios) : null,
             datos_nuevos: $datosNuevos ? json_encode($datosNuevos) : null,
         ));
@@ -64,11 +65,11 @@ class BitacoraLogger extends AbstractLogger
     }
 
     /** Mostrar en consola solo en scripts */
-    private function consoleLog(string $message, string $level = 'INFO'): void
+    private function consoleLog(string $message, LogLevel $level = LogLevel::INFO): void
     {
-        if (PHP_SAPI === 'cli') {
-            $timestamp = date('Y-m-d H:i:s');
-            fwrite(STDOUT, "[$timestamp] [$level] $message\n");
-        }
+        if (PHP_SAPI !== 'cli') return;
+
+        $timestamp = date('Y-m-d H:i:s');
+        fwrite(STDOUT, "[$timestamp] [$level->value] $message\n");
     }
 }

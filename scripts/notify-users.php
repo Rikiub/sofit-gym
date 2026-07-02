@@ -1,7 +1,7 @@
 <?php
 
 use App\Core\Auth\UserRol;
-use App\Core\BitacoraLogger;
+use App\Core\Logging\BitacoraLogger;
 use App\Core\NotificacionService;
 use Psr\Container\ContainerInterface;
 

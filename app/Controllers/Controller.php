@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use App\Core\Auth\UsuarioSession;
-use App\Core\BitacoraLogger;
+use App\Core\Logging\BitacoraLogger;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use CuyZ\Valinor\Normalizer\Normalizer;

@@ -22,13 +22,10 @@ class NotificacionService
      */
     public function sendByRol(array $roles, string $titulo, string $contenido): void
     {
-        // Convertir array en enteros
-        $roles = array_map(function ($item) {
-            if ($item instanceof UserRol) {
-                return $item->value;
-            }
-            return $item;
-        }, $roles);
+        $roles = array_map(
+            fn($item) => $item instanceof UserRol ? $item->value : $item,
+            $roles
+        );
 
         $dto = new NotificacionDTO(
             titulo: $titulo,

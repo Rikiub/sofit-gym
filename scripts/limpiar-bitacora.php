@@ -1,7 +1,7 @@
 <?php
 
-use App\Core\BitacoraLogger;
 use App\Models\BitacoraModel;
+use App\Core\Logging\BitacoraLogger;
 use Psr\Container\ContainerInterface;
 
 // CONFIG

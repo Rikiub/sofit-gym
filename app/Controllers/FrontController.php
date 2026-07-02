@@ -6,7 +6,7 @@ use Psr\Container\ContainerInterface;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Auth\UsuarioSession;
-use App\Core\BitacoraLogger;
+use App\Core\Logging\BitacoraLogger;
 use CuyZ\Valinor\Mapper\MappingError;
 use Throwable;
 use Exception;
