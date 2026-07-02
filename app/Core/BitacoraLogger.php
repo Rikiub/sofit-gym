@@ -37,6 +37,7 @@ class BitacoraLogger extends AbstractLogger
         $datosPrevios = $context["datos_previos"] ?? null;
         $datosNuevos = $context["datos_nuevos"] ?? null;
 
+        $this->consoleLog($message, $level);
         $this->bitacoraModel->insert(new BitacoraDTO(
             id_usuario: UsuarioSession::getCurrent()->id ?? null,
             modulo: $modulo,
@@ -60,5 +61,14 @@ class BitacoraLogger extends AbstractLogger
 
         // Remplazar todos los placeholders
         return strtr($message, $replace);
+    }
+
+    /** Mostrar en consola solo en scripts */
+    private function consoleLog(string $message, string $level = 'INFO'): void
+    {
+        if (PHP_SAPI === 'cli') {
+            $timestamp = date('Y-m-d H:i:s');
+            fwrite(STDOUT, "[$timestamp] [$level] $message\n");
+        }
     }
 }

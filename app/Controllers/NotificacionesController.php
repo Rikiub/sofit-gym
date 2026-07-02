@@ -64,7 +64,7 @@ class NotificacionesController extends Controller
             ?? throw new Exception("Una lista de 'id_usuarios' es requerido");
         $data = $this->mapper->map(NotificacionDTO::class, $body);
 
-        $this->notificacionesModel->sendToUsuarios(
+        $this->notificacionesModel->sendByUsuarios(
             $id_usuarios,
             notificacion: $data,
         );

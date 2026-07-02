@@ -38,13 +38,11 @@ class NotificacionesModel extends Model
     public function find(int $id_usuario, int $id_notificacion): ?NotificacionDTO
     {
         $row = $this->db->dbQuery(
-            $this->sqlSelect(
-                where: <<<SQL
-                    WHERE
-                        nu.id_usuario = ?
-                        AND nu.id_notificacion = ?
-                SQL
-            ),
+            $this->sqlSelect(where: <<<SQL
+                WHERE
+                    nu.id_usuario = ?
+                    AND nu.id_notificacion = ?
+            SQL),
             [$id_usuario, $id_notificacion]
         )->fetch();
 
@@ -53,7 +51,32 @@ class NotificacionesModel extends Model
             : null;
     }
 
-    public function sendToUsuarios(array $id_usuarios, NotificacionDTO $notificacion)
+    public function sendByRol(array $id_roles, NotificacionDTO $notificacion): void
+    {
+        $notificacion->validateInsert();
+
+        if (!$id_roles) {
+            return;
+        }
+
+        $placeholders = join(',', array_fill(0, count($id_roles), '?'));
+        $userIds = $this->db->dbQuery(
+            <<<SQL
+                SELECT id_usuario
+                FROM {$this->dbSecurity('usuario')}
+                WHERE id_rol IN ($placeholders)
+            SQL,
+            [$id_roles]
+        )->fetchAll();
+
+        if (!$userIds) {
+            return;
+        }
+
+        $this->sendByUsuarios($userIds, $notificacion);
+    }
+
+    public function sendByUsuarios(array $id_usuarios, NotificacionDTO $notificacion): void
     {
         $notificacion->validateInsert();
 
