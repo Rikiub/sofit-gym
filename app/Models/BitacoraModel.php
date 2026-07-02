@@ -20,37 +20,6 @@ class BitacoraModel extends Model
         parent::__construct($db);
     }
 
-    private function dtoToArray(BitacoraDTO $dto): array
-    {
-        return [
-            'id_usuario' => $dto->id_usuario,
-            'id_modulo' => $dto->id_modulo,
-            'accion' => $dto->accion,
-            'mensaje' => $dto->mensaje,
-            'nivel' => $dto->nivel,
-            'datos_previos' => $dto->datos_previos,
-            'datos_nuevos' => $dto->datos_nuevos,
-        ];
-    }
-
-    private function sqlSelect(string $where = ""): string
-    {
-        return <<<SQL
-                SELECT
-                    bitacora.*,
-                    usuario.nombre_usuario,
-                    modulo.nombre AS `modulo`
-                FROM
-                    {$this->table} bitacora
-                LEFT JOIN {$this->dbSecurity("modulo")}
-                    ON bitacora.id_modulo = modulo.id_modulo
-                LEFT JOIN {$this->dbSecurity("usuario")}
-                    ON usuario.id_usuario = bitacora.id_usuario
-                {$where}
-                ORDER BY fecha DESC
-            SQL;
-    }
-
     /**
      * @return BitacoraDTO[]
      */
@@ -67,7 +36,7 @@ class BitacoraModel extends Model
     public function find(int $id): ?BitacoraDTO
     {
         $row = $this->db->dbQuery(
-            $this->sqlSelect("WHERE {$this->table}.{$this->primaryKey} = ?"),
+            $this->sqlSelect(where: "WHERE {$this->table}.{$this->primaryKey} = ?"),
             [$id]
         )->fetch();
 
@@ -96,9 +65,10 @@ class BitacoraModel extends Model
             $idModulo = (int)$this->db->lastInsertId();
 
             // Insertar bitacora
-            $array = $this->dtoToArray($bitacora);
-            $array["id_modulo"] = $idModulo;
-            $this->db->dbInsert($this->table, $array);
+            $this->db->dbInsert($this->table, [
+                ...$this->mapToColumns($bitacora),
+                "id_modulo" => $idModulo,
+            ]);
 
             $id = (int)$this->db->lastInsertId();
             return $this->find($id);
@@ -114,6 +84,38 @@ class BitacoraModel extends Model
             [$dias_retencion]
         );
     }
+
+    private function mapToColumns(BitacoraDTO $dto): array
+    {
+        return [
+            'id_usuario' => $dto->id_usuario,
+            'id_modulo' => $dto->id_modulo,
+            'accion' => $dto->accion,
+            'mensaje' => $dto->mensaje,
+            'nivel' => $dto->nivel,
+            'contexto' => $dto->contexto,
+            'datos_previos' => $dto->datos_previos,
+            'datos_nuevos' => $dto->datos_nuevos,
+        ];
+    }
+
+    private function sqlSelect(string $where = ""): string
+    {
+        return <<<SQL
+                SELECT
+                    bitacora.*,
+                    usuario.nombre_usuario,
+                    modulo.nombre AS `modulo`
+                FROM
+                    {$this->table} bitacora
+                LEFT JOIN {$this->dbSecurity("modulo")}
+                    ON bitacora.id_modulo = modulo.id_modulo
+                LEFT JOIN {$this->dbSecurity("usuario")}
+                    ON usuario.id_usuario = bitacora.id_usuario
+                {$where}
+                ORDER BY fecha DESC
+            SQL;
+    }
 }
 
 // DTO
@@ -128,6 +130,7 @@ readonly class BitacoraDTO
         public ?string $accion = null,
         public ?string $mensaje = null,
         public ?string $nivel = null,
+        public ?string $contexto = null,
         public ?string $datos_previos = null,
         public ?string $datos_nuevos = null,
         public ?DateTimeImmutable $fecha = null,

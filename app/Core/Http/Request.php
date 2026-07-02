@@ -54,22 +54,30 @@ class Request
     /** Intenta obtener datos desde el POST o JSON input. */
     public static function getParsedBody(): array
     {
-        // Si el contenido es JSON, entonces decodificarlo.
-        if (Request::isJson()) {
-            $rawInput = file_get_contents('php://input');
-            $data = json_decode($rawInput, associative: true, flags: JSON_THROW_ON_ERROR);
+        // JSON
+        if (self::isJson()) {
+            $raw = file_get_contents('php://input');
+            if (empty($raw)) {
+                return [];
+            }
+
+            $data = json_decode($raw, associative: true, flags: JSON_THROW_ON_ERROR);
+
+            if (!is_array($data)) {
+                return [];
+            }
             return $data;
         }
 
-        // Si el contenido es form POST, entonces devolver directamente
+        // POST
         return $_POST;
     }
 
     public static function wantsJson()
     {
         if (
-            Request::acceptsJson()
-            || Request::isJson()
+            self::acceptsJson()
+            || self::isJson()
             || ($_GET['format'] ?? '') === 'json'
         ) {
             return true;
@@ -80,7 +88,8 @@ class Request
 
     public static function isJson(): bool
     {
-        return $_SERVER['CONTENT_TYPE'] ?? '' == CONTENT_JSON;
+        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+        return str_starts_with($contentType, CONTENT_JSON);
     }
 
     public static function acceptsJson(): bool

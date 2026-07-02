@@ -32,19 +32,29 @@ class BitacoraLogger extends AbstractLogger
     ): void {
         $message = $this->interpolate((string) $message, $context);
 
+        // Extraer datos
         $modulo = $context["modulo"] ?? $this->modulo;
         $accion = $context["accion"] ?? $this->accion;
 
         $datosPrevios = $context["datos_previos"] ?? null;
         $datosNuevos = $context["datos_nuevos"] ?? null;
 
-        $this->consoleLog($message, $level);
+        // Limpiar contexto
+        $context = array_diff_key($context, array_flip([
+            "modulo",
+            "accion",
+            "datos_previos",
+            "datos_nuevos",
+        ]));
+
+        $this->consoleLog($message, LogLevel::from($level));
         $this->bitacoraModel->insert(new BitacoraDTO(
             id_usuario: UsuarioSession::getCurrent()->id ?? null,
             modulo: $modulo,
             accion: $accion,
             mensaje: $message,
             nivel: strtolower((string)$level),
+            contexto: $context ? json_encode($context) : null,
             datos_previos: $datosPrevios ? json_encode($datosPrevios) : null,
             datos_nuevos: $datosNuevos ? json_encode($datosNuevos) : null,
         ));

@@ -87,7 +87,7 @@ CREATE TABLE `clase` (
   PRIMARY KEY (`id_clase`),
   KEY `cedula_trabajador` (`cedula_trabajador`),
   CONSTRAINT `clase_ibfk_1` FOREIGN KEY (`cedula_trabajador`) REFERENCES `trabajador` (`cedula`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -96,7 +96,7 @@ CREATE TABLE `clase` (
 
 LOCK TABLES `clase` WRITE;
 /*!40000 ALTER TABLE `clase` DISABLE KEYS */;
-INSERT INTO `clase` VALUES (2,'V-00000002','Dia de pierna','¡Hora de fortalecer esas piernas!',15,'Programado','2026-05-26 12:00:00','2026-05-12 03:00:00'),(13,'V-00000002','Hola','Adios',20,'Programado','2026-05-29 11:00:00','2026-05-29 02:00:00'),(20,'V-00000002','Hola','Adios',3,'Programado','2026-06-06 08:26:00','2026-06-07 12:00:00');
+INSERT INTO `clase` VALUES (2,'V-00000002','Dia de pierna','¡Hora de fortalecer esas piernas!',15,'Programado','2026-05-26 12:00:00','2026-05-12 03:00:00'),(13,'V-00000002','Hola','Adios',20,'Programado','2026-05-29 11:00:00','2026-05-29 02:00:00'),(26,'V-00000002','assa','asf',2,'Programado','2026-06-30 00:35:00','2026-07-01 00:35:00');
 /*!40000 ALTER TABLE `clase` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -125,7 +125,7 @@ CREATE TABLE `clase_cliente` (
 
 LOCK TABLES `clase_cliente` WRITE;
 /*!40000 ALTER TABLE `clase_cliente` DISABLE KEYS */;
-INSERT INTO `clase_cliente` VALUES (2,'V-11111111',0,'2026-06-20 19:45:42'),(2,'V-22222222',0,'2026-06-20 19:45:42'),(2,'V-33333333',0,'2026-06-20 19:45:42'),(13,'V-11111111',0,'2026-06-20 19:45:42'),(13,'V-33333333',0,'2026-06-20 19:45:42'),(20,'V-11111111',0,'2026-06-20 19:45:42'),(20,'V-22222222',0,'2026-06-20 19:45:42'),(20,'V-33333333',0,'2026-06-20 19:45:42');
+INSERT INTO `clase_cliente` VALUES (2,'V-11111111',0,'2026-06-20 19:45:42'),(2,'V-22222222',0,'2026-06-20 19:45:42'),(2,'V-33333333',0,'2026-06-20 19:45:42'),(13,'V-11111111',0,'2026-06-20 19:45:42'),(13,'V-33333333',0,'2026-06-20 19:45:42'),(26,'V-21059483',0,'2026-06-30 00:36:03'),(26,'V-27338194',0,'2026-06-30 00:36:03');
 /*!40000 ALTER TABLE `clase_cliente` ENABLE KEYS */;
 UNLOCK TABLES;
 ALTER DATABASE `sofit_gym` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci ;
@@ -318,7 +318,7 @@ CREATE TABLE `mantenimiento_equipo` (
   KEY `mantenimiento_equipo_trabajador_FK` (`cedula_trabajador`),
   CONSTRAINT `mantenimiento_equipo_ibfk_1` FOREIGN KEY (`codigo_equipo`) REFERENCES `equipo` (`codigo_equipo`) ON UPDATE CASCADE,
   CONSTRAINT `mantenimiento_equipo_trabajador_FK` FOREIGN KEY (`cedula_trabajador`) REFERENCES `trabajador` (`cedula`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -353,7 +353,7 @@ CREATE TABLE `membresia` (
   CONSTRAINT `membresia_cliente_FK` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `membresia_ibfk_1` FOREIGN KEY (`id_tipo`) REFERENCES `tipo_membresia` (`id_tipo`) ON UPDATE CASCADE,
   CONSTRAINT `membresia_ibfk_2` FOREIGN KEY (`id_estado`) REFERENCES `estado_membresia` (`id_estado`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -362,7 +362,7 @@ CREATE TABLE `membresia` (
 
 LOCK TABLES `membresia` WRITE;
 /*!40000 ALTER TABLE `membresia` DISABLE KEYS */;
-INSERT INTO `membresia` VALUES (40,1,1,'V-11773948','2026-06-20','2026-07-20','2026-06-20 16:30:17'),(41,1,1,'V-21059483','2026-06-20','2026-07-20','2026-06-20 19:14:40'),(42,1,1,'V-24119384','2026-06-22','2026-07-22','2026-06-22 20:43:23');
+INSERT INTO `membresia` VALUES (40,1,2,'V-11773948','2026-06-20','2026-07-20','2026-06-20 16:30:17'),(41,1,1,'V-21059483','2026-06-20','2026-07-20','2026-06-20 19:14:40'),(42,1,1,'V-24119384','2026-06-22','2026-07-22','2026-06-22 20:43:23'),(43,1,1,'V-11773948','2026-07-01','2026-07-31','2026-07-01 12:25:36');
 /*!40000 ALTER TABLE `membresia` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -410,7 +410,7 @@ CREATE TABLE `pago` (
   KEY `pago_metodo_pago_FK` (`id_metodo`),
   CONSTRAINT `pago_membresia_FK` FOREIGN KEY (`id_membresia`) REFERENCES `membresia` (`id_membresia`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `pago_metodo_pago_FK` FOREIGN KEY (`id_metodo`) REFERENCES `metodo_pago` (`id_metodo`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -419,7 +419,7 @@ CREATE TABLE `pago` (
 
 LOCK TABLES `pago` WRITE;
 /*!40000 ALTER TABLE `pago` DISABLE KEYS */;
-INSERT INTO `pago` VALUES (20,40,1,5.00,'','Pagado','2026-06-20'),(21,41,1,5.00,'','Pagado','2026-06-20'),(22,42,1,20.00,'','Pagado','2026-06-22');
+INSERT INTO `pago` VALUES (20,40,1,5.00,'','Pagado','2026-06-20'),(21,41,1,5.00,'','Pagado','2026-06-20'),(22,42,1,20.00,'','Pagado','2026-06-22'),(23,43,1,5.00,'','Pagado','2026-07-01');
 /*!40000 ALTER TABLE `pago` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -605,7 +605,7 @@ CREATE TABLE `seguimiento_fisico` (
   KEY `seguimiento_fisico_trabajador_FK` (`registrado_por`),
   CONSTRAINT `seguimiento_fisico_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `seguimiento_fisico_trabajador_FK` FOREIGN KEY (`registrado_por`) REFERENCES `trabajador` (`cedula`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -614,7 +614,7 @@ CREATE TABLE `seguimiento_fisico` (
 
 LOCK TABLES `seguimiento_fisico` WRITE;
 /*!40000 ALTER TABLE `seguimiento_fisico` DISABLE KEYS */;
-INSERT INTO `seguimiento_fisico` VALUES (3,'V-11111111',NULL,'2026-05-17',2.00,4.00,NULL,NULL,NULL,NULL,NULL,NULL),(14,'V-22222222',NULL,'2026-05-20',111.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(17,'V-22222222',NULL,'2026-05-24',210.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(20,'V-22222222',NULL,'2026-05-30',200.00,50.00,50.00,50.00,50.00,50.00,50.00,50.00),(30,'V-11773948','V-00000001','2026-06-24',200.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `seguimiento_fisico` VALUES (3,'V-11111111',NULL,'2026-05-17',2.00,4.00,NULL,NULL,NULL,NULL,NULL,NULL),(14,'V-22222222',NULL,'2026-05-20',111.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(17,'V-22222222',NULL,'2026-05-24',210.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(20,'V-22222222',NULL,'2026-05-30',200.00,50.00,50.00,50.00,50.00,50.00,50.00,50.00),(30,'V-11773948','V-00000001','2026-06-24',200.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(33,'V-11773948','V-00000002','2026-06-27',200.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `seguimiento_fisico` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -638,7 +638,7 @@ CREATE TABLE `seguimiento_nutricional` (
   KEY `seguimiento_nutricional_trabajador_FK` (`registrado_por`),
   CONSTRAINT `seguimiento_nutricional_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `seguimiento_nutricional_trabajador_FK` FOREIGN KEY (`registrado_por`) REFERENCES `trabajador` (`cedula`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1006,4 +1006,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-06-24 17:19:24
+-- Dump completed on 2026-07-02 18:50:17

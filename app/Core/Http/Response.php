@@ -20,7 +20,7 @@ class Response
      */
     public static function json(mixed $data, int $status = 200): string
     {
-        Response::withJsonHeaders();
+        self::withJsonHeaders();
         http_response_code($status);
         return json_encode($data, JSON_THROW_ON_ERROR);
     }
