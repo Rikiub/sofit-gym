@@ -22,18 +22,4 @@ class BitacoraController extends Controller
         $logs = $this->bitacoraModel->query();
         return $this->json($logs);
     }
-
-    public function cronLimpiarRegistros(): null
-    {
-        $this->protect("bitacora:editar");
-
-        $diasRetencion = (int)($_GET["dias"] ?? 30);
-        $this->bitacoraModel->limpiarRegistros($diasRetencion);
-
-        $this->logger->info("Limpieza automática de bitácora ejecutada", [
-            'dias_retencion' => $diasRetencion,
-        ]);
-
-        return $this->json(null, 204);
-    }
 }
