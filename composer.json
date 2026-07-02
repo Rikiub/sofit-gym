@@ -1,8 +1,5 @@
 {
     "name": "app/sofit-gym",
-    "scripts": {
-        "xampp": "C:\\xampp\\php\\php.exe"
-    },
     "autoload": {
         "psr-4": {
             "App\\": "app/"
