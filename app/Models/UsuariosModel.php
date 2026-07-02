@@ -10,7 +10,6 @@ use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Exception;
-use Throwable;
 
 use function App\Core\toDbDate;
 
