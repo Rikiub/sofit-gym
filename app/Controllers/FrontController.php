@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use DI\ContainerBuilder;
 use Psr\Container\ContainerInterface;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
@@ -15,38 +14,15 @@ use Exception;
 /** Punto de entrada a la aplicación. */
 class FrontController
 {
-    private ContainerInterface $container;
     private const CONTROLLERS_NAMESPACE = 'App\Controllers';
     private const DEFAULT_PAGE = "dashboard";
     private const DEFAULT_ACTION = "index";
 
-    public function __construct()
+    public function __construct(private ContainerInterface $container)
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-
-        // Construir el inyector de dependencias
-        $this->bootstrapContainer();
-    }
-
-    /** Configurar inyector de dependencias (PHP-DI).
-     * 
-     * Dependiendo de las dependencias que tengan en los __contruct de los controladores
-     * el inyector las instanciara automaticamente con la configuración definida.
-     */
-    private function bootstrapContainer(): void
-    {
-        $builder = new ContainerBuilder();
-        $builder
-            ->addDefinitions(require "config/container.php")
-            ->useAttributes(true);
-
-        if (!DEBUG) {
-            $builder->enableCompilation(CACHE_DIR . '/php-di');
-        }
-
-        $this->container = $builder->build();
     }
 
     /**
@@ -74,6 +50,7 @@ class FrontController
             }
 
             // Resolver controlador desde el contenedor DI
+            /** @var Controller */
             $controller = $this->container->get($classPath);
 
             if (!method_exists($controller, $action)) {

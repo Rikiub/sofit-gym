@@ -1,14 +1,10 @@
 <?php
 
-// Cargar composer autoload
-require 'vendor/autoload.php';
+use App\Controllers\FrontController;
 
-// Cargar entorno desde el archivo .env
-// Luego cargar constantes
-$dotenv = \Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->safeLoad();
-require 'config/constants.php';
+// Cargar autoload, variables de entorno y construir contenedor DI
+$container = require 'bootstrap/app.php';
 
-// Iniciar
-$front = new \App\Controllers\FrontController;
+// Iniciar aplicacion
+$front = $container->get(FrontController::class);
 $front->run();

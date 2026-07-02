@@ -11,10 +11,10 @@ use Throwable;
 class Database extends PDO
 {
     public function __construct(
-        string $host = "localhost",
-        string $database = "sofit_gym",
-        string $username = "root",
-        string $password = "",
+        string $host,
+        string $database,
+        string $username,
+        string $password,
     ) {
         $charset = 'utf8mb4';
         $options = [

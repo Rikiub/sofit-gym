@@ -16,7 +16,7 @@ use LLPhant\GeminiOpenAIConfig;
 use PHPMailer\PHPMailer\PHPMailer;
 
 /** Configuración de PHP-DI
- * Aqui se definen los objetos a instanciar en los controladores automaticamente.
+ * Aqui se definen los objetos a instanciar en la aplicación automaticamente.
  */
 return [
     // Conexion a la base de datos

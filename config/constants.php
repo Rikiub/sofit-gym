@@ -4,7 +4,7 @@
 
 // Directorios
 define("ROOT_DIR", dirname(__DIR__));
-define("CACHE_DIR", ROOT_DIR . "/.cache");
+define("CACHE_DIR", ROOT_DIR . "/bootstrap/cache");
 define("UPLOADS_DIR", ROOT_DIR . "/uploads");
 define("UPLOADS_TEMP_DIR", UPLOADS_DIR . "/tmp");
 
