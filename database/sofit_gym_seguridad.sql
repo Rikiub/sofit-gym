@@ -96,7 +96,7 @@ CREATE TABLE `bitacora` (
   KEY `bitacora_modulo_FK` (`id_modulo`),
   CONSTRAINT `bitacora_modulo_FK` FOREIGN KEY (`id_modulo`) REFERENCES `modulo` (`id_modulo`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `bitacora_usuario_FK` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -105,7 +105,7 @@ CREATE TABLE `bitacora` (
 
 LOCK TABLES `bitacora` WRITE;
 /*!40000 ALTER TABLE `bitacora` DISABLE KEYS */;
-INSERT INTO `bitacora` VALUES (4,2,19,'update','Cliente V-11773948 actualizado','info','{\"cedula_cliente\":\"V-11773948\"}','{\"cedula\":\"V-11773948\",\"nombre\":\"Andrea\",\"apellido\":\"Machado\",\"correo\":\"andrea.machado@example.com\",\"telefono\":\"0414-5557777\",\"direccion\":\"Puerto Ayacucho\",\"activo\":true,\"fecha_nacimiento\":{\"date\":\"1975-10-31 18:49:50.000000\",\"timezone_type\":3,\"timezone\":\"America\\/Caracas\"},\"fecha_creacion\":{\"date\":\"2026-06-16 19:37:52.000000\",\"timezone_type\":3,\"timezone\":\"America\\/Caracas\"},\"membresia\":{\"id_membresia\":43,\"id_tipo\":1,\"id_estado\":1,\"tipo\":\"Mensual\",\"estado\":\"Activo\",\"fecha_inicio\":{\"date\":\"2026-07-01 18:49:50.000000\",\"timezone_type\":3,\"timezone\":\"America\\/Caracas\"},\"fecha_fin\":{\"date\":\"2026-07-31 18:49:50.000000\",\"timezone_type\":3,\"timezone\":\"America\\/Caracas\"}}}','{\"cedula\":\"V-11773948\",\"nombre\":\"Andrea\",\"apellido\":\"Machado\",\"correo\":\"andrea.machado@example.com\",\"telefono\":\"0414-5557777\",\"direccion\":\"Puerto Ayacucho\",\"activo\":true,\"fecha_nacimiento\":{\"date\":\"1975-10-31 18:49:50.000000\",\"timezone_type\":3,\"timezone\":\"America\\/Caracas\"},\"fecha_creacion\":{\"date\":\"2026-06-16 19:37:52.000000\",\"timezone_type\":3,\"timezone\":\"America\\/Caracas\"},\"membresia\":{\"id_membresia\":43,\"id_tipo\":1,\"id_estado\":1,\"tipo\":\"Mensual\",\"estado\":\"Activo\",\"fecha_inicio\":{\"date\":\"2026-07-01 18:49:50.000000\",\"timezone_type\":3,\"timezone\":\"America\\/Caracas\"},\"fecha_fin\":{\"date\":\"2026-07-31 18:49:50.000000\",\"timezone_type\":3,\"timezone\":\"America\\/Caracas\"}}}','2026-07-02 18:49:50');
+INSERT INTO `bitacora` VALUES (4,2,19,'update','Cliente V-11773948 actualizado','info','{\"cedula_cliente\":\"V-11773948\"}','{\"cedula\":\"V-11773948\",\"nombre\":\"Andrea\",\"apellido\":\"Machado\",\"correo\":\"andrea.machado@example.com\",\"telefono\":\"0414-5557777\",\"direccion\":\"Puerto Ayacucho\",\"activo\":true,\"fecha_nacimiento\":{\"date\":\"1975-10-31 18:49:50.000000\",\"timezone_type\":3,\"timezone\":\"America\\/Caracas\"},\"fecha_creacion\":{\"date\":\"2026-06-16 19:37:52.000000\",\"timezone_type\":3,\"timezone\":\"America\\/Caracas\"},\"membresia\":{\"id_membresia\":43,\"id_tipo\":1,\"id_estado\":1,\"tipo\":\"Mensual\",\"estado\":\"Activo\",\"fecha_inicio\":{\"date\":\"2026-07-01 18:49:50.000000\",\"timezone_type\":3,\"timezone\":\"America\\/Caracas\"},\"fecha_fin\":{\"date\":\"2026-07-31 18:49:50.000000\",\"timezone_type\":3,\"timezone\":\"America\\/Caracas\"}}}','{\"cedula\":\"V-11773948\",\"nombre\":\"Andrea\",\"apellido\":\"Machado\",\"correo\":\"andrea.machado@example.com\",\"telefono\":\"0414-5557777\",\"direccion\":\"Puerto Ayacucho\",\"activo\":true,\"fecha_nacimiento\":{\"date\":\"1975-10-31 18:49:50.000000\",\"timezone_type\":3,\"timezone\":\"America\\/Caracas\"},\"fecha_creacion\":{\"date\":\"2026-06-16 19:37:52.000000\",\"timezone_type\":3,\"timezone\":\"America\\/Caracas\"},\"membresia\":{\"id_membresia\":43,\"id_tipo\":1,\"id_estado\":1,\"tipo\":\"Mensual\",\"estado\":\"Activo\",\"fecha_inicio\":{\"date\":\"2026-07-01 18:49:50.000000\",\"timezone_type\":3,\"timezone\":\"America\\/Caracas\"},\"fecha_fin\":{\"date\":\"2026-07-31 18:49:50.000000\",\"timezone_type\":3,\"timezone\":\"America\\/Caracas\"}}}','2026-07-02 18:49:50'),(5,2,1,'logout','Usuario admin ha cerrado sesión','info','{\"nombre_usuario\":\"admin\"}',NULL,NULL,'2026-07-02 19:52:27'),(6,2,1,'login','Usuario admin ha iniciado sesión','info','{\"nombre_usuario\":\"admin\"}',NULL,NULL,'2026-07-02 19:52:50');
 /*!40000 ALTER TABLE `bitacora` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -148,7 +148,7 @@ CREATE TABLE `intento_acceso` (
   PRIMARY KEY (`id_acceso`),
   KEY `intento_acceso_usuario_FK` (`id_usuario`),
   CONSTRAINT `intento_acceso_usuario_FK` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -157,7 +157,7 @@ CREATE TABLE `intento_acceso` (
 
 LOCK TABLES `intento_acceso` WRITE;
 /*!40000 ALTER TABLE `intento_acceso` DISABLE KEYS */;
-INSERT INTO `intento_acceso` VALUES (26,14,0,'2026-06-23 14:53:52'),(27,14,0,'2026-06-23 14:53:55'),(28,14,0,'2026-06-23 14:53:56'),(29,14,0,'2026-06-23 14:53:58'),(30,14,0,'2026-06-23 14:57:26'),(31,14,0,'2026-06-23 14:57:28'),(32,14,0,'2026-06-23 14:57:31'),(33,14,0,'2026-06-23 15:08:03'),(34,14,0,'2026-06-23 15:08:06'),(35,14,0,'2026-06-23 15:08:09'),(36,14,1,'2026-06-23 15:08:42'),(37,2,1,'2026-06-23 15:08:52'),(38,2,1,'2026-06-23 17:44:40'),(39,2,1,'2026-06-23 17:45:54'),(40,2,1,'2026-06-24 12:31:23'),(41,2,1,'2026-06-24 16:29:20'),(42,2,1,'2026-06-26 20:02:43'),(43,2,1,'2026-06-26 20:03:15'),(44,2,1,'2026-06-26 20:04:10'),(45,2,1,'2026-06-27 15:30:16'),(46,2,1,'2026-06-27 15:30:17'),(47,2,1,'2026-06-29 17:40:32'),(48,2,1,'2026-06-30 00:41:37'),(49,2,0,'2026-06-30 22:22:44'),(50,2,0,'2026-06-30 22:22:51'),(51,2,0,'2026-06-30 22:25:15'),(52,2,0,'2026-06-30 22:44:17'),(53,2,0,'2026-06-30 22:44:20'),(54,2,0,'2026-06-30 22:44:26'),(55,2,1,'2026-06-30 22:45:55'),(56,2,1,'2026-06-30 22:46:13');
+INSERT INTO `intento_acceso` VALUES (26,14,0,'2026-06-23 14:53:52'),(27,14,0,'2026-06-23 14:53:55'),(28,14,0,'2026-06-23 14:53:56'),(29,14,0,'2026-06-23 14:53:58'),(30,14,0,'2026-06-23 14:57:26'),(31,14,0,'2026-06-23 14:57:28'),(32,14,0,'2026-06-23 14:57:31'),(33,14,0,'2026-06-23 15:08:03'),(34,14,0,'2026-06-23 15:08:06'),(35,14,0,'2026-06-23 15:08:09'),(36,14,1,'2026-06-23 15:08:42'),(37,2,1,'2026-06-23 15:08:52'),(38,2,1,'2026-06-23 17:44:40'),(39,2,1,'2026-06-23 17:45:54'),(40,2,1,'2026-06-24 12:31:23'),(41,2,1,'2026-06-24 16:29:20'),(42,2,1,'2026-06-26 20:02:43'),(43,2,1,'2026-06-26 20:03:15'),(44,2,1,'2026-06-26 20:04:10'),(45,2,1,'2026-06-27 15:30:16'),(46,2,1,'2026-06-27 15:30:17'),(47,2,1,'2026-06-29 17:40:32'),(48,2,1,'2026-06-30 00:41:37'),(49,2,0,'2026-06-30 22:22:44'),(50,2,0,'2026-06-30 22:22:51'),(51,2,0,'2026-06-30 22:25:15'),(52,2,0,'2026-06-30 22:44:17'),(53,2,0,'2026-06-30 22:44:20'),(54,2,0,'2026-06-30 22:44:26'),(55,2,1,'2026-06-30 22:45:55'),(56,2,1,'2026-06-30 22:46:13'),(57,2,1,'2026-07-02 19:52:50');
 /*!40000 ALTER TABLE `intento_acceso` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -173,7 +173,7 @@ CREATE TABLE `modulo` (
   `nombre` varchar(100) NOT NULL,
   PRIMARY KEY (`id_modulo`),
   UNIQUE KEY `modulo_unique` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=278 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=280 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -381,7 +381,7 @@ CREATE TABLE `usuario` (
 
 LOCK TABLES `usuario` WRITE;
 /*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
-INSERT INTO `usuario` VALUES (2,1,1,'admin','$2a$12$ykvCR/z923061JJRwI/OS.m7bdz1Qc13YnD1mtZBqAzOQTaS/gut.','/sofit-gym/uploads/usuarios/25ce95ffaebfc9668d28.jpg','jesusviloriaolivar@gmail.com','2026-05-25','2026-06-30 22:46:13'),(14,2,1,'entrenador','$2y$10$Sq7q1ktxN7GvrWmK7OJzSeov0KX.Z0IJQHgBKyc7xZwADmrx7IhIO','/sofit-gym/uploads/usuarios/d9c981eb0d5ba68511d5.jpg',NULL,'2026-06-11','2026-06-23 15:08:42'),(15,3,1,'recepcionista','$2y$10$EDgPAOWtDOZkqeBMr1okPumdzgokIL7p44TUuxZQUYT513k4zKKc6','/sofit-gym/uploads/usuarios/3de1db646d23bfc96fc2.jpg',NULL,'2026-06-11','2026-06-22 01:18:41');
+INSERT INTO `usuario` VALUES (2,1,1,'admin','$2a$12$ykvCR/z923061JJRwI/OS.m7bdz1Qc13YnD1mtZBqAzOQTaS/gut.','/sofit-gym/uploads/usuarios/20260702_194844_8be7bf36dd60.jpg','jesusviloriaolivar@gmail.com','2026-05-25','2026-07-02 19:52:50'),(14,2,1,'entrenador','$2y$10$Sq7q1ktxN7GvrWmK7OJzSeov0KX.Z0IJQHgBKyc7xZwADmrx7IhIO','/sofit-gym/uploads/usuarios/20260702_194849_c349687f5cfe.jpg',NULL,'2026-06-11','2026-06-23 15:08:42'),(15,3,1,'recepcionista','$2y$10$EDgPAOWtDOZkqeBMr1okPumdzgokIL7p44TUuxZQUYT513k4zKKc6','/sofit-gym/uploads/usuarios/20260702_194855_995e1cc586b6.jpg',NULL,'2026-06-11','2026-06-22 01:18:41');
 /*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -424,4 +424,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-07-02 18:50:19
+-- Dump completed on 2026-07-02 19:54:11
