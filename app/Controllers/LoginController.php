@@ -11,12 +11,13 @@ use App\Core\Http\StatusCode;
 use App\Models\LoginModel;
 use App\Models\UsuariosModel;
 use DateTimeImmutable;
+use PHPMailer\PHPMailer\PHPMailer;
 
 class LoginController extends Controller
 {
     public function __construct(
+        private PHPMailer $mailer,
         private UsuariosModel $usuariosModel,
-        private LoginModel $loginModel,
     ) {}
 
     public function index()
@@ -128,20 +129,19 @@ class LoginController extends Controller
             );
         }
 
-        $codigo = sprintf("%06d", mt_rand(100000, 999999));
-        $expiracion = new DateTimeImmutable('+15 minutes');
+        // Crear codigo de recuperacion
+        $codigo = $this->usuariosModel->createRecoveryCode($usuario->id_usuario);
 
-        $this->usuariosModel->saveRecoveryCode($usuario->id_usuario, $codigo, $expiracion);
+        // Enviar correo
+        $this->mailer->addAddress($email);
+        $this->mailer->isHTML(true);
+        $this->mailer->Subject = 'Recuperación de cuenta - Sofit Gym';
+        $this->mailer->Body = $this->templates->render("recuperacionContrasena", [
+            "codigo" => $codigo,
+        ]);
+        $this->mailer->send();
 
-        // AQUÍ LLAMAMOS AL MODELO, NO CONFIGURAMOS EL CORREO AQUÍ
-        if ($this->loginModel->enviarCorreo($email, $codigo)) {
-            return $this->json(["success" => true]);
-        } else {
-            return $this->json(
-                ["message" => "Error al enviar correo"],
-                StatusCode::INTERNAL_SERVER_ERROR
-            );
-        }
+        return $this->json(["success" => true]);
     }
 
     public function verify(): string

@@ -42,6 +42,7 @@ return [
         $engine = Engine::fromTheme(Theme::hierarchy([
             Theme::new('app/views/base', 'Base'),
             Theme::new('app/views/components', 'Components'),
+            Theme::new('app/views/emails', 'Emails'),
             Theme::new('app/views/pages', 'Page'),
         ]))
             ->loadExtension(new AssetExtension(ASSETS_DIR));

@@ -226,8 +226,11 @@ class UsuariosModel extends Model
 
     // Recuperación Contraseña
 
-    public function saveRecoveryCode(int $id_usuario, string $codigo, DateTimeInterface $expiracion): void
+    public function createRecoveryCode(int $id_usuario): string
     {
+        $codigo = $this->generateRecoveryCode();
+        $expiracion = new DateTimeImmutable('+15 minutes');
+
         $this->db->dbInsert(
             $this->dbSecurity("recuperacion_contrasena"),
             [
@@ -237,6 +240,8 @@ class UsuariosModel extends Model
                 "expira_en" => toDbDate($expiracion),
             ]
         );
+
+        return $codigo;
     }
 
     public function verifyRecoveryCode(string $codigo): ?UsuarioDTO
@@ -270,6 +275,20 @@ class UsuariosModel extends Model
                 conditions: ["id_usuario" => $id_usuario],
             );
         });
+    }
+
+    private function generateRecoveryCode(int $length = 8): string
+    {
+        $chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+        $charCount = strlen($chars);
+        $code = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $code .= $chars[random_int(0, $charCount - 1)];
+        }
+
+        // Formatear como XXXX-XXXX
+        return substr($code, 0, 4) . '-' . substr($code, 4, 4);
     }
 }
 

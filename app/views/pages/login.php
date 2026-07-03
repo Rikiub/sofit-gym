@@ -138,6 +138,7 @@ $this->layout("layout", ["title" => $title, "sidebar" => false]);
             <span class="text-white">Bienvenido a</span><br>
             <span class="text-red">SOFIT GYM</span>
         </h1>
+
         <p class="welcome-text">
             Es un hecho establecido que tu transformación comienza con el primer paso. Únete a nuestra comunidad para alcanzar tus metas físicas con las mejores instalaciones y profesionales. El punto de partida de tu nueva versión.
         </p>
@@ -148,11 +149,13 @@ $this->layout("layout", ["title" => $title, "sidebar" => false]);
                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" />
                 </svg>
             </a>
+
             <a href="https://www.instagram.com/sofitgymoficial" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                 <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
                     <path d="M12 2.16c3.2 0 3.58.01 4.85.07 3.25.15 4.77 1.69 4.92 4.92.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.15 3.23-1.66 4.77-4.92 4.92-1.27.06-1.64.07-4.85.07s-3.58-.01-4.85-.07c-3.26-.15-4.77-1.7-4.92-4.92-.06-1.27-.07-1.64-.07-4.85s.01-3.58.07-4.85C2.38 3.86 3.9 2.32 7.15 2.17 8.42 2.11 8.8 2.16 12 2.16zM12 0C8.74 0 8.33.01 7.05.07c-4.27.2-6.78 2.71-6.98 6.98C0 8.33 0 8.74 0 12s.01 3.67.07 4.95c.2 4.27 2.71 6.78 6.98 6.98 1.28.06 1.69.07 4.95.07s3.67-.01 4.95-.07c4.27-.2 6.78-2.71 6.98-6.98.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.2-4.27-2.71-6.78-6.98-6.98C15.67.01 15.26 0 12 0zm0 5.84A6.16 6.16 0 1 0 18.16 12 6.16 6.16 0 0 0 12 5.84zm0 10.16A4 4 0 1 1 16 12a4 4 0 0 1-4 4zm6.4-11.44a1.44 1.44 0 1 1-2.88 0 1.44 1.44 0 0 1 2.88 0z" />
                 </svg>
             </a>
+
             <a href="https://www.tiktok.com/@sofitgymoficial?_r=1&_t=ZS-971ecqHf3gK" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
                 <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
                     <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.77 0 2.89 2.89 0 0 1 2.89-2.89h.68V9.32h-.68a6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V6.69z" />
@@ -163,7 +166,6 @@ $this->layout("layout", ["title" => $title, "sidebar" => false]);
 
     <div class="login-right-panel">
         <div class="login-card-frame animate-slide-right">
-
             <div class="logo-container animate-fade-in-up" style="animation-delay: 0.8s;">
                 <h1 class="logo-text-only">SOFIT GYM</h1>
             </div>
@@ -173,6 +175,7 @@ $this->layout("layout", ["title" => $title, "sidebar" => false]);
 
             <div x-show="step === 'login'">
                 <h2 class="form-title text-white">Iniciar Sesión</h2>
+
                 <form class="login-form" x-ref="form" @submit.prevent="handleSubmit">
                     <div class="form-field">
                         <label class="text-white">Usuario</label>
@@ -181,6 +184,7 @@ $this->layout("layout", ["title" => $title, "sidebar" => false]);
 
                     <div class="form-field">
                         <label class="text-white">Contraseña</label>
+
                         <div class="password-input-wrapper">
                             <input :type="showPassword ? 'text' : 'password'" name="contrasena" autocomplete="current-password" required>
                             <button type="button" class="toggle-password" @click="showPassword = !showPassword">
@@ -205,11 +209,13 @@ $this->layout("layout", ["title" => $title, "sidebar" => false]);
 
             <div x-show="step === 'recover'" style="display: none;">
                 <h2 class="form-title text-white">Recuperar contraseña</h2>
+
                 <form @submit.prevent="handleRecover()">
                     <div class="form-field">
                         <label class="text-white">Correo electrónico</label>
                         <input type="email" x-model="email" required placeholder="Ingresa tu correo">
                     </div>
+
                     <button type="submit" class="btn-submit">Enviar código</button>
                     <div class="lost-password"><a href="#" @click.prevent="step = 'login'; resetFields();" class="text-red">Volver al login</a></div>
                 </form>
@@ -217,35 +223,56 @@ $this->layout("layout", ["title" => $title, "sidebar" => false]);
 
             <div x-show="step === 'verify'" style="display: none;">
                 <h2 class="form-title text-white">Verificar código</h2>
+
                 <form @submit.prevent="handleVerify()">
                     <div class="form-field">
-                        <label class="text-white">Código de 6 dígitos</label>
-                        <input type="text" x-model="codigo" maxlength="6" required style="text-align: center; letter-spacing: 5px;">
+                        <label class="text-white">Código de 8 dígitos</label>
+
+                        <div x-data="{ text: '' }">
+                            <input
+                                class="fs-3 fw-bold text-center"
+                                style="letter-spacing: 0.1em;"
+                                type="text"
+                                minlength="9"
+                                maxlength="9"
+                                @input="text = $event.target.value.toUpperCase()"
+                                :value="text"
+                                x-model="codigo"
+                                x-mask="****-****"
+                                required>
+                        </div>
                     </div>
-                    <button type="submit" class="btn-submit">Verificar el código</button>
+
+                    <button type="submit" class="btn-submit">Verificar código</button>
                 </form>
             </div>
 
             <div x-show="step === 'newpassword'" style="display: none;">
                 <h2 class="form-title text-white">Nueva contraseña</h2>
+
                 <form @submit.prevent="handleReset()">
                     <div class="form-field">
                         <label class="text-white">Nueva contraseña</label>
+
                         <div class="password-input-wrapper">
                             <input :type="showNewPassword ? 'text' : 'password'" x-model="new_pass" required>
+
                             <button type="button" class="toggle-password" @click="showNewPassword = !showNewPassword">
                                 <svg x-show="!showNewPassword" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                                     <circle cx="12" cy="12" r="3" />
                                 </svg>
+
                                 <svg x-show="showNewPassword" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22" />
                                 </svg>
                             </button>
                         </div>
                     </div>
+
                     <div class="form-field">
                         <label class="text-white">Repetir contraseña</label>
+
                         <div class="password-input-wrapper">
                             <input :type="showRepeatPassword ? 'text' : 'password'" x-model="repeat_pass" required>
                             <button type="button" class="toggle-password" @click="showRepeatPassword = !showRepeatPassword">
@@ -253,12 +280,14 @@ $this->layout("layout", ["title" => $title, "sidebar" => false]);
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                                     <circle cx="12" cy="12" r="3" />
                                 </svg>
+
                                 <svg x-show="showRepeatPassword" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22" />
                                 </svg>
                             </button>
                         </div>
                     </div>
+
                     <button type="submit" class="btn-submit">Cambiar contraseña</button>
                 </form>
             </div>
