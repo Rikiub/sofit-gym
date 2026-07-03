@@ -27,11 +27,13 @@ class NotificacionService
             $roles
         );
 
-        $dto = new NotificacionDTO(
-            titulo: $titulo,
-            contenido: $contenido,
+        $this->notificacionesModel->sendByRol(
+            $roles,
+            new NotificacionDTO(
+                titulo: $titulo,
+                contenido: $contenido,
+            )
         );
-        $this->notificacionesModel->sendByRol($roles, $dto);
     }
 
     /**
@@ -39,11 +41,13 @@ class NotificacionService
      */
     public function sendToUsers(array $userIds, string $titulo, string $contenido): void
     {
-        $dto = new NotificacionDTO(
-            titulo: $titulo,
-            contenido: $contenido,
+        $this->notificacionesModel->sendByUsuarios(
+            $userIds,
+            new NotificacionDTO(
+                titulo: $titulo,
+                contenido: $contenido,
+            )
         );
-        $this->notificacionesModel->sendByUsuarios($userIds, $dto);
     }
 
     /**
