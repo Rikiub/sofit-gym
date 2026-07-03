@@ -4,9 +4,11 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Core\Http\Request;
+use App\Core\Http\StatusCode;
 use App\Models\ClaseGrupalDTO;
 use App\Models\ClasesGrupalesModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
+
 
 class ClasesGrupalesController extends Controller
 {
@@ -37,7 +39,7 @@ class ClasesGrupalesController extends Controller
 
         return $clase
             ? $this->json($clase)
-            : $this->json(null, 404);
+            : $this->json(null, StatusCode::NOT_FOUND);
     }
 
     public function insert(): string
@@ -53,7 +55,7 @@ class ClasesGrupalesController extends Controller
             'datos_nuevos'  => $new,
         ]);
 
-        return $this->json($new, 201);
+        return $this->json($new, StatusCode::CREATED);
     }
 
     public function update(): string
@@ -76,7 +78,7 @@ class ClasesGrupalesController extends Controller
             'datos_nuevos' => $new,
         ]);
 
-        return $this->json($new, 201);
+        return $this->json($new, StatusCode::CREATED);
     }
 
     public function delete(): string|null
@@ -96,7 +98,7 @@ class ClasesGrupalesController extends Controller
             'datos_previos' => $old,
         ]);
 
-        return $this->json(null, 204);
+        return $this->json(null, StatusCode::NO_CONTENT);
     }
 
     private function getId(): int
@@ -106,7 +108,7 @@ class ClasesGrupalesController extends Controller
 
     private function notFound(): string
     {
-        return $this->json(["message" => "Clase no encontrada"], 404);
+        return $this->json(["message" => "Clase no encontrada"], StatusCode::NOT_FOUND);
     }
 
     private function validateBody(): ClaseGrupalDTO

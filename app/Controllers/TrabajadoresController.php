@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Core\Http\Request;
+use App\Core\Http\StatusCode;
 use App\Models\TrabajadorDTO;
 use App\Models\TrabajadoresModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -48,7 +49,7 @@ class TrabajadoresController extends Controller
 
         return $trabajador
             ? $this->json($trabajador)
-            : $this->json(null, 404);
+            : $this->json(null, StatusCode::NOT_FOUND);
     }
 
     public function insert(): string
@@ -59,7 +60,10 @@ class TrabajadoresController extends Controller
         $id = $new->cedula;
 
         if ($this->trabajadoresModel->checkDuplicate($id)) {
-            return $this->json(['message' => 'El trabajador ya existe'], 400);
+            return $this->json(
+                ['message' => 'El trabajador ya existe'],
+                StatusCode::CONFLICT
+            );
         }
 
         $new = $this->trabajadoresModel->insert($new);
@@ -68,7 +72,7 @@ class TrabajadoresController extends Controller
             'datos_nuevos'  => $new,
         ]);
 
-        return $this->json($new, 201);
+        return $this->json($new, StatusCode::CREATED);
     }
 
     public function update(): string
@@ -90,7 +94,7 @@ class TrabajadoresController extends Controller
             'datos_nuevos'  => $new,
         ]);
 
-        return $this->json($new, 201);
+        return $this->json($new, StatusCode::CREATED);
     }
 
     public function delete(): string|null
@@ -109,12 +113,15 @@ class TrabajadoresController extends Controller
             'datos_previos' => $old,
         ]);
 
-        return $this->json(null, 204);
+        return $this->json(null, StatusCode::NO_CONTENT);
     }
 
     private function notFound(): string
     {
-        return $this->json(["message" => "Trabajador no encontrado"], 404);
+        return $this->json(
+            ["message" => "Trabajador no encontrado"],
+            StatusCode::NOT_FOUND
+        );
     }
 
     private function getId(): string

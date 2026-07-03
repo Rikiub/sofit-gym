@@ -7,6 +7,7 @@ use App\Core\Auth\UsuarioSession;
 use App\Core\Auth\UsuarioSessionDto;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
+use App\Core\Http\StatusCode;
 use App\Models\LoginModel;
 use App\Models\UsuariosModel;
 use DateTimeImmutable;
@@ -57,7 +58,7 @@ class LoginController extends Controller
             ) >= $maximoIntentos) {
                 return $this->json(
                     ["message" => "Numero de intentos excedidos. Vuelva a intentarlo en {$minutosBloqueo} minutos."],
-                    401
+                    StatusCode::UNAUTHORIZED
                 );
             } else {
                 $this->usuariosModel->insertIntentoAcceso($usuario->id_usuario, exito: false);
@@ -107,7 +108,10 @@ class LoginController extends Controller
     /** Mensaje de error generico en caso de ingresar datos incorrectos */
     private function invalidInput(): string
     {
-        return $this->json(["message" => "Usuario o contraseña incorrectos"], 401);
+        return $this->json(
+            ["message" => "Usuario o contraseña incorrectos"],
+            StatusCode::UNAUTHORIZED
+        );
     }
 
     // --- MÓDULO RECUPERACIÓN ---
@@ -118,7 +122,10 @@ class LoginController extends Controller
 
         $usuario = $this->usuariosModel->findByEmail($email);
         if (!$usuario) {
-            return $this->json(["message" => "Correo no registrado"], 404);
+            return $this->json(
+                ["message" => "Correo no registrado"],
+                StatusCode::NOT_FOUND
+            );
         }
 
         $codigo = sprintf("%06d", mt_rand(100000, 999999));
@@ -130,7 +137,10 @@ class LoginController extends Controller
         if ($this->loginModel->enviarCorreo($email, $codigo)) {
             return $this->json(["success" => true]);
         } else {
-            return $this->json(["message" => "Error al enviar correo"], 500);
+            return $this->json(
+                ["message" => "Error al enviar correo"],
+                StatusCode::INTERNAL_SERVER_ERROR
+            );
         }
     }
 
@@ -141,7 +151,10 @@ class LoginController extends Controller
 
         $usuario = $this->usuariosModel->verifyRecoveryCode($codigo);
         if (!$usuario) {
-            return $this->json(["message" => "Código inválido o expirado"], 401);
+            return $this->json(
+                ["message" => "Código inválido o expirado"],
+                StatusCode::UNPROCESSABLE_ENTITY
+            );
         }
 
         $_SESSION['recover_user_id'] = $usuario->id_usuario;
@@ -154,7 +167,10 @@ class LoginController extends Controller
         $new_pass = $body["new_pass"] ?? '';
 
         if (!isset($_SESSION['recover_user_id'])) {
-            return $this->json(["message" => "Sesión expirada"], 401);
+            return $this->json(
+                ["message" => "Sesión expirada"],
+                StatusCode::UNAUTHORIZED
+            );
         }
 
         $this->usuariosModel->updatePasswordAndClearCode(

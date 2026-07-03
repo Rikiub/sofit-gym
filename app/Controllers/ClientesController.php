@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Core\Http\Request;
+use App\Core\Http\StatusCode;
 use App\Core\Reportes\reporteClientes;
 use App\Models\Clientes\ClienteDTO;
 use App\Models\Clientes\ClientesModel;
@@ -49,7 +50,7 @@ class ClientesController extends Controller
 
         return $cliente
             ? $this->json($cliente)
-            : $this->json(null, 404);
+            : $this->json(null, StatusCode::NOT_FOUND);
     }
 
     public function insert(): string
@@ -60,7 +61,10 @@ class ClientesController extends Controller
         $id = $cliente->cedula;
 
         if ($this->clientesModelo->checkDuplicate($id)) {
-            return $this->conflict(true, $id);
+            return $this->json(
+                ['message' => "El cliente {$id} ya existe"],
+                StatusCode::CONFLICT
+            );
         }
 
         $newCliente = $this->clientesModelo->insert($cliente);
@@ -72,7 +76,7 @@ class ClientesController extends Controller
             ],
         );
 
-        return $this->json($newCliente, 201);
+        return $this->json($newCliente, StatusCode::CREATED);
     }
 
     public function update(): string
@@ -84,7 +88,7 @@ class ClientesController extends Controller
 
         $oldCliente = $this->clientesModelo->find($id);
         if (!$oldCliente) {
-            return $this->conflict(false, $id);
+            return $this->notFound();
         }
 
         $newCliente = $this->clientesModelo->update($id, $cliente);
@@ -97,7 +101,7 @@ class ClientesController extends Controller
             ],
         );
 
-        return $this->json($cliente, 201);
+        return $this->json($cliente, StatusCode::CREATED);
     }
 
     public function delete(): string|null
@@ -106,7 +110,7 @@ class ClientesController extends Controller
         $id = $this->getId();
 
         if (!$this->clientesModelo->find($id)) {
-            return $this->conflict(false, $id);
+            return $this->notFound();
         }
 
         $this->clientesModelo->delete($id);
@@ -115,20 +119,15 @@ class ClientesController extends Controller
             ["cedula" => $id]
         );
 
-        return $this->json(null, 204);
+        return $this->json(null, StatusCode::NO_CONTENT);
     }
 
-    private function conflict(bool $exists, string $id): string
+    private function notFound(): string
     {
-        if ($exists) {
-            $message = "El cliente {$id} ya existe";
-            $code = 400;
-        } else {
-            $message = "El cliente {$id} no existe";
-            $code = 404;
-        }
-
-        return $this->json(['message' => $message], $code);
+        return $this->json(
+            ['message' => "El cliente no existe"],
+            StatusCode::NOT_FOUND
+        );
     }
 
     private function getId()

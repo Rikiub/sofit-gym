@@ -6,6 +6,7 @@ use App\Controllers\Controller;
 use App\Core\Auth\UsuarioSession;
 use App\Core\Auth\UsuarioSessionDto;
 use App\Core\Http\Request;
+use App\Core\Http\StatusCode;
 use App\Models\AsistenteMensajeDTO;
 use App\Models\AsistenteModel;
 use App\Models\AsistenteSesionDTO;
@@ -103,8 +104,12 @@ class AsistenteController extends Controller
         // Obtener mensaje desde el parametro
         $body = Request::getParsedBody();
         $content = $body["message"];
-        if (!$content)
-            return $this->json(["message" => "Se debe proporcionar el parametro 'message'"], 400);
+        if (!$content) {
+            return $this->json(
+                ["message" => "Se debe proporcionar el parametro 'message'"],
+                StatusCode::BAD_REQUEST
+            );
+        }
 
         // Almacenar mensaje del usuario
         $this->asistenteModel->insertMensaje(new AsistenteMensajeDTO(
@@ -146,7 +151,10 @@ class AsistenteController extends Controller
             }
         }
 
-        return $this->json(["message" => "Excedido el límite de vueltas."], 500);
+        return $this->json(
+            ["message" => "Excedido el límite de vueltas."],
+            StatusCode::INTERNAL_SERVER_ERROR
+        );
     }
 
     public function querySesiones()
@@ -161,7 +169,10 @@ class AsistenteController extends Controller
         $sesion = $this->asistenteModel->findSesion($id);
 
         if (!$sesion || $sesion->id_usuario !== $this->usuario->id) {
-            return $this->json(["message" => "Sesion no encontrada o no autorizada"], 403);
+            return $this->json(
+                ["message" => "Sesion no encontrada o no autorizada"],
+                StatusCode::FORBIDDEN
+            );
         }
 
         return $this->json($sesion);

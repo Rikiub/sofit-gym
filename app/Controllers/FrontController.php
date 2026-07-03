@@ -5,6 +5,7 @@ namespace App\Controllers;
 use Psr\Container\ContainerInterface;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
+use App\Core\Http\StatusCode;
 use App\Core\Auth\UsuarioSession;
 use App\Core\Logging\BitacoraLogger;
 use CuyZ\Valinor\Mapper\MappingError;
@@ -80,9 +81,12 @@ class FrontController
                 'error' => 'Not Found',
                 'message' => "Controller {$className} not found",
                 ...(DEBUG ? ['controller' => $classPath] : [])
-            ], 404);
+            ], StatusCode::NOT_FOUND);
         } else {
-            Response::redirect(['page' => 'error', 'status' => 404]);
+            Response::redirect([
+                'page' => 'error',
+                'status' => StatusCode::NOT_FOUND
+            ]);
         }
     }
 
@@ -104,7 +108,7 @@ class FrontController
             'error' => 'Validation Error',
             'message' => 'The request contains invalid data',
             'errors' => $errors
-        ], 400);
+        ], StatusCode::BAD_REQUEST);
     }
 
     private function handleServerError(Throwable $error): void
@@ -124,9 +128,12 @@ class FrontController
                 $res['trace'] = $error->getTrace();
             }
 
-            echo Response::json($res, 500);
+            echo Response::json($res, StatusCode::INTERNAL_SERVER_ERROR);
         } else {
-            Response::redirect(['page' => 'error', 'status' => 500]);
+            Response::redirect([
+                'page' => 'error',
+                'status' => StatusCode::INTERNAL_SERVER_ERROR
+            ]);
         }
     }
 }

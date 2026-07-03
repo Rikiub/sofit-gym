@@ -4,9 +4,11 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Core\Http\Request;
+use App\Core\Http\StatusCode;
 use App\Models\Equipos\EquipoDTO;
 use App\Models\Equipos\EquiposModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
+
 
 class EquiposController extends Controller
 {
@@ -36,7 +38,7 @@ class EquiposController extends Controller
 
         return $equipo
             ? $this->json($equipo)
-            : $this->json(null, 404);
+            : $this->json(null, StatusCode::NOT_FOUND);
     }
 
     public function insert(): string
@@ -47,7 +49,10 @@ class EquiposController extends Controller
         $id = $equipo->codigo_equipo ?? "";
 
         if ($this->equiposModel->find($id)) {
-            return $this->json(['message' => 'El equipo ya existe'], 400);
+            return $this->json(
+                ['message' => 'El equipo ya existe'],
+                StatusCode::CONFLICT
+            );
         }
 
         $new = $this->equiposModel->insert($new);
@@ -56,7 +61,7 @@ class EquiposController extends Controller
             "datos_nuevos" => $new,
         ]);
 
-        return $this->json($new, 201);
+        return $this->json($new, StatusCode::CREATED);
     }
 
     public function update(): string
@@ -78,7 +83,7 @@ class EquiposController extends Controller
             "datos_nuevos" => $new,
         ]);
 
-        return $this->json($new, 201);
+        return $this->json($new, StatusCode::CREATED);
     }
 
     public function delete(): string|null
@@ -97,7 +102,7 @@ class EquiposController extends Controller
             "datos_previos" => $old,
         ]);
 
-        return $this->json(null, 204);
+        return $this->json(null, StatusCode::NO_CONTENT);
     }
 
     private function getId(): string
@@ -113,6 +118,6 @@ class EquiposController extends Controller
 
     private function notFound(): string
     {
-        return $this->json(['message' => 'El equipo no existe'], 404);
+        return $this->json(['message' => 'El equipo no existe'], StatusCode::NOT_FOUND);
     }
 }

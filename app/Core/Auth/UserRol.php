@@ -2,6 +2,7 @@
 
 namespace App\Core\Auth;
 
+/** ID que corresponde a un rol de usuario en la base de datos. */
 enum UserRol: int
 {
     case Administrador = 1;

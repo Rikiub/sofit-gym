@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\Controller;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
+use App\Core\Http\StatusCode;
 use App\Models\Clientes\ClientesModel;
 use App\Models\Clientes\SeguimientoFisicoDTO;
 use App\Models\Clientes\SeguimientoNutricionalDTO;
@@ -30,7 +31,7 @@ class ClienteInfoController extends Controller
         if (!$this->clientesModel->find($cedula)) {
             Response::redirect([
                 "page" => "error",
-                "status" => 404,
+                "status" => StatusCode::NOT_FOUND,
             ]);
         }
 
@@ -71,7 +72,7 @@ class ClienteInfoController extends Controller
             'datos_nuevos'  => $new,
         ]);
 
-        return $this->json($new, 201);
+        return $this->json($new, StatusCode::CREATED);
     }
 
     public function deleteFisico(): string|null
@@ -91,7 +92,7 @@ class ClienteInfoController extends Controller
             'datos_previos'  => $old,
         ]);
 
-        return $this->json(null, 204);
+        return $this->json(null, StatusCode::NO_CONTENT);
     }
 
     private function validateBodyFisico(): SeguimientoFisicoDTO
@@ -132,7 +133,7 @@ class ClienteInfoController extends Controller
             'datos_nuevos' => $new,
         ]);
 
-        return $this->json($new, 201);
+        return $this->json($new, StatusCode::CREATED);
     }
 
     public function deleteNutricion(): string|null
@@ -152,7 +153,7 @@ class ClienteInfoController extends Controller
             'datos_previos'  => $old,
         ]);
 
-        return $this->json(null, 204);
+        return $this->json(null, StatusCode::NO_CONTENT);
     }
 
     private function validateBodyNutricion(): SeguimientoNutricionalDTO
@@ -166,10 +167,10 @@ class ClienteInfoController extends Controller
     {
         if ($exists) {
             $message = "El seguimiento {$id} ya existe";
-            $code = 400;
+            $code = StatusCode::BAD_REQUEST;
         } else {
             $message = "El seguimiento {$id} no existe";
-            $code = 404;
+            $code = StatusCode::NOT_FOUND;
         }
         return $this->json(['message' => $message], $code);
     }
@@ -186,6 +187,6 @@ class ClienteInfoController extends Controller
 
     private function notFoundCliente(): string
     {
-        return $this->json(["message" => "Cliente no encontrado"], 404);
+        return $this->json(["message" => "Cliente no encontrado"], StatusCode::NOT_FOUND);
     }
 }

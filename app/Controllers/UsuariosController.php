@@ -6,6 +6,7 @@ use App\Controllers\Controller;
 use App\Core\Auth\UsuarioSession;
 use App\Core\Auth\UsuarioSessionDto;
 use App\Core\Http\Request;
+use App\Core\Http\StatusCode;
 use App\Core\ImagesManager;
 use App\Models\UsuarioDTO;
 use App\Models\UsuariosModel;
@@ -56,7 +57,10 @@ class UsuariosController extends Controller
         $new = $this->validateBody();
 
         if ($this->usuariosModel->findByUsername($new->nombre_usuario)) {
-            return $this->json(['message' => 'El usuario ya existe'], 400);
+            return $this->json(
+                ['message' => 'El usuario ya existe'],
+                StatusCode::CONFLICT
+            );
         }
 
         $new = $this->usuariosModel->insert($new);
@@ -66,7 +70,7 @@ class UsuariosController extends Controller
             'datos_nuevos'   => $new,
         ]);
 
-        return $this->json($new, 201);
+        return $this->json($new, StatusCode::CREATED);
     }
 
     public function update(): string
@@ -89,7 +93,7 @@ class UsuariosController extends Controller
             'datos_nuevos'   => $new,
         ]);
 
-        return $this->json($new, 201);
+        return $this->json($new, StatusCode::CREATED);
     }
 
     public function delete(): string|null
@@ -110,7 +114,7 @@ class UsuariosController extends Controller
             'datos_previos'  => $old,
         ]);
 
-        return $this->json(null, 204);
+        return $this->json(null, StatusCode::NO_CONTENT);
     }
 
     public function uploadImage(): string
@@ -118,7 +122,10 @@ class UsuariosController extends Controller
         $image = $_FILES['image'] ?? null;
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !$image) {
-            return $this->json(['error' => 'Petición inválida'], 400);
+            return $this->json(
+                ['error' => 'Petición inválida'],
+                StatusCode::BAD_REQUEST
+            );
         }
 
         $filename = ImagesManager::saveTemp($image);
@@ -141,20 +148,23 @@ class UsuariosController extends Controller
 
     private function notFound(): string
     {
-        return $this->json(['message' => 'El usuario no existe'], 404);
+        return $this->json(
+            ['message' => 'El usuario no existe'],
+            StatusCode::NOT_FOUND
+        );
     }
 
-    /**
-     * Si no es administrador y trata de editar otro perfil que no sea el suyo
-     * entonces evitar el acceso.
-     */
+    /** Si no es administrador y trata de editar otro perfil que no sea el suyo, entonces evitar el acceso. */
     protected function protectAccess(string $permiso, UsuarioDTO $usuario): void
     {
         if (
             !$this->usuarioSesion->hasPermiso($permiso)
             && $this->usuarioSesion->id !== $usuario->id_usuario
         ) {
-            echo $this->json(["message" => "No esta autorizado"], 403);
+            echo $this->json(
+                ["message" => "No esta autorizado"],
+                StatusCode::FORBIDDEN
+            );
             exit;
         }
     }

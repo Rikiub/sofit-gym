@@ -6,26 +6,33 @@ use App\Core\Auth\UsuarioSession;
 use App\Core\Logging\BitacoraLogger;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
-use CuyZ\Valinor\Normalizer\Normalizer;
+use App\Core\Http\StatusCode;
 use DI\Attribute\Inject;
 use League\Plates\Engine;
+use CuyZ\Valinor\Normalizer\Normalizer;
 
 abstract class Controller
 {
-    /** 
-     * Atributos inyectados por PHP-DI automaticamente.
-     * Estan aqui por comodidad ya que se usan en la mayoria de vistas.
-     */
+    // Atributos inyectados por PHP-DI automaticamente.
+    // Estan por comodidad ya que se usan en la mayoria de controladores.
+    // De esta forma se evita instanciarlos manualmente en cada controlador.
+
+    /** Renderizador de plantillas. Utilizado para cargar las vistas. */
     #[Inject]
     protected Engine $templates;
+
+    /** Logger para registrar eventos en la bitacora. */
     #[Inject]
     protected BitacoraLogger $logger;
 
-    /** Dependencias para helpers internos. */
+    /** Convertidor de objetos a JSON. */
     #[Inject]
     private Normalizer $normalizer;
 
-    protected function json(mixed $data, int $status = 200): string|null
+    // Helpers
+
+    /** Convierte cualquier dato en una respuesta JSON. */
+    protected function json(mixed $data, StatusCode $status = StatusCode::OK): string|null
     {
         // No Content
         if ($data === null) {
@@ -46,12 +53,15 @@ abstract class Controller
         if (!$usuario || !$usuario->hasPermiso($permiso)) {
             if (Request::wantsJson()) {
                 // Enviar JSON con mensaje de error
-                echo Response::json(["message" => "No tienes permiso para usar esta accion"], 403);
+                echo Response::json(
+                    ["message" => "No tienes permiso para usar esta accion"],
+                    StatusCode::FORBIDDEN
+                );
             } else {
                 // Redireccionar a pagina de error
                 Response::redirect([
                     "page" => "error",
-                    "status" => 403,
+                    "status" => StatusCode::FORBIDDEN->value,
                 ]);
             }
             exit;
