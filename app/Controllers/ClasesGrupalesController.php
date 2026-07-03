@@ -43,25 +43,40 @@ class ClasesGrupalesController extends Controller
     public function insert(): string
     {
         $this->protect("clases:crear");
-        $clase = $this->validateBody();
 
-        $clase = $this->clasesModel->insert($clase);
-        return $this->json($clase, 201);
+        $new = $this->validateBody();
+        $new = $this->clasesModel->insert($new);
+
+        $this->logger->info("Clase grupal '{nombre}' creada", [
+            'nombre' => $new->nombre,
+            'id_clase'      => $new->id_clase,
+            'datos_nuevos'  => $new,
+        ]);
+
+        return $this->json($new, 201);
     }
 
     public function update(): string
     {
         $this->protect("clases:editar");
 
-        $clase = $this->validateBody();
         $id = $this->getId();
+        $new = $this->validateBody();
 
-        if (!$this->clasesModel->find($id)) {
+        $old = $this->clasesModel->find($id);
+        if (!$old) {
             return $this->notFound();
         }
 
-        $clase = $this->clasesModel->update($id, $clase);
-        return $this->json($clase, 201);
+        $new = $this->clasesModel->update($id, $new);
+        $this->logger->info("Clase grupal '{nombre}' actualizada", [
+            'nombre' => $old->nombre,
+            'id_clase' => $id,
+            'datos_previos' => $old,
+            'datos_nuevos' => $new,
+        ]);
+
+        return $this->json($new, 201);
     }
 
     public function delete(): string|null
@@ -69,11 +84,18 @@ class ClasesGrupalesController extends Controller
         $this->protect("clases:eliminar");
         $id = $this->getId();
 
-        if (!$this->clasesModel->find($id)) {
+        $old = $this->clasesModel->find($id);
+        if (!$old) {
             return $this->notFound();
         }
 
         $this->clasesModel->delete($id);
+        $this->logger->info("Clase grupal '{nombre}' eliminada", [
+            'nombre' => $old->nombre,
+            'id_clase'      => $id,
+            'datos_previos' => $old,
+        ]);
+
         return $this->json(null, 204);
     }
 

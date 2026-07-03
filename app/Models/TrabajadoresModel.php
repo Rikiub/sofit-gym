@@ -163,6 +163,7 @@ class TrabajadoresModel extends Model
                 SELECT
                     trabajador.*,
                     persona.*,
+                    CONCAT(persona.nombre, ' ', persona.apellido) AS nombre_completo,
                     rol.nombre AS `rol`
                 FROM {$this->table} trabajador
                 LEFT JOIN {$pTable} persona
@@ -181,6 +182,7 @@ readonly class TrabajadorDTO extends PersonaDTO
         ?string $cedula = null,
         ?string $nombre = null,
         ?string $apellido = null,
+        ?string $nombre_completo = null,
         ?string $correo = null,
         ?string $telefono = null,
         ?string $direccion = null,
@@ -196,6 +198,7 @@ readonly class TrabajadorDTO extends PersonaDTO
             cedula: $cedula,
             nombre: $nombre,
             apellido: $apellido,
+            nombre_completo: $nombre_completo,
             correo: $correo,
             telefono: $telefono,
             direccion: $direccion,

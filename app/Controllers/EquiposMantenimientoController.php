@@ -44,25 +44,40 @@ class EquiposMantenimientoController extends Controller
     {
         $this->protect("equipos:crear");
 
-        $data = $this->validateBody();
-        $data = $this->model->insert($data);
+        $new = $this->validateBody();
+        $new = $this->model->insert($new);
 
-        return $this->json($data, 201);
+        $this->logger->info("Mantenimiento de equipo '{id_mantenimiento}' registrado", [
+            'id_mantenimiento' => $new->id_mantenimiento,
+            'codigo_equipo'    => $new->codigo_equipo,
+            'datos_nuevos' => $new,
+        ]);
+
+        return $this->json($new, 201);
     }
 
     public function update(): string
     {
         $this->protect("equipos:editar");
 
-        $data = $this->validateBody();
         $id = $this->getId();
+        $old = $this->model->find($id);
 
-        if (!$this->model->find($id)) {
+        if (!$old) {
             return $this->notFound();
         }
 
-        $data = $this->model->update($id, $data);
-        return $this->json($data, 201);
+        $new = $this->validateBody();
+        $new = $this->model->update($id, $new);
+
+        $this->logger->info("Mantenimiento de equipo '{id_mantenimiento}' actualizado", [
+            'id' => $id,
+            'codigo_equipo'    => $old->codigo_equipo,
+            'datos_previos'    => $old,
+            'datos_nuevos'     => $new,
+        ]);
+
+        return $this->json($new, 201);
     }
 
     public function delete(): string|null
@@ -70,15 +85,22 @@ class EquiposMantenimientoController extends Controller
         $this->protect("equipos:eliminar");
         $id = $this->getId();
 
-        if (!$this->model->find($id)) {
+        $old = $this->model->find($id);
+        if (!$old) {
             return $this->notFound();
         }
 
         $this->model->delete($id);
+        $this->logger->info("Mantenimiento de equipo '{id_mantenimiento}' eliminado", [
+            'id_mantenimiento' => $id,
+            'codigo_equipo'    => $old->codigo_equipo,
+            'datos_previos' => $old,
+        ]);
+
         return $this->json(null, 204);
     }
 
-    private function notFound(): int
+    private function notFound(): string
     {
         return $this->json(['message' => 'El mantenimiento no existe'], 404);
     }

@@ -14,6 +14,7 @@ readonly class PersonaDTO
         public ?string $cedula = null,
         public ?string $nombre = null,
         public ?string $apellido = null,
+        public ?string $nombre_completo = null,
         public ?string $correo = null,
         public ?string $telefono = null,
         public ?string $direccion = null,

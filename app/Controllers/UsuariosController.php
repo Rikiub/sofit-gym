@@ -53,29 +53,43 @@ class UsuariosController extends Controller
     public function insert(): string
     {
         $this->protect("usuarios:crear");
-        $usuario = $this->validateBody();
+        $new = $this->validateBody();
 
-        if ($this->usuariosModel->findByUsername($usuario->nombre_usuario)) {
+        if ($this->usuariosModel->findByUsername($new->nombre_usuario)) {
             return $this->json(['message' => 'El usuario ya existe'], 400);
         }
 
-        $usuario = $this->usuariosModel->insert($usuario);
-        return $this->json($usuario, 201);
+        $new = $this->usuariosModel->insert($new);
+        $this->logger->info("Usuario '{nombre_usuario}' creado", [
+            'nombre_usuario' => $new->nombre_usuario,
+            'id_usuario'     => $new->id_usuario,
+            'datos_nuevos'   => $new,
+        ]);
+
+        return $this->json($new, 201);
     }
 
     public function update(): string
     {
-        $newUsuario = $this->validateBody();
         $id = $this->getId();
 
-        $oldUsuario = $this->usuariosModel->findById($id);
-        if (!$oldUsuario) {
+        $old = $this->usuariosModel->findById($id);
+        if (!$old) {
             return $this->notFound();
         }
-        $this->protectAccess("usuarios:editar", $oldUsuario);
+        $this->protectAccess("usuarios:editar", $old);
 
-        $usuario = $this->usuariosModel->update($id, $newUsuario);
-        return $this->json($usuario, 201);
+        $new = $this->validateBody();
+        $new = $this->usuariosModel->update($id, $new);
+
+        $this->logger->info("Usuario '{nombre_usuario}' actualizado", [
+            'nombre_usuario' => $old->nombre_usuario,
+            'id_usuario'     => $id,
+            'datos_previos'  => $old,
+            'datos_nuevos'   => $new,
+        ]);
+
+        return $this->json($new, 201);
     }
 
     public function delete(): string|null
@@ -83,13 +97,19 @@ class UsuariosController extends Controller
         $this->protect("usuarios:eliminar");
 
         $id = $this->getId();
-        $usuario = $this->usuariosModel->findById($id);
+        $old = $this->usuariosModel->findById($id);
 
-        if (!$usuario) {
+        if (!$old) {
             return $this->notFound();
         }
 
         $this->usuariosModel->delete($id);
+        $this->logger->info("Usuario '{nombre_usuario}' eliminado", [
+            'nombre_usuario' => $old->nombre_usuario,
+            'id_usuario'     => $id,
+            'datos_previos'  => $old,
+        ]);
+
         return $this->json(null, 204);
     }
 

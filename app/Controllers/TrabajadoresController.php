@@ -55,30 +55,42 @@ class TrabajadoresController extends Controller
     {
         $this->protect("trabajadores:crear");
 
-        $trabajador = $this->validateBody();
-        $id = $this->getId();
+        $new = $this->validateBody();
+        $id = $new->cedula;
 
         if ($this->trabajadoresModel->checkDuplicate($id)) {
             return $this->json(['message' => 'El trabajador ya existe'], 400);
         }
 
-        $trabajador = $this->trabajadoresModel->insert($trabajador);
-        return $this->json($trabajador, 201);
+        $new = $this->trabajadoresModel->insert($new);
+        $this->logger->info("Trabajador '{cedula}' creado", [
+            'cedula'        => $new->cedula,
+            'datos_nuevos'  => $new,
+        ]);
+
+        return $this->json($new, 201);
     }
 
     public function update(): string
     {
         $this->protect("trabajadores:editar");
 
-        $trabajador = $this->validateBody();
         $id = $this->getId();
+        $new = $this->validateBody();
 
-        if (!$this->trabajadoresModel->find($id)) {
+        $old = $this->trabajadoresModel->find($id);
+        if (!$old) {
             return $this->notFound();
         }
 
-        $trabajador = $this->trabajadoresModel->update($id, $trabajador);
-        return $this->json($trabajador, 201);
+        $new = $this->trabajadoresModel->update($id, $new);
+        $this->logger->info("Trabajador '{cedula}' actualizado", [
+            'cedula'        => $old->cedula,
+            'datos_previos' => $old,
+            'datos_nuevos'  => $new,
+        ]);
+
+        return $this->json($new, 201);
     }
 
     public function delete(): string|null
@@ -86,11 +98,17 @@ class TrabajadoresController extends Controller
         $this->protect("trabajadores:eliminar");
         $id = $this->getId();
 
-        if (!$this->trabajadoresModel->find($id)) {
+        $old = $this->trabajadoresModel->find($id);
+        if (!$old) {
             return $this->notFound();
         }
 
         $this->trabajadoresModel->delete($id);
+        $this->logger->info("Trabajador '{cedula}' eliminado", [
+            'cedula'        => $old->cedula,
+            'datos_previos' => $old,
+        ]);
+
         return $this->json(null, 204);
     }
 

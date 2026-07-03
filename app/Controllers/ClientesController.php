@@ -65,9 +65,9 @@ class ClientesController extends Controller
 
         $newCliente = $this->clientesModelo->insert($cliente);
         $this->logger->info(
-            "Cliente {cedula_cliente} creado",
+            "Cliente '{cedula}' creado",
             [
-                "cedula_cliente" => $id,
+                "cedula" => $id,
                 "datos_nuevos" => $newCliente,
             ],
         );
@@ -89,9 +89,9 @@ class ClientesController extends Controller
 
         $newCliente = $this->clientesModelo->update($id, $cliente);
         $this->logger->info(
-            "Cliente {cedula_cliente} actualizado",
+            "Cliente '{cedula}' actualizado",
             [
-                "cedula_cliente" => $oldCliente->cedula,
+                "cedula" => $oldCliente->cedula,
                 "datos_previos" => $oldCliente,
                 "datos_nuevos" => $newCliente,
             ],
@@ -111,8 +111,8 @@ class ClientesController extends Controller
 
         $this->clientesModelo->delete($id);
         $this->logger->info(
-            "Cliente {cedula_cliente} eliminado",
-            ["cedula_cliente" => $id]
+            "Cliente '{cedula}' eliminado",
+            ["cedula" => $id]
         );
 
         return $this->json(null, 204);

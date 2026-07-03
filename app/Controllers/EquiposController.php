@@ -43,30 +43,42 @@ class EquiposController extends Controller
     {
         $this->protect("equipos:crear");
 
-        $equipo = $this->validateBody();
+        $new = $this->validateBody();
         $id = $equipo->codigo_equipo ?? "";
 
         if ($this->equiposModel->find($id)) {
             return $this->json(['message' => 'El equipo ya existe'], 400);
         }
 
-        $equipo = $this->equiposModel->insert($equipo);
-        return $this->json($equipo, 201);
+        $new = $this->equiposModel->insert($new);
+        $this->logger->info("Equipo '{codigo_equipo}' creado", [
+            "codigo_equipo" => $new->codigo_equipo,
+            "datos_nuevos" => $new,
+        ]);
+
+        return $this->json($new, 201);
     }
 
     public function update(): string
     {
         $this->protect("equipos:editar");
 
-        $equipo = $this->validateBody();
+        $new = $this->validateBody();
         $id = $this->getId();
 
-        if (!$this->equiposModel->find($id)) {
+        $old = $this->equiposModel->find($id);
+        if (!$old) {
             return $this->notFound();
         }
 
-        $equipo = $this->equiposModel->update($id, $equipo);
-        return $this->json($equipo, 201);
+        $new = $this->equiposModel->update($id, $new);
+        $this->logger->info("Equipo '{codigo_equipo}' actualizado", [
+            "codigo_equipo" => $id,
+            "datos_previos" => $old,
+            "datos_nuevos" => $new,
+        ]);
+
+        return $this->json($new, 201);
     }
 
     public function delete(): string|null
@@ -74,11 +86,17 @@ class EquiposController extends Controller
         $this->protect("equipos:eliminar");
         $id = $this->getId();
 
-        if (!$this->equiposModel->find($id)) {
+        $old = $this->equiposModel->find($id);
+        if (!$old) {
             return $this->notFound();
         }
 
         $this->equiposModel->delete($id);
+        $this->logger->info("Equipo '{codigo_equipo}' eliminado", [
+            "codigo_equipo" => $id,
+            "datos_previos" => $old,
+        ]);
+
         return $this->json(null, 204);
     }
 

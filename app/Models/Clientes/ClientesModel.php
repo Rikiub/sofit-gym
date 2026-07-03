@@ -172,6 +172,7 @@ class ClientesModel extends Model
         return <<<SQL
                 SELECT
                     persona.*,
+                    CONCAT(persona.nombre, ' ', persona.apellido) AS nombre_completo,
                     JSON_OBJECT(
                         "id_membresia", m.id_membresia,
                         "id_tipo", m.id_tipo,
@@ -229,7 +230,8 @@ class ClientesModel extends Model
                     SELECT m2.id_membresia 
                     FROM membresia m2 
                     WHERE m2.cedula_cliente = c.cedula 
-                    ORDER BY m2.id_membresia DESC \n                    LIMIT 1
+                    ORDER BY m2.id_membresia DESC
+                    LIMIT 1
                 )
                 LEFT JOIN tipo_membresia mt ON m.id_tipo = mt.id_tipo
                 LEFT JOIN estado_membresia me ON m.id_estado = me.id_estado";

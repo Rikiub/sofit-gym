@@ -64,8 +64,14 @@ class ClienteInfoController extends Controller
             return $this->notFoundCliente();
         }
 
-        $seguimiento = $this->fisicoModel->insert($cedula, $seguimiento);
-        return $this->json($seguimiento, 201);
+        $new = $this->fisicoModel->insert($cedula, $seguimiento);
+        $this->logger->info("Seguimiento físico para cliente '{cedula}' registrado", [
+            'cedula'        => $cedula,
+            'id_seguimiento' => $new->id_seguimiento,
+            'datos_nuevos'  => $new,
+        ]);
+
+        return $this->json($new, 201);
     }
 
     public function deleteFisico(): string|null
@@ -73,11 +79,18 @@ class ClienteInfoController extends Controller
         $this->protect("clientes:eliminar");
         $id = $this->getIdSeguimiento();
 
-        if (!$this->fisicoModel->find($id)) {
+        $old = $this->fisicoModel->find($id);
+        if (!$old) {
             return $this->conflict(false, $id);
         }
 
         $this->fisicoModel->delete($id);
+        $this->logger->info("Seguimiento físico '{id_seguimiento}' eliminado", [
+            'id_seguimiento' => $id,
+            'cedula' => $old->cedula_cliente,
+            'datos_previos'  => $old,
+        ]);
+
         return $this->json(null, 204);
     }
 
@@ -112,8 +125,14 @@ class ClienteInfoController extends Controller
             return $this->notFoundCliente();
         }
 
-        $seguimiento = $this->nutricionalModel->insert($cedula, $seguimiento);
-        return $this->json($seguimiento, 201);
+        $new = $this->nutricionalModel->insert($cedula, $seguimiento);
+        $this->logger->info("Seguimiento nutricional para cliente '{cedula}' registrado", [
+            'cedula' => $cedula,
+            'id_seguimiento' => $new->id_seguimiento,
+            'datos_nuevos' => $new,
+        ]);
+
+        return $this->json($new, 201);
     }
 
     public function deleteNutricion(): string|null
@@ -121,11 +140,18 @@ class ClienteInfoController extends Controller
         $this->protect("clientes:eliminar");
         $id = $this->getIdSeguimiento();
 
-        if (!$this->nutricionalModel->find($id)) {
+        $old = $this->nutricionalModel->find($id);
+        if (!$old) {
             return $this->conflict(false, $id);
         }
 
         $this->nutricionalModel->delete($id);
+        $this->logger->info("Seguimiento nutricional '{id_seguimiento}' eliminado", [
+            'id_seguimiento' => $id,
+            'cedula'         => $old->cedula_cliente,
+            'datos_previos'  => $old,
+        ]);
+
         return $this->json(null, 204);
     }
 
