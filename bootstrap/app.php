@@ -1,6 +1,9 @@
 <?php
 
-/**
+/** Archivo principal para inicializar la aplicación en un solo lugar.
+ * Cargara composer autoload, variables de entorno y construira el contenedor DI.
+ * Pensado para usarse tanto en el FrontController como en scripts.
+ * 
  * @return \Psr\Container\ContainerInterface
  */
 
