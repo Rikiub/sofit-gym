@@ -110,8 +110,11 @@ class ProductosController extends Controller
             'id_unidad' => !empty($_POST['id_unidad']) ? strip_tags(trim($_POST['id_unidad'])) : 'unidad',
             'activo' => 1
         ];
-
         $exito = $this->model->crear($datos);
+
+        $this->logger->info("Producto '{codigo_producto}' creado", [
+            "codigo_producto" => $datos["codigo_producto"],
+        ]);
 
         header('Content-Type: application/json');
         if ($exito) {
@@ -157,6 +160,10 @@ class ProductosController extends Controller
 
         $exito = $this->model->actualizar($codigo, $datosNuevos);
 
+        $this->logger->info("Producto '{codigo_producto}' actualizado", [
+            "codigo_producto" => $codigo,
+        ]);
+
         header('Content-Type: application/json');
         if ($exito) {
             echo json_encode(['success' => true, 'message' => '✅ Producto actualizado exitosamente.']);
@@ -188,6 +195,9 @@ class ProductosController extends Controller
         }
 
         $exito = $this->model->eliminar($codigo, $borradoFisico);
+        $this->logger->info("Producto '{codigo_producto}' eliminado", [
+            "codigo_producto" => $codigo,
+        ]);
 
         header('Content-Type: application/json');
         if ($exito) {
@@ -220,6 +230,10 @@ class ProductosController extends Controller
         }
 
         $exito = $this->model->actualizarStock($codigo, $cantidad);
+        $this->logger->info("Stock del producto '{codigo_producto}' actualizado", [
+            "codigo_producto" => $codigo,
+            "cantidad" => $cantidad,
+        ]);
 
         header('Content-Type: application/json');
         if ($exito) {
@@ -258,6 +272,11 @@ class ProductosController extends Controller
 
         // Procesar en el modelo bajo una sola transacción segura
         $resultado = $this->model->registrarVentaMultiplesProductos($cedulaCliente, $metodoPago, $items);
+        $this->logger->info("Venta de productos registrada al cliente '{cedula_cliente}'", [
+            "cedula_cliente" => $cedulaCliente,
+            "metodoPago" => $metodoPago,
+            "cantidad_productos" => count($items),
+        ]);
 
         header('Content-Type: application/json');
         echo json_encode($resultado);

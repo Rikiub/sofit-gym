@@ -57,7 +57,17 @@ class AsistenciaController extends Controller
             echo json_encode(['success' => false, 'message' => 'Debe seleccionar un cliente.']);
             return;
         }
+
         $resultado = $this->model->registrarEntrada($cedula, $hora);
+        if ($resultado['success']) {
+            $this->logger->info("Entrada registrada para cliente '{cedula}'", [
+                'cedula'        => $cedula,
+                'id_asistencia' => $resultado['id'] ?? null,
+                'fecha'         => $resultado['fecha'] ?? null,
+                'datos_nuevos'  => $resultado,
+            ]);
+        }
+
         echo json_encode($resultado);
     }
 
@@ -112,7 +122,20 @@ class AsistenciaController extends Controller
             echo json_encode(['success' => false, 'message' => 'La hora es requerida']);
             return;
         }
+
+        // Obtener datos previos usando el modelo
+        $old = $this->model->findCliente($id);
         $ok = $this->model->actualizarEntrada($id, $nuevaHora);
+
+        if ($ok) {
+            // Obtener datos nuevos después de la actualización
+            $new = $this->model->findCliente($id);
+            $this->logger->info("Entrada '{id_asistencia}' actualizada", [
+                'id_asistencia' => $id,
+                'datos_previos' => $old,
+                'datos_nuevos'  => $new,
+            ]);
+        }
         echo json_encode(['success' => $ok]);
     }
 
@@ -125,8 +148,18 @@ class AsistenciaController extends Controller
             echo json_encode(['error' => 'Método no permitido']);
             return;
         }
+
         $id = intval($_POST['id']);
+        $old = $this->model->findCliente($id);
+
         $ok = $this->model->eliminarEntrada($id);
+        if ($ok) {
+            $this->logger->info("Entrada '{id_asistencia}' eliminada", [
+                'id_asistencia' => $id,
+                'datos_previos' => $old,
+            ]);
+        }
+
         echo json_encode(['success' => $ok]);
     }
 

@@ -103,6 +103,13 @@ class RutinasController extends Controller
         ];
 
         $ok = $this->model->crearRutina($datos);
+        if ($ok) {
+            $this->logger->info("Rutina '{nombre}' creada", [
+                'nombre' => $nombre,
+                'datos_nuevos' => $datos,
+            ]);
+        }
+
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Rutina creada correctamente.' : 'Error al registrar rutina en la base de datos.']);
     }
 
@@ -125,6 +132,12 @@ class RutinasController extends Controller
             return;
         }
 
+        $old = $this->model->obtenerRutinaPorId($id);
+        if (!$old) {
+            echo json_encode(['success' => false, 'message' => 'Rutina no encontrada.']);
+            return;
+        }
+
         $datos = [];
         if (isset($_POST['id_dificultad']))
             $datos['id_dificultad'] = intval($_POST['id_dificultad']);
@@ -144,6 +157,17 @@ class RutinasController extends Controller
         }
 
         $ok = $this->model->actualizarRutina($id, $datos);
+        if ($ok) {
+            // Obtener los datos actualizados para tener el objeto completo
+            $new = $this->model->obtenerRutinaPorId($id);
+            $this->logger->info("Rutina '{nombre}' actualizada", [
+                'nombre' => $old['nombre'],
+                'id_rutina' => $id,
+                'datos_previos' => $old,
+                'datos_nuevos' => $new,
+            ]);
+        }
+
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Rutina actualizada correctamente.' : 'No se realizaron cambios o error al actualizar.']);
     }
 
@@ -166,7 +190,21 @@ class RutinasController extends Controller
             return;
         }
 
+        $old = $this->model->obtenerRutinaPorId($id);
+        if (!$old) {
+            echo json_encode(['success' => false, 'message' => 'Rutina no encontrada.']);
+            return;
+        }
+
         $ok = $this->model->eliminarRutina($id);
+        if ($ok) {
+            $this->logger->info("Rutina '{nombre}' eliminada", [
+                'nombre' => $old['nombre'],
+                'id_rutina' => $id,
+                'datos_previos' => $old,
+            ]);
+        }
+
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Rutina eliminada correctamente.' : 'Error al eliminar. Verifique que no esté asignada a un cliente.']);
     }
 
@@ -211,6 +249,14 @@ class RutinasController extends Controller
         ];
 
         $ok = $this->model->asignarRutina($datos);
+        if ($ok) {
+            $this->logger->info("Rutina asignada a cliente '{cedula}'", [
+                'cedula' => $cedula,
+                'id_rutina' => $idRutina,
+                'datos_nuevos' => $datos,
+            ]);
+        }
+
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Rutina asignada exitosamente.' : 'Error al realizar la asignación.']);
     }
 
@@ -233,6 +279,12 @@ class RutinasController extends Controller
             return;
         }
 
+        $old = $this->model->obtenerAsignacionPorId($idAsignacion);
+        if (!$old) {
+            echo json_encode(['success' => false, 'message' => 'Asignación no encontrada.']);
+            return;
+        }
+
         $datos = [];
         if (isset($_POST['cedula_cliente']))
             $datos['cedula_cliente'] = trim($_POST['cedula_cliente']);
@@ -250,6 +302,16 @@ class RutinasController extends Controller
             $datos['progreso'] = floatval($_POST['progreso']);
 
         $ok = $this->model->actualizarAsignacion($idAsignacion, $datos);
+        if ($ok) {
+            $new = $this->model->obtenerAsignacionPorId($idAsignacion);
+            $this->logger->info("Asignación de rutina '{id_asignacion}' actualizada", [
+                'id_asignacion' => $idAsignacion,
+                'nombre_cliente' => $old['nombre_cliente'],
+                'datos_previos' => $old,
+                'datos_nuevos' => $new,
+            ]);
+        }
+
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Asignación modificada correctamente.' : 'No se realizaron cambios o error de base de datos.']);
     }
 
@@ -272,7 +334,21 @@ class RutinasController extends Controller
             return;
         }
 
+        $old = $this->model->obtenerAsignacionPorId($idAsignacion);
+        if (!$old) {
+            echo json_encode(['success' => false, 'message' => 'Asignación no encontrada.']);
+            return;
+        }
+
         $ok = $this->model->eliminarAsignacion($idAsignacion);
+        if ($ok) {
+            $this->logger->info("Asignación de rutina '{id_asignacion}' eliminada", [
+                'id_asignacion' => $idAsignacion,
+                'nombre_cliente' => $old['nombre_cliente'],
+                'datos_previos' => $old,
+            ]);
+        }
+
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Asignación eliminada correctamente.' : 'Error al eliminar la asignación.']);
     }
 

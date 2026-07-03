@@ -51,6 +51,15 @@ class FacturacionController extends Controller
             $res = $this->model->registrarPago($cedula, $monto, $metodo, $comprobante, $planTipo);
             $_SESSION['mensaje'] = '✅ ' . $res['mensaje'];
             $_SESSION['tipo_mensaje'] = 'success';
+
+            $this->logger->info("Pago registrado para cliente '{cedula}'", [
+                'cedula'        => $cedula,
+                'id_pago'       => $res['id_pago'] ?? null,
+                'monto'         => $monto,
+                'metodo'        => $metodo,
+                'nueva_fecha_fin' => $res['nueva_fecha_vencimiento'] ?? null,
+                'datos_nuevos'  => $res,
+            ]);
         } catch (Exception $e) {
             $_SESSION['mensaje'] = '❌ Error: ' . $e->getMessage();
             $_SESSION['tipo_mensaje'] = 'danger';
@@ -83,10 +92,22 @@ class FacturacionController extends Controller
         $fechaPago = $_POST['fecha_pago'];
         $fechaVencimiento = $_POST['fecha_vencimiento'];
 
+        // Obtener los datos previos del pago
+        $old = $this->obtenerPagoPorId($idPago);
+
         try {
-            if ($this->model->actualizarPago($idPago, $monto, $metodo, $estado, $fechaPago, $fechaVencimiento)) {
+            $success = $this->model->actualizarPago($idPago, $monto, $metodo, $estado, $fechaPago, $fechaVencimiento);
+            if ($success) {
                 $_SESSION['mensaje'] = '✅ Pago actualizado correctamente.';
                 $_SESSION['tipo_mensaje'] = 'success';
+
+                // Obtener los datos nuevos después de la actualización
+                $new = $this->obtenerPagoPorId($idPago);
+                $this->logger->info("Pago '{id_pago}' actualizado", [
+                    'id_pago'       => $idPago,
+                    'datos_previos' => $old,
+                    'datos_nuevos'  => $new,
+                ]);
             } else {
                 $_SESSION['mensaje'] = '❌ No se pudo actualizar.';
                 $_SESSION['tipo_mensaje'] = 'danger';
@@ -117,10 +138,18 @@ class FacturacionController extends Controller
         }
 
         $idPago = intval($_GET['eliminar_pago']);
+        $old = $this->obtenerPagoPorId($idPago);
+
         try {
-            if ($this->model->eliminarPago($idPago)) {
+            $success = $this->model->eliminarPago($idPago);
+            if ($success) {
                 $_SESSION['mensaje'] = '🗑️ Pago eliminado correctamente.';
                 $_SESSION['tipo_mensaje'] = 'warning';
+
+                $this->logger->info("Pago '{id_pago}' eliminado", [
+                    'id_pago'       => $idPago,
+                    'datos_previos' => $old,
+                ]);
             } else {
                 $_SESSION['mensaje'] = '❌ No se pudo eliminar.';
                 $_SESSION['tipo_mensaje'] = 'danger';
@@ -159,6 +188,20 @@ class FacturacionController extends Controller
         return $this->json($ingresos);
     }
 
+    /**
+     * Helper para obtener los datos de un pago por su ID.
+     */
+    private function obtenerPagoPorId(int $idPago): ?array
+    {
+        $resultados = $this->model->buscarPagos((string)$idPago);
+        foreach ($resultados as $pago) {
+            if ((int)$pago['id_pago'] === $idPago) {
+                return $pago;
+            }
+        }
+        return null;
+    }
+
     // REPORTES
     public function reporteVista()
     {
@@ -174,35 +217,24 @@ class FacturacionController extends Controller
     {
         $this->protect("facturacion:ver");
 
-        // Capturar los parámetros de filtro del reporte desde la URL
         $mes = $_GET['mes'] ?? null;
         $anio = $_GET['anio'] ?? null;
 
-        // Si ambos parámetros están vacíos, por defecto generamos el reporte del mes y año actual
         if (empty($mes) && empty($anio)) {
             $mes = date('m');
             $anio = date('Y');
         }
 
-        // 1. Obtener la data filtrada desde el modelo de pagos
         $pagosData = $this->model->obtenerPagosPorPeriodo($mes, $anio);
 
-        // Instanciar el helper del reporte financiero FPDF
         $pdf = new reporteFinanciero();
-
-        // Establecer metadatos básicos del documento PDF
         $pdf->SetTitle(utf8_decode('Reporte Financiero - SOFIT GYM'));
         $pdf->SetAuthor('Sistema SOFIT GYM');
 
-        // Determinar si el reporte es mensual o anual para la cabecera
         $tipoReporte = (!empty($mes)) ? 'MENSUAL' : 'ANUAL';
         $pdf->setPeriodo($mes, $anio, $tipoReporte);
-
-        // Invocar el renderizado de la tabla con los pagos correspondientes
         $pdf->generar($pagosData);
 
-        // Enviar los headers HTTP correspondientes e imprimir el flujo binario del PDF en el navegador
-        // I: Envía el fichero al navegador de forma limpia para previsualización / descarga
         $nombreArchivo = 'reporte_financiero_' . ($mes ? $mes . '_' : '') . $anio . '.pdf';
         $pdf->Output('I', $nombreArchivo);
     }

@@ -5,6 +5,21 @@ namespace App\Models;
 class AsistenciaModel extends Model
 {
     /**
+     * Obtener una entrada de asistencia por su ID
+     * @param int $id
+     * @return array|null
+     */
+    public function findCliente(int $id): ?array
+    {
+        $sql = "SELECT id_asistencia, cedula_persona as cedula, fecha 
+            FROM asistencia_gimnasio 
+            WHERE id_asistencia = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch() ?: null;
+    }
+
+    /**
      * Buscar clientes por cédula o nombre (solo primer nombre)
      */
     public function buscarClientes(string $termino): array
