@@ -3,8 +3,8 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
-use App\Core\Reportes\reporteInventario;
-use App\Core\Reportes\reporteProductosMasVendidos;
+use App\Core\Reportes\ReporteInventario;
+use App\Core\Reportes\ReporteProductosMasVendidos;
 use App\Models\ProductosModel;
 
 class ProductosController extends Controller
@@ -315,7 +315,7 @@ class ProductosController extends Controller
         if (is_array($productosData) && count($productosData) > 0) {
 
             // Instanciar el helper del reporte PDF
-            $pdf = new reporteProductosMasVendidos();
+            $pdf = new ReporteProductosMasVendidos();
 
             // Establecer metadatos básicos del documento PDF
             $pdf->SetTitle(utf8_decode('Reporte de Productos Más Vendidos - SOFIT GYM'));
@@ -358,7 +358,7 @@ class ProductosController extends Controller
         $inventarioData = $this->model->obtenerReporteInventario();
 
         // Instanciar el helper específico de inventario que creamos
-        $pdf = new reporteInventario();
+        $pdf = new ReporteInventario();
 
         // Establecer los metadatos obligatorios de FPDF
         $pdf->SetTitle(utf8_decode('Reporte General de Inventario - SOFIT GYM'));

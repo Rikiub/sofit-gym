@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Core\Http\Response;
-use App\Core\Reportes\reporteFinanciero;
+use App\Core\Reportes\ReporteFinanciero;
 use App\Models\FacturacionPagosModel;
 use Exception;
 
@@ -225,7 +225,7 @@ class FacturacionController extends Controller
 
         $pagosData = $this->model->obtenerPagosPorPeriodo($mes, $anio);
 
-        $pdf = new reporteFinanciero();
+        $pdf = new ReporteFinanciero();
         $pdf->SetTitle(utf8_decode('Reporte Financiero - SOFIT GYM'));
         $pdf->SetAuthor('Sistema SOFIT GYM');
 

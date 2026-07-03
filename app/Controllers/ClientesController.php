@@ -5,7 +5,7 @@ namespace App\Controllers;
 use App\Controllers\Controller;
 use App\Core\Http\Request;
 use App\Core\Http\StatusCode;
-use App\Core\Reportes\reporteClientes;
+use App\Core\Reportes\ReporteClientes;
 use App\Models\Clientes\ClienteDTO;
 use App\Models\Clientes\ClientesModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -164,7 +164,7 @@ class ClientesController extends Controller
         ]);
 
         // Instanciar la clase FPDF encargada del reporte de clientes
-        $pdf = new reporteClientes();
+        $pdf = new ReporteClientes();
 
         // Establecer los metadatos obligatorios para el documento PDF
         $pdf->SetTitle(utf8_decode('Reporte General de Clientes - SOFIT GYM'));

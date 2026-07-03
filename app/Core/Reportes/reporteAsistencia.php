@@ -4,7 +4,7 @@ namespace App\Core\Reportes;
 
 use Fpdf\Fpdf;
 
-class reporteAsistencia extends Fpdf
+class ReporteAsistencia extends Fpdf
 {
     // Colores corporativos adaptados del modelo base (Sofit Gym)
     private array $colorPrincipal = [22, 51, 107];  // Azul Sofit Gym

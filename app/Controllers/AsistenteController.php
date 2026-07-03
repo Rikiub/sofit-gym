@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\Controller;
 use App\Core\Auth\UsuarioSession;
 use App\Core\Auth\UsuarioSessionDto;
+use App\Core\Config;
 use App\Core\Http\Request;
 use App\Core\Http\StatusCode;
 use App\Models\AsistenteMensajeDTO;
@@ -45,7 +46,7 @@ class AsistenteController extends Controller
     {
         if (isset($this->sesion)) return;
 
-        $systemPrompt = file_get_contents(ROOT_DIR . "/config/system_prompt.md");
+        $systemPrompt = file_get_contents(Config::get("fs.base") . "/config/system_prompt.md");
         $this->chat->setSystemMessage($systemPrompt);
 
         // Recuperar historial de mensajes

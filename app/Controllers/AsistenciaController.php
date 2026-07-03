@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
-use App\Core\Reportes\reporteAsistencia;
+use App\Core\Reportes\ReporteAsistencia;
 use App\Models\AsistenciaModel;
 
 class AsistenciaController extends Controller
@@ -188,7 +188,7 @@ class AsistenciaController extends Controller
         $asistenciasData = $this->model->obtenerAsistenciasParaReporte($fechaInicio, $fechaFin);
 
         // Instanciar la clase FPDF del reporte de asistencia
-        $pdf = new reporteAsistencia();
+        $pdf = new ReporteAsistencia();
 
         // Establecer metadatos del documento PDF
         $pdf->SetTitle(utf8_decode('Reporte de Asistencias - SOFIT GYM'));
