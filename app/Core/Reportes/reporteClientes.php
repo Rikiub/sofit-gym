@@ -85,27 +85,16 @@ class reporteClientes extends Fpdf
         $clientesActivos = 0;
 
         foreach ($clientes as $cliente) {
-            // Manejo dinámico si viene mapeado como objeto ClienteDTO o arreglo asociativo de la BD
-            $cedula = is_object($cliente) ? $cliente->cedula : ($cliente['cedula'] ?? '');
-            $nombre = is_object($cliente) ? ($cliente->nombre . ' ' . $cliente->apellido) : (($cliente['nombre'] ?? '') . ' ' . ($cliente['apellido'] ?? ''));
-            $correo = is_object($cliente) ? $cliente->correo : ($cliente['correo'] ?? 'N/A');
-            $telefono = is_object($cliente) ? $cliente->telefono : ($cliente['telefono'] ?? 'N/A');
+            $membresia = (array)$cliente->membresia;
+            $cliente = (array)$cliente;
 
-            // Extracción de subobjeto o JSON de membresía según la query del ClientesModel
-            $membresiaTipo = 'Ninguna';
-            $membresiaEstado = 'Inactivo';
+            $cedula = $cliente['cedula'] ?? "";
+            $nombre = ($cliente['nombre'] ?? '') . ' ' . ($cliente['apellido'] ?? '');
+            $correo = $cliente['correo'] ?? 'N/A';
+            $telefono = $cliente['telefono'] ?? 'N/A';
 
-            if (is_object($cliente) && isset($cliente->membresia)) {
-                $membresiaTipo = $cliente->membresia['tipo'] ?? 'Ninguna';
-                $membresiaEstado = $cliente->membresia['estado'] ?? 'Inactivo';
-            } elseif (is_array($cliente)) {
-                // Si viene crudo de la consulta SQL (soporte JSON_OBJECT)
-                $membresiaData = is_string($cliente['membresia']) ? json_decode($cliente['membresia'], true) : ($cliente['membresia'] ?? null);
-                if ($membresiaData) {
-                    $membresiaTipo = $membresiaData['tipo'] ?? 'Ninguna';
-                    $membresiaEstado = $membresiaData['estado'] ?? 'Inactivo';
-                }
-            }
+            $membresiaTipo = $membresia["tipo"] ?? 'Ninguna';
+            $membresiaEstado = $membresia["estado"] ?? 'Inactivo';
 
             // Fondo alterno sutil
             if ($fill) {

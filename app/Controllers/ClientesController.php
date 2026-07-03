@@ -159,7 +159,9 @@ class ClientesController extends Controller
         $estadoFiltro = $_GET['estado'] ?? null;
 
         // Solicitar al modelo los datos estructurados en array asociativo
-        $clientesData = $this->clientesModelo->obtenerClientesParaReporte($estadoFiltro);
+        $clientesData = $this->clientesModelo->query(filters: [
+            "estado_membresia" => $estadoFiltro
+        ]);
 
         // Instanciar la clase FPDF encargada del reporte de clientes
         $pdf = new reporteClientes();

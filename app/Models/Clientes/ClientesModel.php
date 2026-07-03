@@ -88,6 +88,7 @@ class ClientesModel extends Model
             'fecha_inicio_hasta' => ['column' => 'm.fecha_inicio', 'op' => '<='],
             'fecha_fin_desde'    => ['column' => 'm.fecha_fin', 'op' => '>='],
             'fecha_fin_hasta'    => ['column' => 'm.fecha_fin', 'op' => '<='],
+            'estado_membresia' => ['column' => 'me.nombre', 'op' => '=']
         ];
 
         foreach ($filters as $key => $value) {
@@ -200,60 +201,5 @@ class ClientesModel extends Model
                         ELSE 1
                     END ASC;
             SQL;
-    }
-
-    // REPORTES
-
-    /**
-     * Obtiene los datos limpios y estructurados de los clientes para el reporte general.
-     * Reutiliza la lógica relacional de la persona con su membresía más reciente.
-     * Diseñado de manera homóloga a ProductosModel para integrarse con reporteClientes.
-     *
-     * @param string|null $estado Filtro opcional por el nombre del estado (ej: 'Activo', 'Inactivo')
-     * @return array Listado de clientes como arreglos asociativos
-     */
-    public function obtenerClientesParaReporte(?string $estado = null): array
-    {
-        $sql = "SELECT
-                    p.cedula,
-                    p.nombre,
-                    p.apellido,
-                    p.correo,
-                    p.telefono,
-                    JSON_OBJECT(
-                        'tipo', mt.nombre,
-                        'estado', me.nombre
-                    ) AS membresia
-                FROM cliente c
-                LEFT JOIN persona p ON p.cedula = c.cedula
-                LEFT JOIN membresia m ON m.id_membresia = (
-                    SELECT m2.id_membresia 
-                    FROM membresia m2 
-                    WHERE m2.cedula_cliente = c.cedula 
-                    ORDER BY m2.id_membresia DESC
-                    LIMIT 1
-                )
-                LEFT JOIN tipo_membresia mt ON m.id_tipo = mt.id_tipo
-                LEFT JOIN estado_membresia me ON m.id_estado = me.id_estado";
-
-        $where = [];
-        $params = [];
-
-        // Permite opcionalmente filtrar en el reporte solo los activos, vencidos, etc.
-        if (!empty($estado)) {
-            $where[] = "me.nombre = :estado";
-            $params['estado'] = $estado;
-        }
-
-        if (!empty($where)) {
-            $sql .= " WHERE " . implode(" AND ", $where);
-        }
-
-        // Ordenamos alfabéticamente por apellido y nombre
-        $sql .= " ORDER BY p.apellido ASC, p.nombre ASC";
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->fetchAll();
     }
 }
