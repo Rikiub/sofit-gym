@@ -7,6 +7,7 @@ use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\StatusCode;
 use App\Core\Auth\UsuarioSession;
+use App\Core\Auth\UsuarioSessionDto;
 use App\Core\Config;
 use App\Core\Logging\BitacoraLogger;
 use CuyZ\Valinor\Mapper\MappingError;
@@ -20,6 +21,7 @@ class FrontController
     private const DEFAULT_PAGE = "dashboard";
     private const DEFAULT_ACTION = "index";
 
+    private ?UsuarioSessionDto $usuario;
     private bool $isDebug;
 
     public function __construct(private ContainerInterface $container)
@@ -27,6 +29,8 @@ class FrontController
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+
+        $this->usuario = UsuarioSession::getCurrent();
         $this->isDebug = Config::get("debug");
     }
 
@@ -40,10 +44,6 @@ class FrontController
         $action = $_GET['action'] ?? self::DEFAULT_ACTION;
 
         try {
-            // Set contexto inicial para logging/bitacora
-            $logger = $this->container->get(BitacoraLogger::class);
-            $logger->setRouteContext($page, $action);
-
             // Construir clase a partir de los parametros
             $className = ucfirst($page) . 'Controller';
             $classPath = '\\' . self::CONTROLLERS_NAMESPACE . "\\$className";
@@ -54,6 +54,9 @@ class FrontController
                 return;
             }
 
+            // Ejecutar middlewares
+            $this->middlewares($page, $action);
+
             // Resolver controlador desde el contenedor DI
             /** @var Controller */
             $controller = $this->container->get($classPath);
@@ -62,20 +65,26 @@ class FrontController
                 throw new Exception("Method '$action' not found in controller '$className'");
             }
 
-            // Autentificar al usuario
-            $usuario = UsuarioSession::getCurrent();
-            if ($page !== "login" && !$usuario) {
-                Response::redirect(["page" => "login"]);
-                return;
-            }
-
-            // Ejecutar accion y mostrar el resultado
+            // Ejecutar accion del controlador y mostrar resultado
             echo $controller->$action();
         } catch (MappingError $error) {
             $this->handleValidationError($error);
         } catch (Throwable $error) {
             $this->handleServerError($error);
         }
+    }
+
+    /** Acciones a ejecutar antes de llegar al controlador. */
+    private function middlewares(string $page, string $action): void
+    {
+        // Autentificar usuario actual
+        if ($page !== "login" && !$this->usuario) {
+            Response::redirect(["page" => "login"]);
+        }
+
+        // Inicializar contexto del logger
+        $logger = $this->container->get(BitacoraLogger::class);
+        $logger->setRouteContext($page, $action);
     }
 
     private function handleNotFound(string $className, string $classPath): void

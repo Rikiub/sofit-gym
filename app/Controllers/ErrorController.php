@@ -17,11 +17,11 @@ class ErrorController extends Controller
             StatusCode::FORBIDDEN => "No tienes permiso para acceder a esta pagina",
             StatusCode::NOT_FOUND => 'Pagina no encontrada',
             StatusCode::METHOD_NOT_ALLOWED => 'Metodo no soportado',
-            StatusCode::INTERNAL_SERVER_ERROR => 'Ocurrio un error inesperado en el servidor',
+            default => 'Ocurrio un error inesperado en el servidor',
         };
 
         return $this->templates->render('error', [
-            'message' => "{$status}: {$message}"
+            'message' => "{$status->value}: {$message}"
         ]);
     }
 }

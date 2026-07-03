@@ -25,7 +25,6 @@ class LoginController extends Controller
         if (UsuarioSession::getCurrent()) {
             // Si el usuario ya inicio sesión, redirigir a pagina de inicio.
             Response::redirect(["page" => "dashboard"]);
-            exit;
         }
 
         return $this->templates->render("login");

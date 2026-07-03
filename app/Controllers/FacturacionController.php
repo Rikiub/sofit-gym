@@ -38,7 +38,6 @@ class FacturacionController extends Controller
                 'action' => 'index',
                 'tab' => 'tab-lista',
             ]);
-            exit;
         }
 
         $cedula = $_POST['cedula'] ?? '';
@@ -134,7 +133,6 @@ class FacturacionController extends Controller
                 'action' => 'index',
                 'tab' => 'tab-lista',
             ]);
-            exit;
         }
 
         $idPago = intval($_GET['eliminar_pago']);
