@@ -31,7 +31,7 @@ CREATE TABLE `asistencia_gimnasio` (
   KEY `cedula_cliente` (`cedula_persona`),
   KEY `idx_asistencias_fecha` (`fecha`),
   CONSTRAINT `asistencia_gimnasio_ibfk_1` FOREIGN KEY (`cedula_persona`) REFERENCES `cliente` (`cedula`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=128 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=129 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -353,7 +353,7 @@ CREATE TABLE `membresia` (
   CONSTRAINT `membresia_cliente_FK` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `membresia_ibfk_1` FOREIGN KEY (`id_tipo`) REFERENCES `tipo_membresia` (`id_tipo`) ON UPDATE CASCADE,
   CONSTRAINT `membresia_ibfk_2` FOREIGN KEY (`id_estado`) REFERENCES `estado_membresia` (`id_estado`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -362,7 +362,7 @@ CREATE TABLE `membresia` (
 
 LOCK TABLES `membresia` WRITE;
 /*!40000 ALTER TABLE `membresia` DISABLE KEYS */;
-INSERT INTO `membresia` VALUES (40,1,2,'V-11773948','2026-06-20','2026-07-20','2026-06-20 16:30:17'),(41,1,1,'V-21059483','2026-06-20','2026-07-20','2026-06-20 19:14:40'),(42,1,1,'V-24119384','2026-06-22','2026-07-22','2026-06-22 20:43:23'),(43,1,1,'V-11773948','2026-07-01','2026-07-31','2026-07-01 12:25:36');
+INSERT INTO `membresia` VALUES (40,1,2,'V-11773948','2026-06-20','2026-07-20','2026-06-20 16:30:17'),(41,1,2,'V-21059483','2026-06-20','2026-07-20','2026-06-20 19:14:40'),(42,1,1,'V-24119384','2026-06-22','2026-07-22','2026-06-22 20:43:23'),(43,1,1,'V-11773948','2026-07-01','2026-07-31','2026-07-01 12:25:36'),(44,1,1,'V-21059483','2026-07-02','2026-08-01','2026-07-02 20:53:03');
 /*!40000 ALTER TABLE `membresia` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -410,7 +410,7 @@ CREATE TABLE `pago` (
   KEY `pago_metodo_pago_FK` (`id_metodo`),
   CONSTRAINT `pago_membresia_FK` FOREIGN KEY (`id_membresia`) REFERENCES `membresia` (`id_membresia`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `pago_metodo_pago_FK` FOREIGN KEY (`id_metodo`) REFERENCES `metodo_pago` (`id_metodo`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -419,7 +419,7 @@ CREATE TABLE `pago` (
 
 LOCK TABLES `pago` WRITE;
 /*!40000 ALTER TABLE `pago` DISABLE KEYS */;
-INSERT INTO `pago` VALUES (20,40,1,5.00,'','Pagado','2026-06-20'),(21,41,1,5.00,'','Pagado','2026-06-20'),(22,42,1,20.00,'','Pagado','2026-06-22'),(23,43,1,5.00,'','Pagado','2026-07-01');
+INSERT INTO `pago` VALUES (20,40,1,5.00,'','Pagado','2026-06-20'),(21,41,1,5.00,'','Pagado','2026-06-20'),(22,42,1,20.00,'','Pagado','2026-06-22'),(24,44,1,5.00,'','Pagado','2026-07-02');
 /*!40000 ALTER TABLE `pago` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1006,4 +1006,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-07-02 19:54:10
+-- Dump completed on 2026-07-03 16:44:21
