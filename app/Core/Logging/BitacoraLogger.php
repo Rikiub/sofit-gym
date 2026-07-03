@@ -80,6 +80,8 @@ class BitacoraLogger extends AbstractLogger
         if (PHP_SAPI !== 'cli') return;
 
         $timestamp = date('Y-m-d H:i:s');
-        fwrite(STDOUT, "[$timestamp] [$level->value] $message\n");
+        $level = strtoupper($level->value);
+
+        fwrite(STDOUT, "[$timestamp] [$level] $message\n");
     }
 }

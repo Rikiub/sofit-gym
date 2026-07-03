@@ -13,6 +13,7 @@ $notif = $container->get(NotificacionService::class);
 /** @var BitacoraLogger */
 $logger = $container->get(BitacoraLogger::class);
 
+/**
 $notif->sendByRol(
     roles: [UserRol::Administrador],
     titulo: "xd",
@@ -23,3 +24,4 @@ $logger->info("Limpieza automática de bitácora ejecutada", [
     'modulo' => 'sistema',
     'accion' => 'limpieza_bitacora'
 ]);
+ */

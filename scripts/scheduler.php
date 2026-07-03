@@ -1,15 +1,16 @@
 <?php
 // Programador de tareas para desarrollo local
+
 // CONFIGURACIÓN
 $tasks = [
     [
         'name'     => 'Enviar notificaciones',
-        'script'   => 'notify-users.php',
+        'script'   => 'notify-users',
         'interval' => 60, // 1 minuto
     ],
     [
-        'name'     => 'Limpieza de bitacora',
-        'script'   => 'limpiar-bitacora.php',
+        'name'     => 'Limpiar bitacora',
+        'script'   => 'limpiar-bitacora',
         'interval' => 86400, // 24 horas
     ],
 ];
@@ -18,7 +19,7 @@ $tasks = [
 set_time_limit(0);
 
 echo "🕒 Programador iniciado. Ejecutando " . count($tasks) . " tareas.\n";
-echo "Presiona Ctrl+C para parar.\n";
+echo "Presiona Ctrl+C para detenerlo.\n";
 echo str_repeat('-', 50) . "\n";
 
 // Seguimiento de cuándo se ejecutó cada tarea por última vez
@@ -40,7 +41,7 @@ while (true) {
 
             try {
                 // Ejecutar script
-                include $job['script'];
+                include $job['script'] . ".php";
                 echo "✅ Completado.\n";
             } catch (Throwable $e) {
                 echo "❌ Error: " . $e->getMessage() . "\n";
