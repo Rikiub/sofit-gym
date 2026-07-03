@@ -1,7 +1,7 @@
 {
     "name": "app/sofit-gym",
     "scripts": {
-        "xampp-dev": "C:\\xampp\\php\\php.exe scripts\\scheduler.php"
+        "xampp-dev": "C:\\xampp\\php\\php.exe scripts\\scheduler\\run.php"
     },
     "autoload": {
         "psr-4": {
