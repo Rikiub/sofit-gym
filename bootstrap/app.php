@@ -14,7 +14,7 @@ $dotenv->safeLoad();
 // Cargar constantes globales
 require_once __DIR__ . '/../config/constants.php';
 
-// Construir el contenedor DI (PHP-DI)
+// Construir contenedor DI (PHP-DI)
 use DI\ContainerBuilder;
 
 $builder = new ContainerBuilder();
@@ -27,5 +27,5 @@ if (!DEBUG) {
 
 $container = $builder->build();
 
-// Devolver el contenedor para que quien lo requiera lo use
+// Devolver contenedor para que quien lo requiera lo use
 return $container;
