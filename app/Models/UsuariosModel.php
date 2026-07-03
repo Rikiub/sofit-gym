@@ -3,12 +3,11 @@
 namespace App\Models;
 
 use App\Core\Database;
-use App\Core\ImagesManager;
+use App\Core\ImageManager;
 use App\Core\Validator;
 use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
-use DateTimeInterface;
 use Exception;
 
 use function App\Core\toDbDate;
@@ -21,6 +20,7 @@ class UsuariosModel extends Model
     public function __construct(
         Database $db,
         private TreeMapper $mapper,
+        private ImageManager $image,
     ) {
         parent::__construct($db);
     }
@@ -119,7 +119,7 @@ class UsuariosModel extends Model
         $usuario = $this->getById($id);
 
         $this->db->dbDelete($this->table, [$this->primaryKey => $id]);
-        ImagesManager::delete($usuario->imagen_url);
+        $this->image->delete($usuario->imagen_url);
     }
 
     private function syncImage(int $id, string $imagen_url = null): UsuarioDTO
@@ -127,7 +127,7 @@ class UsuariosModel extends Model
         $oldUsuario = $this->getById($id);
 
         if ($imagen_url && $imagen_url !== $oldUsuario->imagen_url) {
-            $imagen_url = ImagesManager::moveFromTemp($imagen_url, "/usuarios");
+            $imagen_url = $this->image->moveFromTemp($imagen_url, "/usuarios");
 
             $this->db->dbUpdate(
                 $this->table,
@@ -135,7 +135,7 @@ class UsuariosModel extends Model
                 [$this->primaryKey => $id],
             );
 
-            ImagesManager::delete($oldUsuario->imagen_url ?? "");
+            $this->image->delete($oldUsuario->imagen_url ?? "");
             return $this->findById($id);
         }
         return $oldUsuario;

@@ -7,7 +7,7 @@ use App\Core\Auth\UsuarioSession;
 use App\Core\Auth\UsuarioSessionDto;
 use App\Core\Http\Request;
 use App\Core\Http\StatusCode;
-use App\Core\ImagesManager;
+use App\Core\ImageManager;
 use App\Models\UsuarioDTO;
 use App\Models\UsuariosModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -19,6 +19,7 @@ class UsuariosController extends Controller
     public function __construct(
         private TreeMapper $mapper,
         private UsuariosModel $usuariosModel,
+        private ImageManager $image,
     ) {
         $this->usuarioSesion = UsuarioSession::getCurrent();
     }
@@ -44,7 +45,7 @@ class UsuariosController extends Controller
         $usuario = $this->usuariosModel->findById($id);
 
         if (!$usuario) {
-            $this->notFound();
+            return $this->notFound();
         }
 
         $this->protectAccess("usuarios:ver", $usuario);
@@ -128,7 +129,7 @@ class UsuariosController extends Controller
             );
         }
 
-        $filename = ImagesManager::saveTemp($image);
+        $filename = $this->image->saveTemp($image);
         return $this->json([
             'temp_filename' => $filename
         ]);

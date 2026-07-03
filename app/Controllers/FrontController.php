@@ -7,6 +7,7 @@ use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\StatusCode;
 use App\Core\Auth\UsuarioSession;
+use App\Core\Config;
 use App\Core\Logging\BitacoraLogger;
 use CuyZ\Valinor\Mapper\MappingError;
 use Throwable;
@@ -19,11 +20,14 @@ class FrontController
     private const DEFAULT_PAGE = "dashboard";
     private const DEFAULT_ACTION = "index";
 
+    private bool $isDebug;
+
     public function __construct(private ContainerInterface $container)
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+        $this->isDebug = Config::get("debug");
     }
 
     /**
@@ -80,7 +84,7 @@ class FrontController
             echo Response::json([
                 'error' => 'Not Found',
                 'message' => "Controller {$className} not found",
-                ...(DEBUG ? ['controller' => $classPath] : [])
+                ...($this->isDebug ? ['controller' => $classPath] : [])
             ], StatusCode::NOT_FOUND);
         } else {
             Response::redirect([
@@ -94,7 +98,7 @@ class FrontController
     {
         $errors = [];
         foreach ($error->messages() as $m) {
-            $errors[] = DEBUG ? [
+            $errors[] = $this->isDebug ? [
                 'name' => $m->name(),
                 'source' => $m->sourceValue(),
                 'expected' => $m->expectedSignature(),
@@ -115,13 +119,13 @@ class FrontController
     {
         error_log(sprintf("Error: %s en %s:%d", $error->getMessage(), $error->getFile(), $error->getLine()));
 
-        if (DEBUG || Request::wantsJson()) {
+        if ($this->isDebug || Request::wantsJson()) {
             $res = [
                 'error' => 'Internal Server Error',
-                'message' => DEBUG ? $error->getMessage() : 'An unexpected error occurred on the server'
+                'message' => $this->isDebug ? $error->getMessage() : 'An unexpected error occurred on the server'
             ];
 
-            if (DEBUG) {
+            if ($this->isDebug) {
                 $res["exception"] = get_class($error);
                 $res['file'] = $error->getFile();
                 $res['line'] = $error->getLine();

@@ -21,7 +21,10 @@ class Database extends PDO
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false,
-            PDO::MYSQL_ATTR_INIT_COMMAND => sprintf("SET time_zone = '%s'", TIMEZONE_OFFSET),
+            PDO::MYSQL_ATTR_INIT_COMMAND => sprintf(
+                "SET time_zone = '%s'",
+                Config::get("timezone.offset")
+            ),
         ];
         $dsn = "mysql:host={$host};dbname={$database};charset={$charset};";
 

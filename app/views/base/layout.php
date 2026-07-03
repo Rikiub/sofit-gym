@@ -9,6 +9,8 @@
  * En cualquier vista.
  */
 
+use App\Core\Config;
+
 // Props
 $sidebar ??= true;
 $title ??= null;
@@ -37,7 +39,7 @@ $this->layout('base', ['title' => $title]);
         --backdrop-opacity: 0.1;
         background-image:
             linear-gradient(rgba(0, 0, 0, var(--backdrop-opacity)), rgba(0, 0, 0, var(--backdrop-opacity))),
-            url('<?= ASSETS_DIR . '/base/background.webp' ?>');
+            url('<?= Config::get("web.assets") . '/base/background.webp' ?>');
         background-color: #021C26;
         background-size: cover;
         background-position: center;

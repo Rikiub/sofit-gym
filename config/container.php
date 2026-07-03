@@ -1,6 +1,7 @@
 <?php
 
 use App\Core\Auth\UsuarioSession;
+use App\Core\Config;
 use App\Core\Database;
 use App\Core\Plates\AssetExtension;
 use CuyZ\Valinor\Cache\FileSystemCache;
@@ -45,7 +46,7 @@ return [
             Theme::new('app/views/emails', 'Emails'),
             Theme::new('app/views/pages', 'Page'),
         ]))
-            ->loadExtension(new AssetExtension(ASSETS_DIR));
+            ->loadExtension(new AssetExtension(Config::get("web.assets")));
 
         $usuario = UsuarioSession::getCurrent();
         $engine->addData(["sesion_usuario" => $usuario]);
@@ -87,8 +88,10 @@ return [
     // Utilizado para convertir arrays en DTOs
     // y validarlos en el proceso
     TreeMapper::class => function () {
-        $cache = new FileSystemCache(CACHE_DIR . '/valinor');
-        if (DEBUG) {
+        $cache = new FileSystemCache(
+            Config::get("web.assets") . '/valinor'
+        );
+        if (Config::get("debug")) {
             $cache = new FileWatchingCache($cache);
         }
 
@@ -110,8 +113,10 @@ return [
     // Utilizado para convertir arrays en JSON
     // y convertir tipos como DateTime en texto
     Normalizer::class => function () {
-        $cache = new FileSystemCache(CACHE_DIR . '/valinor');
-        if (DEBUG) {
+        $cache = new FileSystemCache(
+            Config::get("web.assets") . '/valinor'
+        );
+        if (Config::get("debug")) {
             $cache = new FileWatchingCache($cache);
         }
 

@@ -1,4 +1,7 @@
 <?php
+
+use App\Core\Config;
+
 $title = "Inicio de Sesión - SOFIT GYM";
 $this->layout("layout", ["title" => $title, "sidebar" => false]);
 ?>
@@ -411,7 +414,7 @@ $this->layout("layout", ["title" => $title, "sidebar" => false]);
     .split-login-wrapper {
         background-image:
             linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6)),
-            url('<?= ASSETS_DIR ?>/pages/login/background.jpg');
+            url('<?= Config::get("web.assets") ?>/pages/login/background.jpg');
         background-repeat: no-repeat;
         background-position: center;
         background-size: cover;

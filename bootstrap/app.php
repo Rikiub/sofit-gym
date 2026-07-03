@@ -4,6 +4,9 @@
  * @return \Psr\Container\ContainerInterface
  */
 
+use App\Core\Config;
+use DI\ContainerBuilder;
+
 // Cargar composer autoload
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -11,18 +14,16 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__ . "/..");
 $dotenv->safeLoad();
 
-// Cargar constantes globales
-require_once __DIR__ . '/../config/constants.php';
+// Cargar configuración
+Config::load(__DIR__ . '/../config/app.php');
 
 // Construir contenedor DI (PHP-DI)
-use DI\ContainerBuilder;
-
 $builder = new ContainerBuilder();
 $builder->addDefinitions(__DIR__ . '/../config/container.php');
 $builder->useAttributes(true);
 
-if (!DEBUG) {
-    $builder->enableCompilation(CACHE_DIR . '/php-di');
+if (!Config::get("debug")) {
+    $builder->enableCompilation(Config::get("fs.cache") . '/php-di');
 }
 
 $container = $builder->build();
