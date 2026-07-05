@@ -9,7 +9,6 @@ use App\Models\Equipos\Equipo;
 use App\Models\Equipos\EquipoModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 
-
 class EquiposController extends Controller
 {
     public function __construct(
