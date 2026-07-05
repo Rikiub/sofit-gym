@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Core\Database;
 use App\Core\Validator;
-use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 
