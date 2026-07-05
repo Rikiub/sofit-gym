@@ -3,8 +3,8 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
-use App\Core\Auth\UserSessionManager;
-use App\Core\Auth\UserSession;
+use App\Services\Auth\UserSession;
+use App\Services\Auth\AuthenticatedUser;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\StatusCode;
@@ -21,7 +21,7 @@ class LoginController extends Controller
 
     public function index()
     {
-        if (UserSessionManager::getCurrent()) {
+        if (UserSession::getCurrent()) {
             // Si el usuario ya inicio sesión, redirigir a pagina de inicio.
             Response::redirect(["page" => "dashboard"]);
         }
@@ -71,7 +71,7 @@ class LoginController extends Controller
         $this->usuarioModel->updateUltimoAcceso($usuario->id_usuario);
 
         // Guardar la sesión utilizando un helper
-        UserSessionManager::login(new UserSession(
+        UserSession::login(new AuthenticatedUser(
             id: $usuario->id_usuario,
             id_rol: $usuario->id_rol,
             rol: $usuario->rol,
@@ -93,12 +93,12 @@ class LoginController extends Controller
 
     public function logout(): void
     {
-        $user = UserSessionManager::getCurrent();
+        $user = UserSession::getCurrent();
         $this->logger->info(
             "Usuario {nombre_usuario} ha cerrado sesión",
             ["nombre_usuario" => $user->nombre]
         );
-        UserSessionManager::logout();
+        UserSession::logout();
 
         Response::redirect(["page" => "login"]);
         exit;

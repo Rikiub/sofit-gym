@@ -3,8 +3,8 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
-use App\Core\Auth\UserSessionManager;
-use App\Core\Auth\UserSession;
+use App\Services\Auth\UserSession;
+use App\Services\Auth\AuthenticatedUser;
 use App\Core\Http\Request;
 use App\Core\Http\StatusCode;
 use App\Models\Notificacion;
@@ -14,13 +14,13 @@ use Exception;
 
 class NotificacionesController extends Controller
 {
-    private UserSession $user;
+    private AuthenticatedUser $user;
 
     public function __construct(
         private TreeMapper $mapper,
         private NotificacionModel $notifModel,
     ) {
-        $this->user = UserSessionManager::getCurrent();
+        $this->user = UserSession::getCurrent();
     }
 
     public function query()

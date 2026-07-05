@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
-use App\Core\Auth\UserSessionManager;
+use App\Services\Auth\UserSession;
 use App\Models\AsistenciaModel;
 use App\Models\FacturacionModel;
 use App\Models\Clientes\ClienteModel;
@@ -25,7 +25,7 @@ class DashboardController extends Controller
         ]);
         $ingresosMensuales = $this->facturacionModel->obtenerIngresosMesActual();
 
-        $usuario = UserSessionManager::getCurrent();
+        $usuario = UserSession::getCurrent();
         return $this->templates->render('dashboard', [
             "usuario" => $usuario,
             "asistencias" => $asistencias,

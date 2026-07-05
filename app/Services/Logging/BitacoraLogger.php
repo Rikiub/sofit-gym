@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Core\Logging;
+namespace App\Services\Logging;
 
-use App\Core\Auth\UserSessionManager;
-use App\Core\Logging\LogLevel;
+use App\Services\Auth\UserSession;
 use App\Models\BitacoraDTO;
 use App\Models\BitacoraModel;
 use Psr\Log\AbstractLogger;
@@ -49,7 +48,7 @@ class BitacoraLogger extends AbstractLogger
 
         $this->consoleLog($message, LogLevel::from($level));
         $this->bitacoraModel->insert(new BitacoraDTO(
-            id_usuario: UserSessionManager::getCurrent()->id ?? null,
+            id_usuario: UserSession::getCurrent()->id ?? null,
             modulo: $modulo,
             accion: $accion,
             mensaje: $message,

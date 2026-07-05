@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Core\Auth;
+namespace App\Services\Auth;
 
 use DateTimeImmutable;
 
-/** Datos accesibles del usuario que ha iniciado sesión */
-readonly class UserSession
+/** Datos del usuario actual. */
+readonly class AuthenticatedUser
 {
     public function __construct(
         public int $id,

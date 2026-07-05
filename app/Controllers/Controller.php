@@ -2,8 +2,8 @@
 
 namespace App\Controllers;
 
-use App\Core\Auth\UserSessionManager;
-use App\Core\Logging\BitacoraLogger;
+use App\Services\Auth\UserSession;
+use App\Services\Logging\BitacoraLogger;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\StatusCode;
@@ -48,7 +48,7 @@ abstract class Controller
     /** Bloquea el acceso a una ruta y redirige a la pagina de error si el usuario no tiene el permiso. */
     protected function protect(string $permiso): void
     {
-        $user = UserSessionManager::getCurrent();
+        $user = UserSession::getCurrent();
 
         if (!$user || !$user->hasPermiso($permiso)) {
             if (Request::wantsJson()) {

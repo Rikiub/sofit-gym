@@ -6,10 +6,10 @@ use Psr\Container\ContainerInterface;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\StatusCode;
-use App\Core\Auth\UserSessionManager;
-use App\Core\Auth\UserSession;
+use App\Services\Auth\UserSession;
+use App\Services\Auth\AuthenticatedUser;
 use App\Core\Config;
-use App\Core\Logging\BitacoraLogger;
+use App\Services\Logging\BitacoraLogger;
 use CuyZ\Valinor\Mapper\MappingError;
 use Throwable;
 use Exception;
@@ -21,7 +21,7 @@ class FrontController
     private const DEFAULT_PAGE = "dashboard";
     private const DEFAULT_ACTION = "index";
 
-    private ?UserSession $user;
+    private ?AuthenticatedUser $user;
     private bool $isDebug;
 
     public function __construct(private ContainerInterface $container)
@@ -30,7 +30,7 @@ class FrontController
             session_start();
         }
 
-        $this->user = UserSessionManager::getCurrent();
+        $this->user = UserSession::getCurrent();
         $this->isDebug = Config::get("debug");
     }
 

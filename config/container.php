@@ -1,9 +1,9 @@
 <?php
 
-use App\Core\Auth\UserSessionManager;
 use App\Core\Config;
 use App\Core\Database;
 use App\Core\Plates\AssetExtension;
+use App\Services\Auth\UserSession;
 use CuyZ\Valinor\Cache\FileSystemCache;
 use CuyZ\Valinor\Cache\FileWatchingCache;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -48,7 +48,7 @@ return [
         ]))
             ->loadExtension(new AssetExtension(Config::get("web.assets")));
 
-        $user = UserSessionManager::getCurrent();
+        $user = UserSession::getCurrent();
         $engine->addData(["sesion_usuario" => $user]);
         return $engine;
     },

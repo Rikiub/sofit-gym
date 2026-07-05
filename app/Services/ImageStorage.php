@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Core;
+namespace App\Services;
 
+use App\Core\Config;
 use InvalidArgumentException;
 use RuntimeException;
 

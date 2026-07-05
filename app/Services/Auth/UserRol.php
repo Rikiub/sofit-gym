@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Auth;
+namespace App\Services\Auth;
 
 /** ID que corresponde a un rol de usuario en la base de datos. */
 enum UserRol: int

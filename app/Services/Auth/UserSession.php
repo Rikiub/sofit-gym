@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Core\Auth;
+namespace App\Services\Auth;
 
-/** Helper para manejar sesiones de usuario de forma segura */
-class UserSessionManager
+/** Manejador de sesiones de usuario. */
+class UserSession
 {
-    private const SESSION_KEY = 'usuario';
+    private const SESSION_KEY = 'user';
 
     /** Obtener usuario actual */
-    public static function getCurrent(): ?UserSession
+    public static function getCurrent(): ?AuthenticatedUser
     {
         return $_SESSION[self::SESSION_KEY] ?? null;
     }
 
     /** Iniciar sesion */
-    public static function login(UserSession $usuario): void
+    public static function login(AuthenticatedUser $usuario): void
     {
         session_regenerate_id();
         $_SESSION[self::SESSION_KEY] = $usuario;

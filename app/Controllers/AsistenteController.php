@@ -3,8 +3,8 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
-use App\Core\Auth\UserSessionManager;
-use App\Core\Auth\UserSession;
+use App\Services\Auth\UserSession;
+use App\Services\Auth\AuthenticatedUser;
 use App\Core\Config;
 use App\Core\Http\Request;
 use App\Core\Http\StatusCode;
@@ -22,7 +22,7 @@ class AsistenteController extends Controller
 {
     private OpenAIChat $chat;
 
-    private UserSession $user;
+    private AuthenticatedUser $user;
     private AsistenteSesion $sesion;
 
     /** @var Message[] */
@@ -33,7 +33,7 @@ class AsistenteController extends Controller
         private AsistenteModel $asistenteModel,
     ) {
         $this->chat = new OpenAIChat($config);
-        $this->user =  UserSessionManager::getCurrent();
+        $this->user =  UserSession::getCurrent();
     }
 
     public function index()

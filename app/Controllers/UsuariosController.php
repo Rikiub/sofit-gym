@@ -3,25 +3,25 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
-use App\Core\Auth\UserSessionManager;
-use App\Core\Auth\UserSession;
+use App\Services\Auth\UserSession;
+use App\Services\Auth\AuthenticatedUser;
+use App\Services\ImageStorage;
 use App\Core\Http\Request;
 use App\Core\Http\StatusCode;
-use App\Core\ImageStorage;
 use App\Models\Usuario;
 use App\Models\UsuarioModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 
 class UsuariosController extends Controller
 {
-    private UserSession $user;
+    private AuthenticatedUser $user;
 
     public function __construct(
         private TreeMapper $mapper,
         private UsuarioModel $usuarioModel,
         private ImageStorage $image,
     ) {
-        $this->user = UserSessionManager::getCurrent();
+        $this->user = UserSession::getCurrent();
     }
 
     public function index(): string
