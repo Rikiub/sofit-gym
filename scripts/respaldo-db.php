@@ -9,3 +9,5 @@ $container = require "bootstrap/app.php";
 /** @var RespaldoService */
 $respaldo = $container->get(RespaldoService::class);
 $respaldo->backup();
+
+// echo json_encode($respaldo->getAll());

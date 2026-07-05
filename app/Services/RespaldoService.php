@@ -15,13 +15,25 @@ class RespaldoService
 {
     private const DB_NAMES = ["sofit_gym", "sofit_gym_seguridad"];
 
-    private string $cmdPath;
     private string $backupsDir;
+
+    private string $mysqlPath;
+    private string $mysqldumpPath;
+
+    private string $dbHost;
+    private string $dbUsername;
+    private string $dbPassword;
 
     public function __construct(private BitacoraLogger $logger)
     {
-        $this->cmdPath = Config::get("db.path.mysqldump");
         $this->backupsDir = Config::get("fs.backups");
+
+        $this->mysqlPath = Config::get("db.path.mysql");
+        $this->mysqldumpPath = Config::get("db.path.mysqldump");
+
+        $this->dbHost = Config::get("db.host");
+        $this->dbUsername = Config::get("db.username");
+        $this->dbPassword = Config::get("db.password");
     }
 
     public function getAll(): array
@@ -109,10 +121,6 @@ class RespaldoService
 
     public function backup()
     {
-        $host = Config::get("db.host");
-        $username = Config::get("db.username");
-        $password = Config::get("db.password");
-
         $dir = $this->generateTimestampDir();
         mkdir($dir, 0755, true);
 
@@ -120,10 +128,10 @@ class RespaldoService
             $backupPath = "{$dir}/{$name}.sql";
             $cmd = sprintf(
                 '"%s" --opt -h %s -u %s --password="%s" "%s" > "%s"',
-                $this->cmdPath,
-                $host,
-                $username,
-                $password,
+                $this->mysqldumpPath,
+                $this->dbHost,
+                $this->dbUsername,
+                $this->dbPassword,
                 $name,
                 $backupPath,
             );
@@ -152,6 +160,55 @@ class RespaldoService
             "modulo" => "respaldos",
             "accion" => "backup",
         ]);
+    }
+
+    /**
+     * Elimina un respaldo completo.
+     *
+     * @param string $timestamp Ej: "2026/07/05/14-30-00"
+     * @throws RuntimeException Si no existe o no se puede eliminar
+     */
+    public function delete(string $timestamp): void
+    {
+        $dir = $this->backupsDir . '/' . $timestamp;
+
+        if (!is_dir($dir)) {
+            throw new RuntimeException("El directorio de respaldo no existe: $dir");
+        }
+
+        // Eliminar recursivamente
+        $this->deleteDirectory($dir);
+
+        $this->logger->info("Respaldo eliminado: $timestamp", [
+            'modulo' => 'respaldos',
+            'accion' => 'delete'
+        ]);
+    }
+
+    /**
+     * Elimina un directorio y todo su contenido recursivamente.
+     */
+    private function deleteDirectory(string $dir): void
+    {
+        if (!is_dir($dir)) {
+            return;
+        }
+
+        $items = scandir($dir);
+        foreach ($items as $item) {
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+
+            $path = $dir . DIRECTORY_SEPARATOR . $item;
+            if (is_dir($path)) {
+                $this->deleteDirectory($path);
+            } else {
+                unlink($path);
+            }
+        }
+
+        rmdir($dir);
     }
 
     private function generateTimestampDir(): string
