@@ -164,6 +164,12 @@ class FacturacionController extends Controller
         ]);
     }
 
+    public function resumen_semana(): string
+    {
+        $resultados = $this->model->obtenerResumenFinancieroSemanal();
+        return $this->json($resultados);
+    }
+
     public function buscar_ajax()
     {
         $this->protect("facturacion:ver");

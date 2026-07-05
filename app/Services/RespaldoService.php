@@ -127,7 +127,7 @@ class RespaldoService
         foreach (self::DB_NAMES as $name) {
             $backupPath = "{$dir}/{$name}.sql";
             $cmd = sprintf(
-                '"%s" --opt -h %s -u %s --password="%s" "%s" > "%s"',
+                '"%s" --opt --routines --triggers --events --single-transaction -h %s -u %s --password="%s" "%s" > "%s"',
                 $this->mysqldumpPath,
                 $this->dbHost,
                 $this->dbUsername,

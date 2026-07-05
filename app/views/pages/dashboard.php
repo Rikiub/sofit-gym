@@ -135,10 +135,10 @@ function cardEstadistica(string $titulo, int|string $valor, string $footer)
                 </div>
 
                 <div class="col-12 col-md">
-                    <div class="glass-card p-4 rounded-4 h-100 hover-lift" x-data="asistenciasChart">
+                    <div class="glass-card p-4 rounded-4 h-100 hover-lift" x-data="facturacionChart">
                         <h3 class="fs-5 text-white mb-3">
                             <i class="fas fa-chart-line text-danger me-2"></i>
-                            Ingresos esta semana
+                            Ventas esta semana
                         </h3>
                         <canvas class="bg-white rounded-3 p-2 w-100" x-ref="canvas"></canvas>
                     </div>
