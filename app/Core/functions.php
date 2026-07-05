@@ -14,6 +14,20 @@ function toDbDate(?DateTimeInterface $date): ?string
     return $date ? $date->format("Y-m-d H:i:s") : null;
 }
 
+/** Convierte los bytes en una unidad user-friendly. */
+function formatSize(int $bytes): string
+{
+    $units = ['B', 'KB', 'MB', 'GB'];
+    $i = 0;
+
+    while ($bytes >= 1024 && $i < count($units) - 1) {
+        $bytes /= 1024;
+        $i++;
+    }
+
+    return round($bytes, 2) . ' ' . $units[$i];
+}
+
 /** Convierte un array en una lista de atributos HTML */
 function stringifyAttributes(array $inputAttributes): string
 {

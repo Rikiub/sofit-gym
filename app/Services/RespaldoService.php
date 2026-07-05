@@ -9,6 +9,8 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
 
+use function App\Core\formatSize;
+
 class RespaldoService
 {
     private const DB_NAMES = ["sofit_gym", "sofit_gym_seguridad"];
@@ -81,7 +83,7 @@ class RespaldoService
                 $files[$dbName] = [
                     'path' => $sqlFile,
                     'size' => $size,
-                    'size_human' => $this->formatSize($size),
+                    'size_human' => formatSize($size),
                 ];
                 $totalSize += $size;
             }
@@ -92,7 +94,7 @@ class RespaldoService
                 'path' => $path,
                 'files' => $files,
                 'total_size' => $totalSize,
-                'total_size_human' => $this->formatSize($totalSize),
+                'total_size_human' => formatSize($totalSize),
                 'count' => count($files),
             ];
         }
@@ -116,7 +118,6 @@ class RespaldoService
 
         foreach (self::DB_NAMES as $name) {
             $backupPath = "{$dir}/{$name}.sql";
-
             $cmd = sprintf(
                 '"%s" --opt -h %s -u %s --password="%s" "%s" > "%s"',
                 $this->cmdPath,
@@ -156,18 +157,5 @@ class RespaldoService
     private function generateTimestampDir(): string
     {
         return $this->backupsDir . "/" . date("Y/m/d/H-i-s");
-    }
-
-    private function formatSize(int $bytes): string
-    {
-        $units = ['B', 'KB', 'MB', 'GB'];
-        $i = 0;
-
-        while ($bytes >= 1024 && $i < count($units) - 1) {
-            $bytes /= 1024;
-            $i++;
-        }
-
-        return round($bytes, 2) . ' ' . $units[$i];
     }
 }
