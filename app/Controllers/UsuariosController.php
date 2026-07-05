@@ -21,7 +21,7 @@ class UsuariosController extends Controller
         private UsuarioModel $usuarioModel,
         private ImageStorage $image,
     ) {
-        $this->user = UserSession::getCurrent();
+        $this->user = UserSession::get();
     }
 
     public function index(): string

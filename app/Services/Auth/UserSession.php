@@ -8,7 +8,7 @@ class UserSession
     private const SESSION_KEY = 'user';
 
     /** Obtener usuario actual */
-    public static function getCurrent(): ?AuthenticatedUser
+    public static function get(): ?AuthenticatedUser
     {
         return $_SESSION[self::SESSION_KEY] ?? null;
     }

@@ -48,7 +48,7 @@ abstract class Controller
     /** Bloquea el acceso a una ruta y redirige a la pagina de error si el usuario no tiene el permiso. */
     protected function protect(string $permiso): void
     {
-        $user = UserSession::getCurrent();
+        $user = UserSession::get();
 
         if (!$user || !$user->hasPermiso($permiso)) {
             if (Request::wantsJson()) {

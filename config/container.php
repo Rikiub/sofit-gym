@@ -48,7 +48,7 @@ return [
         ]))
             ->loadExtension(new AssetExtension(Config::get("web.assets")));
 
-        $user = UserSession::getCurrent();
+        $user = UserSession::get();
         $engine->addData(["sesion_usuario" => $user]);
         return $engine;
     },

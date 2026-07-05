@@ -48,7 +48,7 @@ class BitacoraLogger extends AbstractLogger
 
         $this->consoleLog($message, LogLevel::from($level));
         $this->bitacoraModel->insert(new BitacoraDTO(
-            id_usuario: UserSession::getCurrent()->id ?? null,
+            id_usuario: UserSession::get()->id ?? null,
             modulo: $modulo,
             accion: $accion,
             mensaje: $message,

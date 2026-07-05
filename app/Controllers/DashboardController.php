@@ -25,7 +25,7 @@ class DashboardController extends Controller
         ]);
         $ingresosMensuales = $this->facturacionModel->obtenerIngresosMesActual();
 
-        $usuario = UserSession::getCurrent();
+        $usuario = UserSession::get();
         return $this->templates->render('dashboard', [
             "usuario" => $usuario,
             "asistencias" => $asistencias,

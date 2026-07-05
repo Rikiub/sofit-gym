@@ -30,7 +30,7 @@ class FrontController
             session_start();
         }
 
-        $this->user = UserSession::getCurrent();
+        $this->user = UserSession::get();
         $this->isDebug = Config::get("debug");
     }
 
