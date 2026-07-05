@@ -1,6 +1,6 @@
 <?php
 
-/** @var \App\Core\Auth\UsuarioSessionDTO $sesion_usuario */
+/** @var \App\Services\Auth\AuthenticatedUser $sesion_usuario */
 
 $link = function (
 	string $url,
@@ -273,10 +273,10 @@ $dropdown = function (
 					"title" => "Reportes estadísticos"
 				],
 				[
-					"permiso" => "respaldos:ver",
-					"url" => "?page=sistema",
+					"permiso" => "roles:ver",
+					"url" => "?page=respaldos",
 					"icon" => "fa-database",
-					"title" => "Mantenimiento del sistema"
+					"title" => "Respaldos de sistema"
 				],
 			]
 		) ?>

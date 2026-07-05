@@ -13,6 +13,7 @@ return [
         "base" => $fsBase,
         "cache" => $fsBase . "/bootstrap/cache",
         "uploads" => $fsBase . "/uploads",
+        "backups" => $fsBase . "/database/backups",
     ],
     // Rutas relativas
     "web" => [
@@ -27,6 +28,9 @@ return [
         "database" => $_ENV['DB_DATABASE'] ?? "sofit_gym",
         "username" =>  $_ENV['DB_USERNAME'] ?? 'root',
         "password" => $_ENV['DB_PASSWORD'] ?? '',
+        "path" => [
+            "mysqldump" => $_ENV['DB_PATH_MYSQLDUMP'] ?? 'mysqldump',
+        ],
     ],
     // Credenciales de correo
     "mail" => [

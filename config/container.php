@@ -90,7 +90,7 @@ return [
     // y validarlos en el proceso
     TreeMapper::class => function () {
         $cache = new FileSystemCache(
-            Config::get("web.assets") . '/valinor'
+            Config::get("web.cache") . '/valinor'
         );
         if (Config::get("debug")) {
             $cache = new FileWatchingCache($cache);
@@ -115,7 +115,7 @@ return [
     // y convertir tipos como DateTime en texto
     Normalizer::class => function () {
         $cache = new FileSystemCache(
-            Config::get("web.assets") . '/valinor'
+            Config::get("web.cache") . '/valinor'
         );
         if (Config::get("debug")) {
             $cache = new FileWatchingCache($cache);

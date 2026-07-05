@@ -12,4 +12,9 @@ return [
         'script'   => 'limpiar-bitacora',
         'interval' => 86400, // 24 horas
     ],
+    [
+        'name'     => 'Respaldar base de datos',
+        'script'   => 'respaldo-db',
+        'interval' => 86400, // 24 horas
+    ],
 ];

@@ -46,7 +46,7 @@ class BitacoraLogger extends AbstractLogger
             "datos_nuevos",
         ]));
 
-        $this->consoleLog($message, LogLevel::from($level));
+        $this->console(LogLevel::from($level), $message);
         $this->bitacoraModel->insert(new BitacoraDTO(
             id_usuario: UserSession::get()->id ?? null,
             modulo: $modulo,
@@ -74,7 +74,7 @@ class BitacoraLogger extends AbstractLogger
     }
 
     /** Mostrar en consola solo en scripts */
-    private function consoleLog(string $message, LogLevel $level = LogLevel::INFO): void
+    public function console(LogLevel $level, string $message): void
     {
         if (PHP_SAPI !== 'cli') return;
 
