@@ -5,7 +5,7 @@ namespace App\Core;
 use InvalidArgumentException;
 use RuntimeException;
 
-class ImageManager
+class ImageStorage
 {
     private const TEMP_DIRNAME = "tmp";
     private const ALLOWED_TYPES = [

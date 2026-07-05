@@ -7,7 +7,7 @@ use App\Core\Auth\UserSessionManager;
 use App\Core\Auth\UserSession;
 use App\Core\Http\Request;
 use App\Core\Http\StatusCode;
-use App\Core\ImageManager;
+use App\Core\ImageStorage;
 use App\Models\Usuario;
 use App\Models\UsuarioModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -19,7 +19,7 @@ class UsuariosController extends Controller
     public function __construct(
         private TreeMapper $mapper,
         private UsuarioModel $usuarioModel,
-        private ImageManager $image,
+        private ImageStorage $image,
     ) {
         $this->user = UserSessionManager::getCurrent();
     }

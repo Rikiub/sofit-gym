@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Core\Database;
-use App\Core\ImageManager;
+use App\Core\ImageStorage;
 use App\Core\Validator;
 use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -20,7 +20,7 @@ class UsuarioModel extends Model
     public function __construct(
         Database $db,
         private TreeMapper $mapper,
-        private ImageManager $image,
+        private ImageStorage $image,
     ) {
         parent::__construct($db);
     }
