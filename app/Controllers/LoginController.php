@@ -171,7 +171,7 @@ class LoginController extends Controller
             );
         }
 
-        $this->usuarioModel->updatePasswordAndClearCode(
+        $this->usuarioModel->updatePassword(
             $_SESSION['recover_user_id'],
             $new_pass,
         );

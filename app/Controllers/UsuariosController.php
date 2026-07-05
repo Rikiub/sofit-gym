@@ -78,15 +78,22 @@ class UsuariosController extends Controller
     {
         $id = $this->getId();
 
+        // Validar
         $old = $this->usuarioModel->findById($id);
         if (!$old) {
             return $this->notFound();
         }
         $this->protectAccess("usuarios:editar", $old);
 
+        // Actualizar
         $new = $this->validateBody();
         $new = $this->usuarioModel->update($id, $new);
 
+        if ($old->contrasena_hash !== $new->contrasena_hash) {
+            $this->usuarioModel->updatePassword($id, $new->contrasena_hash);
+        }
+
+        // Retornar
         $this->logger->info("Usuario '{nombre_usuario}' actualizado", [
             'nombre_usuario' => $old->nombre_usuario,
             'id_usuario'     => $id,

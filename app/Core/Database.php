@@ -167,7 +167,7 @@ class Database extends PDO
     /** Inicia una transacción, hace commit en exito y rollback en excepciones automaticamente.
      * 
      * @template T
-     * @param callable(PDO): T $callback
+     * @param callable(Database $db): T $callback
      * @return T
      */
     public function dbTransaction(callable $callback)

@@ -80,15 +80,17 @@ class UsuarioModel extends Model
     {
         $usuario->validateInsert();
 
-        $this->db->dbInsert(
-            $this->table,
-            $this->mapToColumns($usuario, insertMode: true),
-        );
+        return $this->db->dbTransaction(function () use ($usuario) {
+            $this->db->dbInsert(
+                $this->table,
+                $this->mapToColumns($usuario, insertMode: true),
+            );
 
-        $id = (int) $this->db->lastInsertId();
-        $this->syncImage($id, $usuario->imagen_url);
+            $id = (int) $this->db->lastInsertId();
+            $this->syncImage($id, $usuario->imagen_url);
 
-        return $this->findById($id);
+            return $this->findById($id);
+        });
     }
 
     public function update(int $id, Usuario $usuario): Usuario
@@ -99,6 +101,7 @@ class UsuarioModel extends Model
                 $this->mapToColumns($usuario),
                 [$this->primaryKey => $id],
             );
+
             $usuario = $this->syncImage($id, $usuario->imagen_url);
             return $usuario;
         });
@@ -117,8 +120,13 @@ class UsuarioModel extends Model
     {
         $usuario = $this->getById($id);
 
-        $this->db->dbDelete($this->table, [$this->primaryKey => $id]);
-        $this->image->delete($usuario->imagen_url);
+        $this->db->dbTransaction(function () use ($usuario, $id) {
+            $this->db->dbDelete($this->table, [$this->primaryKey => $id]);
+
+            if ($usuario->imagen_url) {
+                $this->image->delete($usuario->imagen_url);
+            }
+        });
     }
 
     private function syncImage(int $id, string $imagen_url = null): Usuario
@@ -261,7 +269,7 @@ class UsuarioModel extends Model
             : null;
     }
 
-    public function updatePasswordAndClearCode(int $id_usuario, string $new_password): void
+    public function updatePassword(int $id_usuario, string $new_password): void
     {
         $this->db->dbTransaction(function () use ($id_usuario, $new_password) {
             $this->db->dbUpdate(
