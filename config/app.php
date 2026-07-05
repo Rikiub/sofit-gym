@@ -20,13 +20,31 @@ return [
         "assets" => $webBase . '/assets',
         "uploads" => $webBase . "/uploads",
     ],
-    "timezone" => [
-        "zone" => $timezone,
-        "offset" => $timezoneOffset,
+
+    // Base de datos
+    "db" => [
+        "host" => $_ENV['DB_HOST'] ?? "localhost",
+        "database" => $_ENV['DB_DATABASE'] ?? "sofit_gym",
+        "username" =>  $_ENV['DB_USERNAME'] ?? 'root',
+        "password" => $_ENV['DB_PASSWORD'] ?? '',
     ],
+    // Credenciales de correo
+    "mail" => [
+        "host" => $_ENV["MAIL_HOST"] ?? 'smtp.gmail.com',
+        "username" => $_ENV["MAIL_USERNAME"] ?? "",
+        "password" => $_ENV["MAIL_PASSWORD"] ?? "",
+        "from_address" => $_ENV["MAIL_FROM_ADDRESS"] ?? null,
+        "from_name" => $_ENV["MAIL_FROM_NAME"] ?? 'Soporte Sofit GYM',
+    ],
+
     // Modo desarrollo
     "debug" => filter_var(
         $_ENV["DEBUG"] ?? true,
         FILTER_VALIDATE_BOOLEAN
     ),
+
+    "timezone" => [
+        "zone" => $timezone,
+        "offset" => $timezoneOffset,
+    ],
 ];

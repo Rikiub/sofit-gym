@@ -24,10 +24,10 @@ return [
     // Conexion a la base de datos
     Database::class => function () {
         return new Database(
-            host: $_ENV['DB_HOST'] ?? "localhost",
-            database: $_ENV['DB_DATABASE'] ?? 'sofit_gym',
-            username: $_ENV['DB_USERNAME'] ?? 'root',
-            password: $_ENV['DB_PASSWORD'] ?? '',
+            host: Config::get("db.host"),
+            database: Config::get("db.database"),
+            username: Config::get("db.username"),
+            password: Config::get("db.password"),
         );
     },
 
@@ -59,7 +59,7 @@ return [
 
         // Configuración SMTP
         $mail->isSMTP();
-        $mail->Host = $_ENV["MAIL_HOST"] ?? 'smtp.gmail.com';
+        $mail->Host = Config::get("mail.host");
         $mail->SMTPAuth = true;
 
         // Configuracion compatible con Gmail
@@ -68,12 +68,12 @@ return [
         $mail->CharSet = 'UTF-8';
 
         // Credenciales
-        $mail->Username = $_ENV["MAIL_USERNAME"] ?? "";
-        $mail->Password = $_ENV["MAIL_PASSWORD"] ?? "";
+        $mail->Username = Config::get("mail.username");
+        $mail->Password = Config::get("mail.password");
 
         // Remitente
-        $from = $_ENV["MAIL_FROM_ADDRESS"] ?? null;
-        $name = $_ENV["MAIL_FROM_NAME"] ?? null;
+        $from = Config::get("mail.from_address");
+        $name = Config::get("mail.from_name");
 
         if ($from) {
             $mail->setFrom(
