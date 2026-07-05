@@ -1,7 +1,7 @@
 - [ ] Crear modulo de mantenimiento/respaldo.
 - [ ] Implementar notificaciones por AI.
 - [ ] Agregar Captcha en Login.
-- [ ] Editar contraseña de usuario.
+- [x] Editar contraseña de usuario.
 - [x] Crear modulo de reportes.
 - [x] Crear modulo de permisos y roles.
 - [x] Hacer Dashboard funcional.
