@@ -16,8 +16,9 @@ use League\Plates\Engine;
 use LLPhant\GeminiOpenAIConfig;
 use PHPMailer\PHPMailer\PHPMailer;
 
-/** Configuración de PHP-DI
- * Aqui se definen los objetos a instanciar en la aplicación automaticamente.
+/**
+ * Configuración de PHP-DI.
+ * Deficiones iniciales de los objetos a inyectar en la aplicación automaticamente.
  */
 return [
     // Conexion a la base de datos
