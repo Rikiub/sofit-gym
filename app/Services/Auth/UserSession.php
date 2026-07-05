@@ -2,7 +2,7 @@
 
 namespace App\Services\Auth;
 
-/** Manejador de sesiones de usuario. */
+/** Manejador de la sesión actual del usuario. */
 class UserSession
 {
     private const SESSION_KEY = 'user';
