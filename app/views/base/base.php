@@ -37,6 +37,7 @@ $isDebug = Config::get("debug");
 
     <?php
     $this->pushJs('lib/alpinejs/mask.min.js'); // AlpineJS: Mask Plugin
+    $this->pushJs('lib/alpinejs/intersect.min.js'); // AlpineJS: Intersect Plugin
     $this->pushCss('lib/gridjs/mermaid.min.css');  // GridJS
 
     // Bootstrap

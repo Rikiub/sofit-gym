@@ -282,4 +282,76 @@ class FacturacionModel extends Model
             return [];
         }
     }
+
+    /**
+     * Obtiene clientes con membresía activa que vence en X días (o menos)
+     */
+    public function obtenerClientesPorVencer(int $dias): array
+    {
+        $sql = "SELECT p.cedula, CONCAT(p.nombre, ' ', p.apellido) AS nombre, m.fecha_fin
+            FROM cliente c
+            JOIN persona p ON c.cedula = p.cedula
+            JOIN membresia m ON m.cedula_cliente = c.cedula
+            WHERE m.id_estado = 1
+              AND m.fecha_fin BETWEEN CURDATE() + INTERVAL 1 DAY AND CURDATE() + INTERVAL ? DAY
+            ORDER BY m.fecha_fin ASC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$dias]);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Obtiene clientes con membresía vencida (estado Vencido o Moroso)
+     */
+    public function obtenerPagosAtrasados(): array
+    {
+        $sql = "SELECT p.cedula, CONCAT(p.nombre, ' ', p.apellido) AS nombre, m.fecha_fin
+            FROM cliente c
+            JOIN persona p ON c.cedula = p.cedula
+            JOIN membresia m ON m.cedula_cliente = c.cedula
+            WHERE m.id_estado IN (2, 3)
+              AND m.fecha_fin < CURDATE()
+            ORDER BY m.fecha_fin ASC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Obtiene nuevos clientes registrados en los últimos N días
+     */
+    public function obtenerNuevosClientes(int $dias): array
+    {
+        $sql = "SELECT p.cedula, CONCAT(p.nombre, ' ', p.apellido) AS nombre, c.fecha_creacion
+            FROM cliente c
+            JOIN persona p ON c.cedula = p.cedula
+            WHERE c.fecha_creacion >= CURDATE() - INTERVAL ? DAY";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$dias]);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Resumen financiero de la última semana (pagos de membresías + ventas de productos)
+     */
+    public function obtenerResumenFinancieroSemanal(): array
+    {
+        $sqlPagos = "SELECT COALESCE(SUM(monto), 0) AS total_membresias
+                 FROM pago
+                 WHERE fecha_pago >= CURDATE() - INTERVAL 7 DAY";
+        $stmt = $this->db->query($sqlPagos);
+        $totalMembresias = $stmt->fetchColumn();
+
+        $sqlVentas = "SELECT COALESCE(SUM(monto_total), 0) AS total_ventas
+                  FROM venta_producto
+                  WHERE fecha >= CURDATE() - INTERVAL 7 DAY";
+        $stmt = $this->db->query($sqlVentas);
+        $totalVentas = $stmt->fetchColumn();
+
+        return [
+            'total_membresias' => (float) $totalMembresias,
+            'total_ventas'     => (float) $totalVentas,
+            'total_general'    => (float) $totalMembresias + (float) $totalVentas
+        ];
+    }
 }

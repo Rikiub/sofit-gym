@@ -1,6 +1,6 @@
 <?php
 
-/** @var \App\Core\Auth\UsuarioSessionDTO $sesion_usuario */
+/** @var \App\Services\Auth\AuthenticatedUser $sesion_usuario */
 
 $this->pushJs("components/topbar.js");
 ?>
@@ -26,7 +26,7 @@ $this->pushJs("components/topbar.js");
 
             <div
                 class="dropdown-menu end-0 shadow border-0 p-2 rounded-4"
-                :class="{ show: show }" style="width: 350px; max-width: 85vw;">
+                :class="{ show: show }" style="width: 500px;">
                 <?= $this->insert("panelNotificaciones") ?>
             </div>
         </div>

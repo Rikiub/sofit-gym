@@ -1,6 +1,6 @@
 <?php
 
-/** @var \App\Core\Auth\UsuarioSessionDTO $usuario */
+/** @var \App\Services\Auth\AuthenticatedUser $usuario */
 
 // Props
 $asistencias ??= [];

@@ -36,6 +36,22 @@ class MantenimientoEquipoModel extends Model
         );
     }
 
+    /**
+     * Obtiene mantenimientos preventivos programados para los próximos X días
+     */
+    public function getMantenimientosProximos(int $dias): array
+    {
+        $sql = "SELECT me.*, e.nombre AS equipo_nombre
+            FROM mantenimiento_equipo me
+            JOIN equipo e ON me.codigo_equipo = e.codigo_equipo
+            WHERE me.tipo = 'Preventivo'
+              AND me.fecha BETWEEN CURDATE() + INTERVAL 1 DAY AND CURDATE() + INTERVAL ? DAY
+              AND e.activo = 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$dias]);
+        return $stmt->fetchAll();
+    }
+
     public function find(int $id): ?MantenimientoEquipo
     {
         $row = $this->db->dbQuery(

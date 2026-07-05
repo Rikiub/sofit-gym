@@ -1,11 +1,14 @@
 import Alpine from "alpinejs";
 import dayjs from "dayjs";
+import snarkdown from 'sharkdown';
 import { fetchApi } from "@/js/api.js";
 
 const ENDPOINT = "notificaciones";
 
 Alpine.data("panelNotificaciones", () => ({
 	notificaciones: [],
+	nuevas: [],
+	sinLeer: [],
 	unreadCount: 0,
 
 	async init() {
@@ -22,9 +25,10 @@ Alpine.data("panelNotificaciones", () => ({
 			action: "query",
 		});
 
-		this.notificaciones = data.map(notif => ({
-            ...notif,
-            expanded: false,
+		this.notificaciones = data.map((notif) => ({
+			...notif,
+			contenido: snarkdown(notif.contenido), // Convertir markdown en HTML
+			expanded: false,
 		}));
 		this.unreadCount = data.filter((n) => !n.leido).length;
 
@@ -41,7 +45,7 @@ Alpine.data("panelNotificaciones", () => ({
 			page: ENDPOINT,
 			action: "leido",
 			id: id,
-			leido: !leido,
+			leido: leido,
 		});
 		this.refresh();
 

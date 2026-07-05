@@ -32,6 +32,16 @@ class EquipoModel extends Model
         );
     }
 
+    /**
+     * Obtiene equipos en estado Mantenimiento o Fuera de Servicio
+     */
+    public function getEquiposEnMantenimiento(): array
+    {
+        $sql = "SELECT * FROM equipo WHERE estado IN ('Mantenimiento', 'Fuera de Servicio') AND activo = 1";
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll();
+    }
+
     public function find(string $codigo): ?Equipo
     {
         $row = $this->db->dbQuery(

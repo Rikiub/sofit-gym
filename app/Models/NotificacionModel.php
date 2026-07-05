@@ -6,6 +6,7 @@ use App\Core\Database;
 use App\Core\Validator;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
+use PDO;
 
 class NotificacionModel extends Model
 {
@@ -65,8 +66,8 @@ class NotificacionModel extends Model
                 FROM {$this->dbSecurity('usuario')}
                 WHERE id_rol IN ($placeholders)
             SQL,
-            [$id_roles]
-        )->fetchAll();
+            $id_roles
+        )->fetchAll(PDO::FETCH_COLUMN);
 
         if (!$userIds) {
             return;

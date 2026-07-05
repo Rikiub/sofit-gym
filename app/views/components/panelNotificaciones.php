@@ -2,34 +2,31 @@
 $this->pushJs("components/panelNotificaciones.js");
 ?>
 
-<div x-data="panelNotificaciones" class="notifications-panel">
+<div x-data="panelNotificaciones">
     <!-- Contenedor con altura máxima y scroll -->
-    <div class="notifications-list" style="max-height: 360px; overflow-y: auto;">
+    <div style="max-height: 360px; overflow-y: auto;">
         <ul class="list-unstyled mb-0">
             <template x-for="notif in notificaciones" :key="notif.id_notificacion">
                 <li class="d-flex justify-content-between align-items-start py-2 px-3 border-bottom"
-                    :class="{ 'bg-light fw-bold': !notif.leido, 'opacity-75': notif.leido }">
+                    x-intersect.once="setTimeout(() => marcarLeida(notif.id_notificacion, true), 10000)">
 
                     <div class="me-2 flex-grow-1" style="min-width: 0;">
                         <div class="d-flex align-items-center justify-content-between mb-1">
-                            <h3 class="fs-5 fw-semibold text-dark text-truncate"
-                                x-text="notif.titulo"
-                                style="font-size: 0.875rem; line-height: 1.3;">
-                            </h3>
+                            <h3 class="fs-5 fw-semibold text-dark"
+                                x-text="notif.titulo"></h3>
 
                             <i
                                 class="fa-regular fa-circle-check me-1 fs-5 flex-shrink-0"
                                 :class="notif.leido ? 'text-success' : 'text-muted'"
                                 :title="notif.leido ? 'Leído' : 'Marcar como leída'"
-                                @click="!notif.leido && marcarLeida(notif.id_notificacion, notif.leido)"
-                                style="font-size: 0.9rem;"
+                                @click="!notif.leido && marcarLeida(notif.id_notificacion, !notif.leido)"
                                 :style="notif.leido ? 'cursor: default;' : 'cursor: pointer;'"></i>
                         </div>
 
                         <!-- Vista colapsada (truncada) -->
-                        <p class="mb-1 text-muted text-truncate"
+                        <p class="mb-1 text-truncate"
                             x-show="!notif.expanded"
-                            x-text="notif.contenido"
+                            x-html="notif.contenido"
                             style="font-size: 0.8rem; line-height: 1.4;"></p>
 
                         <!-- Vista expandida (recuadro legible) -->
@@ -37,7 +34,7 @@ $this->pushJs("components/panelNotificaciones.js");
                             style="max-height: 180px; overflow-y: auto; overflow-x: hidden; font-size: 0.8rem; line-height: 1.5;">
                             <p class="mb-2 text-dark"
                                 style="white-space: pre-wrap; word-break: break-word;"
-                                x-text="notif.contenido"></p>
+                                x-html="notif.contenido"></p>
 
                             <button class="btn btn-link btn-sm p-0 text-decoration-none"
                                 @click="notif.expanded = false"
