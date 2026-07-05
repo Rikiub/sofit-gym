@@ -6,15 +6,15 @@ use App\Controllers\Controller;
 use App\Core\Http\Request;
 use App\Core\Http\StatusCode;
 use App\Core\Reportes\ReporteClientes;
-use App\Models\Clientes\ClienteDTO;
-use App\Models\Clientes\ClientesModel;
+use App\Models\Clientes\Cliente;
+use App\Models\Clientes\ClienteModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 
 class ClientesController extends Controller
 {
     public function __construct(
         private TreeMapper $mapper,
-        private ClientesModel $clientesModelo,
+        private ClienteModel $clienteModelo,
     ) {}
 
     public function index(): string
@@ -30,14 +30,14 @@ class ClientesController extends Controller
         $search = Request::query("search");
         $filters = Request::query("filters") ?? [];
 
-        $clientes = $this->clientesModelo->query($search, $filters);
+        $clientes = $this->clienteModelo->query($search, $filters);
         return $this->json($clientes);
     }
 
     public function summary(): string
     {
         $this->protect("clientes:ver");
-        $clientes = $this->clientesModelo->getSummary();
+        $clientes = $this->clienteModelo->getSummary();
         return $this->json($clientes);
     }
 
@@ -46,7 +46,7 @@ class ClientesController extends Controller
         $this->protect("clientes:ver");
 
         $id = $this->getId();
-        $cliente = $this->clientesModelo->find($id);
+        $cliente = $this->clienteModelo->find($id);
 
         return $cliente
             ? $this->json($cliente)
@@ -60,14 +60,14 @@ class ClientesController extends Controller
         $cliente = $this->validateBody();
         $id = $cliente->cedula;
 
-        if ($this->clientesModelo->checkDuplicate($id)) {
+        if ($this->clienteModelo->checkDuplicate($id)) {
             return $this->json(
                 ['message' => "El cliente {$id} ya existe"],
                 StatusCode::CONFLICT
             );
         }
 
-        $newCliente = $this->clientesModelo->insert($cliente);
+        $newCliente = $this->clienteModelo->insert($cliente);
         $this->logger->info(
             "Cliente '{cedula}' creado",
             [
@@ -86,12 +86,12 @@ class ClientesController extends Controller
         $cliente = $this->validateBody();
         $id = $this->getId();
 
-        $oldCliente = $this->clientesModelo->find($id);
+        $oldCliente = $this->clienteModelo->find($id);
         if (!$oldCliente) {
             return $this->notFound();
         }
 
-        $newCliente = $this->clientesModelo->update($id, $cliente);
+        $newCliente = $this->clienteModelo->update($id, $cliente);
         $this->logger->info(
             "Cliente '{cedula}' actualizado",
             [
@@ -109,11 +109,11 @@ class ClientesController extends Controller
         $this->protect("clientes:eliminar");
         $id = $this->getId();
 
-        if (!$this->clientesModelo->find($id)) {
+        if (!$this->clienteModelo->find($id)) {
             return $this->notFound();
         }
 
-        $this->clientesModelo->delete($id);
+        $this->clienteModelo->delete($id);
         $this->logger->info(
             "Cliente '{cedula}' eliminado",
             ["cedula" => $id]
@@ -135,10 +135,10 @@ class ClientesController extends Controller
         return Request::query("id") ?? "";
     }
 
-    private function validateBody(): ClienteDTO
+    private function validateBody(): Cliente
     {
         $body = Request::getParsedBody();
-        return $this->mapper->map(ClienteDTO::class, $body);
+        return $this->mapper->map(Cliente::class, $body);
     }
 
     // REPORTES
@@ -159,7 +159,7 @@ class ClientesController extends Controller
         $estadoFiltro = $_GET['estado'] ?? null;
 
         // Solicitar al modelo los datos estructurados en array asociativo
-        $clientesData = $this->clientesModelo->query(filters: [
+        $clientesData = $this->clienteModelo->query(filters: [
             "estado_membresia" => $estadoFiltro
         ]);
 

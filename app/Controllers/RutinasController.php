@@ -3,12 +3,12 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
-use App\Models\RutinasModel;
+use App\Models\RutinaModel;
 
 class RutinasController extends Controller
 {
     public function __construct(
-        private RutinasModel $model
+        private RutinaModel $model
     ) {}
 
     /**

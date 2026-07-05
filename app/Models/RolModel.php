@@ -6,7 +6,7 @@ use App\Core\Database;
 use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 
-class RolesModel extends Model
+class RolModel extends Model
 {
     public function __construct(
         Database $db,
@@ -16,7 +16,7 @@ class RolesModel extends Model
     }
 
     /**
-     * @return RolDTO[]
+     * @return Rol[]
      */
     public function query(): array
     {
@@ -48,7 +48,7 @@ class RolesModel extends Model
         return $row ?? null;
     }
 
-    public function find(int $id): ?RolDTO
+    public function find(int $id): ?Rol
     {
         $row = $this->db->dbQuery(
             $this->sqlSelect(where: "WHERE id_rol = ?"),
@@ -60,7 +60,7 @@ class RolesModel extends Model
             : null;
     }
 
-    public function insert(RolDTO $rol): RolDTO
+    public function insert(Rol $rol): Rol
     {
         return $this->db->dbTransaction(function () use ($rol) {
             $this->db->dbInsert(
@@ -75,7 +75,7 @@ class RolesModel extends Model
         });
     }
 
-    public function update(int $id, RolDTO $rol): RolDTO
+    public function update(int $id, Rol $rol): Rol
     {
         return $this->db->dbTransaction(function () use ($id, $rol) {
             $this->syncPermisos($id, $rol->permisos);
@@ -107,10 +107,10 @@ class RolesModel extends Model
         }
     }
 
-    private function mapRol(array $row): RolDTO
+    private function mapRol(array $row): Rol
     {
         $row["permisos"] = json_decode($row["permisos"], true);
-        return $this->mapper->map(RolDTO::class, $row);
+        return $this->mapper->map(Rol::class, $row);
     }
 
     private function sqlSelect(string $where = ""): string
@@ -135,7 +135,7 @@ class RolesModel extends Model
 }
 
 // DTO
-readonly class RolDTO
+readonly class Rol
 {
     public function __construct(
         public ?int $id_rol = null,

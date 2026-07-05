@@ -8,7 +8,7 @@ use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 
-class EquiposModel extends Model
+class EquipoModel extends Model
 {
     private string $table = 'equipo';
     private string $primaryKey = 'codigo_equipo';
@@ -21,18 +21,18 @@ class EquiposModel extends Model
     }
 
     /**
-     * @return EquipoDTO[]
+     * @return Equipo[]
      */
     public function query(): array
     {
         $rows = $this->db->dbQuery($this->sqlSelect())->fetchAll();
         return array_map(
-            fn($row) => $this->mapper->map(EquipoDTO::class, $row),
+            fn($row) => $this->mapper->map(Equipo::class, $row),
             $rows
         );
     }
 
-    public function find(string $codigo): ?EquipoDTO
+    public function find(string $codigo): ?Equipo
     {
         $row = $this->db->dbQuery(
             $this->sqlSelect("WHERE {$this->primaryKey} = ?"),
@@ -40,11 +40,11 @@ class EquiposModel extends Model
         )->fetch();
 
         return $row
-            ? $this->mapper->map(EquipoDTO::class, $row)
+            ? $this->mapper->map(Equipo::class, $row)
             : null;
     }
 
-    public function insert(EquipoDTO $equipo): EquipoDTO
+    public function insert(Equipo $equipo): Equipo
     {
         $equipo->validateInsert();
 
@@ -56,7 +56,7 @@ class EquiposModel extends Model
         return $this->find($equipo->codigo_equipo);
     }
 
-    public function update(string $codigo, EquipoDTO $equipo): EquipoDTO
+    public function update(string $codigo, Equipo $equipo): Equipo
     {
         $this->db->dbUpdate(
             $this->table,
@@ -71,7 +71,7 @@ class EquiposModel extends Model
         $this->db->dbDelete($this->table, [$this->primaryKey => $codigo]);
     }
 
-    private function mapToColumns(EquipoDTO $dto, bool $includeId = false): array
+    private function mapToColumns(Equipo $dto, bool $includeId = false): array
     {
         $data = [
             'nombre' => $dto->nombre,
@@ -100,14 +100,7 @@ class EquiposModel extends Model
 }
 
 // DTO
-enum EstadoEquipo: string
-{
-    case Operativo = 'Operativo';
-    case Mantenimiento = 'Mantenimiento';
-    case FueraDeServicio = 'Fuera de Servicio';
-}
-
-readonly class EquipoDTO
+readonly class Equipo
 {
     public function __construct(
         public ?string $codigo_equipo = null,
@@ -125,4 +118,11 @@ readonly class EquipoDTO
         Validator::required($this->nombre, "nombre");
         Validator::required($this->estado, "estado");
     }
+}
+
+enum EstadoEquipo: string
+{
+    case Operativo = 'Operativo';
+    case Mantenimiento = 'Mantenimiento';
+    case FueraDeServicio = 'Fuera de Servicio';
 }

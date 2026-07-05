@@ -6,9 +6,9 @@ use App\Core\Validator;
 use DateTimeImmutable;
 
 /**
- * Base para compartir tipos y validaciones con las clases: ClienteDTO y TrabajadorDTO.
+ * Base para compartir tipos y validaciones con las clases: ClienteDTO y Trabajador.
  */
-readonly class PersonaDTO
+readonly class Persona
 {
     public function __construct(
         public ?string $cedula = null,

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Exception;
 
-class FacturacionPagosModel extends Model
+class FacturacionModel extends Model
 {
     public function registrarPago(
         string $cedulaCliente,

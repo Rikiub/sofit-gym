@@ -3,26 +3,25 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
-use App\Core\Auth\UsuarioSession;
-use App\Core\Auth\UsuarioSessionDto;
+use App\Core\Auth\UserSessionManager;
+use App\Core\Auth\UserSession;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\StatusCode;
-use App\Models\LoginModel;
-use App\Models\UsuariosModel;
-use DateTimeImmutable;
+use App\Models\UsuarioModel;
 use PHPMailer\PHPMailer\PHPMailer;
+use DateTimeImmutable;
 
 class LoginController extends Controller
 {
     public function __construct(
         private PHPMailer $mailer,
-        private UsuariosModel $usuariosModel,
+        private UsuarioModel $usuarioModel,
     ) {}
 
     public function index()
     {
-        if (UsuarioSession::getCurrent()) {
+        if (UserSessionManager::getCurrent()) {
             // Si el usuario ya inicio sesión, redirigir a pagina de inicio.
             Response::redirect(["page" => "dashboard"]);
         }
@@ -36,7 +35,7 @@ class LoginController extends Controller
         $nombre_usuario = $body["nombre_usuario"] ?? null;
         $contrasena = $body["contrasena"] ?? null;
 
-        $usuario = $this->usuariosModel->findByUsername($nombre_usuario);
+        $usuario = $this->usuarioModel->findByUsername($nombre_usuario);
         if (!$usuario) {
             return $this->invalidInput();
         };
@@ -52,7 +51,7 @@ class LoginController extends Controller
             $duracion = new DateTimeImmutable("-{$minutosBloqueo} minutes");
 
             // Si el usuario excedio el maximo numero de intentos
-            if ($this->usuariosModel->intentosFallidos(
+            if ($this->usuarioModel->intentosFallidos(
                 $usuario->id_usuario,
                 $duracion,
             ) >= $maximoIntentos) {
@@ -61,18 +60,18 @@ class LoginController extends Controller
                     StatusCode::UNAUTHORIZED
                 );
             } else {
-                $this->usuariosModel->insertIntentoAcceso($usuario->id_usuario, exito: false);
+                $this->usuarioModel->insertIntentoAcceso($usuario->id_usuario, exito: false);
             }
 
             return $this->invalidInput();
         }
 
         // Actualizar estado
-        $this->usuariosModel->insertIntentoAcceso($usuario->id_usuario, exito: true);
-        $this->usuariosModel->updateUltimoAcceso($usuario->id_usuario);
+        $this->usuarioModel->insertIntentoAcceso($usuario->id_usuario, exito: true);
+        $this->usuarioModel->updateUltimoAcceso($usuario->id_usuario);
 
         // Guardar la sesión utilizando un helper
-        UsuarioSession::login(new UsuarioSessionDto(
+        UserSessionManager::login(new UserSession(
             id: $usuario->id_usuario,
             id_rol: $usuario->id_rol,
             rol: $usuario->rol,
@@ -94,12 +93,12 @@ class LoginController extends Controller
 
     public function logout(): void
     {
-        $usuario = UsuarioSession::getCurrent();
+        $user = UserSessionManager::getCurrent();
         $this->logger->info(
             "Usuario {nombre_usuario} ha cerrado sesión",
-            ["nombre_usuario" => $usuario->nombre]
+            ["nombre_usuario" => $user->nombre]
         );
-        UsuarioSession::logout();
+        UserSessionManager::logout();
 
         Response::redirect(["page" => "login"]);
         exit;
@@ -120,7 +119,7 @@ class LoginController extends Controller
         $body = Request::getParsedBody();
         $email = $body["email"] ?? null;
 
-        $usuario = $this->usuariosModel->findByEmail($email);
+        $usuario = $this->usuarioModel->findByEmail($email);
         if (!$usuario) {
             return $this->json(
                 ["message" => "Correo no registrado"],
@@ -129,7 +128,7 @@ class LoginController extends Controller
         }
 
         // Crear codigo de recuperacion
-        $codigo = $this->usuariosModel->createRecoveryCode($usuario->id_usuario);
+        $codigo = $this->usuarioModel->createRecoveryCode($usuario->id_usuario);
 
         // Enviar correo
         $this->mailer->addAddress($email);
@@ -148,7 +147,7 @@ class LoginController extends Controller
         $body = Request::getParsedBody();
         $codigo = $body["codigo"] ?? '';
 
-        $usuario = $this->usuariosModel->verifyRecoveryCode($codigo);
+        $usuario = $this->usuarioModel->verifyRecoveryCode($codigo);
         if (!$usuario) {
             return $this->json(
                 ["message" => "Código inválido o expirado"],
@@ -172,7 +171,7 @@ class LoginController extends Controller
             );
         }
 
-        $this->usuariosModel->updatePasswordAndClearCode(
+        $this->usuarioModel->updatePasswordAndClearCode(
             $_SESSION['recover_user_id'],
             $new_pass,
         );

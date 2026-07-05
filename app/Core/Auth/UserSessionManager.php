@@ -3,18 +3,18 @@
 namespace App\Core\Auth;
 
 /** Helper para manejar sesiones de usuario de forma segura */
-class UsuarioSession
+class UserSessionManager
 {
     private const SESSION_KEY = 'usuario';
 
     /** Obtener usuario actual */
-    public static function getCurrent(): ?UsuarioSessionDto
+    public static function getCurrent(): ?UserSession
     {
         return $_SESSION[self::SESSION_KEY] ?? null;
     }
 
     /** Iniciar sesion */
-    public static function login(UsuarioSessionDto $usuario): void
+    public static function login(UserSession $usuario): void
     {
         session_regenerate_id();
         $_SESSION[self::SESSION_KEY] = $usuario;

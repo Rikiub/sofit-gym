@@ -12,7 +12,7 @@ use Exception;
 
 use function App\Core\toDbDate;
 
-class UsuariosModel extends Model
+class UsuarioModel extends Model
 {
     private string $table = self::DB_SECURITY . ".usuario";
     private string $primaryKey = "id_usuario";
@@ -26,7 +26,7 @@ class UsuariosModel extends Model
     }
 
     /**
-     * @return UsuarioDTO[]
+     * @return Usuario[]
      */
     public function query(): array
     {
@@ -34,7 +34,7 @@ class UsuariosModel extends Model
         return array_map($this->mapUsuario(...), $rows);
     }
 
-    public function findById(int $id): ?UsuarioDTO
+    public function findById(int $id): ?Usuario
     {
         $row = $this->db->dbQuery(
             $this->sqlSelect(where: "WHERE {$this->primaryKey} = ?"),
@@ -46,7 +46,7 @@ class UsuariosModel extends Model
             : null;
     }
 
-    public function findByUsername(string $username): ?UsuarioDTO
+    public function findByUsername(string $username): ?Usuario
     {
         $row = $this->db->dbQuery(
             $this->sqlSelect(where: "WHERE nombre_usuario = ?"),
@@ -58,7 +58,7 @@ class UsuariosModel extends Model
             : null;
     }
 
-    public function findByEmail(string $email): ?UsuarioDTO
+    public function findByEmail(string $email): ?Usuario
     {
         $row = $this->db->dbQuery(
             $this->sqlSelect(where: "WHERE {$this->table}.email = ?"),
@@ -70,14 +70,14 @@ class UsuariosModel extends Model
             : null;
     }
 
-    private function getById(int $id): UsuarioDTO
+    private function getById(int $id): Usuario
     {
         return
             $this->findById($id)
             ?? throw new Exception("Usuario '{$id}' no encontrado");
     }
 
-    public function insert(UsuarioDTO $usuario): UsuarioDTO
+    public function insert(Usuario $usuario): Usuario
     {
         $usuario->validateInsert();
 
@@ -92,7 +92,7 @@ class UsuariosModel extends Model
         return $this->findById($id);
     }
 
-    public function update(int $id, UsuarioDTO $usuario): UsuarioDTO
+    public function update(int $id, Usuario $usuario): Usuario
     {
         return $this->db->dbTransaction(function () use ($id, $usuario) {
             $this->db->dbUpdate(
@@ -122,7 +122,7 @@ class UsuariosModel extends Model
         $this->image->delete($usuario->imagen_url);
     }
 
-    private function syncImage(int $id, string $imagen_url = null): UsuarioDTO
+    private function syncImage(int $id, string $imagen_url = null): Usuario
     {
         $oldUsuario = $this->getById($id);
 
@@ -164,14 +164,14 @@ class UsuariosModel extends Model
         SQL;
     }
 
-    private function mapUsuario(array $row): UsuarioDTO
+    private function mapUsuario(array $row): Usuario
     {
         $row["permisos"] = json_decode($row["permisos"], true);
-        $usuario = $this->mapper->map(UsuarioDTO::class, $row);
+        $usuario = $this->mapper->map(Usuario::class, $row);
         return $usuario;
     }
 
-    private function mapToColumns(UsuarioDTO $dto, bool $insertMode = false): array
+    private function mapToColumns(Usuario $dto, bool $insertMode = false): array
     {
         $data["email"] = $dto->email;
         if ($dto->id_rol) {
@@ -244,7 +244,7 @@ class UsuariosModel extends Model
         return $codigo;
     }
 
-    public function verifyRecoveryCode(string $codigo): ?UsuarioDTO
+    public function verifyRecoveryCode(string $codigo): ?Usuario
     {
         $row = $this->db->dbQuery(
             <<<SQL
@@ -293,7 +293,7 @@ class UsuariosModel extends Model
 }
 
 // DTO
-readonly class UsuarioDTO
+readonly class Usuario
 {
     public function __construct(
         public ?int $id_usuario = null,

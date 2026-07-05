@@ -8,7 +8,7 @@ use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 
-class NotificacionesModel extends Model
+class NotificacionModel extends Model
 {
     private string $table = self::DB_SECURITY . ".notificacion";
 
@@ -20,7 +20,7 @@ class NotificacionesModel extends Model
     }
 
     /**
-     * @return NotificacionDTO[]
+     * @return Notificacion[]
      */
     public function query(int $id_usuario): array
     {
@@ -30,12 +30,12 @@ class NotificacionesModel extends Model
         )->fetchAll();
 
         return array_map(
-            fn($row) => $this->mapper->map(NotificacionDTO::class, $row),
+            fn($row) => $this->mapper->map(Notificacion::class, $row),
             $rows
         );
     }
 
-    public function find(int $id_usuario, int $id_notificacion): ?NotificacionDTO
+    public function find(int $id_usuario, int $id_notificacion): ?Notificacion
     {
         $row = $this->db->dbQuery(
             $this->sqlSelect(where: <<<SQL
@@ -47,11 +47,11 @@ class NotificacionesModel extends Model
         )->fetch();
 
         return $row
-            ? $this->mapper->map(NotificacionDTO::class, $row)
+            ? $this->mapper->map(Notificacion::class, $row)
             : null;
     }
 
-    public function sendByRol(array $id_roles, NotificacionDTO $notificacion): void
+    public function sendByRol(array $id_roles, Notificacion $notificacion): void
     {
         $notificacion->validateInsert();
 
@@ -76,7 +76,7 @@ class NotificacionesModel extends Model
         $this->sendByUsuarios($userIds, $notificacion);
     }
 
-    public function sendByUsuarios(array $id_usuarios, NotificacionDTO $notificacion): void
+    public function sendByUsuarios(array $id_usuarios, Notificacion $notificacion): void
     {
         $notificacion->validateInsert();
 
@@ -141,7 +141,7 @@ class NotificacionesModel extends Model
 }
 
 // DTO
-readonly class NotificacionDTO
+readonly class Notificacion
 {
     public function __construct(
         public ?int $id_notificacion = null,

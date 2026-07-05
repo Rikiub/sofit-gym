@@ -5,20 +5,20 @@ namespace App\Controllers;
 use App\Controllers\Controller;
 use App\Core\Http\Request;
 use App\Core\Http\StatusCode;
-use App\Models\RolDTO;
-use App\Models\RolesModel;
+use App\Models\Rol;
+use App\Models\RolModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 
 class RolesController extends Controller
 {
     public function __construct(
         private TreeMapper $mapper,
-        private RolesModel $rolesModel,
+        private RolModel $rolModel,
     ) {}
 
     public function index(): string
     {
-        $permisos = $this->rolesModel->queryPermisos();
+        $permisos = $this->rolModel->queryPermisos();
         return $this->templates->render('roles', [
             "permisos" => $permisos
         ]);
@@ -27,7 +27,7 @@ class RolesController extends Controller
     public function query(): string
     {
         $this->protect("roles:ver");
-        $roles = $this->rolesModel->query();
+        $roles = $this->rolModel->query();
         return $this->json($roles);
     }
 
@@ -36,7 +36,7 @@ class RolesController extends Controller
         $this->protect("roles:ver");
 
         $id = $this->getId();
-        $rol = $this->rolesModel->find($id);
+        $rol = $this->rolModel->find($id);
 
         if (!$rol) {
             return $this->notFound();
@@ -52,11 +52,11 @@ class RolesController extends Controller
         $id = $this->getId();
         $rol = $this->validateBody();
 
-        if (!$this->rolesModel->find($id)) {
+        if (!$this->rolModel->find($id)) {
             $this->notFound();
         }
 
-        $rol = $this->rolesModel->update($id, $rol);
+        $rol = $this->rolModel->update($id, $rol);
         return $this->json($rol, StatusCode::CREATED);
     }
 
@@ -70,9 +70,9 @@ class RolesController extends Controller
         return Request::queryInt("id") ?? 0;
     }
 
-    private function validateBody(): RolDTO
+    private function validateBody(): Rol
     {
         $body = Request::getParsedBody();
-        return $this->mapper->map(RolDTO::class, $body);
+        return $this->mapper->map(Rol::class, $body);
     }
 }

@@ -3,46 +3,46 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
-use App\Core\Auth\UsuarioSession;
-use App\Core\Auth\UsuarioSessionDto;
+use App\Core\Auth\UserSessionManager;
+use App\Core\Auth\UserSession;
 use App\Core\Http\Request;
 use App\Core\Http\StatusCode;
 use App\Core\ImageManager;
-use App\Models\UsuarioDTO;
-use App\Models\UsuariosModel;
+use App\Models\Usuario;
+use App\Models\UsuarioModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 
 class UsuariosController extends Controller
 {
-    private UsuarioSessionDto $usuarioSesion;
+    private UserSession $user;
 
     public function __construct(
         private TreeMapper $mapper,
-        private UsuariosModel $usuariosModel,
+        private UsuarioModel $usuarioModel,
         private ImageManager $image,
     ) {
-        $this->usuarioSesion = UsuarioSession::getCurrent();
+        $this->user = UserSessionManager::getCurrent();
     }
 
     public function index(): string
     {
         $this->protect("usuarios:ver");
         return $this->templates->render('usuarios/index', [
-            "usuario" => $this->usuarioSesion,
+            "usuario" => $this->user,
         ]);
     }
 
     public function query(): string
     {
         $this->protect("usuarios:ver");
-        $usuarios = $this->usuariosModel->query();
+        $usuarios = $this->usuarioModel->query();
         return $this->json($usuarios);
     }
 
     public function find(): ?string
     {
         $id = $this->getId();
-        $usuario = $this->usuariosModel->findById($id);
+        $usuario = $this->usuarioModel->findById($id);
 
         if (!$usuario) {
             return $this->notFound();
@@ -57,14 +57,14 @@ class UsuariosController extends Controller
         $this->protect("usuarios:crear");
         $new = $this->validateBody();
 
-        if ($this->usuariosModel->findByUsername($new->nombre_usuario)) {
+        if ($this->usuarioModel->findByUsername($new->nombre_usuario)) {
             return $this->json(
                 ['message' => 'El usuario ya existe'],
                 StatusCode::CONFLICT
             );
         }
 
-        $new = $this->usuariosModel->insert($new);
+        $new = $this->usuarioModel->insert($new);
         $this->logger->info("Usuario '{nombre_usuario}' creado", [
             'nombre_usuario' => $new->nombre_usuario,
             'id_usuario'     => $new->id_usuario,
@@ -78,14 +78,14 @@ class UsuariosController extends Controller
     {
         $id = $this->getId();
 
-        $old = $this->usuariosModel->findById($id);
+        $old = $this->usuarioModel->findById($id);
         if (!$old) {
             return $this->notFound();
         }
         $this->protectAccess("usuarios:editar", $old);
 
         $new = $this->validateBody();
-        $new = $this->usuariosModel->update($id, $new);
+        $new = $this->usuarioModel->update($id, $new);
 
         $this->logger->info("Usuario '{nombre_usuario}' actualizado", [
             'nombre_usuario' => $old->nombre_usuario,
@@ -102,13 +102,13 @@ class UsuariosController extends Controller
         $this->protect("usuarios:eliminar");
 
         $id = $this->getId();
-        $old = $this->usuariosModel->findById($id);
+        $old = $this->usuarioModel->findById($id);
 
         if (!$old) {
             return $this->notFound();
         }
 
-        $this->usuariosModel->delete($id);
+        $this->usuarioModel->delete($id);
         $this->logger->info("Usuario '{nombre_usuario}' eliminado", [
             'nombre_usuario' => $old->nombre_usuario,
             'id_usuario'     => $id,
@@ -141,10 +141,10 @@ class UsuariosController extends Controller
         return Request::queryInt("id") ?? 0;
     }
 
-    private function validateBody(): UsuarioDTO
+    private function validateBody(): Usuario
     {
         $body = Request::getParsedBody();
-        return $this->mapper->map(UsuarioDTO::class, $body);
+        return $this->mapper->map(Usuario::class, $body);
     }
 
     private function notFound(): string
@@ -156,11 +156,11 @@ class UsuariosController extends Controller
     }
 
     /** Si no es administrador y trata de editar otro perfil que no sea el suyo, entonces evitar el acceso. */
-    protected function protectAccess(string $permiso, UsuarioDTO $usuario): void
+    protected function protectAccess(string $permiso, Usuario $usuario): void
     {
         if (
-            !$this->usuarioSesion->hasPermiso($permiso)
-            && $this->usuarioSesion->id !== $usuario->id_usuario
+            !$this->user->hasPermiso($permiso)
+            && $this->user->id !== $usuario->id_usuario
         ) {
             echo $this->json(
                 ["message" => "No esta autorizado"],

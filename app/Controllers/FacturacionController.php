@@ -5,13 +5,13 @@ namespace App\Controllers;
 use App\Controllers\Controller;
 use App\Core\Http\Response;
 use App\Core\Reportes\ReporteFinanciero;
-use App\Models\FacturacionPagosModel;
+use App\Models\FacturacionModel;
 use Exception;
 
 class FacturacionController extends Controller
 {
     public function __construct(
-        private FacturacionPagosModel $model,
+        private FacturacionModel $model,
     ) {}
 
     public function index()

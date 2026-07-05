@@ -3,37 +3,37 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
-use App\Core\Auth\UsuarioSession;
-use App\Core\Auth\UsuarioSessionDto;
+use App\Core\Auth\UserSessionManager;
+use App\Core\Auth\UserSession;
 use App\Core\Http\Request;
 use App\Core\Http\StatusCode;
-use App\Models\NotificacionDTO;
-use App\Models\NotificacionesModel;
+use App\Models\Notificacion;
+use App\Models\NotificacionModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use Exception;
 
 class NotificacionesController extends Controller
 {
-    private UsuarioSessionDto $usuario;
+    private UserSession $user;
 
     public function __construct(
         private TreeMapper $mapper,
-        private NotificacionesModel $notificacionesModel,
+        private NotificacionModel $notifModel,
     ) {
-        $this->usuario = UsuarioSession::getCurrent();
+        $this->user = UserSessionManager::getCurrent();
     }
 
     public function query()
     {
-        $id_usuario = Request::queryInt("id") ?? $this->usuario->id;
-        $results = $this->notificacionesModel->query($id_usuario);
+        $id_usuario = Request::queryInt("id") ?? $this->user->id;
+        $results = $this->notifModel->query($id_usuario);
         return $this->json($results);
     }
 
     public function find(): ?string
     {
         $id = Request::queryInt("id") ?? 0;
-        $data = $this->notificacionesModel->find($this->usuario->id, $id);
+        $data = $this->notifModel->find($this->user->id, $id);
 
         return $data
             ? $this->json($data)
@@ -45,13 +45,13 @@ class NotificacionesController extends Controller
         $id = Request::queryInt("id") ?? 0;
         $leido = Request::queryBool("leido") ?? true;
 
-        $this->notificacionesModel->setLeido($this->usuario->id, $id, $leido);
+        $this->notifModel->setLeido($this->user->id, $id, $leido);
         return $this->json(null, StatusCode::NO_CONTENT);
     }
 
     public function leerTodas()
     {
-        $this->notificacionesModel->setLeidoTodas($this->usuario->id);
+        $this->notifModel->setLeidoTodas($this->user->id);
         return $this->json(null, StatusCode::NO_CONTENT);
     }
 
@@ -61,11 +61,11 @@ class NotificacionesController extends Controller
 
         $id_usuarios =
             $body["id_usuarios"]
-            ?? [$this->usuario->id]
+            ?? [$this->user->id]
             ?? throw new Exception("Una lista de 'id_usuarios' es requerido");
-        $data = $this->mapper->map(NotificacionDTO::class, $body);
+        $data = $this->mapper->map(Notificacion::class, $body);
 
-        $this->notificacionesModel->sendByUsuarios(
+        $this->notifModel->sendByUsuarios(
             $id_usuarios,
             notificacion: $data,
         );

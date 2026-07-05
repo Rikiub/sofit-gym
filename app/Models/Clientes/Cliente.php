@@ -2,10 +2,10 @@
 
 namespace App\Models\Clientes;
 
-use App\Models\Personas\PersonaDTO;
+use App\Models\Personas\Persona;
 use DateTimeImmutable;
 
-readonly class ClienteDTO extends PersonaDTO
+readonly class Cliente extends Persona
 {
     public function __construct(
         // Atributos heredados
@@ -20,7 +20,7 @@ readonly class ClienteDTO extends PersonaDTO
         ?DateTimeImmutable $fecha_nacimiento = null,
         ?DateTimeImmutable $fecha_creacion = null,
         // Atributos nuevos
-        public ?MembresiaDTO $membresia = null,
+        public ?Membresia $membresia = null,
     ) {
         parent::__construct(
             cedula: $cedula,
@@ -37,7 +37,7 @@ readonly class ClienteDTO extends PersonaDTO
     }
 }
 
-readonly class MembresiaDTO
+readonly class Membresia
 {
     public function __construct(
         public ?int $id_membresia = null,

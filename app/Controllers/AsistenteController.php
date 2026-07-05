@@ -3,14 +3,14 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
-use App\Core\Auth\UsuarioSession;
-use App\Core\Auth\UsuarioSessionDto;
+use App\Core\Auth\UserSessionManager;
+use App\Core\Auth\UserSession;
 use App\Core\Config;
 use App\Core\Http\Request;
 use App\Core\Http\StatusCode;
-use App\Models\AsistenteMensajeDTO;
+use App\Models\AsistenteMensaje;
 use App\Models\AsistenteModel;
-use App\Models\AsistenteSesionDTO;
+use App\Models\AsistenteSesion;
 use App\Models\RolAsistente;
 use LLPhant\Chat\FunctionInfo\FunctionBuilder;
 use LLPhant\Chat\Message;
@@ -22,8 +22,8 @@ class AsistenteController extends Controller
 {
     private OpenAIChat $chat;
 
-    private UsuarioSessionDto $usuario;
-    private AsistenteSesionDTO $sesion;
+    private UserSession $user;
+    private AsistenteSesion $sesion;
 
     /** @var Message[] */
     private array $messages;
@@ -33,7 +33,7 @@ class AsistenteController extends Controller
         private AsistenteModel $asistenteModel,
     ) {
         $this->chat = new OpenAIChat($config);
-        $this->usuario =  UsuarioSession::getCurrent();
+        $this->user =  UserSessionManager::getCurrent();
     }
 
     public function index()
@@ -50,14 +50,14 @@ class AsistenteController extends Controller
         $this->chat->setSystemMessage($systemPrompt);
 
         // Recuperar historial de mensajes
-        $_sesion = $this->asistenteModel->getLastSesion($this->usuario->id);
+        $_sesion = $this->asistenteModel->getLastSesion($this->user->id);
         if (!$_sesion) {
             $this->newSesion();
         } else {
             $this->sesion = $_sesion;
         }
 
-        $this->messages = array_map(function (AsistenteMensajeDTO $mensaje) {
+        $this->messages = array_map(function (AsistenteMensaje $mensaje) {
             return match ($mensaje->rol) {
                 RolAsistente::Asistente => Message::assistant($mensaje->contenido),
                 RolAsistente::Usuario => Message::user($mensaje->contenido),
@@ -83,7 +83,7 @@ class AsistenteController extends Controller
         ];
 
         foreach ($permissionTools as $permission => $tools) {
-            if ($this->usuario->hasPermiso($permission)) {
+            if ($this->user->hasPermiso($permission)) {
                 foreach ($tools as $tool) {
                     $this->addTool($tool);
                 }
@@ -112,8 +112,8 @@ class AsistenteController extends Controller
             );
         }
 
-        // Almacenar mensaje del usuario
-        $this->asistenteModel->insertMensaje(new AsistenteMensajeDTO(
+        // Almacenar mensaje del user
+        $this->asistenteModel->insertMensaje(new AsistenteMensaje(
             id_sesion: $this->sesion->id_sesion,
             rol: RolAsistente::Usuario,
             contenido: $content,
@@ -132,7 +132,7 @@ class AsistenteController extends Controller
 
             // El LLM produjo una respuesta final. Devolver resultado.
             if (is_string($result)) {
-                $this->asistenteModel->insertMensaje(new AsistenteMensajeDTO(
+                $this->asistenteModel->insertMensaje(new AsistenteMensaje(
                     id_sesion: $this->sesion->id_sesion,
                     rol: RolAsistente::Asistente,
                     contenido: $result,
@@ -169,7 +169,7 @@ class AsistenteController extends Controller
         $id = (int) $_GET["id"];
         $sesion = $this->asistenteModel->findSesion($id);
 
-        if (!$sesion || $sesion->id_usuario !== $this->usuario->id) {
+        if (!$sesion || $sesion->id_usuario !== $this->user->id) {
             return $this->json(
                 ["message" => "Sesion no encontrada o no autorizada"],
                 StatusCode::FORBIDDEN
@@ -181,8 +181,8 @@ class AsistenteController extends Controller
 
     public function newSesion(): string
     {
-        $this->sesion = $this->asistenteModel->insertSesion(new AsistenteSesionDTO(
-            id_usuario: $this->usuario->id,
+        $this->sesion = $this->asistenteModel->insertSesion(new AsistenteSesion(
+            id_usuario: $this->user->id,
             modelo_usado: $this->chat->model,
         ));
         $this->messages = [];

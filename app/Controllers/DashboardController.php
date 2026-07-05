@@ -3,29 +3,29 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
-use App\Core\Auth\UsuarioSession;
+use App\Core\Auth\UserSessionManager;
 use App\Models\AsistenciaModel;
-use App\Models\Clientes\ClientesModel;
-use App\Models\FacturacionPagosModel;
+use App\Models\FacturacionModel;
+use App\Models\Clientes\ClienteModel;
 
 class DashboardController extends Controller
 {
     public function __construct(
         private AsistenciaModel $asistenciaModel,
-        private ClientesModel $clientesModel,
-        private FacturacionPagosModel $facturacionModel,
+        private ClienteModel $clienteModel,
+        private FacturacionModel $facturacionModel,
     ) {}
 
     public function index(): string
     {
         $asistencias = $this->asistenciaModel->obtenerEntradasHoy();
-        $clientesMensuales = $this->clientesModel->query(filters: [
+        $clientesMensuales = $this->clienteModel->query(filters: [
             'fecha_inicio_desde' => date('Y-m-01'),
             'fecha_inicio_hasta' => date('Y-m-t'),
         ]);
         $ingresosMensuales = $this->facturacionModel->obtenerIngresosMesActual();
 
-        $usuario = UsuarioSession::getCurrent();
+        $usuario = UserSessionManager::getCurrent();
         return $this->templates->render('dashboard', [
             "usuario" => $usuario,
             "asistencias" => $asistencias,

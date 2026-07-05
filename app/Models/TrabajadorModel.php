@@ -4,15 +4,15 @@ namespace App\Models;
 
 use App\Core\Database;
 use App\Core\Validator;
-use App\Models\Personas\PersonaDTO;
-use App\Models\Personas\PersonasModel;
 use App\Models\Model;
+use App\Models\Personas\Persona;
+use App\Models\Personas\PersonaModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 
 use function App\Core\toDbDate;
 
-class TrabajadoresModel extends Model
+class TrabajadorModel extends Model
 {
     private string $table = 'trabajador';
     private string $primaryKey = 'cedula';
@@ -20,7 +20,7 @@ class TrabajadoresModel extends Model
     public function __construct(
         Database $db,
         private TreeMapper $mapper,
-        private PersonasModel $personasModel,
+        private PersonaModel $personaModel,
     ) {
         return parent::__construct($db);
     }
@@ -38,7 +38,7 @@ class TrabajadoresModel extends Model
     }
 
     /**
-     * @return TrabajadorDTO[]
+     * @return Trabajador[]
      */
     public function query(?string $search = null, ?int $id_rol = null): array
     {
@@ -82,12 +82,12 @@ class TrabajadoresModel extends Model
         $rows = $this->db->dbQuery($sql, $params)->fetchAll();
 
         return array_map(
-            fn($row) => $this->mapper->map(TrabajadorDTO::class, $row),
+            fn($row) => $this->mapper->map(Trabajador::class, $row),
             $rows
         );
     }
 
-    public function find(string $cedula): ?TrabajadorDTO
+    public function find(string $cedula): ?Trabajador
     {
         $row = $this->db->dbQuery(
             $this->sqlSelect(where: "WHERE trabajador.{$this->primaryKey} = ?"),
@@ -95,22 +95,22 @@ class TrabajadoresModel extends Model
         )->fetch();
 
         return $row
-            ? $this->mapper->map(TrabajadorDTO::class, $row)
+            ? $this->mapper->map(Trabajador::class, $row)
             : null;
     }
 
     /** Comprobar si la cedula ya esta asignada a una persona */
     public function checkDuplicate(string $cedula): bool
     {
-        return (bool)$this->personasModel->find($cedula);
+        return (bool)$this->personaModel->find($cedula);
     }
 
-    public function insert(TrabajadorDTO $trabajador): TrabajadorDTO
+    public function insert(Trabajador $trabajador): Trabajador
     {
         $trabajador->validateInsert();
 
         return $this->db->dbTransaction(function () use ($trabajador) {
-            $this->personasModel->insert($trabajador);
+            $this->personaModel->insert($trabajador);
             $this->db->dbInsert(
                 $this->table,
                 $this->mapToColumns($trabajador, includeId: true),
@@ -119,10 +119,10 @@ class TrabajadoresModel extends Model
         });
     }
 
-    public function update(string $cedula, TrabajadorDTO $trabajador): TrabajadorDTO
+    public function update(string $cedula, Trabajador $trabajador): Trabajador
     {
         return $this->db->dbTransaction(function () use ($cedula, $trabajador) {
-            $this->personasModel->update($cedula, $trabajador);
+            $this->personaModel->update($cedula, $trabajador);
 
             $this->db->dbUpdate(
                 $this->table,
@@ -139,7 +139,7 @@ class TrabajadoresModel extends Model
         $this->db->dbDelete($this->table, [$this->primaryKey => $cedula]);
     }
 
-    private function mapToColumns(TrabajadorDTO $dto, bool $includeId = false): array
+    private function mapToColumns(Trabajador $dto, bool $includeId = false): array
     {
         $data = [
             'id_rol' => $dto->id_rol,
@@ -156,8 +156,8 @@ class TrabajadoresModel extends Model
 
     private function sqlSelect(string $where = ""): string
     {
-        $pTable = $this->personasModel->table;
-        $pKey = $this->personasModel->primaryKey;
+        $pTable = $this->personaModel->table;
+        $pKey = $this->personaModel->primaryKey;
 
         return <<<SQL
                 SELECT
@@ -176,7 +176,7 @@ class TrabajadoresModel extends Model
 }
 
 // DTO
-readonly class TrabajadorDTO extends PersonaDTO
+readonly class Trabajador extends Persona
 {
     public function __construct(
         ?string $cedula = null,

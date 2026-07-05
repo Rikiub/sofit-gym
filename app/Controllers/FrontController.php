@@ -6,8 +6,8 @@ use Psr\Container\ContainerInterface;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\StatusCode;
-use App\Core\Auth\UsuarioSession;
-use App\Core\Auth\UsuarioSessionDto;
+use App\Core\Auth\UserSessionManager;
+use App\Core\Auth\UserSession;
 use App\Core\Config;
 use App\Core\Logging\BitacoraLogger;
 use CuyZ\Valinor\Mapper\MappingError;
@@ -21,7 +21,7 @@ class FrontController
     private const DEFAULT_PAGE = "dashboard";
     private const DEFAULT_ACTION = "index";
 
-    private ?UsuarioSessionDto $usuario;
+    private ?UserSession $user;
     private bool $isDebug;
 
     public function __construct(private ContainerInterface $container)
@@ -30,7 +30,7 @@ class FrontController
             session_start();
         }
 
-        $this->usuario = UsuarioSession::getCurrent();
+        $this->user = UserSessionManager::getCurrent();
         $this->isDebug = Config::get("debug");
     }
 
@@ -78,7 +78,7 @@ class FrontController
     private function middlewares(string $page, string $action): void
     {
         // Autentificar usuario actual
-        if ($page !== "login" && !$this->usuario) {
+        if ($page !== "login" && !$this->user) {
             Response::redirect(["page" => "login"]);
         }
 
@@ -98,7 +98,7 @@ class FrontController
         } else {
             Response::redirect([
                 'page' => 'error',
-                'status' => StatusCode::NOT_FOUND
+                'status' => StatusCode::NOT_FOUND->value
             ]);
         }
     }
@@ -145,7 +145,7 @@ class FrontController
         } else {
             Response::redirect([
                 'page' => 'error',
-                'status' => StatusCode::INTERNAL_SERVER_ERROR
+                'status' => StatusCode::INTERNAL_SERVER_ERROR->value
             ]);
         }
     }

@@ -49,7 +49,7 @@ class ReporteInventario extends Fpdf
     /**
      * Genera la estructura de la tabla de inventario en base a los datos provistos por el Modelo
      *
-     * @param array $datosProductos Listado obtenido de ProductosModel::obtenerTodos()
+     * @param array $datosProductos Listado obtenido de ProductoModel::obtenerTodos()
      */
     public function crearReporte(array $datosProductos)
     {

@@ -5,12 +5,12 @@ namespace App\Controllers;
 use App\Controllers\Controller;
 use App\Core\Reportes\ReporteInventario;
 use App\Core\Reportes\ReporteProductosMasVendidos;
-use App\Models\ProductosModel;
+use App\Models\ProductoModel;
 
 class ProductosController extends Controller
 {
     public function __construct(
-        private ProductosModel $model
+        private ProductoModel $model
     ) {}
 
     /**

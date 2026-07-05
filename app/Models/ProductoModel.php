@@ -5,7 +5,7 @@ namespace App\Models;
 use PDO;
 use PDOException;
 
-class ProductosModel extends Model
+class ProductoModel extends Model
 {
     private string $tabla = 'producto';
 
@@ -43,7 +43,7 @@ class ProductosModel extends Model
             }
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            error_log("Error en ProductosModel::obtenerTodos: " . $e->getMessage());
+            error_log("Error en ProductoModel::obtenerTodos: " . $e->getMessage());
             return [];
         }
     }
@@ -67,7 +67,7 @@ class ProductosModel extends Model
             $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
             return $resultado ?: null;
         } catch (PDOException $e) {
-            error_log("Error en ProductosModel::obtenerPorCodigo: " . $e->getMessage());
+            error_log("Error en ProductoModel::obtenerPorCodigo: " . $e->getMessage());
             return null;
         }
     }
@@ -95,7 +95,7 @@ class ProductosModel extends Model
             $this->db->dbInsert($this->tabla, $nuevoProducto);
             return true;
         } catch (PDOException $e) {
-            error_log("Error en ProductosModel::crear: " . $e->getMessage());
+            error_log("Error en ProductoModel::crear: " . $e->getMessage());
             return false;
         }
     }
@@ -114,7 +114,7 @@ class ProductosModel extends Model
             $this->db->dbUpdate($this->tabla, $datos, ['codigo_producto' => $codigo]);
             return true;
         } catch (PDOException $e) {
-            error_log("Error en ProductosModel::actualizar: " . $e->getMessage());
+            error_log("Error en ProductoModel::actualizar: " . $e->getMessage());
             return false;
         }
     }
@@ -136,7 +136,7 @@ class ProductosModel extends Model
                 return $this->actualizar($codigo, ['activo' => 0]);
             }
         } catch (PDOException $e) {
-            error_log("Error en ProductosModel::eliminar: " . $e->getMessage());
+            error_log("Error en ProductoModel::eliminar: " . $e->getMessage());
             return false;
         }
     }
@@ -157,7 +157,7 @@ class ProductosModel extends Model
             $stmt = $this->db->prepare($sql);
             return $stmt->execute([$cantidad, $codigo, $cantidad]);
         } catch (PDOException $e) {
-            error_log("Error en ProductosModel::actualizarStock: " . $e->getMessage());
+            error_log("Error en ProductoModel::actualizarStock: " . $e->getMessage());
             return false;
         }
     }
@@ -180,7 +180,7 @@ class ProductosModel extends Model
             $stmt = $this->db->query($sql);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            error_log("Error en ProductosModel::obtenerBajoStock: " . $e->getMessage());
+            error_log("Error en ProductoModel::obtenerBajoStock: " . $e->getMessage());
             return [];
         }
     }
@@ -201,7 +201,7 @@ class ProductosModel extends Model
             $stmt = $this->db->query($sql);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            error_log("Error en ProductosModel::obtenerClientes: " . $e->getMessage());
+            error_log("Error en ProductoModel::obtenerClientes: " . $e->getMessage());
             return [];
         }
     }
@@ -330,7 +330,7 @@ class ProductosModel extends Model
             if ($this->db->inTransaction()) {
                 $this->db->rollBack();
             }
-            error_log("Error en ProductosModel::registrarVentaMultiplesProductos: " . $e->getMessage());
+            error_log("Error en ProductoModel::registrarVentaMultiplesProductos: " . $e->getMessage());
             return ['success' => false, 'message' => '❌ Error de base de datos al procesar la venta. Contacte soporte técnico.'];
         }
     }
@@ -375,7 +375,7 @@ class ProductosModel extends Model
 
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            error_log("Error en ProductosModel::obtenerProductosMasVendidos: " . $e->getMessage());
+            error_log("Error en ProductoModel::obtenerProductosMasVendidos: " . $e->getMessage());
             return [];
         }
     }

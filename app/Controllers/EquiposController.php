@@ -5,8 +5,8 @@ namespace App\Controllers;
 use App\Controllers\Controller;
 use App\Core\Http\Request;
 use App\Core\Http\StatusCode;
-use App\Models\Equipos\EquipoDTO;
-use App\Models\Equipos\EquiposModel;
+use App\Models\Equipos\Equipo;
+use App\Models\Equipos\EquipoModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 
 
@@ -14,7 +14,7 @@ class EquiposController extends Controller
 {
     public function __construct(
         private TreeMapper $mapper,
-        private EquiposModel $equiposModel,
+        private EquipoModel $equipoModel,
     ) {}
 
     public function index()
@@ -25,7 +25,7 @@ class EquiposController extends Controller
     public function query()
     {
         $this->protect("equipos:ver");
-        $equipos = $this->equiposModel->query();
+        $equipos = $this->equipoModel->query();
         return $this->json($equipos);
     }
 
@@ -34,7 +34,7 @@ class EquiposController extends Controller
         $this->protect("equipos:ver");
 
         $id = $this->getId();
-        $equipo = $this->equiposModel->find($id);
+        $equipo = $this->equipoModel->find($id);
 
         return $equipo
             ? $this->json($equipo)
@@ -48,14 +48,14 @@ class EquiposController extends Controller
         $new = $this->validateBody();
         $id = $equipo->codigo_equipo ?? "";
 
-        if ($this->equiposModel->find($id)) {
+        if ($this->equipoModel->find($id)) {
             return $this->json(
                 ['message' => 'El equipo ya existe'],
                 StatusCode::CONFLICT
             );
         }
 
-        $new = $this->equiposModel->insert($new);
+        $new = $this->equipoModel->insert($new);
         $this->logger->info("Equipo '{codigo_equipo}' creado", [
             "codigo_equipo" => $new->codigo_equipo,
             "datos_nuevos" => $new,
@@ -71,12 +71,12 @@ class EquiposController extends Controller
         $new = $this->validateBody();
         $id = $this->getId();
 
-        $old = $this->equiposModel->find($id);
+        $old = $this->equipoModel->find($id);
         if (!$old) {
             return $this->notFound();
         }
 
-        $new = $this->equiposModel->update($id, $new);
+        $new = $this->equipoModel->update($id, $new);
         $this->logger->info("Equipo '{codigo_equipo}' actualizado", [
             "codigo_equipo" => $id,
             "datos_previos" => $old,
@@ -91,12 +91,12 @@ class EquiposController extends Controller
         $this->protect("equipos:eliminar");
         $id = $this->getId();
 
-        $old = $this->equiposModel->find($id);
+        $old = $this->equipoModel->find($id);
         if (!$old) {
             return $this->notFound();
         }
 
-        $this->equiposModel->delete($id);
+        $this->equipoModel->delete($id);
         $this->logger->info("Equipo '{codigo_equipo}' eliminado", [
             "codigo_equipo" => $id,
             "datos_previos" => $old,
@@ -110,10 +110,10 @@ class EquiposController extends Controller
         return Request::query("id") ?? "";
     }
 
-    private function validateBody(): EquipoDTO
+    private function validateBody(): Equipo
     {
         $body = Request::getParsedBody();
-        return $this->mapper->map(EquipoDTO::class, $body);
+        return $this->mapper->map(Equipo::class, $body);
     }
 
     private function notFound(): string

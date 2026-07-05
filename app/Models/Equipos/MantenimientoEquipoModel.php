@@ -19,13 +19,13 @@ class MantenimientoEquipoModel extends Model
     public function __construct(
         Database $db,
         private TreeMapper $mapper,
-        private EquiposModel $equiposModel,
+        private EquipoModel $equipoModel,
     ) {
         return parent::__construct($db);
     }
 
     /**
-     * @return MantenimientoEquipoDTO[]
+     * @return MantenimientoEquipo[]
      */
     public function query(): array
     {
@@ -36,7 +36,7 @@ class MantenimientoEquipoModel extends Model
         );
     }
 
-    public function find(int $id): ?MantenimientoEquipoDTO
+    public function find(int $id): ?MantenimientoEquipo
     {
         $row = $this->db->dbQuery(
             $this->sqlSelect(where: "WHERE {$this->primaryKey} = ?"),
@@ -48,7 +48,7 @@ class MantenimientoEquipoModel extends Model
             : null;
     }
 
-    public function insert(MantenimientoEquipoDTO $mantenimiento): MantenimientoEquipoDTO
+    public function insert(MantenimientoEquipo $mantenimiento): MantenimientoEquipo
     {
         $mantenimiento->validateInsert();
 
@@ -61,7 +61,7 @@ class MantenimientoEquipoModel extends Model
         return $this->find($id);
     }
 
-    public function update(string $id, MantenimientoEquipoDTO $mantenimiento): MantenimientoEquipoDTO
+    public function update(string $id, MantenimientoEquipo $mantenimiento): MantenimientoEquipo
     {
         $this->db->dbUpdate(
             table: $this->table,
@@ -85,14 +85,14 @@ class MantenimientoEquipoModel extends Model
             SQL;
     }
 
-    private function mapToMantenimiento(array $row): MantenimientoEquipoDTO
+    private function mapToMantenimiento(array $row): MantenimientoEquipo
     {
-        $row['equipo'] = $this->equiposModel->find($row['codigo_equipo']);
-        $mantenimiento = $this->mapper->map(MantenimientoEquipoDTO::class, $row);
+        $row['equipo'] = $this->equipoModel->find($row['codigo_equipo']);
+        $mantenimiento = $this->mapper->map(MantenimientoEquipo::class, $row);
         return $mantenimiento;
     }
 
-    private function mapToColumns(MantenimientoEquipoDTO $dto): array
+    private function mapToColumns(MantenimientoEquipo $dto): array
     {
         return [
             'codigo_equipo' => $dto->codigo_equipo,
@@ -106,13 +106,7 @@ class MantenimientoEquipoModel extends Model
 }
 
 // DTO
-enum TipoMantenimiento: string
-{
-    case Preventivo = 'Preventivo';
-    case Correctivo = 'Correctivo';
-}
-
-readonly class MantenimientoEquipoDTO
+readonly class MantenimientoEquipo
 {
     public function __construct(
         public ?int $id_mantenimiento = null,
@@ -122,7 +116,7 @@ readonly class MantenimientoEquipoDTO
         public ?TipoMantenimiento $tipo = null,
         public ?string $descripcion = null,
         public ?float $costo = null,
-        public ?EquipoDTO $equipo = null,
+        public ?Equipo $equipo = null,
     ) {}
 
     public function validateInsert(): void
@@ -134,4 +128,10 @@ readonly class MantenimientoEquipoDTO
             throw new InvalidArgumentException('El costo no puede ser negativo');
         }
     }
+}
+
+enum TipoMantenimiento: string
+{
+    case Preventivo = 'Preventivo';
+    case Correctivo = 'Correctivo';
 }

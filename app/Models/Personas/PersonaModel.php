@@ -11,7 +11,7 @@ use function App\Core\toDbDate;
 /**
  * Base para realizar operaciones sobre la tabla `persona`.
  */
-class PersonasModel extends Model
+class PersonaModel extends Model
 {
     public string $table = 'persona';
     public string $primaryKey = 'cedula';
@@ -24,18 +24,18 @@ class PersonasModel extends Model
     }
 
     /**
-     * @return PersonaDTO[]
+     * @return Persona[]
      */
     public function query(): array
     {
         $rows = $this->db->dbQuery($this->sqlSelect())->fetchAll();
         return array_map(
-            fn($row) => $this->mapper->map(PersonaDTO::class, $row),
+            fn($row) => $this->mapper->map(Persona::class, $row),
             $rows
         );
     }
 
-    public function find(string $cedula): ?PersonaDTO
+    public function find(string $cedula): ?Persona
     {
         $row = $this->db->dbQuery(
             "{$this->sqlSelect()} WHERE {$this->primaryKey} = ?",
@@ -43,11 +43,11 @@ class PersonasModel extends Model
         )->fetch();
 
         return $row
-            ? $this->mapper->map(PersonaDTO::class, $row)
+            ? $this->mapper->map(Persona::class, $row)
             : null;
     }
 
-    public function insert(PersonaDTO $persona): PersonaDTO
+    public function insert(Persona $persona): Persona
     {
         $persona->validateInsert();
 
@@ -58,7 +58,7 @@ class PersonasModel extends Model
         return $this->find($persona->cedula);
     }
 
-    public function update(string $cedula, PersonaDTO $persona): PersonaDTO
+    public function update(string $cedula, Persona $persona): Persona
     {
         $this->db->dbUpdate(
             $this->table,
@@ -73,7 +73,7 @@ class PersonasModel extends Model
         $this->db->dbDelete($this->table, [$this->primaryKey => $cedula]);
     }
 
-    private function mapToColumns(PersonaDTO $dto, bool $includeId = false): array
+    private function mapToColumns(Persona $dto, bool $includeId = false): array
     {
         $data = [
             'nombre' => $dto->nombre,

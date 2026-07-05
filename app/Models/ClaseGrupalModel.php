@@ -11,7 +11,7 @@ use InvalidArgumentException;
 
 use function App\Core\toDbDate;
 
-class ClasesGrupalesModel extends Model
+class ClaseGrupalModel extends Model
 {
     private string $table = 'clase';
     private string $primaryKey = 'id_clase';
@@ -24,7 +24,7 @@ class ClasesGrupalesModel extends Model
     }
 
     /**
-     * @return ClaseGrupalDTO[]
+     * @return ClaseGrupal[]
      */
     public function query(): array
     {
@@ -35,7 +35,7 @@ class ClasesGrupalesModel extends Model
         );
     }
 
-    public function find(int $id): ?ClaseGrupalDTO
+    public function find(int $id): ?ClaseGrupal
     {
         $row = $this->db->dbQuery(
             $this->sqlSelect(where: "WHERE clase.{$this->primaryKey} = ? "),
@@ -47,7 +47,7 @@ class ClasesGrupalesModel extends Model
             : null;
     }
 
-    public function insert(ClaseGrupalDTO $clase): ClaseGrupalDTO
+    public function insert(ClaseGrupal $clase): ClaseGrupal
     {
         $clase->validateInsert();
 
@@ -64,7 +64,7 @@ class ClasesGrupalesModel extends Model
         });
     }
 
-    public function update(int $id, ClaseGrupalDTO $clase): ClaseGrupalDTO
+    public function update(int $id, ClaseGrupal $clase): ClaseGrupal
     {
         return $this->db->dbTransaction(function () use ($id, $clase) {
             $this->db->dbUpdate(
@@ -83,7 +83,7 @@ class ClasesGrupalesModel extends Model
         $this->db->dbDelete($this->table, [$this->primaryKey => $id]);
     }
 
-    /** @param ClaseClienteDTO[]|array<string> $clientes */
+    /** @param ClaseCliente[]|array<string> $clientes */
     private function syncClientes(int $id_clase, array $clientes): void
     {
         $table = "clase_cliente";
@@ -96,7 +96,7 @@ class ClasesGrupalesModel extends Model
         // Insertar los nuevos clientes
         foreach ($clientes as $cliente) {
             // Extraer solo la cedula
-            if ($cliente instanceof ClaseClienteDTO) {
+            if ($cliente instanceof ClaseCliente) {
                 $cedula = $cliente->cedula;
             } else {
                 $cedula = $cliente;
@@ -110,14 +110,14 @@ class ClasesGrupalesModel extends Model
         }
     }
 
-    private function mapToClase(array $row): ClaseGrupalDTO
+    private function mapToClase(array $row): ClaseGrupal
     {
         $clientes = json_decode($row["clientes"], true);
         $row["clientes"] = $clientes;
-        return $this->mapper->map(ClaseGrupalDTO::class, $row);
+        return $this->mapper->map(ClaseGrupal::class, $row);
     }
 
-    private function mapToColumns(ClaseGrupalDTO $dto): array
+    private function mapToColumns(ClaseGrupal $dto): array
     {
         return [
             'cedula_trabajador' => $dto->cedula_trabajador,
@@ -163,30 +163,12 @@ class ClasesGrupalesModel extends Model
 }
 
 // DTOs
-enum EstadoClase: string
-{
-    case PROGRAMADO = "Programado";
-    case EN_CURSO = "En curso";
-    case FINALIZADO = "Finalizado";
-    case CANCELADO = "Cancelado";
-}
-
-readonly class ClaseClienteDTO
-{
-    public function __construct(
-        public string $cedula,
-        public string $nombre,
-        public string $apellido,
-        public bool $asistio = false,
-    ) {}
-}
-
-readonly class ClaseGrupalDTO
+readonly class ClaseGrupal
 {
     public function __construct(
         public ?int $id_clase = null,
         public ?string $cedula_trabajador = null,
-        /** @var ClaseClienteDTO[]|string[] */
+        /** @var ClaseCliente[]|string[] */
         public array $clientes = [],
         public ?string $nombre = null,
         public ?string $descripcion = null,
@@ -197,7 +179,7 @@ readonly class ClaseGrupalDTO
         public ?DateTimeImmutable $fecha_fin = null,
     ) {
         foreach ($this->clientes as $cliente) {
-            if ($cliente instanceof ClaseClienteDTO && !$cliente->cedula) {
+            if ($cliente instanceof ClaseCliente && !$cliente->cedula) {
                 throw new InvalidArgumentException("Cada cliente debe tener una cédula");
             }
 
@@ -218,4 +200,22 @@ readonly class ClaseGrupalDTO
             throw new InvalidArgumentException("Se requiere como minimo una capacidad maxima mayor a 1");
         }
     }
+}
+
+readonly class ClaseCliente
+{
+    public function __construct(
+        public string $cedula,
+        public string $nombre,
+        public string $apellido,
+        public bool $asistio = false,
+    ) {}
+}
+
+enum EstadoClase: string
+{
+    case PROGRAMADO = "Programado";
+    case EN_CURSO = "En curso";
+    case FINALIZADO = "Finalizado";
+    case CANCELADO = "Cancelado";
 }

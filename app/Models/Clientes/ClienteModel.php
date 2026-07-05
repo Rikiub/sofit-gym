@@ -4,10 +4,10 @@ namespace App\Models\Clientes;
 
 use App\Core\Database;
 use App\Models\Model;
-use App\Models\Personas\PersonasModel;
+use App\Models\Personas\PersonaModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 
-class ClientesModel extends Model
+class ClienteModel extends Model
 {
     public string $table = 'cliente';
     public string $primaryKey = 'cedula';
@@ -15,7 +15,7 @@ class ClientesModel extends Model
     public function __construct(
         Database $db,
         private TreeMapper $mapper,
-        private PersonasModel $personasModel,
+        private PersonaModel $personaModel,
     ) {
         return parent::__construct($db);
     }
@@ -44,7 +44,7 @@ class ClientesModel extends Model
     }
 
     /**
-     * @return ClienteDTO[]
+     * @return Cliente[]
      */
     public function query(?string $search = null, array $filters = []): array
     {
@@ -119,7 +119,7 @@ class ClientesModel extends Model
         );
     }
 
-    public function find(string $cedula): ?ClienteDTO
+    public function find(string $cedula): ?Cliente
     {
         $row = $this->db->dbQuery(
             $this->sqlSelect(where: "WHERE cliente.{$this->primaryKey} = ?"),
@@ -134,15 +134,15 @@ class ClientesModel extends Model
     /** Comprobar si la cedula ya esta asignada a una persona */
     public function checkDuplicate(string $cedula): bool
     {
-        return (bool)$this->personasModel->find($cedula);
+        return (bool)$this->personaModel->find($cedula);
     }
 
-    public function insert(ClienteDTO $cliente): ClienteDTO
+    public function insert(Cliente $cliente): Cliente
     {
         $cliente->validateInsert();
 
         return $this->db->dbTransaction(function () use ($cliente) {
-            $this->personasModel->insert($cliente);
+            $this->personaModel->insert($cliente);
             $this->db->dbInsert(
                 $this->table,
                 [$this->primaryKey => $cliente->cedula]
@@ -151,9 +151,9 @@ class ClientesModel extends Model
         });
     }
 
-    public function update(string $cedula, ClienteDTO $cliente): ClienteDTO
+    public function update(string $cedula, Cliente $cliente): Cliente
     {
-        $this->personasModel->update($cedula, $cliente);
+        $this->personaModel->update($cedula, $cliente);
         return $this->find($cliente->cedula);
     }
 
@@ -162,10 +162,10 @@ class ClientesModel extends Model
         $this->db->dbDelete($this->table, [$this->primaryKey => $cedula]);
     }
 
-    private function mapToCliente(array $row): ClienteDTO
+    private function mapToCliente(array $row): Cliente
     {
         $row['membresia'] = json_decode($row['membresia'], true);
-        return $this->mapper->map(ClienteDTO::class, $row);
+        return $this->mapper->map(Cliente::class, $row);
     }
 
     private function sqlSelect(string $where = ""): string

@@ -5,7 +5,7 @@ namespace App\Core\Auth;
 use DateTimeImmutable;
 
 /** Datos accesibles del usuario que ha iniciado sesión */
-readonly class UsuarioSessionDto
+readonly class UserSession
 {
     public function __construct(
         public int $id,

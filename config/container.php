@@ -1,6 +1,6 @@
 <?php
 
-use App\Core\Auth\UsuarioSession;
+use App\Core\Auth\UserSessionManager;
 use App\Core\Config;
 use App\Core\Database;
 use App\Core\Plates\AssetExtension;
@@ -48,8 +48,8 @@ return [
         ]))
             ->loadExtension(new AssetExtension(Config::get("web.assets")));
 
-        $usuario = UsuarioSession::getCurrent();
-        $engine->addData(["sesion_usuario" => $usuario]);
+        $user = UserSessionManager::getCurrent();
+        $engine->addData(["sesion_usuario" => $user]);
         return $engine;
     },
 

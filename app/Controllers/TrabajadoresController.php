@@ -5,15 +5,15 @@ namespace App\Controllers;
 use App\Controllers\Controller;
 use App\Core\Http\Request;
 use App\Core\Http\StatusCode;
-use App\Models\TrabajadorDTO;
-use App\Models\TrabajadoresModel;
+use App\Models\Trabajador;
+use App\Models\TrabajadorModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 
 class TrabajadoresController extends Controller
 {
     public function __construct(
         private TreeMapper $mapper,
-        private TrabajadoresModel $trabajadoresModel,
+        private TrabajadorModel $trabajadorModel,
     ) {}
 
     public function index(): string
@@ -29,14 +29,14 @@ class TrabajadoresController extends Controller
         $search = Request::query("search") ?? null;
         $id_rol = Request::queryInt("id_rol") ?? 0;
 
-        $trabajadores = $this->trabajadoresModel->query($search, $id_rol);
+        $trabajadores = $this->trabajadorModel->query($search, $id_rol);
         return $this->json($trabajadores);
     }
 
     public function summary(): string
     {
         $this->protect("trabajadores:ver");
-        $summary = $this->trabajadoresModel->getSummary();
+        $summary = $this->trabajadorModel->getSummary();
         return $this->json($summary);
     }
 
@@ -45,7 +45,7 @@ class TrabajadoresController extends Controller
         $this->protect("trabajadores:ver");
 
         $id = $this->getId();
-        $trabajador = $this->trabajadoresModel->find($id);
+        $trabajador = $this->trabajadorModel->find($id);
 
         return $trabajador
             ? $this->json($trabajador)
@@ -59,14 +59,14 @@ class TrabajadoresController extends Controller
         $new = $this->validateBody();
         $id = $new->cedula;
 
-        if ($this->trabajadoresModel->checkDuplicate($id)) {
+        if ($this->trabajadorModel->checkDuplicate($id)) {
             return $this->json(
                 ['message' => 'El trabajador ya existe'],
                 StatusCode::CONFLICT
             );
         }
 
-        $new = $this->trabajadoresModel->insert($new);
+        $new = $this->trabajadorModel->insert($new);
         $this->logger->info("Trabajador '{cedula}' creado", [
             'cedula'        => $new->cedula,
             'datos_nuevos'  => $new,
@@ -82,12 +82,12 @@ class TrabajadoresController extends Controller
         $id = $this->getId();
         $new = $this->validateBody();
 
-        $old = $this->trabajadoresModel->find($id);
+        $old = $this->trabajadorModel->find($id);
         if (!$old) {
             return $this->notFound();
         }
 
-        $new = $this->trabajadoresModel->update($id, $new);
+        $new = $this->trabajadorModel->update($id, $new);
         $this->logger->info("Trabajador '{cedula}' actualizado", [
             'cedula'        => $old->cedula,
             'datos_previos' => $old,
@@ -102,12 +102,12 @@ class TrabajadoresController extends Controller
         $this->protect("trabajadores:eliminar");
         $id = $this->getId();
 
-        $old = $this->trabajadoresModel->find($id);
+        $old = $this->trabajadorModel->find($id);
         if (!$old) {
             return $this->notFound();
         }
 
-        $this->trabajadoresModel->delete($id);
+        $this->trabajadorModel->delete($id);
         $this->logger->info("Trabajador '{cedula}' eliminado", [
             'cedula'        => $old->cedula,
             'datos_previos' => $old,
@@ -129,9 +129,9 @@ class TrabajadoresController extends Controller
         return Request::query("id") ?? "";
     }
 
-    private function validateBody(): TrabajadorDTO
+    private function validateBody(): Trabajador
     {
         $body = Request::getParsedBody();
-        return $this->mapper->map(TrabajadorDTO::class, $body);
+        return $this->mapper->map(Trabajador::class, $body);
     }
 }

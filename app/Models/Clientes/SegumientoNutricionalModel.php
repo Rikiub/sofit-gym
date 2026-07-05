@@ -3,7 +3,6 @@
 namespace App\Models\Clientes;
 
 use App\Core\Database;
-use App\Core\Validator;
 use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
@@ -34,7 +33,7 @@ class SegumientoNutricionalModel extends Model
 
     /**
      * Obtiene todos los seguimientos de un cliente.
-     * @return SeguimientoNutricionalDTO[]
+     * @return SeguimientoNutricional[]
      */
     public function queryByCliente(string $cedula): array
     {
@@ -47,7 +46,7 @@ class SegumientoNutricionalModel extends Model
         )->fetchAll();
 
         return array_map(
-            fn($row) => $this->mapper->map(SeguimientoNutricionalDTO::class, $row),
+            fn($row) => $this->mapper->map(SeguimientoNutricional::class, $row),
             $rows
         );
     }
@@ -55,7 +54,7 @@ class SegumientoNutricionalModel extends Model
     /**
      * Busca un seguimiento por su ID.
      */
-    public function find(int $id): ?SeguimientoNutricionalDTO
+    public function find(int $id): ?SeguimientoNutricional
     {
         $row = $this->db->dbQuery(
             $this->sqlSelect(where: "WHERE {$this->primaryKey} = ?"),
@@ -63,14 +62,14 @@ class SegumientoNutricionalModel extends Model
         )->fetch();
 
         return $row
-            ? $this->mapper->map(SeguimientoNutricionalDTO::class, $row)
+            ? $this->mapper->map(SeguimientoNutricional::class, $row)
             : null;
     }
 
     /**
      * Inserta un nuevo seguimiento.
      */
-    public function insert(string $cedula_cliente, SeguimientoNutricionalDTO $seguimiento): SeguimientoNutricionalDTO
+    public function insert(string $cedula_cliente, SeguimientoNutricional $seguimiento): SeguimientoNutricional
     {
         $seguimiento->validateInsert();
 
@@ -89,7 +88,7 @@ class SegumientoNutricionalModel extends Model
     /**
      * Actualiza un seguimiento existente.
      */
-    public function update(int $id, SeguimientoNutricionalDTO $seguimiento): SeguimientoNutricionalDTO
+    public function update(int $id, SeguimientoNutricional $seguimiento): SeguimientoNutricional
     {
         $this->db->dbUpdate(
             $this->table,
@@ -109,7 +108,7 @@ class SegumientoNutricionalModel extends Model
         $this->db->dbDelete($this->table, [$this->primaryKey => $id]);
     }
 
-    private function mapToColumns(SeguimientoNutricionalDTO $dto): array
+    private function mapToColumns(SeguimientoNutricional $dto): array
     {
         $array = (array) $dto;
         $array["fecha"] = toDbDate($dto->fecha);
@@ -119,7 +118,7 @@ class SegumientoNutricionalModel extends Model
 }
 
 // DTO
-readonly class SeguimientoNutricionalDTO
+readonly class SeguimientoNutricional
 {
     public function __construct(
         public ?int $id_seguimiento = null,

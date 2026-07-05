@@ -6,9 +6,9 @@ use App\Controllers\Controller;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\StatusCode;
-use App\Models\Clientes\ClientesModel;
-use App\Models\Clientes\SeguimientoFisicoDTO;
-use App\Models\Clientes\SeguimientoNutricionalDTO;
+use App\Models\Clientes\ClienteModel;
+use App\Models\Clientes\SeguimientoFisico;
+use App\Models\Clientes\SeguimientoNutricional;
 use App\Models\Clientes\SegumientoFisicoModel;
 use App\Models\Clientes\SegumientoNutricionalModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -17,7 +17,7 @@ class ClienteInfoController extends Controller
 {
     public function __construct(
         private TreeMapper $mapper,
-        private ClientesModel $clientesModel,
+        private ClienteModel $clienteModel,
         private SegumientoFisicoModel $fisicoModel,
         private SegumientoNutricionalModel $nutricionalModel,
     ) {}
@@ -28,7 +28,7 @@ class ClienteInfoController extends Controller
         $this->protect("clientes:ver");
         $cedula = $this->getCedula();
 
-        if (!$this->clientesModel->find($cedula)) {
+        if (!$this->clienteModel->find($cedula)) {
             Response::redirect([
                 "page" => "error",
                 "status" => StatusCode::NOT_FOUND,
@@ -46,7 +46,7 @@ class ClienteInfoController extends Controller
         $this->protect("clientes:ver");
         $cedula = $this->getCedula();
 
-        if (!$this->clientesModel->find($cedula)) {
+        if (!$this->clienteModel->find($cedula)) {
             return $this->notFoundCliente();
         }
 
@@ -61,7 +61,7 @@ class ClienteInfoController extends Controller
         $seguimiento = $this->validateBodyFisico();
         $cedula = $this->getCedula();
 
-        if (!$this->clientesModel->find($cedula)) {
+        if (!$this->clienteModel->find($cedula)) {
             return $this->notFoundCliente();
         }
 
@@ -95,10 +95,10 @@ class ClienteInfoController extends Controller
         return $this->json(null, StatusCode::NO_CONTENT);
     }
 
-    private function validateBodyFisico(): SeguimientoFisicoDTO
+    private function validateBodyFisico(): SeguimientoFisico
     {
         $body = Request::getParsedBody();
-        return $this->mapper->map(SeguimientoFisicoDTO::class, $body);
+        return $this->mapper->map(SeguimientoFisico::class, $body);
     }
 
     // SEGUMIENTO NUTRICIONAL
@@ -107,7 +107,7 @@ class ClienteInfoController extends Controller
         $this->protect("clientes:ver");
         $cedula = $this->getCedula();
 
-        if (!$this->clientesModel->find($cedula)) {
+        if (!$this->clienteModel->find($cedula)) {
             return $this->notFoundCliente();
         }
 
@@ -122,7 +122,7 @@ class ClienteInfoController extends Controller
         $seguimiento = $this->validateBodyNutricion();
         $cedula = $this->getCedula();
 
-        if (!$this->clientesModel->find($cedula)) {
+        if (!$this->clienteModel->find($cedula)) {
             return $this->notFoundCliente();
         }
 
@@ -156,10 +156,10 @@ class ClienteInfoController extends Controller
         return $this->json(null, StatusCode::NO_CONTENT);
     }
 
-    private function validateBodyNutricion(): SeguimientoNutricionalDTO
+    private function validateBodyNutricion(): SeguimientoNutricional
     {
         $body = Request::getParsedBody();
-        return $this->mapper->map(SeguimientoNutricionalDTO::class, $body);
+        return $this->mapper->map(SeguimientoNutricional::class, $body);
     }
 
     // Helpers

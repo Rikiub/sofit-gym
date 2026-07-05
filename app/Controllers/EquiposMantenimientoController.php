@@ -5,7 +5,7 @@ namespace App\Controllers;
 use App\Controllers\Controller;
 use App\Core\Http\Request;
 use App\Core\Http\StatusCode;
-use App\Models\Equipos\MantenimientoEquipoDTO;
+use App\Models\Equipos\MantenimientoEquipo;
 use App\Models\Equipos\MantenimientoEquipoModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
 
@@ -112,9 +112,9 @@ class EquiposMantenimientoController extends Controller
         return Request::queryInt("id") ?? 0;
     }
 
-    private function validateBody(): MantenimientoEquipoDTO
+    private function validateBody(): MantenimientoEquipo
     {
         $body = Request::getParsedBody();
-        return $this->mapper->map(MantenimientoEquipoDTO::class, $body);
+        return $this->mapper->map(MantenimientoEquipo::class, $body);
     }
 }

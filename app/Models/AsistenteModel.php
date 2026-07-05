@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Core\Database;
-use App\Models\Clientes\ClientesModel;
+use App\Models\Clientes\ClienteModel;
 use App\Models\Clientes\SegumientoFisicoModel;
 use App\Models\Clientes\SegumientoNutricionalModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -17,16 +17,16 @@ class AsistenteModel extends Model
         private TreeMapper $mapper,
         private Normalizer $normalizer,
         private AsistenciaModel $asistenciaModel,
-        private RutinasModel $rutinasModel,
-        private TrabajadoresModel $trabajadoresModel,
-        private ClientesModel $clientesModel,
+        private RutinaModel $rutinaModel,
+        private TrabajadorModel $trabajadorModel,
+        private ClienteModel $clienteModel,
         private SegumientoFisicoModel $segFisicoModel,
         private SegumientoNutricionalModel $segNutricionalModel,
     ) {
         parent::__construct($db);
     }
 
-    public function insertSesion(AsistenteSesionDTO $sesion): AsistenteSesionDTO
+    public function insertSesion(AsistenteSesion $sesion): AsistenteSesion
     {
         $table = $this->dbSecurity("asistente_sesion");
 
@@ -40,7 +40,7 @@ class AsistenteModel extends Model
         return $this->findSesion($id);
     }
 
-    public function insertMensaje(AsistenteMensajeDTO $mensaje): void
+    public function insertMensaje(AsistenteMensaje $mensaje): void
     {
         $table = $this->dbSecurity("asistente_mensaje");
 
@@ -51,7 +51,7 @@ class AsistenteModel extends Model
         $this->db->dbInsert($table, $array);
     }
 
-    /** @return AsistenteSesionDTO[] */
+    /** @return AsistenteSesion[] */
     public function querySesiones(): array
     {
         $rows = $this->db->dbQuery(
@@ -61,12 +61,12 @@ class AsistenteModel extends Model
         )->fetchAll();
 
         return array_map(
-            fn($row) => $this->mapper->map(AsistenteSesionDTO::class, $row),
+            fn($row) => $this->mapper->map(AsistenteSesion::class, $row),
             $rows,
         );
     }
 
-    public function findSesion(int $id_sesion): ?AsistenteSesionDTO
+    public function findSesion(int $id_sesion): ?AsistenteSesion
     {
         $sesion = $this->db->dbQuery(
             <<<SQL
@@ -88,10 +88,10 @@ class AsistenteModel extends Model
         )->fetchAll();
         $sesion["mensajes"] = $mensajes;
 
-        return $this->mapper->map(AsistenteSesionDTO::class, $sesion);
+        return $this->mapper->map(AsistenteSesion::class, $sesion);
     }
 
-    public function getLastSesion(int $id_usuario): ?AsistenteSesionDTO
+    public function getLastSesion(int $id_usuario): ?AsistenteSesion
     {
         $sesion = $this->db->dbQuery(<<<SQL
             SELECT id_sesion
@@ -126,7 +126,7 @@ class AsistenteModel extends Model
      */
     public function queryClientes(?string $search = null, array $filters = []): string
     {
-        $items = $this->clientesModel->query(search: $search, filters: $filters);
+        $items = $this->clienteModel->query(search: $search, filters: $filters);
         return $this->normalizer->normalize($items);
     }
 
@@ -136,7 +136,7 @@ class AsistenteModel extends Model
      */
     public function findCliente(string $cedula_cliente): string
     {
-        $items = $this->clientesModel->find($cedula_cliente);
+        $items = $this->clienteModel->find($cedula_cliente);
         return $this->normalizer->normalize($items);
     }
 
@@ -170,7 +170,7 @@ class AsistenteModel extends Model
      */
     public function queryTrabajadores(?string $search = null): string
     {
-        $items = $this->trabajadoresModel->query($search);
+        $items = $this->trabajadorModel->query($search);
         return $this->normalizer->normalize($items);
     }
 
@@ -192,19 +192,27 @@ class AsistenteModel extends Model
      */
     public function queryRutinas(string $cedula_cliente): string
     {
-        $items = $this->rutinasModel->obtenerAsignacionesPorCliente($cedula_cliente);
+        $items = $this->rutinaModel->obtenerAsignacionesPorCliente($cedula_cliente);
         return $this->normalizer->normalize($items);
     }
 }
 
 // DTO
-enum RolAsistente: string
+readonly class AsistenteSesion
 {
-    case Asistente = "asistente";
-    case Usuario = "usuario";
+    public function __construct(
+        public ?int $id_sesion = null,
+        public ?int $id_usuario = null,
+        public ?string $titulo = null,
+        public ?string $modelo_usado = null,
+        public ?DateTimeImmutable $fecha_creacion = new DateTimeImmutable(),
+
+        /** @var AsistenteMensaje[] */
+        public ?array $mensajes = [],
+    ) {}
 }
 
-readonly class AsistenteMensajeDTO
+readonly class AsistenteMensaje
 {
     public function __construct(
         public ?int $id_mensaje = null,
@@ -215,16 +223,8 @@ readonly class AsistenteMensajeDTO
     ) {}
 }
 
-readonly class AsistenteSesionDTO
+enum RolAsistente: string
 {
-    public function __construct(
-        public ?int $id_sesion = null,
-        public ?int $id_usuario = null,
-        public ?string $titulo = null,
-        public ?string $modelo_usado = null,
-        public ?DateTimeImmutable $fecha_creacion = new DateTimeImmutable(),
-
-        /** @var AsistenteMensajeDTO[] */
-        public ?array $mensajes = [],
-    ) {}
+    case Asistente = "asistente";
+    case Usuario = "usuario";
 }

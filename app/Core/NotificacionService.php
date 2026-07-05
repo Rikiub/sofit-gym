@@ -3,15 +3,15 @@
 namespace App\Core;
 
 use App\Core\Auth\UserRol;
-use App\Models\NotificacionDTO;
-use App\Models\NotificacionesModel;
+use App\Models\Notificacion;
+use App\Models\NotificacionModel;
 use PHPMailer\PHPMailer\PHPMailer;
 use Exception;
 
 class NotificacionService
 {
     public function __construct(
-        private NotificacionesModel $notificacionesModel,
+        private NotificacionModel $notifyModel,
         private PHPMailer $mailer,
     ) {}
 
@@ -27,9 +27,9 @@ class NotificacionService
             $roles
         );
 
-        $this->notificacionesModel->sendByRol(
+        $this->notifyModel->sendByRol(
             $roles,
-            new NotificacionDTO(
+            new Notificacion(
                 titulo: $titulo,
                 contenido: $contenido,
             )
@@ -41,9 +41,9 @@ class NotificacionService
      */
     public function sendToUsers(array $userIds, string $titulo, string $contenido): void
     {
-        $this->notificacionesModel->sendByUsuarios(
+        $this->notifyModel->sendByUsuarios(
             $userIds,
-            new NotificacionDTO(
+            new Notificacion(
                 titulo: $titulo,
                 contenido: $contenido,
             )

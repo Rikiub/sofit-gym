@@ -5,16 +5,15 @@ namespace App\Controllers;
 use App\Controllers\Controller;
 use App\Core\Http\Request;
 use App\Core\Http\StatusCode;
-use App\Models\ClaseGrupalDTO;
-use App\Models\ClasesGrupalesModel;
+use App\Models\ClaseGrupal;
+use App\Models\ClaseGrupalModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
-
 
 class ClasesGrupalesController extends Controller
 {
     public function __construct(
         private TreeMapper $mapper,
-        private ClasesGrupalesModel $clasesModel,
+        private ClaseGrupalModel $claseModel,
     ) {}
 
     public function index(): string
@@ -26,7 +25,7 @@ class ClasesGrupalesController extends Controller
     public function query(): string
     {
         $this->protect("clases:ver");
-        $clases = $this->clasesModel->query();
+        $clases = $this->claseModel->query();
         return $this->json($clases);
     }
 
@@ -35,7 +34,7 @@ class ClasesGrupalesController extends Controller
         $this->protect("clases:ver");
 
         $id = $this->getId();
-        $clase = $this->clasesModel->find($id);
+        $clase = $this->claseModel->find($id);
 
         return $clase
             ? $this->json($clase)
@@ -47,7 +46,7 @@ class ClasesGrupalesController extends Controller
         $this->protect("clases:crear");
 
         $new = $this->validateBody();
-        $new = $this->clasesModel->insert($new);
+        $new = $this->claseModel->insert($new);
 
         $this->logger->info("Clase grupal '{nombre}' creada", [
             'nombre' => $new->nombre,
@@ -65,12 +64,12 @@ class ClasesGrupalesController extends Controller
         $id = $this->getId();
         $new = $this->validateBody();
 
-        $old = $this->clasesModel->find($id);
+        $old = $this->claseModel->find($id);
         if (!$old) {
             return $this->notFound();
         }
 
-        $new = $this->clasesModel->update($id, $new);
+        $new = $this->claseModel->update($id, $new);
         $this->logger->info("Clase grupal '{nombre}' actualizada", [
             'nombre' => $old->nombre,
             'id_clase' => $id,
@@ -86,12 +85,12 @@ class ClasesGrupalesController extends Controller
         $this->protect("clases:eliminar");
         $id = $this->getId();
 
-        $old = $this->clasesModel->find($id);
+        $old = $this->claseModel->find($id);
         if (!$old) {
             return $this->notFound();
         }
 
-        $this->clasesModel->delete($id);
+        $this->claseModel->delete($id);
         $this->logger->info("Clase grupal '{nombre}' eliminada", [
             'nombre' => $old->nombre,
             'id_clase'      => $id,
@@ -111,9 +110,9 @@ class ClasesGrupalesController extends Controller
         return $this->json(["message" => "Clase no encontrada"], StatusCode::NOT_FOUND);
     }
 
-    private function validateBody(): ClaseGrupalDTO
+    private function validateBody(): ClaseGrupal
     {
         $body = Request::getParsedBody();
-        return $this->mapper->map(ClaseGrupalDTO::class, $body);
+        return $this->mapper->map(ClaseGrupal::class, $body);
     }
 }

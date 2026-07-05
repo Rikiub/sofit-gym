@@ -3,7 +3,6 @@
 namespace App\Models\Clientes;
 
 use App\Core\Database;
-use App\Core\Validator;
 use App\Models\Model;
 use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
@@ -34,7 +33,7 @@ class SegumientoFisicoModel extends Model
 
     /**
      * Obtiene todos los seguimientos de un cliente.
-     * @return SeguimientoFisicoDTO[]
+     * @return SeguimientoFisico[]
      */
     public function queryByCliente(string $cedula): array
     {
@@ -47,7 +46,7 @@ class SegumientoFisicoModel extends Model
         )->fetchAll();
 
         return array_map(
-            fn($row) => $this->mapper->map(SeguimientoFisicoDTO::class, $row),
+            fn($row) => $this->mapper->map(SeguimientoFisico::class, $row),
             $rows
         );
     }
@@ -55,7 +54,7 @@ class SegumientoFisicoModel extends Model
     /**
      * Busca un seguimiento por su ID.
      */
-    public function find(int $id): ?SeguimientoFisicoDTO
+    public function find(int $id): ?SeguimientoFisico
     {
         $row = $this->db->dbQuery(
             $this->sqlSelect(where: "WHERE {$this->primaryKey} = ?"),
@@ -63,14 +62,14 @@ class SegumientoFisicoModel extends Model
         )->fetch();
 
         return $row
-            ? $this->mapper->map(SeguimientoFisicoDTO::class, $row)
+            ? $this->mapper->map(SeguimientoFisico::class, $row)
             : null;
     }
 
     /**
      * Inserta un nuevo seguimiento.
      */
-    public function insert(string $cedula_cliente, SeguimientoFisicoDTO $seguimiento): SeguimientoFisicoDTO
+    public function insert(string $cedula_cliente, SeguimientoFisico $seguimiento): SeguimientoFisico
     {
         $seguimiento->validateInsert();
 
@@ -89,7 +88,7 @@ class SegumientoFisicoModel extends Model
     /**
      * Actualiza un seguimiento existente.
      */
-    public function update(int $id, SeguimientoFisicoDTO $seguimiento): SeguimientoFisicoDTO
+    public function update(int $id, SeguimientoFisico $seguimiento): SeguimientoFisico
     {
         $this->db->dbUpdate(
             $this->table,
@@ -109,7 +108,7 @@ class SegumientoFisicoModel extends Model
         $this->db->dbDelete($this->table, [$this->primaryKey => $id]);
     }
 
-    private function mapToColumns(SeguimientoFisicoDTO $dto): array
+    private function mapToColumns(SeguimientoFisico $dto): array
     {
         $array = (array) $dto;
         $array["fecha"] = toDbDate($dto->fecha);
@@ -119,7 +118,7 @@ class SegumientoFisicoModel extends Model
 }
 
 // DTO
-readonly class SeguimientoFisicoDTO
+readonly class SeguimientoFisico
 {
     public function __construct(
         public ?int $id_seguimiento = null,
