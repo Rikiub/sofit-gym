@@ -86,7 +86,7 @@ return [
     },
 
     // Valinor: Mapper
-    // Utilizado para convertir arrays en DTOs
+    // Utilizado para convertir arrays en objetos
     // y validarlos en el proceso
     TreeMapper::class => function () {
         $cache = new FileSystemCache(
@@ -112,7 +112,7 @@ return [
 
     // Valinor: Normalizer
     // Utilizado para convertir arrays en JSON
-    // y convertir tipos como DateTime en texto
+    // y convertir tipos como DateTime en string
     Normalizer::class => function () {
         $cache = new FileSystemCache(
             Config::get("web.cache") . '/valinor'
