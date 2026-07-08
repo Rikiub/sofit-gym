@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Core\Config;
-use App\Services\Logging\BitacoraLogger;
-use App\Services\Logging\Level;
+use App\Models\BitacoraModel;
+use App\Models\Level;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
@@ -25,7 +25,7 @@ class RespaldoService
     private string $dbPassword;
 
     public function __construct(
-        private $logger = new BitacoraLogger()
+        private $logger = new BitacoraModel()
     ) {
         $this->backupsDir = Config::get("fs.backups");
 
@@ -144,10 +144,14 @@ class RespaldoService
             if ($returnCode !== 0) {
                 $msg = "Respaldo de base de datos fallido para {$name}";
 
-                $this->logger->error($msg, [
-                    "modulo" => "respaldos",
-                    "accion" => "backup",
-                ]);
+                $this->logger->log(
+                    $msg,
+                    [
+                        "modulo" => "respaldos",
+                        "accion" => "backup",
+                    ],
+                    nivel: Level::ERROR
+                );
                 $this->logger->console(
                     Level::ERROR,
                     "Output: " . implode("\n", $output)
@@ -157,7 +161,7 @@ class RespaldoService
             }
         }
 
-        $this->logger->info("Respaldo de base de datos creado con exito", [
+        $this->logger->log("Respaldo de base de datos creado con exito", [
             "modulo" => "respaldos",
             "accion" => "backup",
         ]);
@@ -180,7 +184,7 @@ class RespaldoService
         // Eliminar recursivamente
         $this->deleteDirectory($dir);
 
-        $this->logger->info("Respaldo eliminado: $timestamp", [
+        $this->logger->log("Respaldo eliminado: $timestamp", [
             'modulo' => 'respaldos',
             'accion' => 'delete'
         ]);

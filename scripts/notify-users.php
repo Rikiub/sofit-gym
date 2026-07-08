@@ -1,8 +1,8 @@
 <?php
 
 use App\Services\Auth\UserRol;
-use App\Services\Logging\BitacoraLogger;
 use App\Services\NotificacionService;
+use App\Models\BitacoraModel;
 use App\Models\FacturacionModel;
 use App\Models\ProductoModel;
 use App\Models\Equipos\EquipoModel;
@@ -16,7 +16,7 @@ const CONTEXT = [
 ];
 
 $notif = new NotificacionService();
-$logger = new BitacoraLogger();
+$logger = new BitacoraModel();
 $facturacionModel = new FacturacionModel();
 $productoModel = new ProductoModel();
 $equipoModel = new EquipoModel();
@@ -38,7 +38,7 @@ if ($clientes) {
         titulo: "📅 Membresías por vencer en 3 días",
         contenido: "Los siguientes clientes tienen membresía a punto de vencer:\n\n" . $lista
     );
-    $logger->info("Notificación de membresías por vencer enviada", CONTEXT);
+    $logger->log("Notificación de membresías por vencer enviada", CONTEXT);
 }
 
 // 2. Pagos atrasados
@@ -54,7 +54,7 @@ if ($atrasados) {
         titulo: "⚠️ Pagos atrasados",
         contenido: "Clientes con membresía vencida:\n\n" . $lista
     );
-    $logger->info("Notificación de pagos atrasados enviada", CONTEXT);
+    $logger->log("Notificación de pagos atrasados enviada", CONTEXT);
 }
 
 // 3. Stock bajo
@@ -70,7 +70,7 @@ if ($bajoStock) {
         titulo: "📦 Stock bajo en productos",
         contenido: "Los siguientes productos tienen stock por debajo del mínimo:\n\n" . $lista
     );
-    $logger->info("Notificación de stock bajo enviada", CONTEXT);
+    $logger->log("Notificación de stock bajo enviada", CONTEXT);
 }
 
 // 4. Equipos en mantenimiento
@@ -86,7 +86,7 @@ if ($equipos) {
         titulo: "🔧 Equipos en mantenimiento o fuera de servicio",
         contenido: "Equipos que requieren atención:\n\n" . $lista
     );
-    $logger->info("Notificación de equipos en mantenimiento enviada", CONTEXT);
+    $logger->log("Notificación de equipos en mantenimiento enviada", CONTEXT);
 }
 
 // 5. Mantenimientos preventivos programados (próximos 2 días)
@@ -102,7 +102,7 @@ if ($mantenimientos) {
         titulo: "📅 Mantenimientos preventivos programados",
         contenido: "Los siguientes mantenimientos están programados para los próximos días:\n\n" . $lista
     );
-    $logger->info("Notificación de mantenimientos próximos enviada", CONTEXT);
+    $logger->log("Notificación de mantenimientos próximos enviada", CONTEXT);
 }
 
 // --- Notificaciones semanales (solo se ejecutan los lunes) ---
@@ -119,7 +119,7 @@ if ($diaSemana === 1) { // Lunes
             titulo: "🆕 Nuevos clientes en la última semana",
             contenido: "Se registraron " . count($nuevos) . " nuevos clientes:\n\n" . $lista
         );
-        $logger->info("Notificación de nuevos clientes enviada", CONTEXT);
+        $logger->log("Notificación de nuevos clientes enviada", CONTEXT);
     }
 
     // 7. Resumen financiero semanal
@@ -132,7 +132,7 @@ if ($diaSemana === 1) { // Lunes
             "Ventas de productos: $" . number_format($resumen['total_ventas'], 2) . "\n" .
             "Total general: $" . number_format($resumen['total_general'], 2)
     );
-    $logger->info("Notificación de resumen financiero enviada", CONTEXT);
+    $logger->log("Notificación de resumen financiero enviada", CONTEXT);
 }
 
-$logger->info("Envio de notificaciones ejecutado correctamente", CONTEXT);
+$logger->log("Envio de notificaciones ejecutado correctamente", CONTEXT);

@@ -10,16 +10,16 @@ use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
 use App\Core\Tools;
+use App\Models\BitacoraModel;
 use App\Models\Usuario;
 use App\Models\UsuarioModel;
-use App\Services\Logging\BitacoraLogger;
 
 class UsuariosController extends Controller
 {
     private CurrentUser $user;
 
     public function __construct(
-        private $logger = new BitacoraLogger(),
+        private $logger = new BitacoraModel(),
         private $image = new ImageStorage(),
         private $usuarioModel = new UsuarioModel(),
     ) {
@@ -67,7 +67,10 @@ class UsuariosController extends Controller
         }
 
         $new = $this->usuarioModel->insert($new);
-        $this->logger->info("Usuario '{nombre_usuario}' creado", [
+        $this->logger->log("Usuario '{nombre_usuario}' creado", [
+            "modulo" => "usuarios",
+            "accion" => "crear",
+
             'nombre_usuario' => $new->nombre_usuario,
             'id_usuario'     => $new->id_usuario,
             'datos_nuevos'   => $new,
@@ -96,7 +99,10 @@ class UsuariosController extends Controller
         }
 
         // Retornar
-        $this->logger->info("Usuario '{nombre_usuario}' actualizado", [
+        $this->logger->log("Usuario '{nombre_usuario}' actualizado", [
+            "modulo" => "usuarios",
+            "accion" => "editar",
+
             'nombre_usuario' => $old->nombre_usuario,
             'id_usuario'     => $id,
             'datos_previos'  => $old,
@@ -118,7 +124,10 @@ class UsuariosController extends Controller
         }
 
         $this->usuarioModel->delete($id);
-        $this->logger->info("Usuario '{nombre_usuario}' eliminado", [
+        $this->logger->log("Usuario '{nombre_usuario}' eliminado", [
+            "modulo" => "usuarios",
+            "accion" => "eliminar",
+
             'nombre_usuario' => $old->nombre_usuario,
             'id_usuario'     => $id,
             'datos_previos'  => $old,

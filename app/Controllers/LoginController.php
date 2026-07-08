@@ -10,7 +10,8 @@ use App\Core\Http\Response;
 use App\Core\Http\Status;
 use App\Core\Tools;
 use App\Models\UsuarioModel;
-use App\Services\Logging\BitacoraLogger;
+use App\Models\BitacoraModel;
+use App\Models\Level;
 use PHPMailer\PHPMailer\PHPMailer;
 use DateTimeImmutable;
 
@@ -19,8 +20,8 @@ class LoginController extends Controller
     private PHPMailer $mailer;
 
     public function __construct(
+        private $logger = new BitacoraModel(),
         private $usuarioModel = new UsuarioModel(),
-        private $logger = new BitacoraLogger(),
     ) {
         $this->mailer = Tools::getMailer();
     }
@@ -47,9 +48,14 @@ class LoginController extends Controller
         };
 
         if (!password_verify($contrasena, $usuario->contrasena_hash)) {
-            $this->logger->info(
+            $this->logger->log(
                 "Usuario {nombre_usuario} ha fallado al iniciar sesión",
-                ["nombre_usuario" => $usuario->nombre_usuario]
+                [
+                    "modulo" => "login",
+                    "accion" => "iniciar_sesion",
+                    "nombre_usuario" => $usuario->nombre_usuario,
+                ],
+                nivel: Level::ERROR,
             );
 
             $maximoIntentos = 3;
@@ -86,9 +92,13 @@ class LoginController extends Controller
             ultimo_acceso: $usuario->ultimo_acceso,
         ));
 
-        $this->logger->info(
+        $this->logger->log(
             "Usuario {nombre_usuario} ha iniciado sesión",
-            ["nombre_usuario" => $usuario->nombre_usuario]
+            [
+                "modulo" => "login",
+                "accion" => "iniciar_sesion",
+                "nombre_usuario" => $usuario->nombre_usuario
+            ]
         );
 
         // Devolver respuesta con la direccion donde deberia redireccionar
@@ -100,9 +110,13 @@ class LoginController extends Controller
     public function logout(): void
     {
         $user = UserSession::get();
-        $this->logger->info(
+        $this->logger->log(
             "Usuario {nombre_usuario} ha cerrado sesión",
-            ["nombre_usuario" => $user->nombre]
+            [
+                "modulo" => "login",
+                "accion" => "cerrar_sesion",
+                "nombre_usuario" => $user->nombre
+            ]
         );
         UserSession::logout();
 

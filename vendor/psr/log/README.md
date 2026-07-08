@@ -36,7 +36,7 @@ class Foo
     public function doSomething()
     {
         if ($this->logger) {
-            $this->logger->info('Doing work');
+            $this->logger->log('Doing work');
         }
            
         try {

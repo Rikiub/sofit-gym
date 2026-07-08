@@ -4,14 +4,14 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Models\ProductoModel;
-use App\Services\Logging\BitacoraLogger;
+use App\Models\BitacoraModel;
 use App\Services\Reportes\ReporteInventario;
 use App\Services\Reportes\ReporteProductosMasVendidos;
 
 class ProductosController extends Controller
 {
     public function __construct(
-        private $logger = new BitacoraLogger(),
+        private $logger = new BitacoraModel(),
         private $model = new ProductoModel()
     ) {}
 
@@ -114,7 +114,9 @@ class ProductosController extends Controller
         ];
         $exito = $this->model->crear($datos);
 
-        $this->logger->info("Producto '{codigo_producto}' creado", [
+        $this->logger->log("Producto '{codigo_producto}' creado", [
+            "modulo" => "productos",
+            "accion" => "crear",
             "codigo_producto" => $datos["codigo_producto"],
         ]);
 
@@ -162,7 +164,9 @@ class ProductosController extends Controller
 
         $exito = $this->model->actualizar($codigo, $datosNuevos);
 
-        $this->logger->info("Producto '{codigo_producto}' actualizado", [
+        $this->logger->log("Producto '{codigo_producto}' actualizado", [
+            "modulo" => "productos",
+            "accion" => "editar",
             "codigo_producto" => $codigo,
         ]);
 
@@ -197,7 +201,9 @@ class ProductosController extends Controller
         }
 
         $exito = $this->model->eliminar($codigo, $borradoFisico);
-        $this->logger->info("Producto '{codigo_producto}' eliminado", [
+        $this->logger->log("Producto '{codigo_producto}' eliminado", [
+            "modulo" => "productos",
+            "accion" => "eliminar",
             "codigo_producto" => $codigo,
         ]);
 
@@ -232,7 +238,9 @@ class ProductosController extends Controller
         }
 
         $exito = $this->model->actualizarStock($codigo, $cantidad);
-        $this->logger->info("Stock del producto '{codigo_producto}' actualizado", [
+        $this->logger->log("Stock del producto '{codigo_producto}' actualizado", [
+            "modulo" => "productos",
+            "accion" => "actualizar_stock",
             "codigo_producto" => $codigo,
             "cantidad" => $cantidad,
         ]);
@@ -274,7 +282,10 @@ class ProductosController extends Controller
 
         // Procesar en el modelo bajo una sola transacción segura
         $resultado = $this->model->registrarVentaMultiplesProductos($cedulaCliente, $metodoPago, $items);
-        $this->logger->info("Venta de productos registrada al cliente '{cedula_cliente}'", [
+        $this->logger->log("Venta de productos registrada al cliente '{cedula_cliente}'", [
+            "modulo" => "productos",
+            "accion" => "registrar_ventar",
+
             "cedula_cliente" => $cedulaCliente,
             "metodoPago" => $metodoPago,
             "cantidad_productos" => count($items),

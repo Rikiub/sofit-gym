@@ -9,12 +9,12 @@ use App\Core\Http\Status;
 use App\Core\Tools;
 use App\Models\Equipos\MantenimientoEquipo;
 use App\Models\Equipos\MantenimientoEquipoModel;
-use App\Services\Logging\BitacoraLogger;
+use App\Models\BitacoraModel;
 
 class EquiposMantenimientoController extends Controller
 {
     public function __construct(
-        private $logger = new BitacoraLogger(),
+        private $logger = new BitacoraModel(),
         private $model = new MantenimientoEquipoModel(),
     ) {}
 
@@ -50,7 +50,10 @@ class EquiposMantenimientoController extends Controller
         $new = $this->validateBody();
         $new = $this->model->insert($new);
 
-        $this->logger->info("Mantenimiento de equipo '{id_mantenimiento}' registrado", [
+        $this->logger->log("Mantenimiento de equipo '{id_mantenimiento}' registrado", [
+            "modulo" => "equipos",
+            "accion" => "crear",
+
             'id_mantenimiento' => $new->id_mantenimiento,
             'codigo_equipo'    => $new->codigo_equipo,
             'datos_nuevos' => $new,
@@ -73,8 +76,11 @@ class EquiposMantenimientoController extends Controller
         $new = $this->validateBody();
         $new = $this->model->update($id, $new);
 
-        $this->logger->info("Mantenimiento de equipo '{id_mantenimiento}' actualizado", [
-            'id' => $id,
+        $this->logger->log("Mantenimiento de equipo '{id_mantenimiento}' actualizado", [
+            "modulo" => "equipos",
+            "accion" => "editar",
+
+            'id_mantenimiento' => $id,
             'codigo_equipo'    => $old->codigo_equipo,
             'datos_previos'    => $old,
             'datos_nuevos'     => $new,
@@ -94,7 +100,10 @@ class EquiposMantenimientoController extends Controller
         }
 
         $this->model->delete($id);
-        $this->logger->info("Mantenimiento de equipo '{id_mantenimiento}' eliminado", [
+        $this->logger->log("Mantenimiento de equipo '{id_mantenimiento}' eliminado", [
+            "modulo" => "equipos",
+            "accion" => "eliminar",
+
             'id_mantenimiento' => $id,
             'codigo_equipo'    => $old->codigo_equipo,
             'datos_previos' => $old,

@@ -3,7 +3,7 @@
         'name' => 'app/sofit-gym',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'b8dd13ee9ee12454834873fca639f434751e5d5c',
+        'reference' => 'f8e8ee143e93f7663a65e19153feec99e04b1c21',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'app/sofit-gym' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'b8dd13ee9ee12454834873fca639f434751e5d5c',
+            'reference' => 'f8e8ee143e93f7663a65e19153feec99e04b1c21',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

@@ -7,14 +7,14 @@ use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
 use App\Core\Tools;
+use App\Models\BitacoraModel;
 use App\Models\Trabajador;
 use App\Models\TrabajadorModel;
-use App\Services\Logging\BitacoraLogger;
 
 class TrabajadoresController extends Controller
 {
     public function __construct(
-        private $logger = new BitacoraLogger(),
+        private $logger = new BitacoraModel(),
         private $trabajadorModel = new TrabajadorModel(),
     ) {}
 
@@ -69,7 +69,10 @@ class TrabajadoresController extends Controller
         }
 
         $new = $this->trabajadorModel->insert($new);
-        $this->logger->info("Trabajador '{cedula}' creado", [
+        $this->logger->log("Trabajador '{cedula}' creado", [
+            "modulo" => "trabajadores",
+            "accion" => "crear",
+
             'cedula'        => $new->cedula,
             'datos_nuevos'  => $new,
         ]);
@@ -90,7 +93,10 @@ class TrabajadoresController extends Controller
         }
 
         $new = $this->trabajadorModel->update($id, $new);
-        $this->logger->info("Trabajador '{cedula}' actualizado", [
+        $this->logger->log("Trabajador '{cedula}' actualizado", [
+            "modulo" => "trabajadores",
+            "accion" => "editar",
+
             'cedula'        => $old->cedula,
             'datos_previos' => $old,
             'datos_nuevos'  => $new,
@@ -110,7 +116,10 @@ class TrabajadoresController extends Controller
         }
 
         $this->trabajadorModel->delete($id);
-        $this->logger->info("Trabajador '{cedula}' eliminado", [
+        $this->logger->log("Trabajador '{cedula}' eliminado", [
+            "modulo" => "trabajadores",
+            "accion" => "eliminar",
+
             'cedula'        => $old->cedula,
             'datos_previos' => $old,
         ]);

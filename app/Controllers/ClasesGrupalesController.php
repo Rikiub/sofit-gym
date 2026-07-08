@@ -7,14 +7,14 @@ use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
 use App\Core\Tools;
+use App\Models\BitacoraModel;
 use App\Models\ClaseGrupal;
 use App\Models\ClaseGrupalModel;
-use App\Services\Logging\BitacoraLogger;
 
 class ClasesGrupalesController extends Controller
 {
     public function __construct(
-        private $logger = new BitacoraLogger(),
+        private $logger = new BitacoraModel(),
         private $claseModel = new ClaseGrupalModel(),
     ) {}
 
@@ -50,7 +50,10 @@ class ClasesGrupalesController extends Controller
         $new = $this->validateBody();
         $new = $this->claseModel->insert($new);
 
-        $this->logger->info("Clase grupal '{nombre}' creada", [
+        $this->logger->log("Clase grupal '{nombre}' creada", [
+            "modulo" => "clases_grupales",
+            "accion" => "crear",
+
             'nombre' => $new->nombre,
             'id_clase'      => $new->id_clase,
             'datos_nuevos'  => $new,
@@ -72,7 +75,10 @@ class ClasesGrupalesController extends Controller
         }
 
         $new = $this->claseModel->update($id, $new);
-        $this->logger->info("Clase grupal '{nombre}' actualizada", [
+        $this->logger->log("Clase grupal '{nombre}' actualizada", [
+            "modulo" => "clases_grupales",
+            "accion" => "editar",
+
             'nombre' => $old->nombre,
             'id_clase' => $id,
             'datos_previos' => $old,
@@ -93,7 +99,10 @@ class ClasesGrupalesController extends Controller
         }
 
         $this->claseModel->delete($id);
-        $this->logger->info("Clase grupal '{nombre}' eliminada", [
+        $this->logger->log("Clase grupal '{nombre}' eliminada", [
+            "modulo" => "clases_grupales",
+            "accion" => "eliminar",
+
             'nombre' => $old->nombre,
             'id_clase'      => $id,
             'datos_previos' => $old,

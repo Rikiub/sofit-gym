@@ -3,13 +3,81 @@
 namespace App\Models;
 
 use App\Core\Tools;
-use App\Core\Validator;
+use App\Services\Auth\UserSession;
 use DateTimeImmutable;
 
 class BitacoraModel extends Model
 {
     private string $table = self::DB_SECURITY . ".bitacora";
     private string $primaryKey = 'id_bitacora';
+
+    // Logger
+
+    /** Registra un suceso del sistema. */
+    public function log(
+        string $mensaje,
+        array $contexto = [],
+        string|Level $nivel = Level::INFO,
+    ): void {
+        $nivel = $nivel instanceof Level
+            ? $nivel
+            : Level::from($nivel);
+        $mensaje = $this->interpolate((string) $mensaje, $contexto);
+
+        // Extraer datos
+        $modulo = $contexto["modulo"] ?? null;
+        $accion = $contexto["accion"] ?? null;
+
+        $datosPrevios = $contexto["datos_previos"] ?? null;
+        $datosNuevos = $contexto["datos_nuevos"] ?? null;
+
+        // Limpiar contexto
+        $contexto = array_diff_key($contexto, array_flip([
+            "modulo",
+            "accion",
+            "datos_previos",
+            "datos_nuevos",
+        ]));
+
+        $this->console($nivel, $mensaje);
+        $this->insert(new BitacoraLog(
+            id_usuario: UserSession::get()->id ?? null,
+            modulo: $modulo,
+            accion: $accion,
+            mensaje: $mensaje,
+            nivel: $nivel,
+            contexto: $contexto,
+            datos_previos: $datosPrevios,
+            datos_nuevos: $datosNuevos,
+        ));
+    }
+
+    /** Remplaza los {placeholder} de un texto con las variables de un array */
+    private function interpolate(string $message, array $context): string
+    {
+        $replace = [];
+        foreach ($context as $key => $val) {
+            if (is_scalar($val) || (is_object($val) && method_exists($val, '__toString'))) {
+                $replace['{' . $key . '}'] = $val;
+            }
+        }
+
+        // Remplazar todos los placeholders
+        return strtr($message, $replace);
+    }
+
+    /** Mostrar en consola solo en scripts */
+    public function console(Level $level, string $message): void
+    {
+        if (PHP_SAPI !== 'cli') return;
+
+        $timestamp = date('Y-m-d H:i:s');
+        $level = strtoupper($level->value);
+
+        fwrite(STDOUT, "[$timestamp] [$level] $message\n");
+    }
+
+    // Modelo
 
     /**
      * @return BitacoraLog[]
@@ -38,8 +106,6 @@ class BitacoraModel extends Model
 
     public function insert(BitacoraLog $bitacora): BitacoraLog
     {
-        $bitacora->validateInsert();
-
         return $this->db->dbTransaction(function () use ($bitacora) {
             // Crear modulo dinamicamente si no existe
             $this->db->dbQuery(
@@ -91,9 +157,9 @@ class BitacoraModel extends Model
         return [
             'id_usuario' => $dto->id_usuario,
             'id_modulo' => $dto->id_modulo,
-            'accion' => $dto->accion,
+            'accion' => strtolower($dto->accion),
             'mensaje' => $dto->mensaje,
-            'nivel' => $dto->nivel,
+            'nivel' => strtolower((string)$dto->nivel->value),
             'contexto' => $dto->contexto ? json_encode($dto->contexto) : null,
             'datos_previos' => $dto->datos_previos ? json_encode($dto->datos_previos) : null,
             'datos_nuevos' => $dto->datos_nuevos ? json_encode($dto->datos_nuevos) : null,
@@ -130,23 +196,24 @@ readonly class BitacoraLog
         public ?string $modulo = null,
         public ?string $accion = null,
         public ?string $mensaje = null,
-        public ?string $nivel = null,
+        public ?Level $nivel = null,
         public ?DateTimeImmutable $fecha = null,
 
-        /** @var array<string, mixed>|null */
-        public ?array $datos_previos = null,
-
-        /** @var array<string, mixed>|null */
-        public ?array $datos_nuevos = null,
-
-        /** @var array<string, mixed>|null */
-        public ?array $contexto = null,
+        public object|array|null $datos_previos = null,
+        public object|array|null $datos_nuevos = null,
+        public object|array|null $contexto = null,
     ) {}
+}
 
-    public function validateInsert()
-    {
-        Validator::required($this->accion, "accion");
-        Validator::required($this->modulo, "modulo");
-        Validator::required($this->nivel, "nivel");
-    }
+/** Nivel de logging */
+enum Level: string
+{
+    case DEBUG = 'debug';
+    case INFO = 'info';
+    case NOTICE = 'notice';
+    case WARNING = 'warning';
+    case ERROR = 'error';
+    case CRITICAL = 'critical';
+    case ALERT = 'alert';
+    case EMERGENCY = 'emergency';
 }

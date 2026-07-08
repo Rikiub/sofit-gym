@@ -4,13 +4,13 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Models\AsistenciaModel;
-use App\Services\Logging\BitacoraLogger;
+use App\Models\BitacoraModel;
 use App\Services\Reportes\ReporteAsistencia;
 
 class AsistenciaController extends Controller
 {
     public function __construct(
-        private $logger = new BitacoraLogger(),
+        private $logger = new BitacoraModel(),
         private $model = new AsistenciaModel(),
     ) {}
 
@@ -62,7 +62,10 @@ class AsistenciaController extends Controller
 
         $resultado = $this->model->registrarEntrada($cedula, $hora);
         if ($resultado['success']) {
-            $this->logger->info("Entrada registrada para cliente '{cedula}'", [
+            $this->logger->log("Entrada registrada para cliente '{cedula}'", [
+                "modulo" => "asistencia",
+                "accion" => "registrar",
+
                 'cedula'        => $cedula,
                 'id_asistencia' => $resultado['id'] ?? null,
                 'fecha'         => $resultado['fecha'] ?? null,
@@ -132,7 +135,10 @@ class AsistenciaController extends Controller
         if ($ok) {
             // Obtener datos nuevos después de la actualización
             $new = $this->model->findCliente($id);
-            $this->logger->info("Entrada '{id_asistencia}' actualizada", [
+            $this->logger->log("Entrada '{id_asistencia}' actualizada", [
+                "modulo" => "asistencia",
+                "accion" => "editar",
+
                 'id_asistencia' => $id,
                 'datos_previos' => $old,
                 'datos_nuevos'  => $new,
@@ -156,7 +162,10 @@ class AsistenciaController extends Controller
 
         $ok = $this->model->eliminarEntrada($id);
         if ($ok) {
-            $this->logger->info("Entrada '{id_asistencia}' eliminada", [
+            $this->logger->log("Entrada '{id_asistencia}' eliminada", [
+                "modulo" => "asistencia",
+                "accion" => "eliminar",
+
                 'id_asistencia' => $id,
                 'datos_previos' => $old,
             ]);

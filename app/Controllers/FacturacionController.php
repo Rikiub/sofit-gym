@@ -5,14 +5,14 @@ namespace App\Controllers;
 use App\Controllers\Controller;
 use App\Core\Http\Response;
 use App\Models\FacturacionModel;
-use App\Services\Logging\BitacoraLogger;
+use App\Models\BitacoraModel;
 use App\Services\Reportes\ReporteFinanciero;
 use Exception;
 
 class FacturacionController extends Controller
 {
     public function __construct(
-        private $logger = new BitacoraLogger(),
+        private $logger = new BitacoraModel(),
         private $model = new FacturacionModel(),
     ) {}
 
@@ -53,7 +53,10 @@ class FacturacionController extends Controller
             $_SESSION['mensaje'] = '✅ ' . $res['mensaje'];
             $_SESSION['tipo_mensaje'] = 'success';
 
-            $this->logger->info("Pago registrado para cliente '{cedula}'", [
+            $this->logger->log("Pago registrado para cliente '{cedula}'", [
+                "modulo" => "facturacion",
+                "accion" => "crear",
+
                 'cedula'        => $cedula,
                 'id_pago'       => $res['id_pago'] ?? null,
                 'monto'         => $monto,
@@ -104,7 +107,10 @@ class FacturacionController extends Controller
 
                 // Obtener los datos nuevos después de la actualización
                 $new = $this->obtenerPagoPorId($idPago);
-                $this->logger->info("Pago '{id_pago}' actualizado", [
+                $this->logger->log("Pago '{id_pago}' actualizado", [
+                    "modulo" => "facturacion",
+                    "accion" => "editar",
+
                     'id_pago'       => $idPago,
                     'datos_previos' => $old,
                     'datos_nuevos'  => $new,
@@ -146,7 +152,9 @@ class FacturacionController extends Controller
                 $_SESSION['mensaje'] = '🗑️ Pago eliminado correctamente.';
                 $_SESSION['tipo_mensaje'] = 'warning';
 
-                $this->logger->info("Pago '{id_pago}' eliminado", [
+                $this->logger->log("Pago '{id_pago}' eliminado", [
+                    "modulo" => "facturacion",
+                    "accion" => "eliminar",
                     'id_pago'       => $idPago,
                     'datos_previos' => $old,
                 ]);

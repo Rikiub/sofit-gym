@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\BitacoraModel;
-use App\Services\Logging\BitacoraLogger;
+use App\Models\Level;
 
 require 'bootstrap/app.php';
 
@@ -9,20 +9,19 @@ require 'bootstrap/app.php';
 $diasRetencion = 30;
 
 // LOGIC
-$biracoraModel = new BitacoraModel();
-$logger = new BitacoraLogger();
+$biracora = new BitacoraModel();
 
 try {
-    $biracoraModel->limpiarRegistros($diasRetencion);
-    $logger->info("Limpieza automática de registros en la bitacora con más de {dias_retencion} dias", [
+    $biracora->limpiarRegistros($diasRetencion);
+    $biracora->log("Limpieza automática de registros en la bitacora con más de {dias_retencion} dias", [
         'dias_retencion' => $diasRetencion,
         'modulo' => 'sistema',
         'accion' => 'limpieza_bitacora'
     ]);
 } catch (Exception $e) {
-    $logger->error("Error al limpiar bitácora", [
+    $biracora->log("Error al limpiar bitácora", [
         'error' => $e->getMessage(),
         'modulo' => 'sistema',
         'accion' => 'limpieza_bitacora'
-    ]);
+    ], Level::ERROR);
 }

@@ -7,15 +7,15 @@ use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
 use App\Core\Tools;
+use App\Models\BitacoraModel;
 use App\Models\Clientes\Cliente;
 use App\Models\Clientes\ClienteModel;
-use App\Services\Logging\BitacoraLogger;
 use App\Services\Reportes\ReporteClientes;
 
 class ClientesController extends Controller
 {
     public function __construct(
-        private $logger = new BitacoraLogger(),
+        private $logger = new BitacoraModel(),
         private $clienteModelo = new ClienteModel(),
     ) {}
 
@@ -70,9 +70,12 @@ class ClientesController extends Controller
         }
 
         $newCliente = $this->clienteModelo->insert($cliente);
-        $this->logger->info(
+        $this->logger->log(
             "Cliente '{cedula}' creado",
             [
+                "modulo" => "clientes",
+                "accion" => "crear",
+
                 "cedula" => $id,
                 "datos_nuevos" => $newCliente,
             ],
@@ -94,9 +97,12 @@ class ClientesController extends Controller
         }
 
         $newCliente = $this->clienteModelo->update($id, $cliente);
-        $this->logger->info(
+        $this->logger->log(
             "Cliente '{cedula}' actualizado",
             [
+                "modulo" => "clientes",
+                "accion" => "editar",
+
                 "cedula" => $oldCliente->cedula,
                 "datos_previos" => $oldCliente,
                 "datos_nuevos" => $newCliente,
@@ -116,9 +122,13 @@ class ClientesController extends Controller
         }
 
         $this->clienteModelo->delete($id);
-        $this->logger->info(
+        $this->logger->log(
             "Cliente '{cedula}' eliminado",
-            ["cedula" => $id]
+            [
+                "modulo" => "clientes",
+                "accion" => "eliminar",
+                "cedula" => $id
+            ]
         );
 
         return Response::noContent();

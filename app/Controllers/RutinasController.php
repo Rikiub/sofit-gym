@@ -4,12 +4,12 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Models\RutinaModel;
-use App\Services\Logging\BitacoraLogger;
+use App\Models\BitacoraModel;
 
 class RutinasController extends Controller
 {
     public function __construct(
-        private $logger = new BitacoraLogger(),
+        private $logger = new BitacoraModel(),
         private $model = new RutinaModel()
     ) {}
 
@@ -106,7 +106,9 @@ class RutinasController extends Controller
 
         $ok = $this->model->crearRutina($datos);
         if ($ok) {
-            $this->logger->info("Rutina '{nombre}' creada", [
+            $this->logger->log("Rutina '{nombre}' creada", [
+                "modulo" => "rutinas",
+                "accion" => "crear",
                 'nombre' => $nombre,
                 'datos_nuevos' => $datos,
             ]);
@@ -162,7 +164,10 @@ class RutinasController extends Controller
         if ($ok) {
             // Obtener los datos actualizados para tener el objeto completo
             $new = $this->model->obtenerRutinaPorId($id);
-            $this->logger->info("Rutina '{nombre}' actualizada", [
+            $this->logger->log("Rutina '{nombre}' actualizada", [
+                "modulo" => "rutinas",
+                "accion" => "editar",
+
                 'nombre' => $old['nombre'],
                 'id_rutina' => $id,
                 'datos_previos' => $old,
@@ -200,7 +205,10 @@ class RutinasController extends Controller
 
         $ok = $this->model->eliminarRutina($id);
         if ($ok) {
-            $this->logger->info("Rutina '{nombre}' eliminada", [
+            $this->logger->log("Rutina '{nombre}' eliminada", [
+                "modulo" => "rutinas",
+                "accion" => "eliminar",
+
                 'nombre' => $old['nombre'],
                 'id_rutina' => $id,
                 'datos_previos' => $old,
@@ -252,7 +260,10 @@ class RutinasController extends Controller
 
         $ok = $this->model->asignarRutina($datos);
         if ($ok) {
-            $this->logger->info("Rutina asignada a cliente '{cedula}'", [
+            $this->logger->log("Rutina asignada a cliente '{cedula}'", [
+                "modulo" => "rutinas",
+                "accion" => "asignar",
+
                 'cedula' => $cedula,
                 'id_rutina' => $idRutina,
                 'datos_nuevos' => $datos,
@@ -306,7 +317,10 @@ class RutinasController extends Controller
         $ok = $this->model->actualizarAsignacion($idAsignacion, $datos);
         if ($ok) {
             $new = $this->model->obtenerAsignacionPorId($idAsignacion);
-            $this->logger->info("Asignación de rutina '{id_asignacion}' actualizada", [
+            $this->logger->log("Asignación de rutina '{id_asignacion}' actualizada", [
+                "modulo" => "rutinas",
+                "accion" => "editar",
+
                 'id_asignacion' => $idAsignacion,
                 'nombre_cliente' => $old['nombre_cliente'],
                 'datos_previos' => $old,
@@ -344,7 +358,10 @@ class RutinasController extends Controller
 
         $ok = $this->model->eliminarAsignacion($idAsignacion);
         if ($ok) {
-            $this->logger->info("Asignación de rutina '{id_asignacion}' eliminada", [
+            $this->logger->log("Asignación de rutina '{id_asignacion}' eliminada", [
+                "modulo" => "rutinas",
+                "accion" => "eliminar",
+
                 'id_asignacion' => $idAsignacion,
                 'nombre_cliente' => $old['nombre_cliente'],
                 'datos_previos' => $old,

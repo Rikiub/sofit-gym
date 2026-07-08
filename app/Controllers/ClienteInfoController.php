@@ -7,17 +7,17 @@ use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
 use App\Core\Tools;
+use App\Models\BitacoraModel;
 use App\Models\Clientes\ClienteModel;
 use App\Models\Clientes\SeguimientoFisico;
 use App\Models\Clientes\SeguimientoNutricional;
 use App\Models\Clientes\SegumientoFisicoModel;
 use App\Models\Clientes\SegumientoNutricionalModel;
-use App\Services\Logging\BitacoraLogger;
 
 class ClienteInfoController extends Controller
 {
     public function __construct(
-        private $logger = new BitacoraLogger(),
+        private $logger = new BitacoraModel(),
         private $clienteModel = new ClienteModel(),
         private $fisicoModel = new SegumientoFisicoModel(),
         private $nutricionalModel = new SegumientoNutricionalModel(),
@@ -67,7 +67,10 @@ class ClienteInfoController extends Controller
         }
 
         $new = $this->fisicoModel->insert($cedula, $seguimiento);
-        $this->logger->info("Seguimiento físico para cliente '{cedula}' registrado", [
+        $this->logger->log("Seguimiento físico para cliente '{cedula}' registrado", [
+            "modulo" => "cliente_info",
+            "accion" => "crear_seg_fisico",
+
             'cedula'        => $cedula,
             'id_seguimiento' => $new->id_seguimiento,
             'datos_nuevos'  => $new,
@@ -87,7 +90,10 @@ class ClienteInfoController extends Controller
         }
 
         $this->fisicoModel->delete($id);
-        $this->logger->info("Seguimiento físico '{id_seguimiento}' eliminado", [
+        $this->logger->log("Seguimiento físico '{id_seguimiento}' eliminado", [
+            "modulo" => "cliente_info",
+            "accion" => "eliminar_seg_fisico",
+
             'id_seguimiento' => $id,
             'cedula' => $old->cedula_cliente,
             'datos_previos'  => $old,
@@ -128,7 +134,10 @@ class ClienteInfoController extends Controller
         }
 
         $new = $this->nutricionalModel->insert($cedula, $seguimiento);
-        $this->logger->info("Seguimiento nutricional para cliente '{cedula}' registrado", [
+        $this->logger->log("Seguimiento nutricional para cliente '{cedula}' registrado", [
+            "modulo" => "cliente_info",
+            "accion" => "crear_seg_nutricion",
+
             'cedula' => $cedula,
             'id_seguimiento' => $new->id_seguimiento,
             'datos_nuevos' => $new,
@@ -148,7 +157,10 @@ class ClienteInfoController extends Controller
         }
 
         $this->nutricionalModel->delete($id);
-        $this->logger->info("Seguimiento nutricional '{id_seguimiento}' eliminado", [
+        $this->logger->log("Seguimiento nutricional '{id_seguimiento}' eliminado", [
+            "modulo" => "cliente_info",
+            "accion" => "eliminar_seg_nutricion",
+
             'id_seguimiento' => $id,
             'cedula'         => $old->cedula_cliente,
             'datos_previos'  => $old,

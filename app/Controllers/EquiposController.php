@@ -7,14 +7,14 @@ use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
 use App\Core\Tools;
+use App\Models\BitacoraModel;
 use App\Models\Equipos\Equipo;
 use App\Models\Equipos\EquipoModel;
-use App\Services\Logging\BitacoraLogger;
 
 class EquiposController extends Controller
 {
     public function __construct(
-        private $logger = new BitacoraLogger(),
+        private $logger = new BitacoraModel(),
         private $equipoModel = new EquipoModel(),
     ) {}
 
@@ -57,7 +57,10 @@ class EquiposController extends Controller
         }
 
         $new = $this->equipoModel->insert($new);
-        $this->logger->info("Equipo '{codigo_equipo}' creado", [
+        $this->logger->log("Equipo '{codigo_equipo}' creado", [
+            "modulo" => "equipos",
+            "accion" => "crear",
+
             "codigo_equipo" => $new->codigo_equipo,
             "datos_nuevos" => $new,
         ]);
@@ -78,7 +81,10 @@ class EquiposController extends Controller
         }
 
         $new = $this->equipoModel->update($id, $new);
-        $this->logger->info("Equipo '{codigo_equipo}' actualizado", [
+        $this->logger->log("Equipo '{codigo_equipo}' actualizado", [
+            "modulo" => "equipos",
+            "accion" => "editar",
+
             "codigo_equipo" => $id,
             "datos_previos" => $old,
             "datos_nuevos" => $new,
@@ -98,7 +104,10 @@ class EquiposController extends Controller
         }
 
         $this->equipoModel->delete($id);
-        $this->logger->info("Equipo '{codigo_equipo}' eliminado", [
+        $this->logger->log("Equipo '{codigo_equipo}' eliminado", [
+            "modulo" => "equipos",
+            "accion" => "eliminar",
+
             "codigo_equipo" => $id,
             "datos_previos" => $old,
         ]);
