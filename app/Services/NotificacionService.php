@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Core\Tools;
 use App\Services\Auth\UserRol;
 use App\Models\Notificacion;
 use App\Models\NotificacionModel;
@@ -10,10 +11,13 @@ use Exception;
 
 class NotificacionService
 {
+    private PHPMailer $mailer;
+
     public function __construct(
-        private NotificacionModel $notifModel,
-        private PHPMailer $mailer,
-    ) {}
+        private $notifModel = new NotificacionModel(),
+    ) {
+        $this->mailer = Tools::getMailer();
+    }
 
     /**
      * Envía una notificación a todos los usuarios con los roles asignados

@@ -2,7 +2,8 @@
 
 namespace App\Services\Logging;
 
-enum LogLevel: string
+/** Nivel de logging */
+enum Level: string
 {
     case DEBUG = 'debug';
     case INFO = 'info';

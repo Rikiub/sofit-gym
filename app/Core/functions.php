@@ -14,6 +14,17 @@ function toDbDate(?DateTimeInterface $date): ?string
     return $date ? $date->format("Y-m-d H:i:s") : null;
 }
 
+/** Mostrar en consola en formato de logger */
+function console(string $level, string $message): void
+{
+    if (PHP_SAPI !== 'cli') return;
+
+    $timestamp = date('Y-m-d H:i:s');
+    $level = strtoupper($level);
+
+    fwrite(STDOUT, "[$timestamp] [$level] $message\n");
+}
+
 /** Convierte los bytes en una unidad user-friendly. */
 function formatSize(int $bytes): string
 {

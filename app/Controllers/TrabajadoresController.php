@@ -4,16 +4,18 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Core\Http\Request;
+use App\Core\Http\Response;
 use App\Core\Http\Status;
+use App\Core\Tools;
 use App\Models\Trabajador;
 use App\Models\TrabajadorModel;
-use CuyZ\Valinor\Mapper\TreeMapper;
+use App\Services\Logging\BitacoraLogger;
 
 class TrabajadoresController extends Controller
 {
     public function __construct(
-        private TreeMapper $mapper,
-        private TrabajadorModel $trabajadorModel,
+        private $logger = new BitacoraLogger(),
+        private $trabajadorModel = new TrabajadorModel(),
     ) {}
 
     public function index(): string
@@ -30,14 +32,14 @@ class TrabajadoresController extends Controller
         $id_rol = Request::queryInt("id_rol") ?? 0;
 
         $trabajadores = $this->trabajadorModel->query($search, $id_rol);
-        return $this->json($trabajadores);
+        return Response::json($trabajadores);
     }
 
     public function summary(): string
     {
         $this->protect("trabajadores:ver");
         $summary = $this->trabajadorModel->getSummary();
-        return $this->json($summary);
+        return Response::json($summary);
     }
 
     public function find(): ?string
@@ -48,8 +50,8 @@ class TrabajadoresController extends Controller
         $trabajador = $this->trabajadorModel->find($id);
 
         return $trabajador
-            ? $this->json($trabajador)
-            : $this->json(null, Status::NOT_FOUND);
+            ? Response::json($trabajador)
+            : Response::noContent();
     }
 
     public function insert(): string
@@ -60,7 +62,7 @@ class TrabajadoresController extends Controller
         $id = $new->cedula;
 
         if ($this->trabajadorModel->checkDuplicate($id)) {
-            return $this->json(
+            return Response::json(
                 ['message' => 'El trabajador ya existe'],
                 Status::CONFLICT
             );
@@ -72,7 +74,7 @@ class TrabajadoresController extends Controller
             'datos_nuevos'  => $new,
         ]);
 
-        return $this->json($new, Status::CREATED);
+        return Response::json($new, Status::CREATED);
     }
 
     public function update(): string
@@ -94,7 +96,7 @@ class TrabajadoresController extends Controller
             'datos_nuevos'  => $new,
         ]);
 
-        return $this->json($new, Status::CREATED);
+        return Response::json($new, Status::CREATED);
     }
 
     public function delete(): string|null
@@ -113,12 +115,12 @@ class TrabajadoresController extends Controller
             'datos_previos' => $old,
         ]);
 
-        return $this->json(null, Status::NO_CONTENT);
+        return Response::noContent();
     }
 
     private function notFound(): string
     {
-        return $this->json(
+        return Response::json(
             ["message" => "Trabajador no encontrado"],
             Status::NOT_FOUND
         );
@@ -132,6 +134,6 @@ class TrabajadoresController extends Controller
     private function validateBody(): Trabajador
     {
         $body = Request::getParsedBody();
-        return $this->mapper->map(Trabajador::class, $body);
+        return Tools::map(Trabajador::class, $body);
     }
 }

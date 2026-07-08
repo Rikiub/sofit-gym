@@ -2,18 +2,15 @@
 
 use App\Models\BitacoraModel;
 use App\Services\Logging\BitacoraLogger;
-use Psr\Container\ContainerInterface;
+
+require 'bootstrap/app.php';
 
 // CONFIG
 $diasRetencion = 30;
 
-/** @var ContainerInterface */
-$container = require 'bootstrap/app.php';
-
-/** @var BitacoraModel */
-$biracoraModel = $container->get(BitacoraModel::class);
-/** @var BitacoraLogger */
-$logger = $container->get(BitacoraLogger::class);
+// LOGIC
+$biracoraModel = new BitacoraModel();
+$logger = new BitacoraLogger();
 
 try {
     $biracoraModel->limpiarRegistros($diasRetencion);

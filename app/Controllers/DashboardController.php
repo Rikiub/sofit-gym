@@ -11,9 +11,9 @@ use App\Models\Clientes\ClienteModel;
 class DashboardController extends Controller
 {
     public function __construct(
-        private AsistenciaModel $asistenciaModel,
-        private ClienteModel $clienteModel,
-        private FacturacionModel $facturacionModel,
+        private $asistenciaModel = new AsistenciaModel(),
+        private $clienteModel = new ClienteModel(),
+        private $facturacionModel = new FacturacionModel(),
     ) {}
 
     public function index(): string

@@ -2,22 +2,14 @@
 
 namespace App\Models;
 
-use App\Core\Database;
+use App\Core\Tools;
 use App\Core\Validator;
-use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use PDO;
 
 class NotificacionModel extends Model
 {
     private string $table = self::DB_SECURITY . ".notificacion";
-
-    public function __construct(
-        Database $db,
-        private TreeMapper $mapper,
-    ) {
-        parent::__construct($db);
-    }
 
     /**
      * @return Notificacion[]
@@ -30,7 +22,7 @@ class NotificacionModel extends Model
         )->fetchAll();
 
         return array_map(
-            fn($row) => $this->mapper->map(Notificacion::class, $row),
+            fn($row) => Tools::map(Notificacion::class, $row),
             $rows
         );
     }
@@ -47,7 +39,7 @@ class NotificacionModel extends Model
         )->fetch();
 
         return $row
-            ? $this->mapper->map(Notificacion::class, $row)
+            ? Tools::map(Notificacion::class, $row)
             : null;
     }
 

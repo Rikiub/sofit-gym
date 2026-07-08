@@ -8,16 +8,22 @@ use App\Services\Auth\AuthenticatedUser;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
+use App\Core\Tools;
 use App\Models\UsuarioModel;
+use App\Services\Logging\BitacoraLogger;
 use PHPMailer\PHPMailer\PHPMailer;
 use DateTimeImmutable;
 
 class LoginController extends Controller
 {
+    private PHPMailer $mailer;
+
     public function __construct(
-        private PHPMailer $mailer,
-        private UsuarioModel $usuarioModel,
-    ) {}
+        private $usuarioModel = new UsuarioModel(),
+        private $logger = new BitacoraLogger(),
+    ) {
+        $this->mailer = Tools::getMailer();
+    }
 
     public function index()
     {
@@ -55,7 +61,7 @@ class LoginController extends Controller
                 $usuario->id_usuario,
                 $duracion,
             ) >= $maximoIntentos) {
-                return $this->json(
+                return Response::json(
                     ["message" => "Numero de intentos excedidos. Vuelva a intentarlo en {$minutosBloqueo} minutos."],
                     Status::UNAUTHORIZED
                 );
@@ -86,7 +92,7 @@ class LoginController extends Controller
         );
 
         // Devolver respuesta con la direccion donde deberia redireccionar
-        return $this->json([
+        return Response::json([
             "redirect" => "?" . Request::buildQuery(["page" => "dashboard"])
         ]);
     }
@@ -107,7 +113,7 @@ class LoginController extends Controller
     /** Mensaje de error generico en caso de ingresar datos incorrectos */
     private function invalidInput(): string
     {
-        return $this->json(
+        return Response::json(
             ["message" => "Usuario o contraseña incorrectos"],
             Status::UNAUTHORIZED
         );
@@ -121,7 +127,7 @@ class LoginController extends Controller
 
         $usuario = $this->usuarioModel->findByEmail($email);
         if (!$usuario) {
-            return $this->json(
+            return Response::json(
                 ["message" => "Correo no registrado"],
                 Status::NOT_FOUND
             );
@@ -139,7 +145,7 @@ class LoginController extends Controller
         ]);
         $this->mailer->send();
 
-        return $this->json(["success" => true]);
+        return Response::json(["success" => true]);
     }
 
     public function verify(): string
@@ -149,14 +155,14 @@ class LoginController extends Controller
 
         $usuario = $this->usuarioModel->verifyRecoveryCode($codigo);
         if (!$usuario) {
-            return $this->json(
+            return Response::json(
                 ["message" => "Código inválido o expirado"],
                 Status::UNPROCESSABLE_ENTITY
             );
         }
 
         $_SESSION['recover_user_id'] = $usuario->id_usuario;
-        return $this->json(["success" => true]);
+        return Response::json(["success" => true]);
     }
 
     public function reset(): string
@@ -165,7 +171,7 @@ class LoginController extends Controller
         $new_pass = $body["new_pass"] ?? '';
 
         if (!isset($_SESSION['recover_user_id'])) {
-            return $this->json(
+            return Response::json(
                 ["message" => "Sesión expirada"],
                 Status::UNAUTHORIZED
             );
@@ -177,6 +183,6 @@ class LoginController extends Controller
         );
 
         unset($_SESSION['recover_user_id']);
-        return $this->json(["success" => true]);
+        return Response::json(["success" => true]);
     }
 }

@@ -4,16 +4,18 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Core\Http\Request;
+use App\Core\Http\Response;
 use App\Core\Http\Status;
+use App\Core\Tools;
 use App\Models\Equipos\Equipo;
 use App\Models\Equipos\EquipoModel;
-use CuyZ\Valinor\Mapper\TreeMapper;
+use App\Services\Logging\BitacoraLogger;
 
 class EquiposController extends Controller
 {
     public function __construct(
-        private TreeMapper $mapper,
-        private EquipoModel $equipoModel,
+        private $logger = new BitacoraLogger(),
+        private $equipoModel = new EquipoModel(),
     ) {}
 
     public function index()
@@ -25,7 +27,7 @@ class EquiposController extends Controller
     {
         $this->protect("equipos:ver");
         $equipos = $this->equipoModel->query();
-        return $this->json($equipos);
+        return Response::json($equipos);
     }
 
     public function find(): ?string
@@ -36,8 +38,8 @@ class EquiposController extends Controller
         $equipo = $this->equipoModel->find($id);
 
         return $equipo
-            ? $this->json($equipo)
-            : $this->json(null, Status::NOT_FOUND);
+            ? Response::json($equipo)
+            : Response::noContent();
     }
 
     public function insert(): string
@@ -48,7 +50,7 @@ class EquiposController extends Controller
         $id = $equipo->codigo_equipo ?? "";
 
         if ($this->equipoModel->find($id)) {
-            return $this->json(
+            return Response::json(
                 ['message' => 'El equipo ya existe'],
                 Status::CONFLICT
             );
@@ -60,7 +62,7 @@ class EquiposController extends Controller
             "datos_nuevos" => $new,
         ]);
 
-        return $this->json($new, Status::CREATED);
+        return Response::json($new, Status::CREATED);
     }
 
     public function update(): string
@@ -82,7 +84,7 @@ class EquiposController extends Controller
             "datos_nuevos" => $new,
         ]);
 
-        return $this->json($new, Status::CREATED);
+        return Response::json($new, Status::CREATED);
     }
 
     public function delete(): string|null
@@ -101,7 +103,7 @@ class EquiposController extends Controller
             "datos_previos" => $old,
         ]);
 
-        return $this->json(null, Status::NO_CONTENT);
+        return Response::noContent();
     }
 
     private function getId(): string
@@ -112,11 +114,11 @@ class EquiposController extends Controller
     private function validateBody(): Equipo
     {
         $body = Request::getParsedBody();
-        return $this->mapper->map(Equipo::class, $body);
+        return Tools::map(Equipo::class, $body);
     }
 
     private function notFound(): string
     {
-        return $this->json(['message' => 'El equipo no existe'], Status::NOT_FOUND);
+        return Response::json(['message' => 'El equipo no existe'], Status::NOT_FOUND);
     }
 }

@@ -6,20 +6,21 @@ use App\Controllers\Controller;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
+use App\Core\Tools;
 use App\Models\Clientes\ClienteModel;
 use App\Models\Clientes\SeguimientoFisico;
 use App\Models\Clientes\SeguimientoNutricional;
 use App\Models\Clientes\SegumientoFisicoModel;
 use App\Models\Clientes\SegumientoNutricionalModel;
-use CuyZ\Valinor\Mapper\TreeMapper;
+use App\Services\Logging\BitacoraLogger;
 
 class ClienteInfoController extends Controller
 {
     public function __construct(
-        private TreeMapper $mapper,
-        private ClienteModel $clienteModel,
-        private SegumientoFisicoModel $fisicoModel,
-        private SegumientoNutricionalModel $nutricionalModel,
+        private $logger = new BitacoraLogger(),
+        private $clienteModel = new ClienteModel(),
+        private $fisicoModel = new SegumientoFisicoModel(),
+        private $nutricionalModel = new SegumientoNutricionalModel(),
     ) {}
 
     // INFORMACIÓN DE CLIENTE
@@ -51,7 +52,7 @@ class ClienteInfoController extends Controller
         }
 
         $seguimiento = $this->fisicoModel->queryByCliente($cedula);
-        return $this->json($seguimiento);
+        return Response::json($seguimiento);
     }
 
     public function insertFisico(): string
@@ -72,7 +73,7 @@ class ClienteInfoController extends Controller
             'datos_nuevos'  => $new,
         ]);
 
-        return $this->json($new, Status::CREATED);
+        return Response::json($new, Status::CREATED);
     }
 
     public function deleteFisico(): string|null
@@ -92,13 +93,13 @@ class ClienteInfoController extends Controller
             'datos_previos'  => $old,
         ]);
 
-        return $this->json(null, Status::NO_CONTENT);
+        return Response::noContent();
     }
 
     private function validateBodyFisico(): SeguimientoFisico
     {
         $body = Request::getParsedBody();
-        return $this->mapper->map(SeguimientoFisico::class, $body);
+        return Tools::map(SeguimientoFisico::class, $body);
     }
 
     // SEGUMIENTO NUTRICIONAL
@@ -112,7 +113,7 @@ class ClienteInfoController extends Controller
         }
 
         $seguimientos = $this->nutricionalModel->queryByCliente($cedula);
-        return $this->json($seguimientos);
+        return Response::json($seguimientos);
     }
 
     public function insertNutricion(): string
@@ -133,7 +134,7 @@ class ClienteInfoController extends Controller
             'datos_nuevos' => $new,
         ]);
 
-        return $this->json($new, Status::CREATED);
+        return Response::json($new, Status::CREATED);
     }
 
     public function deleteNutricion(): string|null
@@ -153,13 +154,13 @@ class ClienteInfoController extends Controller
             'datos_previos'  => $old,
         ]);
 
-        return $this->json(null, Status::NO_CONTENT);
+        return Response::noContent();
     }
 
     private function validateBodyNutricion(): SeguimientoNutricional
     {
         $body = Request::getParsedBody();
-        return $this->mapper->map(SeguimientoNutricional::class, $body);
+        return Tools::map(SeguimientoNutricional::class, $body);
     }
 
     // Helpers
@@ -172,7 +173,7 @@ class ClienteInfoController extends Controller
             $message = "El seguimiento {$id} no existe";
             $code = Status::NOT_FOUND;
         }
-        return $this->json(['message' => $message], $code);
+        return Response::json(['message' => $message], $code);
     }
 
     private function getIdSeguimiento(): int
@@ -187,6 +188,6 @@ class ClienteInfoController extends Controller
 
     private function notFoundCliente(): string
     {
-        return $this->json(["message" => "Cliente no encontrado"], Status::NOT_FOUND);
+        return Response::json(["message" => "Cliente no encontrado"], Status::NOT_FOUND);
     }
 }

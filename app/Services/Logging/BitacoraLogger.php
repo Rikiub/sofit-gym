@@ -3,7 +3,7 @@
 namespace App\Services\Logging;
 
 use App\Services\Auth\UserSession;
-use App\Models\BitacoraDTO;
+use App\Models\BitacoraLog;
 use App\Models\BitacoraModel;
 use Psr\Log\AbstractLogger;
 use Stringable;
@@ -13,7 +13,9 @@ use Stringable;
  * Sigue la interfaz PSR-3 para facil extensibilidad con futuras herramientas. */
 class BitacoraLogger extends AbstractLogger
 {
-    public function __construct(private BitacoraModel $bitacoraModel) {}
+    public function __construct(
+        private $bitacoraModel = new BitacoraModel()
+    ) {}
 
     private string $modulo = 'sistema';
     private string $accion = 'desconocido';
@@ -46,8 +48,8 @@ class BitacoraLogger extends AbstractLogger
             "datos_nuevos",
         ]));
 
-        $this->console(LogLevel::from($level), $message);
-        $this->bitacoraModel->insert(new BitacoraDTO(
+        $this->console(Level::from($level), $message);
+        $this->bitacoraModel->insert(new BitacoraLog(
             id_usuario: UserSession::get()->id ?? null,
             modulo: $modulo,
             accion: $accion,
@@ -74,7 +76,7 @@ class BitacoraLogger extends AbstractLogger
     }
 
     /** Mostrar en consola solo en scripts */
-    public function console(LogLevel $level, string $message): void
+    public function console(Level $level, string $message): void
     {
         if (PHP_SAPI !== 'cli') return;
 

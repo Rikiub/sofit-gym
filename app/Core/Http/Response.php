@@ -2,6 +2,8 @@
 
 namespace App\Core\Http;
 
+use App\Core\Tools;
+
 /** Helpers para devolver respuestas HTTP, principalmente como JSON. */
 class Response
 {
@@ -21,8 +23,8 @@ class Response
     public static function json(mixed $data, Status $status = Status::OK): string
     {
         self::withJsonHeaders();
-        http_response_code($status->value);
-        return json_encode($data, JSON_THROW_ON_ERROR);
+        self::withStatus($status);
+        return Tools::normalizeJson($data);
     }
 
     /**
@@ -30,17 +32,17 @@ class Response
      */
     public static function noContent(Status $status = Status::NO_CONTENT): null
     {
-        http_response_code($status->value);
+        self::withStatus($status);
         return null;
     }
 
     /**
      * Redirigir a una ruta segun los query params.
      */
-    public static function redirect(array $queryParams, Status $status = Status::FOUND): void
+    public static function redirect(array $query, Status $status = Status::FOUND): void
     {
-        http_response_code($status->value);
-        header('Location: ?' . Request::buildQuery($queryParams));
+        self::withStatus($status);
+        header('Location: ?' . Request::buildQuery($query));
         exit;
     }
 }

@@ -6,10 +6,11 @@ use App\Controllers\Controller;
 use App\Services\Auth\UserSession;
 use App\Services\Auth\AuthenticatedUser;
 use App\Core\Http\Request;
+use App\Core\Http\Response;
 use App\Core\Http\Status;
+use App\Core\Tools;
 use App\Models\Notificacion;
 use App\Models\NotificacionModel;
-use CuyZ\Valinor\Mapper\TreeMapper;
 use Exception;
 
 class NotificacionesController extends Controller
@@ -17,8 +18,7 @@ class NotificacionesController extends Controller
     private AuthenticatedUser $user;
 
     public function __construct(
-        private TreeMapper $mapper,
-        private NotificacionModel $notifModel,
+        private $notifModel = new NotificacionModel(),
     ) {
         $this->user = UserSession::get();
     }
@@ -27,7 +27,7 @@ class NotificacionesController extends Controller
     {
         $id_usuario = Request::queryInt("id") ?? $this->user->id;
         $results = $this->notifModel->query($id_usuario);
-        return $this->json($results);
+        return Response::json($results);
     }
 
     public function find(): ?string
@@ -36,8 +36,8 @@ class NotificacionesController extends Controller
         $data = $this->notifModel->find($this->user->id, $id);
 
         return $data
-            ? $this->json($data)
-            : $this->json(null, Status::NOT_FOUND);
+            ? Response::json($data)
+            : Response::noContent();
     }
 
     public function leido()
@@ -46,13 +46,13 @@ class NotificacionesController extends Controller
         $leido = Request::queryBool("leido") ?? true;
 
         $this->notifModel->setLeido($this->user->id, $id, $leido);
-        return $this->json(null, Status::NO_CONTENT);
+        return Response::noContent();
     }
 
     public function leerTodas()
     {
         $this->notifModel->setLeidoTodas($this->user->id);
-        return $this->json(null, Status::NO_CONTENT);
+        return Response::noContent();
     }
 
     public function sendMultiple(): null
@@ -63,12 +63,13 @@ class NotificacionesController extends Controller
             $body["id_usuarios"]
             ?? [$this->user->id]
             ?? throw new Exception("Una lista de 'id_usuarios' es requerido");
-        $data = $this->mapper->map(Notificacion::class, $body);
+        $data = Tools::map(Notificacion::class, $body);
 
         $this->notifModel->sendByUsuarios(
             $id_usuarios,
             notificacion: $data,
         );
-        return $this->json(null, Status::NO_CONTENT);
+
+        return Response::noContent();
     }
 }

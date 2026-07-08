@@ -21,9 +21,7 @@ return array(
     'PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'),
     'OpenAI\\' => array($vendorDir . '/openai-php/client/src'),
     'League\\Plates\\' => array($vendorDir . '/league/plates/src'),
-    'Laravel\\SerializableClosure\\' => array($vendorDir . '/laravel/serializable-closure/src'),
     'LLPhant\\' => array($vendorDir . '/theodo-group/llphant/src'),
-    'Invoker\\' => array($vendorDir . '/php-di/invoker/src'),
     'Http\\Message\\MultipartStream\\' => array($vendorDir . '/php-http/multipart-stream-builder/src'),
     'Http\\Discovery\\' => array($vendorDir . '/php-http/discovery/src'),
     'GuzzleHttp\\Psr7\\' => array($vendorDir . '/guzzlehttp/psr7/src'),
@@ -32,7 +30,6 @@ return array(
     'GrahamCampbell\\ResultType\\' => array($vendorDir . '/graham-campbell/result-type/src'),
     'Fpdf\\' => array($vendorDir . '/fpdf/fpdf/src/Fpdf'),
     'Dotenv\\' => array($vendorDir . '/vlucas/phpdotenv/src'),
-    'DI\\' => array($vendorDir . '/php-di/php-di/src'),
     'CuyZ\\Valinor\\' => array($vendorDir . '/cuyz/valinor/src'),
     'App\\' => array($baseDir . '/app'),
 );

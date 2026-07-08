@@ -5,11 +5,13 @@ namespace App\Controllers;
 use App\Controllers\Controller;
 use App\Core\Reportes\ReporteAsistencia;
 use App\Models\AsistenciaModel;
+use App\Services\Logging\BitacoraLogger;
 
 class AsistenciaController extends Controller
 {
     public function __construct(
-        private AsistenciaModel $model
+        private $logger = new BitacoraLogger(),
+        private $model = new AsistenciaModel(),
     ) {}
 
     public function index()

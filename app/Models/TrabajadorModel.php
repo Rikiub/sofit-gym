@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
-use App\Core\Database;
+use App\Core\Tools;
 use App\Core\Validator;
 use App\Models\Personas\Persona;
 use App\Models\Personas\PersonaModel;
-use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 
 use function App\Core\toDbDate;
@@ -17,11 +16,9 @@ class TrabajadorModel extends Model
     private string $primaryKey = 'cedula';
 
     public function __construct(
-        Database $db,
-        private TreeMapper $mapper,
-        private PersonaModel $personaModel,
+        private PersonaModel $personaModel = new PersonaModel(),
     ) {
-        return parent::__construct($db);
+        parent::__construct();
     }
 
     /** Resumen estadisticos */
@@ -81,7 +78,7 @@ class TrabajadorModel extends Model
         $rows = $this->db->dbQuery($sql, $params)->fetchAll();
 
         return array_map(
-            fn($row) => $this->mapper->map(Trabajador::class, $row),
+            fn($row) => Tools::map(Trabajador::class, $row),
             $rows
         );
     }
@@ -94,7 +91,7 @@ class TrabajadorModel extends Model
         )->fetch();
 
         return $row
-            ? $this->mapper->map(Trabajador::class, $row)
+            ? Tools::map(Trabajador::class, $row)
             : null;
     }
 

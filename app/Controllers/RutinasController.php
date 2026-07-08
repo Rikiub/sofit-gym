@@ -4,11 +4,13 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Models\RutinaModel;
+use App\Services\Logging\BitacoraLogger;
 
 class RutinasController extends Controller
 {
     public function __construct(
-        private RutinaModel $model
+        private $logger = new BitacoraLogger(),
+        private $model = new RutinaModel()
     ) {}
 
     /**

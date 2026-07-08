@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
+use App\Core\Tools;
 use App\Services\ImageStorage;
-use App\Core\Database;
 use App\Core\Validator;
-use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use Exception;
 
@@ -17,11 +16,9 @@ class UsuarioModel extends Model
     private string $primaryKey = "id_usuario";
 
     public function __construct(
-        Database $db,
-        private TreeMapper $mapper,
-        private ImageStorage $image,
+        private $image = new ImageStorage(),
     ) {
-        parent::__construct($db);
+        parent::__construct();
     }
 
     /**
@@ -174,7 +171,7 @@ class UsuarioModel extends Model
     private function mapUsuario(array $row): Usuario
     {
         $row["permisos"] = json_decode($row["permisos"], true);
-        $usuario = $this->mapper->map(Usuario::class, $row);
+        $usuario = Tools::map(Usuario::class, $row);
         return $usuario;
     }
 

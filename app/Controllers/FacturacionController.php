@@ -6,12 +6,14 @@ use App\Controllers\Controller;
 use App\Core\Http\Response;
 use App\Core\Reportes\ReporteFinanciero;
 use App\Models\FacturacionModel;
+use App\Services\Logging\BitacoraLogger;
 use Exception;
 
 class FacturacionController extends Controller
 {
     public function __construct(
-        private FacturacionModel $model,
+        private $logger = new BitacoraLogger(),
+        private $model = new FacturacionModel(),
     ) {}
 
     public function index()
@@ -167,7 +169,7 @@ class FacturacionController extends Controller
     public function resumen_semana(): string
     {
         $resultados = $this->model->obtenerResumenFinancieroSemanal();
-        return $this->json($resultados);
+        return Response::json($resultados);
     }
 
     public function buscar_ajax()
@@ -181,7 +183,7 @@ class FacturacionController extends Controller
         $termino = $_GET['termino'] ?? '';
         $resultados = $this->model->buscarPagos($termino);
 
-        return $this->json($resultados);
+        return Response::json($resultados);
     }
 
     public function ingresos_mensuales()
@@ -189,7 +191,7 @@ class FacturacionController extends Controller
         $this->protect("facturacion:ver");
 
         $ingresos = $this->model->obtenerIngresosMesActual();
-        return $this->json($ingresos);
+        return Response::json($ingresos);
     }
 
     /**

@@ -2,28 +2,23 @@
 
 namespace App\Models;
 
-use App\Core\Database;
+use App\Core\Tools;
 use App\Models\Clientes\ClienteModel;
 use App\Models\Clientes\SegumientoFisicoModel;
 use App\Models\Clientes\SegumientoNutricionalModel;
-use CuyZ\Valinor\Mapper\TreeMapper;
-use CuyZ\Valinor\Normalizer\Normalizer;
 use DateTimeImmutable;
 
 class AsistenteModel extends Model
 {
     public function __construct(
-        Database $db,
-        private TreeMapper $mapper,
-        private Normalizer $normalizer,
-        private AsistenciaModel $asistenciaModel,
-        private RutinaModel $rutinaModel,
-        private TrabajadorModel $trabajadorModel,
-        private ClienteModel $clienteModel,
-        private SegumientoFisicoModel $segFisicoModel,
-        private SegumientoNutricionalModel $segNutricionalModel,
+        private $asistenciaModel = new AsistenciaModel(),
+        private $rutinaModel = new RutinaModel(),
+        private $trabajadorModel = new TrabajadorModel(),
+        private $clienteModel = new ClienteModel(),
+        private $segFisicoModel = new SegumientoFisicoModel(),
+        private $segNutricionalModel = new SegumientoNutricionalModel(),
     ) {
-        parent::__construct($db);
+        parent::__construct();
     }
 
     public function insertSesion(AsistenteSesion $sesion): AsistenteSesion
@@ -61,7 +56,7 @@ class AsistenteModel extends Model
         )->fetchAll();
 
         return array_map(
-            fn($row) => $this->mapper->map(AsistenteSesion::class, $row),
+            fn($row) => Tools::map(AsistenteSesion::class, $row),
             $rows,
         );
     }
@@ -88,7 +83,7 @@ class AsistenteModel extends Model
         )->fetchAll();
         $sesion["mensajes"] = $mensajes;
 
-        return $this->mapper->map(AsistenteSesion::class, $sesion);
+        return Tools::map(AsistenteSesion::class, $sesion);
     }
 
     public function getLastSesion(int $id_usuario): ?AsistenteSesion
@@ -127,7 +122,7 @@ class AsistenteModel extends Model
     public function queryClientes(?string $search = null, array $filters = []): string
     {
         $items = $this->clienteModel->query(search: $search, filters: $filters);
-        return $this->normalizer->normalize($items);
+        return Tools::normalizeJson($items);
     }
 
     /** * Busca un cliente específico utilizando su cédula exacta y devuelve su información personal.
@@ -137,7 +132,7 @@ class AsistenteModel extends Model
     public function findCliente(string $cedula_cliente): string
     {
         $items = $this->clienteModel->find($cedula_cliente);
-        return $this->normalizer->normalize($items);
+        return Tools::normalizeJson($items);
     }
 
     /** * Retorna el listado de seguimientos físicos de un cliente ordenados por fecha.
@@ -149,7 +144,7 @@ class AsistenteModel extends Model
     public function querySegFisico(string $cedula_cliente): string
     {
         $items = $this->segFisicoModel->queryByCliente($cedula_cliente);
-        return $this->normalizer->normalize($items);
+        return Tools::normalizeJson($items);
     }
 
     /** * Retorna el listado de seguimientos nutricionales de un cliente ordenados por fecha.
@@ -161,7 +156,7 @@ class AsistenteModel extends Model
     public function querySegNutricional(string $cedula_cliente): string
     {
         $items = $this->segNutricionalModel->queryByCliente($cedula_cliente);
-        return $this->normalizer->normalize($items);
+        return Tools::normalizeJson($items);
     }
 
     /** * Retorna un listado de trabajadores del gimnasio.
@@ -171,7 +166,7 @@ class AsistenteModel extends Model
     public function queryTrabajadores(?string $search = null): string
     {
         $items = $this->trabajadorModel->query($search);
-        return $this->normalizer->normalize($items);
+        return Tools::normalizeJson($items);
     }
 
     /** * Retorna un listado de asistencias (historial de accesos al gimnasio).
@@ -181,7 +176,7 @@ class AsistenteModel extends Model
     public function queryAsistencias(?string $search = ""): string
     {
         $items = $this->asistenciaModel->buscarEntradas($search);
-        return $this->normalizer->normalize($items);
+        return Tools::normalizeJson($items);
     }
 
     /** * Retorna el historial de rutinas asignadas a un cliente específico.
@@ -193,7 +188,7 @@ class AsistenteModel extends Model
     public function queryRutinas(string $cedula_cliente): string
     {
         $items = $this->rutinaModel->obtenerAsignacionesPorCliente($cedula_cliente);
-        return $this->normalizer->normalize($items);
+        return Tools::normalizeJson($items);
     }
 }
 

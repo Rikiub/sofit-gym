@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use Psr\Container\ContainerInterface;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
@@ -24,7 +23,7 @@ class FrontController
     private ?AuthenticatedUser $user;
     private bool $isDebug;
 
-    public function __construct(private ContainerInterface $container)
+    public function __construct()
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -57,9 +56,9 @@ class FrontController
             // Ejecutar middlewares
             $this->middlewares($page, $action);
 
-            // Resolver controlador desde el contenedor DI
+            // Resolver controlador
             /** @var Controller */
-            $controller = $this->container->get($classPath);
+            $controller = new $classPath;
 
             if (!method_exists($controller, $action)) {
                 throw new Exception("Method '$action' not found in controller '$className'");
@@ -81,10 +80,6 @@ class FrontController
         if ($page !== "login" && !$this->user) {
             Response::redirect(["page" => "login"]);
         }
-
-        // Inicializar contexto del logger
-        $logger = $this->container->get(BitacoraLogger::class);
-        $logger->setRouteContext($page, $action);
     }
 
     private function handleNotFound(string $className, string $classPath): void

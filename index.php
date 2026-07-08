@@ -2,9 +2,9 @@
 
 use App\Controllers\FrontController;
 
-// Cargar autoload, variables de entorno y construir contenedor DI
-$container = require 'bootstrap/app.php';
+// Cargar autoload y variables de entorno
+require 'bootstrap/app.php';
 
 // Iniciar aplicacion
-$front = $container->get(FrontController::class);
+$front = new FrontController();
 $front->run();

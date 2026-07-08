@@ -1,13 +1,10 @@
 <?php
 
 use App\Services\RespaldoService;
-use Psr\Container\ContainerInterface;
 
-/** @var ContainerInterface */
-$container = require "bootstrap/app.php";
+require "bootstrap/app.php";
 
-/** @var RespaldoService */
-$respaldo = $container->get(RespaldoService::class);
+$respaldo = new RespaldoService();
 $respaldo->backup();
 
 // echo json_encode($respaldo->getAll());

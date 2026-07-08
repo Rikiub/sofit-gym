@@ -4,16 +4,18 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Core\Http\Request;
+use App\Core\Http\Response;
 use App\Core\Http\Status;
 use App\Core\Reportes\ReporteClientes;
+use App\Core\Tools;
 use App\Models\Clientes\Cliente;
 use App\Models\Clientes\ClienteModel;
-use CuyZ\Valinor\Mapper\TreeMapper;
+use App\Services\Logging\BitacoraLogger;
 
 class ClientesController extends Controller
 {
     public function __construct(
-        private TreeMapper $mapper,
+        private $logger = new BitacoraLogger(),
         private $clienteModelo = new ClienteModel(),
     ) {}
 
@@ -31,14 +33,14 @@ class ClientesController extends Controller
         $filters = Request::query("filters") ?? [];
 
         $clientes = $this->clienteModelo->query($search, $filters);
-        return $this->json($clientes);
+        return Response::json($clientes);
     }
 
     public function summary(): string
     {
         $this->protect("clientes:ver");
         $clientes = $this->clienteModelo->getSummary();
-        return $this->json($clientes);
+        return Response::json($clientes);
     }
 
     public function find(): ?string
@@ -49,8 +51,8 @@ class ClientesController extends Controller
         $cliente = $this->clienteModelo->find($id);
 
         return $cliente
-            ? $this->json($cliente)
-            : $this->json(null, Status::NOT_FOUND);
+            ? Response::json($cliente)
+            : Response::noContent();
     }
 
     public function insert(): string
@@ -61,7 +63,7 @@ class ClientesController extends Controller
         $id = $cliente->cedula;
 
         if ($this->clienteModelo->checkDuplicate($id)) {
-            return $this->json(
+            return Response::json(
                 ['message' => "El cliente {$id} ya existe"],
                 Status::CONFLICT
             );
@@ -76,7 +78,7 @@ class ClientesController extends Controller
             ],
         );
 
-        return $this->json($newCliente, Status::CREATED);
+        return Response::json($newCliente, Status::CREATED);
     }
 
     public function update(): string
@@ -101,7 +103,7 @@ class ClientesController extends Controller
             ],
         );
 
-        return $this->json($cliente, Status::CREATED);
+        return Response::json($cliente, Status::CREATED);
     }
 
     public function delete(): string|null
@@ -119,12 +121,12 @@ class ClientesController extends Controller
             ["cedula" => $id]
         );
 
-        return $this->json(null, Status::NO_CONTENT);
+        return Response::noContent();
     }
 
     private function notFound(): string
     {
-        return $this->json(
+        return Response::json(
             ['message' => "El cliente no existe"],
             Status::NOT_FOUND
         );
@@ -138,7 +140,7 @@ class ClientesController extends Controller
     private function validateBody(): Cliente
     {
         $body = Request::getParsedBody();
-        return $this->mapper->map(Cliente::class, $body);
+        return Tools::map(Cliente::class, $body);
     }
 
     // REPORTES

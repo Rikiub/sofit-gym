@@ -4,16 +4,16 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Core\Http\Request;
+use App\Core\Http\Response;
 use App\Core\Http\Status;
+use App\Core\Tools;
 use App\Models\Rol;
 use App\Models\RolModel;
-use CuyZ\Valinor\Mapper\TreeMapper;
 
 class RolesController extends Controller
 {
     public function __construct(
-        private TreeMapper $mapper,
-        private RolModel $rolModel,
+        private $rolModel = new RolModel(),
     ) {}
 
     public function index(): string
@@ -28,7 +28,7 @@ class RolesController extends Controller
     {
         $this->protect("roles:ver");
         $roles = $this->rolModel->query();
-        return $this->json($roles);
+        return Response::json($roles);
     }
 
     public function find(): ?string
@@ -42,7 +42,7 @@ class RolesController extends Controller
             return $this->notFound();
         }
 
-        return $this->json($rol);
+        return Response::json($rol);
     }
 
     public function update(): string
@@ -57,12 +57,12 @@ class RolesController extends Controller
         }
 
         $rol = $this->rolModel->update($id, $rol);
-        return $this->json($rol, Status::CREATED);
+        return Response::json($rol, Status::CREATED);
     }
 
     private function notFound(): string
     {
-        return $this->json(["message" => "El rol no existe"], Status::NOT_FOUND);
+        return Response::json(["message" => "El rol no existe"], Status::NOT_FOUND);
     }
 
     private function getId(): int
@@ -73,6 +73,6 @@ class RolesController extends Controller
     private function validateBody(): Rol
     {
         $body = Request::getParsedBody();
-        return $this->mapper->map(Rol::class, $body);
+        return Tools::map(Rol::class, $body);
     }
 }

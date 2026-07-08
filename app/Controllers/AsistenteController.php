@@ -7,6 +7,7 @@ use App\Services\Auth\UserSession;
 use App\Services\Auth\AuthenticatedUser;
 use App\Core\Config;
 use App\Core\Http\Request;
+use App\Core\Http\Response;
 use App\Core\Http\Status;
 use App\Models\AsistenteMensaje;
 use App\Models\AsistenteModel;
@@ -29,9 +30,12 @@ class AsistenteController extends Controller
     private array $messages;
 
     public function __construct(
-        private GeminiOpenAIConfig $config,
-        private AsistenteModel $asistenteModel,
+        private $asistenteModel = new AsistenteModel(),
     ) {
+        $config = new GeminiOpenAIConfig();
+        $config->apiKey = $_ENV["GEMINI_API_KEY"];
+        $config->model = "gemini-2.5-flash-lite";
+
         $this->chat = new OpenAIChat($config);
         $this->user =  UserSession::get();
     }
@@ -106,7 +110,7 @@ class AsistenteController extends Controller
         $body = Request::getParsedBody();
         $content = $body["message"];
         if (!$content) {
-            return $this->json(
+            return Response::json(
                 ["message" => "Se debe proporcionar el parametro 'message'"],
                 Status::BAD_REQUEST
             );
@@ -137,7 +141,7 @@ class AsistenteController extends Controller
                     rol: RolAsistente::Asistente,
                     contenido: $result,
                 ));
-                return $this->json([
+                return Response::json([
                     "message" => $result,
                 ]);
             }
@@ -152,7 +156,7 @@ class AsistenteController extends Controller
             }
         }
 
-        return $this->json(
+        return Response::json(
             ["message" => "Excedido el límite de vueltas."],
             Status::INTERNAL_SERVER_ERROR
         );
@@ -161,7 +165,7 @@ class AsistenteController extends Controller
     public function querySesiones()
     {
         $sesiones = $this->asistenteModel->querySesiones();
-        return $this->json($sesiones);
+        return Response::json($sesiones);
     }
 
     public function findSesion(): string
@@ -170,13 +174,13 @@ class AsistenteController extends Controller
         $sesion = $this->asistenteModel->findSesion($id);
 
         if (!$sesion || $sesion->id_usuario !== $this->user->id) {
-            return $this->json(
+            return Response::json(
                 ["message" => "Sesion no encontrada o no autorizada"],
                 Status::FORBIDDEN
             );
         }
 
-        return $this->json($sesion);
+        return Response::json($sesion);
     }
 
     public function newSesion(): string
@@ -187,6 +191,6 @@ class AsistenteController extends Controller
         ));
         $this->messages = [];
 
-        return $this->json($this->sesion);
+        return Response::json($this->sesion);
     }
 }

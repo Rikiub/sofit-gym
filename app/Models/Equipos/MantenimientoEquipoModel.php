@@ -2,10 +2,9 @@
 
 namespace App\Models\Equipos;
 
-use App\Core\Database;
+use App\Core\Tools;
 use App\Core\Validator;
 use App\Models\Model;
-use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use InvalidArgumentException;
 
@@ -17,11 +16,9 @@ class MantenimientoEquipoModel extends Model
     private string $primaryKey = 'id_mantenimiento';
 
     public function __construct(
-        Database $db,
-        private TreeMapper $mapper,
-        private EquipoModel $equipoModel,
+        private $equipoModel = new EquipoModel(),
     ) {
-        return parent::__construct($db);
+        return parent::__construct();
     }
 
     /**
@@ -104,7 +101,7 @@ class MantenimientoEquipoModel extends Model
     private function mapToMantenimiento(array $row): MantenimientoEquipo
     {
         $row['equipo'] = $this->equipoModel->find($row['codigo_equipo']);
-        $mantenimiento = $this->mapper->map(MantenimientoEquipo::class, $row);
+        $mantenimiento = Tools::map(MantenimientoEquipo::class, $row);
         return $mantenimiento;
     }
 

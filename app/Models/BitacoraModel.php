@@ -12,19 +12,19 @@ class BitacoraModel extends Model
     private string $primaryKey = 'id_bitacora';
 
     /**
-     * @return BitacoraDTO[]
+     * @return BitacoraLog[]
      */
     public function query(): array
     {
         $rows = $this->db->dbQuery($this->sqlSelect())->fetchAll();
 
         return array_map(
-            fn($row) => Tools::map(BitacoraDTO::class, $row),
+            fn($row) => Tools::map(BitacoraLog::class, $row),
             $rows
         );
     }
 
-    public function find(int $id): ?BitacoraDTO
+    public function find(int $id): ?BitacoraLog
     {
         $row = $this->db->dbQuery(
             $this->sqlSelect(where: "WHERE {$this->table}.{$this->primaryKey} = ?"),
@@ -32,11 +32,11 @@ class BitacoraModel extends Model
         )->fetch();
 
         return $row
-            ? Tools::map(BitacoraDTO::class, $row)
+            ? Tools::map(BitacoraLog::class, $row)
             : null;
     }
 
-    public function insert(BitacoraDTO $bitacora): BitacoraDTO
+    public function insert(BitacoraLog $bitacora): BitacoraLog
     {
         $bitacora->validateInsert();
 
@@ -76,7 +76,8 @@ class BitacoraModel extends Model
         );
     }
 
-    private function mapToColumns(BitacoraDTO $dto): array
+    // Helpers
+    private function mapToColumns(BitacoraLog $dto): array
     {
         return [
             'id_usuario' => $dto->id_usuario,
@@ -110,7 +111,7 @@ class BitacoraModel extends Model
 }
 
 // DTO
-readonly class BitacoraDTO
+readonly class BitacoraLog
 {
     public function __construct(
         public ?int $id_bitacora = null,

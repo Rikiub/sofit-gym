@@ -7,28 +7,20 @@ use App\Models\FacturacionModel;
 use App\Models\ProductoModel;
 use App\Models\Equipos\EquipoModel;
 use App\Models\Equipos\MantenimientoEquipoModel;
-use Psr\Container\ContainerInterface;
+
+require 'bootstrap/app.php';
 
 const CONTEXT = [
     "modulo" => "notificaciones",
     "accion" => "enviar",
 ];
 
-/** @var ContainerInterface */
-$container = require 'bootstrap/app.php';
-
-/** @var NotificacionService */
-$notif = $container->get(NotificacionService::class);
-/** @var BitacoraLogger */
-$logger = $container->get(BitacoraLogger::class);
-/** @var FacturacionModel */
-$facturacionModel = $container->get(FacturacionModel::class);
-/** @var ProductoModel */
-$productoModel = $container->get(ProductoModel::class);
-/** @var EquipoModel */
-$equipoModel = $container->get(EquipoModel::class);
-/** @var MantenimientoEquipoModel */
-$mantenimientoModel = $container->get(MantenimientoEquipoModel::class);
+$notif = new NotificacionService();
+$logger = new BitacoraLogger();
+$facturacionModel = new FacturacionModel();
+$productoModel = new ProductoModel();
+$equipoModel = new EquipoModel();
+$mantenimientoModel = new MantenimientoEquipoModel();
 
 // Día de la semana actual (1 = lunes, 7 = domingo)
 $diaSemana = (int) date('N');

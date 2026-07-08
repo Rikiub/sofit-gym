@@ -4,17 +4,18 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Core\Http\Request;
+use App\Core\Http\Response;
 use App\Core\Http\Status;
+use App\Core\Tools;
 use App\Models\Equipos\MantenimientoEquipo;
 use App\Models\Equipos\MantenimientoEquipoModel;
-use CuyZ\Valinor\Mapper\TreeMapper;
-
+use App\Services\Logging\BitacoraLogger;
 
 class EquiposMantenimientoController extends Controller
 {
     public function __construct(
-        private TreeMapper $mapper,
-        private MantenimientoEquipoModel $model,
+        private $logger = new BitacoraLogger(),
+        private $model = new MantenimientoEquipoModel(),
     ) {}
 
     public function index()
@@ -27,7 +28,7 @@ class EquiposMantenimientoController extends Controller
     {
         $this->protect("equipos:ver");
         $data = $this->model->query();
-        return $this->json($data);
+        return Response::json($data);
     }
 
     public function find(): ?string
@@ -38,8 +39,8 @@ class EquiposMantenimientoController extends Controller
         $data = $this->model->find($id);
 
         return $data
-            ? $this->json($data)
-            : $this->json(null, Status::NOT_FOUND);
+            ? Response::json($data)
+            : Response::noContent();
     }
 
     public function insert(): string
@@ -55,7 +56,7 @@ class EquiposMantenimientoController extends Controller
             'datos_nuevos' => $new,
         ]);
 
-        return $this->json($new, Status::CREATED);
+        return Response::json($new, Status::CREATED);
     }
 
     public function update(): string
@@ -79,7 +80,7 @@ class EquiposMantenimientoController extends Controller
             'datos_nuevos'     => $new,
         ]);
 
-        return $this->json($new, Status::CREATED);
+        return Response::json($new, Status::CREATED);
     }
 
     public function delete(): string|null
@@ -99,12 +100,12 @@ class EquiposMantenimientoController extends Controller
             'datos_previos' => $old,
         ]);
 
-        return $this->json(null, Status::NO_CONTENT);
+        return Response::noContent();
     }
 
     private function notFound(): string
     {
-        return $this->json(['message' => 'El mantenimiento no existe'], Status::NOT_FOUND);
+        return Response::json(['message' => 'El mantenimiento no existe'], Status::NOT_FOUND);
     }
 
     private function getId(): int
@@ -115,6 +116,6 @@ class EquiposMantenimientoController extends Controller
     private function validateBody(): MantenimientoEquipo
     {
         $body = Request::getParsedBody();
-        return $this->mapper->map(MantenimientoEquipo::class, $body);
+        return Tools::map(MantenimientoEquipo::class, $body);
     }
 }

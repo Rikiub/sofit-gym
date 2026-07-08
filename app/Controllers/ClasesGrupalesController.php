@@ -4,14 +4,17 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Core\Http\Request;
+use App\Core\Http\Response;
 use App\Core\Http\Status;
 use App\Core\Tools;
 use App\Models\ClaseGrupal;
 use App\Models\ClaseGrupalModel;
+use App\Services\Logging\BitacoraLogger;
 
 class ClasesGrupalesController extends Controller
 {
     public function __construct(
+        private $logger = new BitacoraLogger(),
         private $claseModel = new ClaseGrupalModel(),
     ) {}
 
@@ -25,7 +28,7 @@ class ClasesGrupalesController extends Controller
     {
         $this->protect("clases:ver");
         $clases = $this->claseModel->query();
-        return $this->json($clases);
+        return Response::json($clases);
     }
 
     public function find(): ?string
@@ -36,8 +39,8 @@ class ClasesGrupalesController extends Controller
         $clase = $this->claseModel->find($id);
 
         return $clase
-            ? $this->json($clase)
-            : $this->json(null, Status::NOT_FOUND);
+            ? Response::json($clase)
+            : Response::noContent();
     }
 
     public function insert(): string
@@ -53,7 +56,7 @@ class ClasesGrupalesController extends Controller
             'datos_nuevos'  => $new,
         ]);
 
-        return $this->json($new, Status::CREATED);
+        return Response::json($new, Status::CREATED);
     }
 
     public function update(): string
@@ -76,7 +79,7 @@ class ClasesGrupalesController extends Controller
             'datos_nuevos' => $new,
         ]);
 
-        return $this->json($new, Status::CREATED);
+        return Response::json($new, Status::CREATED);
     }
 
     public function delete(): string|null
@@ -96,7 +99,7 @@ class ClasesGrupalesController extends Controller
             'datos_previos' => $old,
         ]);
 
-        return $this->json(null, Status::NO_CONTENT);
+        return Response::noContent();
     }
 
     private function getId(): int
@@ -106,7 +109,7 @@ class ClasesGrupalesController extends Controller
 
     private function notFound(): string
     {
-        return $this->json(["message" => "Clase no encontrada"], Status::NOT_FOUND);
+        return Response::json(["message" => "Clase no encontrada"], Status::NOT_FOUND);
     }
 
     private function validateBody(): ClaseGrupal

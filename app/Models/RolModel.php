@@ -2,18 +2,10 @@
 
 namespace App\Models;
 
-use App\Core\Database;
-use CuyZ\Valinor\Mapper\TreeMapper;
+use App\Core\Tools;
 
 class RolModel extends Model
 {
-    public function __construct(
-        Database $db,
-        private TreeMapper $mapper,
-    ) {
-        parent::__construct($db);
-    }
-
     /**
      * @return Rol[]
      */
@@ -109,7 +101,7 @@ class RolModel extends Model
     private function mapRol(array $row): Rol
     {
         $row["permisos"] = json_decode($row["permisos"], true);
-        return $this->mapper->map(Rol::class, $row);
+        return Tools::map(Rol::class, $row);
     }
 
     private function sqlSelect(string $where = ""): string

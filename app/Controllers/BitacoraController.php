@@ -2,12 +2,13 @@
 
 namespace App\Controllers;
 
+use App\Core\Http\Response;
 use App\Models\BitacoraModel;
 
 class BitacoraController extends Controller
 {
     public function __construct(
-        private BitacoraModel $bitacoraModel
+        private $bitacoraModel = new BitacoraModel()
     ) {}
 
     public function index()
@@ -20,6 +21,6 @@ class BitacoraController extends Controller
     {
         $this->protect("bitacora:ver");
         $logs = $this->bitacoraModel->query();
-        return $this->json($logs);
+        return Response::json($logs);
     }
 }

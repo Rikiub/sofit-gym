@@ -7,19 +7,21 @@ use App\Services\Auth\UserSession;
 use App\Services\Auth\AuthenticatedUser;
 use App\Services\ImageStorage;
 use App\Core\Http\Request;
+use App\Core\Http\Response;
 use App\Core\Http\Status;
+use App\Core\Tools;
 use App\Models\Usuario;
 use App\Models\UsuarioModel;
-use CuyZ\Valinor\Mapper\TreeMapper;
+use App\Services\Logging\BitacoraLogger;
 
 class UsuariosController extends Controller
 {
     private AuthenticatedUser $user;
 
     public function __construct(
-        private TreeMapper $mapper,
-        private UsuarioModel $usuarioModel,
-        private ImageStorage $image,
+        private $logger = new BitacoraLogger(),
+        private $image = new ImageStorage(),
+        private $usuarioModel = new UsuarioModel(),
     ) {
         $this->user = UserSession::get();
     }
@@ -36,7 +38,7 @@ class UsuariosController extends Controller
     {
         $this->protect("usuarios:ver");
         $usuarios = $this->usuarioModel->query();
-        return $this->json($usuarios);
+        return Response::json($usuarios);
     }
 
     public function find(): ?string
@@ -49,7 +51,7 @@ class UsuariosController extends Controller
         }
 
         $this->protectAccess("usuarios:ver", $usuario);
-        return $this->json($usuario);
+        return Response::json($usuario);
     }
 
     public function insert(): string
@@ -58,7 +60,7 @@ class UsuariosController extends Controller
         $new = $this->validateBody();
 
         if ($this->usuarioModel->findByUsername($new->nombre_usuario)) {
-            return $this->json(
+            return Response::json(
                 ['message' => 'El usuario ya existe'],
                 Status::CONFLICT
             );
@@ -71,7 +73,7 @@ class UsuariosController extends Controller
             'datos_nuevos'   => $new,
         ]);
 
-        return $this->json($new, Status::CREATED);
+        return Response::json($new, Status::CREATED);
     }
 
     public function update(): string
@@ -101,7 +103,7 @@ class UsuariosController extends Controller
             'datos_nuevos'   => $new,
         ]);
 
-        return $this->json($new, Status::CREATED);
+        return Response::json($new, Status::CREATED);
     }
 
     public function delete(): string|null
@@ -122,7 +124,7 @@ class UsuariosController extends Controller
             'datos_previos'  => $old,
         ]);
 
-        return $this->json(null, Status::NO_CONTENT);
+        return Response::noContent();
     }
 
     public function uploadImage(): string
@@ -130,14 +132,14 @@ class UsuariosController extends Controller
         $image = $_FILES['image'] ?? null;
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !$image) {
-            return $this->json(
+            return Response::json(
                 ['error' => 'Petición inválida'],
                 Status::BAD_REQUEST
             );
         }
 
         $filename = $this->image->saveTemp($image);
-        return $this->json([
+        return Response::json([
             'temp_filename' => $filename
         ]);
     }
@@ -151,12 +153,12 @@ class UsuariosController extends Controller
     private function validateBody(): Usuario
     {
         $body = Request::getParsedBody();
-        return $this->mapper->map(Usuario::class, $body);
+        return Tools::map(Usuario::class, $body);
     }
 
     private function notFound(): string
     {
-        return $this->json(
+        return Response::json(
             ['message' => 'El usuario no existe'],
             Status::NOT_FOUND
         );
@@ -169,7 +171,7 @@ class UsuariosController extends Controller
             !$this->user->hasPermiso($permiso)
             && $this->user->id !== $usuario->id_usuario
         ) {
-            echo $this->json(
+            echo Response::json(
                 ["message" => "No esta autorizado"],
                 Status::FORBIDDEN
             );

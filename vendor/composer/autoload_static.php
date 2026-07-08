@@ -14,7 +14,6 @@ class ComposerStaticInit007908f45e1ed672225b026d49057923
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '61ba3e92ef91a7a0f1cc260ebd9290e4' => __DIR__ . '/..' . '/openai-php/client/src/OpenAI.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
-        'b33e3d135e5d9e47d845c576147bda89' => __DIR__ . '/..' . '/php-di/php-di/src/functions.php',
         '3c4cad93409359dce46ad26276e37ed3' => __DIR__ . '/../..' . '/app/Core/functions.php',
     );
 
@@ -48,12 +47,7 @@ class ComposerStaticInit007908f45e1ed672225b026d49057923
         'L' =>
         array (
             'League\\Plates\\' => 14,
-            'Laravel\\SerializableClosure\\' => 28,
             'LLPhant\\' => 8,
-        ),
-        'I' =>
-        array (
-            'Invoker\\' => 8,
         ),
         'H' =>
         array (
@@ -74,7 +68,6 @@ class ComposerStaticInit007908f45e1ed672225b026d49057923
         'D' =>
         array (
             'Dotenv\\' => 7,
-            'DI\\' => 3,
         ),
         'C' =>
         array (
@@ -148,17 +141,9 @@ class ComposerStaticInit007908f45e1ed672225b026d49057923
         array (
             0 => __DIR__ . '/..' . '/league/plates/src',
         ),
-        'Laravel\\SerializableClosure\\' =>
-        array (
-            0 => __DIR__ . '/..' . '/laravel/serializable-closure/src',
-        ),
         'LLPhant\\' =>
         array (
             0 => __DIR__ . '/..' . '/theodo-group/llphant/src',
-        ),
-        'Invoker\\' =>
-        array (
-            0 => __DIR__ . '/..' . '/php-di/invoker/src',
         ),
         'Http\\Message\\MultipartStream\\' =>
         array (
@@ -191,10 +176,6 @@ class ComposerStaticInit007908f45e1ed672225b026d49057923
         'Dotenv\\' =>
         array (
             0 => __DIR__ . '/..' . '/vlucas/phpdotenv/src',
-        ),
-        'DI\\' =>
-        array (
-            0 => __DIR__ . '/..' . '/php-di/php-di/src',
         ),
         'CuyZ\\Valinor\\' =>
         array (

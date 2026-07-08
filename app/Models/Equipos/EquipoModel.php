@@ -2,23 +2,15 @@
 
 namespace App\Models\Equipos;
 
-use App\Core\Database;
+use App\Core\Tools;
 use App\Core\Validator;
 use App\Models\Model;
-use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 
 class EquipoModel extends Model
 {
     private string $table = 'equipo';
     private string $primaryKey = 'codigo_equipo';
-
-    public function __construct(
-        Database $db,
-        private TreeMapper $mapper,
-    ) {
-        return parent::__construct($db);
-    }
 
     /**
      * @return Equipo[]
@@ -27,7 +19,7 @@ class EquipoModel extends Model
     {
         $rows = $this->db->dbQuery($this->sqlSelect())->fetchAll();
         return array_map(
-            fn($row) => $this->mapper->map(Equipo::class, $row),
+            fn($row) => Tools::map(Equipo::class, $row),
             $rows
         );
     }
@@ -50,7 +42,7 @@ class EquipoModel extends Model
         )->fetch();
 
         return $row
-            ? $this->mapper->map(Equipo::class, $row)
+            ? Tools::map(Equipo::class, $row)
             : null;
     }
 

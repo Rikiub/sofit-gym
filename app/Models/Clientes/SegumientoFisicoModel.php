@@ -2,9 +2,8 @@
 
 namespace App\Models\Clientes;
 
-use App\Core\Database;
+use App\Core\Tools;
 use App\Models\Model;
-use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use InvalidArgumentException;
 
@@ -14,13 +13,6 @@ class SegumientoFisicoModel extends Model
 {
     private string $table = 'seguimiento_fisico';
     private string $primaryKey = 'id_seguimiento';
-
-    public function __construct(
-        Database $db,
-        private TreeMapper $mapper,
-    ) {
-        return parent::__construct($db);
-    }
 
     private function sqlSelect(string $where = ""): string
     {
@@ -46,7 +38,7 @@ class SegumientoFisicoModel extends Model
         )->fetchAll();
 
         return array_map(
-            fn($row) => $this->mapper->map(SeguimientoFisico::class, $row),
+            fn($row) => Tools::map(SeguimientoFisico::class, $row),
             $rows
         );
     }
@@ -62,7 +54,7 @@ class SegumientoFisicoModel extends Model
         )->fetch();
 
         return $row
-            ? $this->mapper->map(SeguimientoFisico::class, $row)
+            ? Tools::map(SeguimientoFisico::class, $row)
             : null;
     }
 

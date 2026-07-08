@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Core\Config;
 use App\Services\Logging\BitacoraLogger;
-use App\Services\Logging\LogLevel;
+use App\Services\Logging\Level;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
@@ -24,8 +24,9 @@ class RespaldoService
     private string $dbUsername;
     private string $dbPassword;
 
-    public function __construct(private BitacoraLogger $logger)
-    {
+    public function __construct(
+        private $logger = new BitacoraLogger()
+    ) {
         $this->backupsDir = Config::get("fs.backups");
 
         $this->mysqlPath = Config::get("db.path.mysql");
@@ -148,7 +149,7 @@ class RespaldoService
                     "accion" => "backup",
                 ]);
                 $this->logger->console(
-                    LogLevel::ERROR,
+                    Level::ERROR,
                     "Output: " . implode("\n", $output)
                 );
 
