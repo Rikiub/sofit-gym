@@ -7,8 +7,8 @@ use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
 use App\Core\Tools;
-use App\Models\Equipos\Equipo;
-use App\Models\Equipos\EquipoModel;
+use App\Models\Equipo;
+use App\Models\EquipoModel;
 use App\Services\Logging\BitacoraLogger;
 
 class EquiposController extends Controller

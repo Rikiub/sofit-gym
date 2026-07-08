@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Equipos;
+namespace App\Models;
 
 use App\Core\Tools;
 use App\Core\Validator;
