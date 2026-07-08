@@ -59,8 +59,8 @@ class ClientesController extends Controller
     {
         $this->protect("clientes:crear");
 
-        $cliente = $this->validateBody();
-        $id = $cliente->cedula;
+        $new = $this->validateBody();
+        $id = $new->cedula;
 
         if ($this->clienteModelo->checkDuplicate($id)) {
             return Response::json(
@@ -69,7 +69,7 @@ class ClientesController extends Controller
             );
         }
 
-        $newCliente = $this->clienteModelo->insert($cliente);
+        $new = $this->clienteModelo->insert($new);
         $this->logger->log(
             "Cliente '{cedula}' creado",
             [
@@ -77,39 +77,39 @@ class ClientesController extends Controller
                 "accion" => "crear",
 
                 "cedula" => $id,
-                "datos_nuevos" => $newCliente,
+                "datos_nuevos" => $new,
             ],
         );
 
-        return Response::json($newCliente, Status::CREATED);
+        return Response::json($new, Status::CREATED);
     }
 
     public function update(): string
     {
         $this->protect("clientes:editar");
 
-        $cliente = $this->validateBody();
+        $new = $this->validateBody();
         $id = $this->getId();
 
-        $oldCliente = $this->clienteModelo->find($id);
-        if (!$oldCliente) {
+        $old = $this->clienteModelo->find($id);
+        if (!$old) {
             return $this->notFound();
         }
 
-        $newCliente = $this->clienteModelo->update($id, $cliente);
+        $new = $this->clienteModelo->update($id, $new);
         $this->logger->log(
             "Cliente '{cedula}' actualizado",
             [
                 "modulo" => "clientes",
                 "accion" => "editar",
 
-                "cedula" => $oldCliente->cedula,
-                "datos_previos" => $oldCliente,
-                "datos_nuevos" => $newCliente,
+                "cedula" => $old->cedula,
+                "datos_previos" => $old,
+                "datos_nuevos" => $new,
             ],
         );
 
-        return Response::json($cliente, Status::CREATED);
+        return Response::json($new, Status::CREATED);
     }
 
     public function delete(): string|null
