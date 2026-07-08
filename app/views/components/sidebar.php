@@ -1,6 +1,6 @@
 <?php
 
-/** @var \App\Services\Auth\AuthenticatedUser $sesion_usuario */
+/** @var \App\Services\Auth\CurrentUser $sesion_usuario */
 
 $link = function (
 	string $url,

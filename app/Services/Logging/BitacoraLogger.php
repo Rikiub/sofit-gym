@@ -8,9 +8,7 @@ use App\Models\BitacoraModel;
 use Psr\Log\AbstractLogger;
 use Stringable;
 
-/** Logger para registrar eventos del sistema.
- * 
- * Sigue la interfaz PSR-3. */
+/** Logger para registrar eventos del sistema y guardar registros en la base de datos. */
 class BitacoraLogger extends AbstractLogger
 {
     private string $modulo;

@@ -8,13 +8,13 @@ class UserSession
     private const SESSION_KEY = 'user';
 
     /** Obtener usuario actual */
-    public static function get(): ?AuthenticatedUser
+    public static function get(): ?CurrentUser
     {
         return $_SESSION[self::SESSION_KEY] ?? null;
     }
 
     /** Iniciar sesion */
-    public static function login(AuthenticatedUser $usuario): void
+    public static function login(CurrentUser $usuario): void
     {
         session_regenerate_id();
         $_SESSION[self::SESSION_KEY] = $usuario;

@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Services\Auth\UserSession;
-use App\Services\Auth\AuthenticatedUser;
+use App\Services\Auth\CurrentUser;
 use App\Core\Config;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
@@ -23,7 +23,7 @@ class AsistenteController extends Controller
 {
     private OpenAIChat $chat;
 
-    private AuthenticatedUser $user;
+    private CurrentUser $user;
     private AsistenteSesion $sesion;
 
     /** @var Message[] */

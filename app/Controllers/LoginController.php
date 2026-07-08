@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Services\Auth\UserSession;
-use App\Services\Auth\AuthenticatedUser;
+use App\Services\Auth\CurrentUser;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
@@ -77,7 +77,7 @@ class LoginController extends Controller
         $this->usuarioModel->updateUltimoAcceso($usuario->id_usuario);
 
         // Guardar la sesión utilizando un helper
-        UserSession::login(new AuthenticatedUser(
+        UserSession::login(new CurrentUser(
             id: $usuario->id_usuario,
             id_rol: $usuario->id_rol,
             rol: $usuario->rol,

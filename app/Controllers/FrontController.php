@@ -5,10 +5,9 @@ namespace App\Controllers;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
-use App\Services\Auth\UserSession;
-use App\Services\Auth\AuthenticatedUser;
 use App\Core\Config;
-use App\Services\Logging\BitacoraLogger;
+use App\Services\Auth\UserSession;
+use App\Services\Auth\CurrentUser;
 use CuyZ\Valinor\Mapper\MappingError;
 use Throwable;
 use Exception;
@@ -20,7 +19,7 @@ class FrontController
     private const DEFAULT_PAGE = "dashboard";
     private const DEFAULT_ACTION = "index";
 
-    private ?AuthenticatedUser $user;
+    private ?CurrentUser $user;
     private bool $isDebug;
 
     public function __construct()
@@ -121,8 +120,6 @@ class FrontController
 
     private function handleServerError(Throwable $error): void
     {
-        error_log(sprintf("Error: %s en %s:%d", $error->getMessage(), $error->getFile(), $error->getLine()));
-
         if ($this->isDebug || Request::wantsJson()) {
             $res = [
                 'error' => 'Internal Server Error',

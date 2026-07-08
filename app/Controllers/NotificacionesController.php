@@ -4,10 +4,9 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Services\Auth\UserSession;
-use App\Services\Auth\AuthenticatedUser;
+use App\Services\Auth\CurrentUser;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
-use App\Core\Http\Status;
 use App\Core\Tools;
 use App\Models\Notificacion;
 use App\Models\NotificacionModel;
@@ -15,7 +14,7 @@ use Exception;
 
 class NotificacionesController extends Controller
 {
-    private AuthenticatedUser $user;
+    private CurrentUser $user;
 
     public function __construct(
         private $notifModel = new NotificacionModel(),

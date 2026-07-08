@@ -5,7 +5,7 @@ namespace App\Services\Auth;
 use DateTimeImmutable;
 
 /** Datos del usuario actual. */
-readonly class AuthenticatedUser
+readonly class CurrentUser
 {
     public function __construct(
         public int $id,

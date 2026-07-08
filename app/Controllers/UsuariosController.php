@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Services\Auth\UserSession;
-use App\Services\Auth\AuthenticatedUser;
+use App\Services\Auth\CurrentUser;
 use App\Services\ImageStorage;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
@@ -16,7 +16,7 @@ use App\Services\Logging\BitacoraLogger;
 
 class UsuariosController extends Controller
 {
-    private AuthenticatedUser $user;
+    private CurrentUser $user;
 
     public function __construct(
         private $logger = new BitacoraLogger(),
