@@ -134,13 +134,13 @@ readonly class BitacoraLog
         public ?DateTimeImmutable $fecha = null,
 
         /** @var array<string, mixed>|null */
-        public ?array $contexto = null,
-
-        /** @var array<string, mixed>|null */
         public ?array $datos_previos = null,
 
         /** @var array<string, mixed>|null */
         public ?array $datos_nuevos = null,
+
+        /** @var array<string, mixed>|null */
+        public ?array $contexto = null,
     ) {}
 
     public function validateInsert()
