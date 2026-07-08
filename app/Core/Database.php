@@ -11,11 +11,16 @@ use Throwable;
 class Database extends PDO
 {
     public function __construct(
-        string $host,
-        string $database,
-        string $username,
-        string $password,
+        string $host = null,
+        string $database = null,
+        string $username = null,
+        string $password = null,
     ) {
+        $host ??= Config::get("db.host");
+        $database ??= Config::get("db.database");
+        $username ??= Config::get("db.username");
+        $password ??= Config::get("db.password");
+
         $charset = 'utf8mb4';
         $options = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

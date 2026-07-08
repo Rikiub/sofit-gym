@@ -2,10 +2,9 @@
 
 namespace App\Models\Clientes;
 
-use App\Core\Database;
+use App\Core\Tools;
 use App\Models\Model;
 use App\Models\Personas\PersonaModel;
-use CuyZ\Valinor\Mapper\TreeMapper;
 
 class ClienteModel extends Model
 {
@@ -13,11 +12,9 @@ class ClienteModel extends Model
     public string $primaryKey = 'cedula';
 
     public function __construct(
-        Database $db,
-        private TreeMapper $mapper,
-        private PersonaModel $personaModel,
+        private $personaModel = new PersonaModel(),
     ) {
-        return parent::__construct($db);
+        parent::__construct();
     }
 
     /** Resumen estadisticos */
@@ -165,7 +162,7 @@ class ClienteModel extends Model
     private function mapToCliente(array $row): Cliente
     {
         $row['membresia'] = json_decode($row['membresia'], true);
-        return $this->mapper->map(Cliente::class, $row);
+        return Tools::map(Cliente::class, $row);
     }
 
     private function sqlSelect(string $where = ""): string

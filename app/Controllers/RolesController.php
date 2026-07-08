@@ -19,7 +19,7 @@ class RolesController extends Controller
     public function index(): string
     {
         $permisos = $this->rolModel->queryPermisos();
-        return $this->templates->render('roles', [
+        return $this->render('roles', [
             "permisos" => $permisos
         ]);
     }

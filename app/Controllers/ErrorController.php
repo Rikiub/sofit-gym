@@ -20,7 +20,7 @@ class ErrorController extends Controller
             default => 'Ocurrio un error inesperado en el servidor',
         };
 
-        return $this->templates->render('error', [
+        return $this->render('error', [
             'message' => "{$status->value}: {$message}"
         ]);
     }

@@ -39,7 +39,7 @@ class AsistenteController extends Controller
     public function index()
     {
         $this->initSesion();
-        return $this->templates->render("asistente");
+        return $this->render("asistente");
     }
 
     public function initSesion(): void

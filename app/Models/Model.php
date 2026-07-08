@@ -15,6 +15,6 @@ abstract class Model
     }
 
     public function __construct(
-        protected Database $db
+        protected Database $db = new Database()
     ) {}
 }

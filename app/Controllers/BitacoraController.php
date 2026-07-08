@@ -13,7 +13,7 @@ class BitacoraController extends Controller
     public function index()
     {
         $this->protect("bitacora:ver");
-        return $this->templates->render("bitacora");
+        return $this->render("bitacora");
     }
 
     public function query(): string

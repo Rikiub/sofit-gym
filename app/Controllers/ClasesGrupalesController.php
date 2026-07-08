@@ -5,21 +5,20 @@ namespace App\Controllers;
 use App\Controllers\Controller;
 use App\Core\Http\Request;
 use App\Core\Http\Status;
+use App\Core\Tools;
 use App\Models\ClaseGrupal;
 use App\Models\ClaseGrupalModel;
-use CuyZ\Valinor\Mapper\TreeMapper;
 
 class ClasesGrupalesController extends Controller
 {
     public function __construct(
-        private TreeMapper $mapper,
-        private ClaseGrupalModel $claseModel,
+        private $claseModel = new ClaseGrupalModel(),
     ) {}
 
     public function index(): string
     {
         $this->protect("clases:ver");
-        return $this->templates->render('clases');
+        return $this->render('clases');
     }
 
     public function query(): string
@@ -113,6 +112,6 @@ class ClasesGrupalesController extends Controller
     private function validateBody(): ClaseGrupal
     {
         $body = Request::getParsedBody();
-        return $this->mapper->map(ClaseGrupal::class, $body);
+        return Tools::map(ClaseGrupal::class, $body);
     }
 }

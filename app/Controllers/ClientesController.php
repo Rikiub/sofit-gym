@@ -14,13 +14,13 @@ class ClientesController extends Controller
 {
     public function __construct(
         private TreeMapper $mapper,
-        private ClienteModel $clienteModelo,
+        private $clienteModelo = new ClienteModel(),
     ) {}
 
     public function index(): string
     {
         $this->protect("clientes:ver");
-        return $this->templates->render('clientes/index');
+        return $this->render('clientes/index');
     }
 
     public function query(): string
@@ -145,7 +145,7 @@ class ClientesController extends Controller
     public function reporteVista()
     {
         $this->protect("clientes:ver");
-        return $this->templates->render('reportes/clientes');
+        return $this->render('reportes/clientes');
     }
 
     /**

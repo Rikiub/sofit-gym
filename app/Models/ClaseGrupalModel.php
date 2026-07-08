@@ -2,9 +2,8 @@
 
 namespace App\Models;
 
-use App\Core\Database;
+use App\Core\Tools;
 use App\Core\Validator;
-use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 use InvalidArgumentException;
 
@@ -14,13 +13,6 @@ class ClaseGrupalModel extends Model
 {
     private string $table = 'clase';
     private string $primaryKey = 'id_clase';
-
-    public function __construct(
-        Database $db,
-        private TreeMapper $mapper,
-    ) {
-        parent::__construct($db);
-    }
 
     /**
      * @return ClaseGrupal[]
@@ -113,7 +105,7 @@ class ClaseGrupalModel extends Model
     {
         $clientes = json_decode($row["clientes"], true);
         $row["clientes"] = $clientes;
-        return $this->mapper->map(ClaseGrupal::class, $row);
+        return Tools::map(ClaseGrupal::class, $row);
     }
 
     private function mapToColumns(ClaseGrupal $dto): array

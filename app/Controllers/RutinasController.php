@@ -22,7 +22,7 @@ class RutinasController extends Controller
         // Limpiamos mensajes de sesión previos
         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
-        return $this->templates->render('rutinas', [
+        return $this->render('rutinas', [
             'rutinas' => $this->model->obtenerTodasLasRutinas(),
             'dificultades' => $this->model->obtenerDificultades(),
             'mensaje' => $_SESSION['mensaje'] ?? '',
@@ -42,7 +42,7 @@ class RutinasController extends Controller
         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
         // Renderizamos la vista 'rutinasAsignadas' enviándole las asignaciones y las rutinas bases cargadas
-        return $this->templates->render('rutinas_asignadas', [
+        return $this->render('rutinas_asignadas', [
             'asignaciones' => $this->model->obtenerTodasLasAsignaciones(),
             'rutinas' => $this->model->obtenerTodasLasRutinas(),
             'mensaje' => $_SESSION['mensaje'] ?? '',

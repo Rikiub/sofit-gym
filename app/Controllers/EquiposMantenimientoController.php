@@ -20,7 +20,7 @@ class EquiposMantenimientoController extends Controller
     public function index()
     {
         $this->protect("equipos:ver");
-        return $this->templates->render('equipos_mantenimiento');
+        return $this->render('equipos_mantenimiento');
     }
 
     public function query()

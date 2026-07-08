@@ -12,7 +12,7 @@ class RespaldosController extends Controller
     public function index()
     {
         $this->protect("respaldos:ver");
-        return $this->templates->render('respaldos');
+        return $this->render('respaldos');
     }
 
     public function query()

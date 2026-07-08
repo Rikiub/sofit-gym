@@ -19,7 +19,7 @@ class TrabajadoresController extends Controller
     public function index(): string
     {
         $this->protect("trabajadores:ver");
-        return $this->templates->render('trabajadores');
+        return $this->render('trabajadores');
     }
 
     public function query(): string

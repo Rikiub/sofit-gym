@@ -18,7 +18,7 @@ class EquiposController extends Controller
 
     public function index()
     {
-        return $this->templates->render('equipos');
+        return $this->render('equipos');
     }
 
     public function query()

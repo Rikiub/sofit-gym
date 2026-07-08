@@ -27,7 +27,7 @@ class UsuariosController extends Controller
     public function index(): string
     {
         $this->protect("usuarios:ver");
-        return $this->templates->render('usuarios/index', [
+        return $this->render('usuarios/index', [
             "usuario" => $this->user,
         ]);
     }

@@ -19,7 +19,7 @@ class AsistenciaController extends Controller
         $fechaSeleccionada = $_GET['fecha'] ?? date('Y-m-d');
         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
-        return $this->templates->render('asistencia', [
+        return $this->render('asistencia', [
             'entradasHoy' => $this->model->obtenerEntradasHoy(),
             'fechaSeleccionada' => $fechaSeleccionada,
             'ocupacion' => $this->model->obtenerOcupacionPorFranjas($fechaSeleccionada),
@@ -168,7 +168,7 @@ class AsistenciaController extends Controller
     {
         // Renderiza el formulario usando el motor Plates cargando tu nueva vista
         $this->protect("clientes:ver");
-        echo $this->templates->render('reportes/asistencia');
+        echo $this->render('reportes/asistencia');
         exit;
     }
 

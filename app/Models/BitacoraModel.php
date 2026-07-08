@@ -2,22 +2,14 @@
 
 namespace App\Models;
 
-use App\Core\Database;
+use App\Core\Tools;
 use App\Core\Validator;
-use CuyZ\Valinor\Mapper\TreeMapper;
 use DateTimeImmutable;
 
 class BitacoraModel extends Model
 {
     private string $table = self::DB_SECURITY . ".bitacora";
     private string $primaryKey = 'id_bitacora';
-
-    public function __construct(
-        Database $db,
-        private TreeMapper $mapper,
-    ) {
-        parent::__construct($db);
-    }
 
     /**
      * @return BitacoraDTO[]
@@ -27,7 +19,7 @@ class BitacoraModel extends Model
         $rows = $this->db->dbQuery($this->sqlSelect())->fetchAll();
 
         return array_map(
-            fn($row) => $this->mapper->map(BitacoraDTO::class, $row),
+            fn($row) => Tools::map(BitacoraDTO::class, $row),
             $rows
         );
     }
@@ -40,7 +32,7 @@ class BitacoraModel extends Model
         )->fetch();
 
         return $row
-            ? $this->mapper->map(BitacoraDTO::class, $row)
+            ? Tools::map(BitacoraDTO::class, $row)
             : null;
     }
 

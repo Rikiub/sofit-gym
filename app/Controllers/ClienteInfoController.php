@@ -35,7 +35,7 @@ class ClienteInfoController extends Controller
             ]);
         }
 
-        return $this->templates->render('clientes/info', [
+        return $this->render('clientes/info', [
             "cedula" => $cedula,
         ]);
     }

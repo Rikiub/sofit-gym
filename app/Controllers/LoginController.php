@@ -26,7 +26,7 @@ class LoginController extends Controller
             Response::redirect(["page" => "dashboard"]);
         }
 
-        return $this->templates->render("login");
+        return $this->render("login");
     }
 
     public function login(): string
@@ -134,7 +134,7 @@ class LoginController extends Controller
         $this->mailer->addAddress($email);
         $this->mailer->isHTML(true);
         $this->mailer->Subject = 'Recuperación de cuenta - Sofit Gym';
-        $this->mailer->Body = $this->templates->render("recuperacionContrasena", [
+        $this->mailer->Body = $this->render("recuperacionContrasena", [
             "codigo" => $codigo,
         ]);
         $this->mailer->send();

@@ -2,9 +2,8 @@
 
 namespace App\Models\Personas;
 
-use App\Core\Database;
+use App\Core\Tools;
 use App\Models\Model;
-use CuyZ\Valinor\Mapper\TreeMapper;
 
 use function App\Core\toDbDate;
 
@@ -16,13 +15,6 @@ class PersonaModel extends Model
     public string $table = 'persona';
     public string $primaryKey = 'cedula';
 
-    public function __construct(
-        Database $db,
-        private TreeMapper $mapper,
-    ) {
-        return parent::__construct($db);
-    }
-
     /**
      * @return Persona[]
      */
@@ -30,7 +22,7 @@ class PersonaModel extends Model
     {
         $rows = $this->db->dbQuery($this->sqlSelect())->fetchAll();
         return array_map(
-            fn($row) => $this->mapper->map(Persona::class, $row),
+            fn($row) => Tools::map(Persona::class, $row),
             $rows
         );
     }
@@ -43,7 +35,7 @@ class PersonaModel extends Model
         )->fetch();
 
         return $row
-            ? $this->mapper->map(Persona::class, $row)
+            ? Tools::map(Persona::class, $row)
             : null;
     }
 

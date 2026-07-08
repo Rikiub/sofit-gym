@@ -34,7 +34,7 @@ class ProductosController extends Controller
         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
         // Renderizado usando el método heredado de Controller
-        echo $this->templates->render('productos', [
+        echo $this->render('productos', [
             'productos' => $productos,
             'bajoStock' => $bajoStock,
             'clientes'  => $clientes,
@@ -293,7 +293,7 @@ class ProductosController extends Controller
     {
         // Renderiza el formulario usando el motor Plates cargando tu nueva vista
         $this->protect("productos:ver");
-        echo $this->templates->render('reportes/productos');
+        echo $this->render('reportes/productos');
         exit;
     }
 
@@ -343,7 +343,7 @@ class ProductosController extends Controller
     {
         $this->protect("productos:ver");
         // Renderiza el formulario usando el motor Plates cargando tu nueva vista
-        echo $this->templates->render('reportes/inventario');
+        echo $this->render('reportes/inventario');
         exit;
     }
 

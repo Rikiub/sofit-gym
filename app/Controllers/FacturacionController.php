@@ -19,7 +19,7 @@ class FacturacionController extends Controller
         $this->protect("facturacion:ver");
         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
-        return $this->templates->render('facturacion', [
+        return $this->render('facturacion', [
             'clientes' => $this->model->obtenerClientesSimples(),
             'pagos' => $this->model->obtenerTodosPagos(),
             'activeTab' => $_GET['tab'] ?? 'tab-pagos',
@@ -210,7 +210,7 @@ class FacturacionController extends Controller
     public function reporteVista()
     {
         $this->protect("facturacion:ver");
-        return $this->templates->render('reportes/facturacion');
+        return $this->render('reportes/facturacion');
     }
 
     /**
