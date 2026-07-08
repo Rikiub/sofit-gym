@@ -5,7 +5,7 @@ namespace App\Controllers;
 use Psr\Container\ContainerInterface;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
-use App\Core\Http\StatusCode;
+use App\Core\Http\Status;
 use App\Services\Auth\UserSession;
 use App\Services\Auth\AuthenticatedUser;
 use App\Core\Config;
@@ -94,11 +94,11 @@ class FrontController
                 'error' => 'Not Found',
                 'message' => "Controller {$className} not found",
                 ...($this->isDebug ? ['controller' => $classPath] : [])
-            ], StatusCode::NOT_FOUND);
+            ], Status::NOT_FOUND);
         } else {
             Response::redirect([
                 'page' => 'error',
-                'status' => StatusCode::NOT_FOUND->value
+                'status' => Status::NOT_FOUND->value
             ]);
         }
     }
@@ -121,7 +121,7 @@ class FrontController
             'error' => 'Validation Error',
             'message' => 'The request contains invalid data',
             'errors' => $errors
-        ], StatusCode::BAD_REQUEST);
+        ], Status::BAD_REQUEST);
     }
 
     private function handleServerError(Throwable $error): void
@@ -141,11 +141,11 @@ class FrontController
                 $res['trace'] = $error->getTrace();
             }
 
-            echo Response::json($res, StatusCode::INTERNAL_SERVER_ERROR);
+            echo Response::json($res, Status::INTERNAL_SERVER_ERROR);
         } else {
             Response::redirect([
                 'page' => 'error',
-                'status' => StatusCode::INTERNAL_SERVER_ERROR->value
+                'status' => Status::INTERNAL_SERVER_ERROR->value
             ]);
         }
     }

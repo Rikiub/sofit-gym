@@ -7,7 +7,7 @@ use App\Services\Auth\UserSession;
 use App\Services\Auth\AuthenticatedUser;
 use App\Core\Config;
 use App\Core\Http\Request;
-use App\Core\Http\StatusCode;
+use App\Core\Http\Status;
 use App\Models\AsistenteMensaje;
 use App\Models\AsistenteModel;
 use App\Models\AsistenteSesion;
@@ -108,7 +108,7 @@ class AsistenteController extends Controller
         if (!$content) {
             return $this->json(
                 ["message" => "Se debe proporcionar el parametro 'message'"],
-                StatusCode::BAD_REQUEST
+                Status::BAD_REQUEST
             );
         }
 
@@ -154,7 +154,7 @@ class AsistenteController extends Controller
 
         return $this->json(
             ["message" => "Excedido el límite de vueltas."],
-            StatusCode::INTERNAL_SERVER_ERROR
+            Status::INTERNAL_SERVER_ERROR
         );
     }
 
@@ -172,7 +172,7 @@ class AsistenteController extends Controller
         if (!$sesion || $sesion->id_usuario !== $this->user->id) {
             return $this->json(
                 ["message" => "Sesion no encontrada o no autorizada"],
-                StatusCode::FORBIDDEN
+                Status::FORBIDDEN
             );
         }
 

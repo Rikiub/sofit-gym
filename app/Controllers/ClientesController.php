@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Core\Http\Request;
-use App\Core\Http\StatusCode;
+use App\Core\Http\Status;
 use App\Core\Reportes\ReporteClientes;
 use App\Models\Clientes\Cliente;
 use App\Models\Clientes\ClienteModel;
@@ -50,7 +50,7 @@ class ClientesController extends Controller
 
         return $cliente
             ? $this->json($cliente)
-            : $this->json(null, StatusCode::NOT_FOUND);
+            : $this->json(null, Status::NOT_FOUND);
     }
 
     public function insert(): string
@@ -63,7 +63,7 @@ class ClientesController extends Controller
         if ($this->clienteModelo->checkDuplicate($id)) {
             return $this->json(
                 ['message' => "El cliente {$id} ya existe"],
-                StatusCode::CONFLICT
+                Status::CONFLICT
             );
         }
 
@@ -76,7 +76,7 @@ class ClientesController extends Controller
             ],
         );
 
-        return $this->json($newCliente, StatusCode::CREATED);
+        return $this->json($newCliente, Status::CREATED);
     }
 
     public function update(): string
@@ -101,7 +101,7 @@ class ClientesController extends Controller
             ],
         );
 
-        return $this->json($cliente, StatusCode::CREATED);
+        return $this->json($cliente, Status::CREATED);
     }
 
     public function delete(): string|null
@@ -119,14 +119,14 @@ class ClientesController extends Controller
             ["cedula" => $id]
         );
 
-        return $this->json(null, StatusCode::NO_CONTENT);
+        return $this->json(null, Status::NO_CONTENT);
     }
 
     private function notFound(): string
     {
         return $this->json(
             ['message' => "El cliente no existe"],
-            StatusCode::NOT_FOUND
+            Status::NOT_FOUND
         );
     }
 

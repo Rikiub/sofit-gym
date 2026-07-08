@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Core\Http\Request;
-use App\Core\Http\StatusCode;
+use App\Core\Http\Status;
 use App\Models\Equipos\MantenimientoEquipo;
 use App\Models\Equipos\MantenimientoEquipoModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -39,7 +39,7 @@ class EquiposMantenimientoController extends Controller
 
         return $data
             ? $this->json($data)
-            : $this->json(null, StatusCode::NOT_FOUND);
+            : $this->json(null, Status::NOT_FOUND);
     }
 
     public function insert(): string
@@ -55,7 +55,7 @@ class EquiposMantenimientoController extends Controller
             'datos_nuevos' => $new,
         ]);
 
-        return $this->json($new, StatusCode::CREATED);
+        return $this->json($new, Status::CREATED);
     }
 
     public function update(): string
@@ -79,7 +79,7 @@ class EquiposMantenimientoController extends Controller
             'datos_nuevos'     => $new,
         ]);
 
-        return $this->json($new, StatusCode::CREATED);
+        return $this->json($new, Status::CREATED);
     }
 
     public function delete(): string|null
@@ -99,12 +99,12 @@ class EquiposMantenimientoController extends Controller
             'datos_previos' => $old,
         ]);
 
-        return $this->json(null, StatusCode::NO_CONTENT);
+        return $this->json(null, Status::NO_CONTENT);
     }
 
     private function notFound(): string
     {
-        return $this->json(['message' => 'El mantenimiento no existe'], StatusCode::NOT_FOUND);
+        return $this->json(['message' => 'El mantenimiento no existe'], Status::NOT_FOUND);
     }
 
     private function getId(): int

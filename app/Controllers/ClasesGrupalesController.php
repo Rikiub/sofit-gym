@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Core\Http\Request;
-use App\Core\Http\StatusCode;
+use App\Core\Http\Status;
 use App\Models\ClaseGrupal;
 use App\Models\ClaseGrupalModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -38,7 +38,7 @@ class ClasesGrupalesController extends Controller
 
         return $clase
             ? $this->json($clase)
-            : $this->json(null, StatusCode::NOT_FOUND);
+            : $this->json(null, Status::NOT_FOUND);
     }
 
     public function insert(): string
@@ -54,7 +54,7 @@ class ClasesGrupalesController extends Controller
             'datos_nuevos'  => $new,
         ]);
 
-        return $this->json($new, StatusCode::CREATED);
+        return $this->json($new, Status::CREATED);
     }
 
     public function update(): string
@@ -77,7 +77,7 @@ class ClasesGrupalesController extends Controller
             'datos_nuevos' => $new,
         ]);
 
-        return $this->json($new, StatusCode::CREATED);
+        return $this->json($new, Status::CREATED);
     }
 
     public function delete(): string|null
@@ -97,7 +97,7 @@ class ClasesGrupalesController extends Controller
             'datos_previos' => $old,
         ]);
 
-        return $this->json(null, StatusCode::NO_CONTENT);
+        return $this->json(null, Status::NO_CONTENT);
     }
 
     private function getId(): int
@@ -107,7 +107,7 @@ class ClasesGrupalesController extends Controller
 
     private function notFound(): string
     {
-        return $this->json(["message" => "Clase no encontrada"], StatusCode::NOT_FOUND);
+        return $this->json(["message" => "Clase no encontrada"], Status::NOT_FOUND);
     }
 
     private function validateBody(): ClaseGrupal

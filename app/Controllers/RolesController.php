@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Core\Http\Request;
-use App\Core\Http\StatusCode;
+use App\Core\Http\Status;
 use App\Models\Rol;
 use App\Models\RolModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -57,12 +57,12 @@ class RolesController extends Controller
         }
 
         $rol = $this->rolModel->update($id, $rol);
-        return $this->json($rol, StatusCode::CREATED);
+        return $this->json($rol, Status::CREATED);
     }
 
     private function notFound(): string
     {
-        return $this->json(["message" => "El rol no existe"], StatusCode::NOT_FOUND);
+        return $this->json(["message" => "El rol no existe"], Status::NOT_FOUND);
     }
 
     private function getId(): int

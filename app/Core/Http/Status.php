@@ -6,10 +6,10 @@ namespace App\Core\Http;
  * Si solo tienes el codigo como entero, conviertelo con:
  * 
  * ```
- * StatusCode::from($statusCode)
+ * Status::from($statusCode)
  * ```
  */
-enum StatusCode: int
+enum Status: int
 {
     // ==================== 2xx: Éxito ====================
     /** 200 OK. La solicitud ha tenido éxito. */

@@ -6,7 +6,7 @@ use App\Controllers\Controller;
 use App\Services\Auth\UserSession;
 use App\Services\Auth\AuthenticatedUser;
 use App\Core\Http\Request;
-use App\Core\Http\StatusCode;
+use App\Core\Http\Status;
 use App\Models\Notificacion;
 use App\Models\NotificacionModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -37,7 +37,7 @@ class NotificacionesController extends Controller
 
         return $data
             ? $this->json($data)
-            : $this->json(null, StatusCode::NOT_FOUND);
+            : $this->json(null, Status::NOT_FOUND);
     }
 
     public function leido()
@@ -46,13 +46,13 @@ class NotificacionesController extends Controller
         $leido = Request::queryBool("leido") ?? true;
 
         $this->notifModel->setLeido($this->user->id, $id, $leido);
-        return $this->json(null, StatusCode::NO_CONTENT);
+        return $this->json(null, Status::NO_CONTENT);
     }
 
     public function leerTodas()
     {
         $this->notifModel->setLeidoTodas($this->user->id);
-        return $this->json(null, StatusCode::NO_CONTENT);
+        return $this->json(null, Status::NO_CONTENT);
     }
 
     public function sendMultiple(): null
@@ -69,6 +69,6 @@ class NotificacionesController extends Controller
             $id_usuarios,
             notificacion: $data,
         );
-        return $this->json(null, StatusCode::NO_CONTENT);
+        return $this->json(null, Status::NO_CONTENT);
     }
 }

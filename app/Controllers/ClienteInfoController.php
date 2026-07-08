@@ -5,7 +5,7 @@ namespace App\Controllers;
 use App\Controllers\Controller;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
-use App\Core\Http\StatusCode;
+use App\Core\Http\Status;
 use App\Models\Clientes\ClienteModel;
 use App\Models\Clientes\SeguimientoFisico;
 use App\Models\Clientes\SeguimientoNutricional;
@@ -31,7 +31,7 @@ class ClienteInfoController extends Controller
         if (!$this->clienteModel->find($cedula)) {
             Response::redirect([
                 "page" => "error",
-                "status" => StatusCode::NOT_FOUND,
+                "status" => Status::NOT_FOUND,
             ]);
         }
 
@@ -72,7 +72,7 @@ class ClienteInfoController extends Controller
             'datos_nuevos'  => $new,
         ]);
 
-        return $this->json($new, StatusCode::CREATED);
+        return $this->json($new, Status::CREATED);
     }
 
     public function deleteFisico(): string|null
@@ -92,7 +92,7 @@ class ClienteInfoController extends Controller
             'datos_previos'  => $old,
         ]);
 
-        return $this->json(null, StatusCode::NO_CONTENT);
+        return $this->json(null, Status::NO_CONTENT);
     }
 
     private function validateBodyFisico(): SeguimientoFisico
@@ -133,7 +133,7 @@ class ClienteInfoController extends Controller
             'datos_nuevos' => $new,
         ]);
 
-        return $this->json($new, StatusCode::CREATED);
+        return $this->json($new, Status::CREATED);
     }
 
     public function deleteNutricion(): string|null
@@ -153,7 +153,7 @@ class ClienteInfoController extends Controller
             'datos_previos'  => $old,
         ]);
 
-        return $this->json(null, StatusCode::NO_CONTENT);
+        return $this->json(null, Status::NO_CONTENT);
     }
 
     private function validateBodyNutricion(): SeguimientoNutricional
@@ -167,10 +167,10 @@ class ClienteInfoController extends Controller
     {
         if ($exists) {
             $message = "El seguimiento {$id} ya existe";
-            $code = StatusCode::BAD_REQUEST;
+            $code = Status::BAD_REQUEST;
         } else {
             $message = "El seguimiento {$id} no existe";
-            $code = StatusCode::NOT_FOUND;
+            $code = Status::NOT_FOUND;
         }
         return $this->json(['message' => $message], $code);
     }
@@ -187,6 +187,6 @@ class ClienteInfoController extends Controller
 
     private function notFoundCliente(): string
     {
-        return $this->json(["message" => "Cliente no encontrado"], StatusCode::NOT_FOUND);
+        return $this->json(["message" => "Cliente no encontrado"], Status::NOT_FOUND);
     }
 }

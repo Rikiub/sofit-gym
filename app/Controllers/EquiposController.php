@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Core\Http\Request;
-use App\Core\Http\StatusCode;
+use App\Core\Http\Status;
 use App\Models\Equipos\Equipo;
 use App\Models\Equipos\EquipoModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -37,7 +37,7 @@ class EquiposController extends Controller
 
         return $equipo
             ? $this->json($equipo)
-            : $this->json(null, StatusCode::NOT_FOUND);
+            : $this->json(null, Status::NOT_FOUND);
     }
 
     public function insert(): string
@@ -50,7 +50,7 @@ class EquiposController extends Controller
         if ($this->equipoModel->find($id)) {
             return $this->json(
                 ['message' => 'El equipo ya existe'],
-                StatusCode::CONFLICT
+                Status::CONFLICT
             );
         }
 
@@ -60,7 +60,7 @@ class EquiposController extends Controller
             "datos_nuevos" => $new,
         ]);
 
-        return $this->json($new, StatusCode::CREATED);
+        return $this->json($new, Status::CREATED);
     }
 
     public function update(): string
@@ -82,7 +82,7 @@ class EquiposController extends Controller
             "datos_nuevos" => $new,
         ]);
 
-        return $this->json($new, StatusCode::CREATED);
+        return $this->json($new, Status::CREATED);
     }
 
     public function delete(): string|null
@@ -101,7 +101,7 @@ class EquiposController extends Controller
             "datos_previos" => $old,
         ]);
 
-        return $this->json(null, StatusCode::NO_CONTENT);
+        return $this->json(null, Status::NO_CONTENT);
     }
 
     private function getId(): string
@@ -117,6 +117,6 @@ class EquiposController extends Controller
 
     private function notFound(): string
     {
-        return $this->json(['message' => 'El equipo no existe'], StatusCode::NOT_FOUND);
+        return $this->json(['message' => 'El equipo no existe'], Status::NOT_FOUND);
     }
 }

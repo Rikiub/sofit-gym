@@ -7,7 +7,7 @@ use App\Services\Auth\UserSession;
 use App\Services\Auth\AuthenticatedUser;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
-use App\Core\Http\StatusCode;
+use App\Core\Http\Status;
 use App\Models\UsuarioModel;
 use PHPMailer\PHPMailer\PHPMailer;
 use DateTimeImmutable;
@@ -57,7 +57,7 @@ class LoginController extends Controller
             ) >= $maximoIntentos) {
                 return $this->json(
                     ["message" => "Numero de intentos excedidos. Vuelva a intentarlo en {$minutosBloqueo} minutos."],
-                    StatusCode::UNAUTHORIZED
+                    Status::UNAUTHORIZED
                 );
             } else {
                 $this->usuarioModel->insertIntentoAcceso($usuario->id_usuario, exito: false);
@@ -109,7 +109,7 @@ class LoginController extends Controller
     {
         return $this->json(
             ["message" => "Usuario o contraseña incorrectos"],
-            StatusCode::UNAUTHORIZED
+            Status::UNAUTHORIZED
         );
     }
 
@@ -123,7 +123,7 @@ class LoginController extends Controller
         if (!$usuario) {
             return $this->json(
                 ["message" => "Correo no registrado"],
-                StatusCode::NOT_FOUND
+                Status::NOT_FOUND
             );
         }
 
@@ -151,7 +151,7 @@ class LoginController extends Controller
         if (!$usuario) {
             return $this->json(
                 ["message" => "Código inválido o expirado"],
-                StatusCode::UNPROCESSABLE_ENTITY
+                Status::UNPROCESSABLE_ENTITY
             );
         }
 
@@ -167,7 +167,7 @@ class LoginController extends Controller
         if (!isset($_SESSION['recover_user_id'])) {
             return $this->json(
                 ["message" => "Sesión expirada"],
-                StatusCode::UNAUTHORIZED
+                Status::UNAUTHORIZED
             );
         }
 

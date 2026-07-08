@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\Http\StatusCode;
+use App\Core\Http\Status;
 use App\Services\RespaldoService;
 
 class RespaldosController extends Controller
@@ -26,6 +26,6 @@ class RespaldosController extends Controller
     {
         $this->protect("respaldos:respaldar");
         $this->respaldo->backup();
-        return $this->json(null, StatusCode::NO_CONTENT);
+        return $this->json(null, Status::NO_CONTENT);
     }
 }

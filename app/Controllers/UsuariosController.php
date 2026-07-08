@@ -7,7 +7,7 @@ use App\Services\Auth\UserSession;
 use App\Services\Auth\AuthenticatedUser;
 use App\Services\ImageStorage;
 use App\Core\Http\Request;
-use App\Core\Http\StatusCode;
+use App\Core\Http\Status;
 use App\Models\Usuario;
 use App\Models\UsuarioModel;
 use CuyZ\Valinor\Mapper\TreeMapper;
@@ -60,7 +60,7 @@ class UsuariosController extends Controller
         if ($this->usuarioModel->findByUsername($new->nombre_usuario)) {
             return $this->json(
                 ['message' => 'El usuario ya existe'],
-                StatusCode::CONFLICT
+                Status::CONFLICT
             );
         }
 
@@ -71,7 +71,7 @@ class UsuariosController extends Controller
             'datos_nuevos'   => $new,
         ]);
 
-        return $this->json($new, StatusCode::CREATED);
+        return $this->json($new, Status::CREATED);
     }
 
     public function update(): string
@@ -101,7 +101,7 @@ class UsuariosController extends Controller
             'datos_nuevos'   => $new,
         ]);
 
-        return $this->json($new, StatusCode::CREATED);
+        return $this->json($new, Status::CREATED);
     }
 
     public function delete(): string|null
@@ -122,7 +122,7 @@ class UsuariosController extends Controller
             'datos_previos'  => $old,
         ]);
 
-        return $this->json(null, StatusCode::NO_CONTENT);
+        return $this->json(null, Status::NO_CONTENT);
     }
 
     public function uploadImage(): string
@@ -132,7 +132,7 @@ class UsuariosController extends Controller
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !$image) {
             return $this->json(
                 ['error' => 'Petición inválida'],
-                StatusCode::BAD_REQUEST
+                Status::BAD_REQUEST
             );
         }
 
@@ -158,7 +158,7 @@ class UsuariosController extends Controller
     {
         return $this->json(
             ['message' => 'El usuario no existe'],
-            StatusCode::NOT_FOUND
+            Status::NOT_FOUND
         );
     }
 
@@ -171,7 +171,7 @@ class UsuariosController extends Controller
         ) {
             echo $this->json(
                 ["message" => "No esta autorizado"],
-                StatusCode::FORBIDDEN
+                Status::FORBIDDEN
             );
             exit;
         }

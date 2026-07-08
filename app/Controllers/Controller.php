@@ -6,7 +6,7 @@ use App\Services\Auth\UserSession;
 use App\Services\Logging\BitacoraLogger;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
-use App\Core\Http\StatusCode;
+use App\Core\Http\Status;
 use DI\Attribute\Inject;
 use League\Plates\Engine;
 use CuyZ\Valinor\Normalizer\Normalizer;
@@ -32,7 +32,7 @@ abstract class Controller
     // Helpers
 
     /** Convierte cualquier dato en una respuesta JSON. */
-    protected function json(mixed $data, StatusCode $status = StatusCode::OK): string|null
+    protected function json(mixed $data, Status $status = Status::OK): string|null
     {
         // No Content
         if ($data === null) {
@@ -55,13 +55,13 @@ abstract class Controller
                 // Enviar JSON con mensaje de error
                 echo Response::json(
                     ["message" => "No tienes permiso para usar esta accion"],
-                    StatusCode::FORBIDDEN
+                    Status::FORBIDDEN
                 );
             } else {
                 // Redireccionar a pagina de error
                 Response::redirect([
                     "page" => "error",
-                    "status" => StatusCode::FORBIDDEN->value,
+                    "status" => Status::FORBIDDEN->value,
                 ]);
             }
             exit;

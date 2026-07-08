@@ -10,7 +10,7 @@ class Response
         header('Content-Type: application/json');
     }
 
-    public static function withStatus(StatusCode $code): void
+    public static function withStatus(Status $code): void
     {
         http_response_code($code->value);
     }
@@ -18,7 +18,7 @@ class Response
     /**
      * Serializa los datos en una JSON string y envia los headers `application/json`.
      */
-    public static function json(mixed $data, StatusCode $status = StatusCode::OK): string
+    public static function json(mixed $data, Status $status = Status::OK): string
     {
         self::withJsonHeaders();
         http_response_code($status->value);
@@ -28,7 +28,7 @@ class Response
     /**
      * Envia una respuesta `HTTP 204 No Content` (Sin Contenido).
      */
-    public static function noContent(StatusCode $status = StatusCode::NO_CONTENT): null
+    public static function noContent(Status $status = Status::NO_CONTENT): null
     {
         http_response_code($status->value);
         return null;
@@ -37,7 +37,7 @@ class Response
     /**
      * Redirigir a una ruta segun los query params.
      */
-    public static function redirect(array $queryParams, StatusCode $status = StatusCode::FOUND): void
+    public static function redirect(array $queryParams, Status $status = Status::FOUND): void
     {
         http_response_code($status->value);
         header('Location: ?' . Request::buildQuery($queryParams));
