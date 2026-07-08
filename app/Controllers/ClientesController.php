@@ -6,11 +6,11 @@ use App\Controllers\Controller;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
-use App\Core\Reportes\ReporteClientes;
 use App\Core\Tools;
 use App\Models\Clientes\Cliente;
 use App\Models\Clientes\ClienteModel;
 use App\Services\Logging\BitacoraLogger;
+use App\Services\Reportes\ReporteClientes;
 
 class ClientesController extends Controller
 {

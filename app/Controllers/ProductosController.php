@@ -3,10 +3,10 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
-use App\Core\Reportes\ReporteInventario;
-use App\Core\Reportes\ReporteProductosMasVendidos;
-use App\Services\Logging\BitacoraLogger;
 use App\Models\ProductoModel;
+use App\Services\Logging\BitacoraLogger;
+use App\Services\Reportes\ReporteInventario;
+use App\Services\Reportes\ReporteProductosMasVendidos;
 
 class ProductosController extends Controller
 {

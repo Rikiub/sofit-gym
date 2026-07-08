@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Reportes;
+namespace App\Services\Reportes;
 
 use Fpdf\Fpdf;
 

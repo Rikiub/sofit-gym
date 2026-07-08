@@ -3,9 +3,9 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
-use App\Core\Reportes\ReporteAsistencia;
 use App\Models\AsistenciaModel;
 use App\Services\Logging\BitacoraLogger;
+use App\Services\Reportes\ReporteAsistencia;
 
 class AsistenciaController extends Controller
 {
