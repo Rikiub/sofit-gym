@@ -14,9 +14,9 @@ Colocar la carpeta `sofit-gym` dentro de `htdocs/`. Luego ingresar a traves de `
     - `views/`
         - Colección de plantillas HTML cargadas por los controladores.
     - `Services/`
-        - Clases especializadas y reutilizables.
+        - Servicios reutilizables especializados en un ambito.
     - `Core/`
-        - Colección de helpers y abstracciones principales de la aplicación.
+        - Colección de helpers y abstracciones genericas de la aplicación.
 
 ---
 
