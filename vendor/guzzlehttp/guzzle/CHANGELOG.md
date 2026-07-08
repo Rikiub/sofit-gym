@@ -3,6 +3,36 @@
 Please refer to [UPGRADING](UPGRADING.md) guide for upgrading to a major version.
 
 
+## 7.13.3 - 2026-07-08
+
+### Changed
+
+- Adjusted `guzzlehttp/promises` version constraint to `^2.5.1`
+- Adjusted `guzzlehttp/psr7` version constraint to `^2.12.4`
+- Pass explicit trim characters ahead of the PHP 8.6 trim default change
+
+### Fixed
+
+- Stop matching cookie domains against hosts with a trailing newline
+- Reject HTTP status codes and certificate type extensions with a trailing newline
+- Treat PCRE engine failures as invalid cookie names during cookie validation
+- Report PCRE engine failures when formatting log messages
+- Report PCRE engine failures when splitting `no_proxy` values
+
+
+## 7.13.2 - 2026-07-05
+
+### Fixed
+
+- Stop the cURL multi handler busy-waiting on request delays shorter than one second
+- Stop cURL HEAD requests with request bodies hanging on responses that declare a content length
+- The cURL handler no longer transmits request bodies on HEAD requests
+- Preserve response headers when a response includes HTTP trailers
+- Harden cURL response header block detection when HTTP trailers are received
+- Corrected the PSR-7 class names in the Pool iterator exception
+- Redirect body rewind failures no longer leak a bare `RuntimeException`
+
+
 ## 7.13.1 - 2026-06-29
 
 ### Fixed
