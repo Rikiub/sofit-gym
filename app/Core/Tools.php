@@ -60,6 +60,7 @@ class Tools
             ->allowScalarValueCasting() // Convertir strings en el tipo correspondiente
             ->allowSuperfluousKeys() // Ignorar keys extras
             ->allowUndefinedValues() // Valores indefinidos se convierten en null
+            ->allowPermissiveTypes() // Permitir arrays y objetos
             ->supportDateFormats( // Formatos de fecha soportados
                 DateTimeInterface::ATOM,
                 'Y-m-d\TH:i',
@@ -85,7 +86,7 @@ class Tools
     private static function getValinorCache(): FileSystemCache|FileWatchingCache
     {
         $cache = new FileSystemCache(
-            Config::get("web.cache") . '/valinor'
+            Config::get("fs.cache") . '/valinor'
         );
 
         if (Config::get("debug")) {

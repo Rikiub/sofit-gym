@@ -10,20 +10,18 @@ use Stringable;
 
 /** Logger para registrar eventos del sistema.
  * 
- * Sigue la interfaz PSR-3 para facil extensibilidad con futuras herramientas. */
+ * Sigue la interfaz PSR-3. */
 class BitacoraLogger extends AbstractLogger
 {
+    private string $modulo;
+    private string $accion;
+
     public function __construct(
         private $bitacoraModel = new BitacoraModel()
-    ) {}
-
-    private string $modulo = 'sistema';
-    private string $accion = 'desconocido';
-
-    public function setRouteContext(string $modulo, string $accion): void
-    {
-        $this->modulo = $modulo;
-        $this->accion = $accion;
+    ) {
+        // Determinar parametros segun la URL
+        $this->modulo = $_GET["page"] ?? "?";
+        $this->accion = $_GET["action"] ?? "?";
     }
 
     public function log(
@@ -55,9 +53,9 @@ class BitacoraLogger extends AbstractLogger
             accion: $accion,
             mensaje: $message,
             nivel: strtolower((string)$level),
-            contexto: $context ? json_encode($context) : null,
-            datos_previos: $datosPrevios ? json_encode($datosPrevios) : null,
-            datos_nuevos: $datosNuevos ? json_encode($datosNuevos) : null,
+            contexto: $context,
+            datos_previos: $datosPrevios,
+            datos_nuevos: $datosNuevos,
         ));
     }
 

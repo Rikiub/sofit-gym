@@ -19,7 +19,7 @@ class BitacoraModel extends Model
         $rows = $this->db->dbQuery($this->sqlSelect())->fetchAll();
 
         return array_map(
-            fn($row) => Tools::map(BitacoraLog::class, $row),
+            fn($row) => $this->mapToLog($row),
             $rows
         );
     }
@@ -32,7 +32,7 @@ class BitacoraModel extends Model
         )->fetch();
 
         return $row
-            ? Tools::map(BitacoraLog::class, $row)
+            ? $this->mapToLog($row)
             : null;
     }
 
@@ -77,6 +77,15 @@ class BitacoraModel extends Model
     }
 
     // Helpers
+    private function mapToLog(array $row): BitacoraLog
+    {
+        $row["contexto"] = json_decode($row["contexto"], true);
+        $row["datos_previos"] = json_decode($row["datos_previos"], true);
+        $row["datos_nuevos"] = json_decode($row["datos_nuevos"], true);
+
+        return Tools::map(BitacoraLog::class, $row);
+    }
+
     private function mapToColumns(BitacoraLog $dto): array
     {
         return [
@@ -85,9 +94,9 @@ class BitacoraModel extends Model
             'accion' => $dto->accion,
             'mensaje' => $dto->mensaje,
             'nivel' => $dto->nivel,
-            'contexto' => $dto->contexto,
-            'datos_previos' => $dto->datos_previos,
-            'datos_nuevos' => $dto->datos_nuevos,
+            'contexto' => $dto->contexto ? json_encode($dto->contexto) : null,
+            'datos_previos' => $dto->datos_previos ? json_encode($dto->datos_previos) : null,
+            'datos_nuevos' => $dto->datos_nuevos ? json_encode($dto->datos_nuevos) : null,
         ];
     }
 
@@ -122,10 +131,16 @@ readonly class BitacoraLog
         public ?string $accion = null,
         public ?string $mensaje = null,
         public ?string $nivel = null,
-        public ?string $contexto = null,
-        public ?string $datos_previos = null,
-        public ?string $datos_nuevos = null,
         public ?DateTimeImmutable $fecha = null,
+
+        /** @var array<string, mixed>|null */
+        public ?array $contexto = null,
+
+        /** @var array<string, mixed>|null */
+        public ?array $datos_previos = null,
+
+        /** @var array<string, mixed>|null */
+        public ?array $datos_nuevos = null,
     ) {}
 
     public function validateInsert()
