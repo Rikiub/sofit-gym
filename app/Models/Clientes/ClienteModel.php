@@ -53,6 +53,7 @@ class ClienteModel extends Model
             $search = trim($search);
 
             $columns = [
+                'persona.cedula',
                 'persona.nombre',
                 'persona.apellido',
                 "CONCAT(persona.nombre, ' ', persona.apellido)",

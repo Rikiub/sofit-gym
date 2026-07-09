@@ -130,7 +130,7 @@ class FrontController
                 $res["exception"] = get_class($error);
                 $res['file'] = $error->getFile();
                 $res['line'] = $error->getLine();
-                $res['trace'] = $error->getTrace();
+                $res['trace'] = $error->getTraceAsString();
             }
 
             echo Response::json($res, Status::INTERNAL_SERVER_ERROR);
