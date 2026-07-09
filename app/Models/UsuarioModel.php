@@ -16,7 +16,7 @@ class UsuarioModel extends Model
     private string $primaryKey = "id_usuario";
 
     public function __construct(
-        private $image = new ImageStorage(),
+        private ImageStorage $image = new ImageStorage(),
     ) {
         parent::__construct();
     }

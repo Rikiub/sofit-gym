@@ -14,7 +14,7 @@ class NotificacionService
     private PHPMailer $mailer;
 
     public function __construct(
-        private $notifModel = new NotificacionModel(),
+        private NotificacionModel $notifModel = new NotificacionModel(),
     ) {
         $this->mailer = Tools::getMailer();
     }

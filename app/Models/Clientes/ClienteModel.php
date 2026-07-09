@@ -12,7 +12,7 @@ class ClienteModel extends Model
     public string $primaryKey = 'cedula';
 
     public function __construct(
-        private $personaModel = new PersonaModel(),
+        private PersonaModel $personaModel = new PersonaModel(),
     ) {
         parent::__construct();
     }

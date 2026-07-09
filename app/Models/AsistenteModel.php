@@ -11,12 +11,12 @@ use DateTimeImmutable;
 class AsistenteModel extends Model
 {
     public function __construct(
-        private $asistenciaModel = new AsistenciaModel(),
-        private $rutinaModel = new RutinaModel(),
-        private $trabajadorModel = new TrabajadorModel(),
-        private $clienteModel = new ClienteModel(),
-        private $segFisicoModel = new SegumientoFisicoModel(),
-        private $segNutricionalModel = new SegumientoNutricionalModel(),
+        private AsistenciaModel $asistenciaModel = new AsistenciaModel(),
+        private RutinaModel $rutinaModel = new RutinaModel(),
+        private TrabajadorModel $trabajadorModel = new TrabajadorModel(),
+        private ClienteModel $clienteModel = new ClienteModel(),
+        private SegumientoFisicoModel $segFisicoModel = new SegumientoFisicoModel(),
+        private SegumientoNutricionalModel $segNutricionalModel = new SegumientoNutricionalModel(),
     ) {
         parent::__construct();
     }

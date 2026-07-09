@@ -14,15 +14,6 @@ class SegumientoNutricionalModel extends Model
     private string $table = 'seguimiento_nutricional';
     private string $primaryKey = 'id_seguimiento';
 
-    private function sqlSelect(string $where = ""): string
-    {
-        return <<<SQL
-                SELECT *
-                FROM {$this->table}
-                {$where}
-            SQL;
-    }
-
     /**
      * Obtiene todos los seguimientos de un cliente.
      * @return SeguimientoNutricional[]
@@ -98,6 +89,15 @@ class SegumientoNutricionalModel extends Model
     public function delete(int $id): void
     {
         $this->db->dbDelete($this->table, [$this->primaryKey => $id]);
+    }
+
+    private function sqlSelect(string $where = ""): string
+    {
+        return <<<SQL
+                SELECT *
+                FROM {$this->table}
+                {$where}
+            SQL;
     }
 
     private function mapToColumns(SeguimientoNutricional $dto): array

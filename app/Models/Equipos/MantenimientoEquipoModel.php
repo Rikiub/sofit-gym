@@ -16,7 +16,7 @@ class MantenimientoEquipoModel extends Model
     private string $primaryKey = 'id_mantenimiento';
 
     public function __construct(
-        private $equipoModel = new EquipoModel(),
+        private EquipoModel $equipoModel = new EquipoModel(),
     ) {
         return parent::__construct();
     }
