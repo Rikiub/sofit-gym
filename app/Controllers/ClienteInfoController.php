@@ -86,7 +86,7 @@ class ClienteInfoController extends Controller
 
         $old = $this->fisicoModel->find($id);
         if (!$old) {
-            return $this->conflict(false, $id);
+            return $this->notFoundSeg();
         }
 
         $this->fisicoModel->delete($id);
@@ -153,7 +153,7 @@ class ClienteInfoController extends Controller
 
         $old = $this->nutricionalModel->find($id);
         if (!$old) {
-            return $this->conflict(false, $id);
+            return $this->notFoundSeg();
         }
 
         $this->nutricionalModel->delete($id);
@@ -176,18 +176,6 @@ class ClienteInfoController extends Controller
     }
 
     // Helpers
-    private function conflict(bool $exists, string $id): string
-    {
-        if ($exists) {
-            $message = "El seguimiento {$id} ya existe";
-            $code = Status::BAD_REQUEST;
-        } else {
-            $message = "El seguimiento {$id} no existe";
-            $code = Status::NOT_FOUND;
-        }
-        return Response::json(['message' => $message], $code);
-    }
-
     private function getIdSeguimiento(): int
     {
         return Request::queryInt("id_seguimiento") ?? 0;
@@ -201,5 +189,10 @@ class ClienteInfoController extends Controller
     private function notFoundCliente(): string
     {
         return Response::json(["message" => "Cliente no encontrado"], Status::NOT_FOUND);
+    }
+
+    private function notFoundSeg(): string
+    {
+        return Response::json(['message' => "El seguimiento no existe"], Status::NOT_FOUND);
     }
 }
