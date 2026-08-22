@@ -13,6 +13,7 @@ use App\Models\AsistenteMensaje;
 use App\Models\AsistenteModel;
 use App\Models\AsistenteSesion;
 use App\Models\RolAsistente;
+use Error;
 use LLPhant\Chat\FunctionInfo\FunctionBuilder;
 use LLPhant\Chat\Message;
 use LLPhant\Chat\OpenAIChat;
@@ -32,9 +33,19 @@ class AsistenteController extends Controller
     public function __construct(
         private $asistenteModel = new AsistenteModel(),
     ) {
+        $apiKey = Config::get("ai.api_key");
+        $model = Config::get("ai.model");
+
+        if (!$apiKey) {
+            throw new Error("Debes definir la variable de entorno AI_API_KEY en el archivo .env");
+        }
+        if (!$model) {
+            throw new Error("Debes definir la variable de entorno AI_MODEL en el archivo .env");
+        }
+
         $config = new GeminiOpenAIConfig();
-        $config->apiKey = $_ENV["GEMINI_API_KEY"];
-        $config->model = "gemini-2.5-flash-lite";
+        $config->apiKey = $apiKey;
+        $config->model = $model;
 
         $this->chat = new OpenAIChat($config);
         $this->user =  UserSession::get();

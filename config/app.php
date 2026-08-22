@@ -42,6 +42,12 @@ return [
         "from_name" => $_ENV["MAIL_FROM_NAME"] ?? 'Soporte Sofit GYM',
     ],
 
+    // Modelo de inteligencia artificial
+    "ai" => [
+        "api_key" => $_ENV["AI_API_KEY"] ?? null,
+        "model" => $_ENV["AI_MODEL"] ?? "gemini-2.5-flash-lite",
+    ],
+
     // Modo desarrollo
     "debug" => filter_var(
         $_ENV["DEBUG"] ?? true,
