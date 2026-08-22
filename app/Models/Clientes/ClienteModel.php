@@ -162,7 +162,10 @@ class ClienteModel extends Model
 
     private function mapToCliente(array $row): Cliente
     {
-        $row['membresia'] = json_decode($row['membresia'], true);
+        $membresia = $row['membresia'] ?? null;
+        if ($membresia) {
+            $row['membresia'] = json_decode($membresia, true);
+        }
         return Tools::map(Cliente::class, $row);
     }
 
@@ -172,15 +175,18 @@ class ClienteModel extends Model
                 SELECT
                     persona.*,
                     CONCAT(persona.nombre, ' ', persona.apellido) AS nombre_completo,
-                    JSON_OBJECT(
-                        "id_membresia", m.id_membresia,
-                        "id_tipo", m.id_tipo,
-                        "estado", me.nombre,
-                        "id_estado", m.id_estado,
-                        "tipo", mt.nombre,
-                        "fecha_inicio", m.fecha_inicio,
-                        "fecha_fin", m.fecha_fin
-                    ) AS membresia
+                    IF(m.fecha_fin >= CURDATE(),
+                        JSON_OBJECT(
+                            "id_membresia", m.id_membresia,
+                            "id_tipo", m.id_tipo,
+                            "estado", me.nombre,
+                            "id_estado", m.id_estado,
+                            "tipo", mt.nombre,
+                            "fecha_inicio", m.fecha_inicio,
+                            "fecha_fin", m.fecha_fin
+                        ),
+                        NULL
+                    )
                 FROM cliente
                 LEFT JOIN persona ON persona.cedula = cliente.cedula
                 LEFT JOIN membresia m ON m.id_membresia = (
