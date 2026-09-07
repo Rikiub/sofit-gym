@@ -25,6 +25,7 @@ $modalForm = $this->fetch('modalForm', [
                         class="form-control"
                         name="nombre"
                         type="text" 
+                        maxlength="50"
                         required
                     >
                     <small class="text-danger" x-text="errors.nombre"></small>
@@ -38,6 +39,7 @@ $modalForm = $this->fetch('modalForm', [
                         class="form-control"
                         name="descripcion"
                         rows="2" 
+                        maxlength="1000"
                     ></textarea>
                     <small class="text-danger" x-text="errors.descripcion"></small>
                 </label>
@@ -64,7 +66,7 @@ $modalForm = $this->fetch('modalForm', [
                 <fieldset class="row">
                     <label class="col">
                         <span class="form-label">Capacidad Actual</span>
-                        <input class="form-control" name="capacidad_actual" :value="capacidad_actual" placeholder="0" readonly>
+                        <input class="form-control" name="capacidad_actual" :value="capacidad_actual" placeholder="0" disabled>
                     </label>
 
                     <label class="col">
