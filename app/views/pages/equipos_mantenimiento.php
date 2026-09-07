@@ -79,6 +79,7 @@ $modalForm = $this->fetch('modalForm', [
                     name="descripcion"
                     placeholder="Detalles del mantenimiento realizado"
                     rows="3"
+                    maxlength="1000"
                 ></textarea>
                 <small x-text="errors.descripcion"></small>
             </label>
