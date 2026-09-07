@@ -13,4 +13,5 @@ $input ??= [];
         "action" => "query",
     ],
     "itemKey" => "cedula",
+    "displaySelectedKey" => "nombre_completo"
 ]); ?>

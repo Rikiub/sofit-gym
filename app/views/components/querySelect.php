@@ -27,6 +27,7 @@ $columns ??= [];
 $configJson = encodeToJson([
     "params" => $params ??= [], // Parametros fetch ['page' => 'clientes', 'action' => 'query', ...]
     "searchParam" => $searchParam ??= "search", // Parametro a usar para la busqueda
+    "displaySelectedKey" => $displaySelectedKey ??= null,
     "itemKey" => $itemKey ??= "id", // Clave primaria para identificar cada item
 ]);
 
@@ -40,7 +41,7 @@ $this->pushJs("components/querySelect.js");
         type="button"
         @click="togglePopover()"
         x-ref="selectButton"
-        x-text="selected || '<?= $this->e($placeholder) ?>'"
+        x-text="displaySelected || selected || '<?= $this->e($placeholder) ?>'"
         class="form-select text-start"
         :class="{ 'text-body-secondary': !selected }"></button>
 

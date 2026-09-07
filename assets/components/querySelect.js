@@ -4,6 +4,7 @@ import { fetchApi } from "@/js/api.js";
 Alpine.data("querySelect", ({
     params = {},
     searchParam = "search",
+    displaySelectedKey = null,
     itemKey = "id",
 } = {}) => {
     return {
@@ -11,8 +12,8 @@ Alpine.data("querySelect", ({
         search: null,
         popover: null,
         selected: null,
-        itemKey,
-        
+        displaySelected: null,
+
         async init() {
             document.addEventListener('click', (e) => {
                 if (!this.popover) return;
@@ -28,7 +29,7 @@ Alpine.data("querySelect", ({
                 this.$refs.input.dispatchEvent(new Event('change', { bubbles: true }));
             })
 
-            await this.handleSearch(); 
+            await this.handleSearch();
         },
 
         togglePopover() {
@@ -50,7 +51,7 @@ Alpine.data("querySelect", ({
 
                 this.$refs.selectButton.addEventListener('hidden.bs.popover', () => {
                     if (this.popover) {
-                        this.popover.dispose(); 
+                        this.popover.dispose();
                         this.popover = null;
                         this.$refs.popoverContent.style.display = 'none';
                         this.$refs.popoverContainer.appendChild(this.$refs.popoverContent);
@@ -66,18 +67,23 @@ Alpine.data("querySelect", ({
 
         setSelected(item) {
             this.search = null;
-            this.selected = item[this.itemKey];
+            this.selected = item[itemKey];
+
+            if (displaySelectedKey) {
+                this.displaySelected = item[displaySelectedKey]
+            }
+
             this.$dispatch("item-selected", item);
             this.hidePopover();
         },
-        
+
         async handleSearch() {
             let newParams = params;
             if (this.search) {
                 newParams = { ...params, [searchParam]: this.search };
             }
             this.items = await fetchApi(newParams);
-            
+
             if (this.popover) this.popover.update();
         },
     };

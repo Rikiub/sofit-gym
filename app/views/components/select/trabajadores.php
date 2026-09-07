@@ -16,4 +16,5 @@ $id_rol ??= "";
         "id_rol" => $id_rol,
     ],
     "itemKey" => "cedula",
+    "displaySelectedKey" => "nombre_completo"
 ]); ?>
