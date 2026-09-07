@@ -41,9 +41,27 @@ class LoginController extends Controller
         $body = Request::getParsedBody();
         $nombre_usuario = $body["nombre_usuario"] ?? null;
         $contrasena = $body["contrasena"] ?? null;
+        $direccion_ip = $_SERVER['REMOTE_ADDR'];
 
+        # Comprobar intentos
+        $maximoIntentos = 3;
+        $minutosBloqueo = 15;
+        $duracion = new DateTimeImmutable("-{$minutosBloqueo} minutes");
+
+        if ($this->usuarioModel->intentosFallidos(
+            duracion: $duracion,
+            direccion_ip: $direccion_ip
+        ) >= $maximoIntentos) {
+            return Response::json(
+                ["message" => "Numero de intentos excedidos. Vuelva a intentarlo en {$minutosBloqueo} minutos."],
+                Status::UNAUTHORIZED
+            );
+        }
+
+        # Validar y registrar intento
         $usuario = $this->usuarioModel->findByUsername($nombre_usuario);
         if (!$usuario) {
+            $this->usuarioModel->insertIntentoAcceso(exito: false, direccion_ip: $direccion_ip);
             return $this->invalidInput();
         };
 
@@ -58,28 +76,21 @@ class LoginController extends Controller
                 nivel: Level::ERROR,
             );
 
-            $maximoIntentos = 3;
-            $minutosBloqueo = 15;
-            $duracion = new DateTimeImmutable("-{$minutosBloqueo} minutes");
-
-            // Si el usuario excedio el maximo numero de intentos
-            if ($this->usuarioModel->intentosFallidos(
-                $usuario->id_usuario,
-                $duracion,
-            ) >= $maximoIntentos) {
-                return Response::json(
-                    ["message" => "Numero de intentos excedidos. Vuelva a intentarlo en {$minutosBloqueo} minutos."],
-                    Status::UNAUTHORIZED
-                );
-            } else {
-                $this->usuarioModel->insertIntentoAcceso($usuario->id_usuario, exito: false);
-            }
+            $this->usuarioModel->insertIntentoAcceso(
+                exito: false,
+                direccion_ip: $direccion_ip,
+                id_usuario: $usuario->id_usuario
+            );
 
             return $this->invalidInput();
         }
 
         // Actualizar estado
-        $this->usuarioModel->insertIntentoAcceso($usuario->id_usuario, exito: true);
+        $this->usuarioModel->insertIntentoAcceso(
+            direccion_ip: $direccion_ip,
+            id_usuario: $usuario->id_usuario,
+            exito: true
+        );
         $this->usuarioModel->updateUltimoAcceso($usuario->id_usuario);
 
         // Guardar la sesión utilizando un helper

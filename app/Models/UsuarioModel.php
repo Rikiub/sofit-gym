@@ -197,30 +197,31 @@ class UsuarioModel extends Model
 
     // Intentos
 
-    public function insertIntentoAcceso(int $id_usuario, bool $exito): void
+    public function insertIntentoAcceso(bool $exito, string $direccion_ip, int $id_usuario = null): void
     {
         $this->db->dbInsert(
             $this->dbSecurity('intento_acceso'),
             [
+                "direccion_ip" => $direccion_ip,
                 "id_usuario" => $id_usuario,
                 "exito" => $exito
             ],
         );
     }
 
-    public function intentosFallidos(int $id_usuario, DateTimeImmutable $duracion): int
+    public function intentosFallidos(DateTimeImmutable $duracion, string $direccion_ip, int $id_usuario = null): int
     {
         $intentos = $this->db->dbQuery(
             <<<SQL
                 SELECT COUNT(*)
                 FROM
                     {$this->dbSecurity('intento_acceso')}
-                WHERE
-                    id_usuario = ?
+                WHERE (direccion_ip = ? OR id_usuario = ?)
                     AND exito = 0
                     AND fecha_creacion > ?;
             SQL,
             [
+                $direccion_ip,
                 $id_usuario,
                 toDbDate($duracion)
             ]
