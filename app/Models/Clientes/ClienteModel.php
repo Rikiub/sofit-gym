@@ -186,16 +186,15 @@ class ClienteModel extends Model
                             "fecha_fin", m.fecha_fin
                         ),
                         NULL
-                    )
+                    ) AS membresia 
                 FROM cliente
                 LEFT JOIN persona ON persona.cedula = cliente.cedula
-                LEFT JOIN membresia m ON m.id_membresia = (
-                    SELECT m2.id_membresia 
-                    FROM membresia m2 
-                    WHERE m2.cedula_cliente = cliente.cedula 
-                    ORDER BY m2.id_membresia DESC 
-                    LIMIT 1
-                )
+                LEFT JOIN (
+                    SELECT 
+                        m1.*, 
+                        ROW_NUMBER() OVER (PARTITION BY m1.cedula_cliente ORDER BY m1.fecha_inicio DESC) as rn
+                    FROM membresia m1
+                ) m ON m.cedula_cliente = cliente.cedula AND m.rn = 1
                 LEFT JOIN tipo_membresia mt ON m.id_tipo = mt.id_tipo
                 LEFT JOIN estado_membresia me ON m.id_estado = me.id_estado
                 {$where} 

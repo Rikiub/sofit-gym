@@ -18,13 +18,13 @@
 
     <label class="col">
         <span class="form-label">Nombre</span>
-        <input class="form-control" required name="nombre" type="text">
+        <input class="form-control" required name="nombre" type="text" maxlength="25">
         <small class="text-danger" x-text="errors.nombre"></small>
     </label>
 
     <label class="col">
         <span class="form-label">Apellido</span>
-        <input class="form-control" required name="apellido" type="text">
+        <input class="form-control" required name="apellido" type="text" maxlength="25">
         <small class="text-danger" x-text="errors.apellido"></small>
     </label>
 </fieldset>
@@ -60,7 +60,7 @@
 <fieldset class="row">
     <label class="col">
         <span class="form-label">Dirección</span>
-        <textarea class="form-control" name="direccion"></textarea>
+        <textarea class="form-control" name="direccion" maxlength="200"></textarea>
         <small class="text-danger" x-text="errors.direccion"></small>
     </label>
 </fieldset>
