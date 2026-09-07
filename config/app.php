@@ -29,8 +29,8 @@ return [
         "username" =>  $_ENV['DB_USERNAME'] ?? 'root',
         "password" => $_ENV['DB_PASSWORD'] ?? '',
         "path" => [
-            "mysql" => $_ENV['DB_PATH_MYSQL'] ?? 'mysql',
-            "mysqldump" => $_ENV['DB_PATH_MYSQLDUMP'] ?? 'mysqldump',
+            "mysql" => $_ENV['DB_PATH_MYSQL'] ?? 'C:\xampp\mysql\bin\mysql',
+            "mysqldump" => $_ENV['DB_PATH_MYSQLDUMP'] ?? 'C:\xampp\mysql\bin\mysqldump',
         ],
     ],
     // Credenciales de correo

@@ -10,13 +10,13 @@ $modalForm = $this->fetch('modalForm', [
             <fieldset class="row">
                 <label class="col">
                     <span class="form-label">Código</span>
-                    <input class="form-control" type="text" name="codigo_equipo" required placeholder="Código del equipo">
+                    <input class="form-control" type="text" name="codigo_equipo" required placeholder="Código del equipo" maxlength="20">
                     <small class="text-danger" x-text="errors.codigo_equipo"></small>
                 </label>
 
                 <label class="col">
                     <span class="form-label">Nombre</span>
-                    <input class="form-control" type="text" name="nombre" required placeholder="Nombre del equipo">
+                    <input class="form-control" type="text" name="nombre" required placeholder="Nombre del equipo" maxlength="40">
                     <small class="text-danger" x-text="errors.nombre"></small>
                 </label>
             </fieldset>
@@ -24,13 +24,13 @@ $modalForm = $this->fetch('modalForm', [
             <fieldset class="row">
                 <label class="col">
                     <span class="form-label">Tipo</span>
-                    <input class="form-control" type="text" name="tipo" placeholder="Ej. Diagnóstico, Soporte vital">
+                    <input class="form-control" type="text" name="tipo" placeholder="Ej. Diagnóstico, Soporte vital" maxlength="40">
                     <small class="text-danger" x-text="errors.tipo"></small>
                 </label>
 
                 <label class="col">
                     <span class="form-label">Ubicación</span>
-                    <input class="form-control" type="text" name="ubicacion" placeholder="Área o sala">
+                    <input class="form-control" type="text" name="ubicacion" placeholder="Área o sala" maxlength="40">
                     <small class="text-danger" x-text="errors.ubicacion"></small>
                 </label>
             </fieldset>
