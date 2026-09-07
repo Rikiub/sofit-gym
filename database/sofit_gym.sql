@@ -87,7 +87,7 @@ CREATE TABLE `clase` (
   PRIMARY KEY (`id_clase`),
   KEY `cedula_trabajador` (`cedula_trabajador`),
   CONSTRAINT `clase_ibfk_1` FOREIGN KEY (`cedula_trabajador`) REFERENCES `trabajador` (`cedula`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -96,7 +96,7 @@ CREATE TABLE `clase` (
 
 LOCK TABLES `clase` WRITE;
 /*!40000 ALTER TABLE `clase` DISABLE KEYS */;
-INSERT INTO `clase` VALUES (2,'V-00000002','Dia de pierna','¡Hora de fortalecer esas piernas!',15,'Programado','2026-05-26 12:00:00','2026-05-12 03:00:00'),(13,'V-00000002','Hola','Adios',20,'Programado','2026-05-29 11:00:00','2026-05-29 02:00:00'),(26,'V-00000002','assa','asf',2,'Programado','2026-06-30 00:35:00','2026-07-01 00:35:00');
+INSERT INTO `clase` VALUES (2,'V-00000002','Dia de pierna','¡Hora de fortalecer esas piernas!',15,'Programado','2026-05-26 12:00:00','2026-05-12 03:00:00'),(13,'V-00000002','Hola','Adios',20,'Programado','2026-05-29 11:00:00','2026-05-29 02:00:00'),(26,'V-00000002','assa','asf',2,'Programado','2026-06-30 00:35:00','2026-07-01 00:35:00'),(27,'V-00000002','saf','asf',4,'Programado','2026-09-06 21:30:00','2026-09-08 21:31:00');
 /*!40000 ALTER TABLE `clase` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -125,7 +125,7 @@ CREATE TABLE `clase_cliente` (
 
 LOCK TABLES `clase_cliente` WRITE;
 /*!40000 ALTER TABLE `clase_cliente` DISABLE KEYS */;
-INSERT INTO `clase_cliente` VALUES (2,'V-11111111',0,'2026-06-20 19:45:42'),(2,'V-22222222',0,'2026-06-20 19:45:42'),(2,'V-33333333',0,'2026-06-20 19:45:42'),(13,'V-11111111',0,'2026-06-20 19:45:42'),(13,'V-33333333',0,'2026-06-20 19:45:42'),(26,'V-21059483',0,'2026-07-08 15:54:33'),(26,'V-27338194',0,'2026-07-08 15:54:33');
+INSERT INTO `clase_cliente` VALUES (2,'V-11111111',0,'2026-06-20 19:45:42'),(2,'V-22222222',0,'2026-06-20 19:45:42'),(2,'V-33333333',0,'2026-06-20 19:45:42'),(13,'V-11111111',0,'2026-06-20 19:45:42'),(13,'V-33333333',0,'2026-06-20 19:45:42'),(26,'V-21059483',0,'2026-07-08 15:54:33'),(26,'V-27338194',0,'2026-07-08 15:54:33'),(27,'V-11111111',1,'2026-09-06 21:31:29'),(27,'V-11773948',0,'2026-09-06 21:31:29');
 /*!40000 ALTER TABLE `clase_cliente` ENABLE KEYS */;
 UNLOCK TABLES;
 ALTER DATABASE `sofit_gym` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci ;
@@ -138,52 +138,84 @@ ALTER DATABASE `sofit_gym` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `tg_control_capacidad_clase` BEFORE INSERT ON `clase_cliente` FOR EACH ROW begin
-
-
-	declare capacidad_actual int;
-
-
-	declare capacidad_maxima int;
-
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `tg_control_capacidad_clase` BEFORE INSERT ON `clase_cliente` FOR EACH ROW begin
 
 
 
 
-	select COUNT(*) into capacidad_actual
+	declare capacidad_actual int;
+
+
 
 
-	from clase_cliente
+	declare capacidad_maxima int;
+
+
 
 
-	where cedula_cliente = new.cedula_cliente;
 
 
-	
+
 
 
-	select capacidad_maxima into capacidad_maxima
+	select COUNT(*) into capacidad_actual
+
+
 
 
-	from clase
+	from clase_cliente
+
+
 
 
-	where id_clase = new.id_clase;
+	where cedula_cliente = new.cedula_cliente;
+
+
 
 
-	
+	
+
+
 
 
-	if capacidad_actual > capacidad_maxima then
+	select capacidad_maxima into capacidad_maxima
+
+
 
 
-		signal sqlstate "45000"
+	from clase
+
+
 
 
-		set MESSAGE_TEXT = "Error: La clase ha alcanzado su maxima capacidad. No se admiten mas clientes.";
+	where id_clase = new.id_clase;
+
+
 
 
-	end if;
+	
+
+
+
+
+	if capacidad_actual > capacidad_maxima then
+
+
+
+
+		signal sqlstate "45000"
+
+
+
+
+		set MESSAGE_TEXT = "Error: La clase ha alcanzado su maxima capacidad. No se admiten mas clientes.";
+
+
+
+
+	end if;
+
+
 
 
 end */;;
@@ -228,13 +260,19 @@ ALTER DATABASE `sofit_gym` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `tg_delete_person` AFTER DELETE ON `cliente` FOR EACH ROW begin
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `tg_delete_person` AFTER DELETE ON `cliente` FOR EACH ROW begin
+
+
 
 
-	delete from persona
+	delete from persona
+
+
 
 
-	where persona.cedula = old.cedula;
+	where persona.cedula = old.cedula;
+
+
 
 
 end */;;
@@ -353,7 +391,7 @@ CREATE TABLE `membresia` (
   CONSTRAINT `membresia_cliente_FK` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `membresia_ibfk_1` FOREIGN KEY (`id_tipo`) REFERENCES `tipo_membresia` (`id_tipo`) ON UPDATE CASCADE,
   CONSTRAINT `membresia_ibfk_2` FOREIGN KEY (`id_estado`) REFERENCES `estado_membresia` (`id_estado`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -362,7 +400,7 @@ CREATE TABLE `membresia` (
 
 LOCK TABLES `membresia` WRITE;
 /*!40000 ALTER TABLE `membresia` DISABLE KEYS */;
-INSERT INTO `membresia` VALUES (40,1,2,'V-11773948','2026-06-20','2026-07-20','2026-06-20 16:30:17'),(41,1,2,'V-21059483','2026-06-20','2026-07-20','2026-06-20 19:14:40'),(42,1,1,'V-24119384','2026-06-22','2026-07-22','2026-06-22 20:43:23'),(43,1,1,'V-11773948','2026-07-01','2026-07-31','2026-07-01 12:25:36'),(44,1,1,'V-21059483','2026-07-02','2026-08-01','2026-07-02 20:53:03');
+INSERT INTO `membresia` VALUES (40,1,2,'V-11773948','2026-06-20','2026-07-20','2026-06-20 16:30:17'),(41,1,2,'V-21059483','2026-06-20','2026-07-20','2026-06-20 19:14:40'),(42,1,1,'V-24119384','2026-06-22','2026-07-22','2026-06-22 20:43:23'),(43,1,2,'V-11773948','2026-07-01','2026-07-31','2026-07-01 12:25:36'),(44,1,1,'V-21059483','2026-07-02','2026-08-01','2026-07-02 20:53:03'),(45,1,1,'V-11773948','2026-09-06','2026-10-06','2026-09-06 20:44:45');
 /*!40000 ALTER TABLE `membresia` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -410,7 +448,7 @@ CREATE TABLE `pago` (
   KEY `pago_metodo_pago_FK` (`id_metodo`),
   CONSTRAINT `pago_membresia_FK` FOREIGN KEY (`id_membresia`) REFERENCES `membresia` (`id_membresia`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `pago_metodo_pago_FK` FOREIGN KEY (`id_metodo`) REFERENCES `metodo_pago` (`id_metodo`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -419,7 +457,7 @@ CREATE TABLE `pago` (
 
 LOCK TABLES `pago` WRITE;
 /*!40000 ALTER TABLE `pago` DISABLE KEYS */;
-INSERT INTO `pago` VALUES (20,40,1,5.00,'','Pagado','2026-06-20'),(21,41,1,5.00,'','Pagado','2026-06-20'),(22,42,1,20.00,'','Pagado','2026-06-22'),(24,44,1,5.00,'','Pagado','2026-07-02');
+INSERT INTO `pago` VALUES (20,40,1,5.00,'','Pagado','2026-06-20'),(21,41,1,5.00,'','Pagado','2026-06-20'),(22,42,1,20.00,'','Pagado','2026-06-22'),(24,44,1,5.00,'','Pagado','2026-07-02'),(25,45,1,5.00,'','Pagado','2026-09-06');
 /*!40000 ALTER TABLE `pago` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -605,7 +643,7 @@ CREATE TABLE `seguimiento_fisico` (
   KEY `seguimiento_fisico_trabajador_FK` (`registrado_por`),
   CONSTRAINT `seguimiento_fisico_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `seguimiento_fisico_trabajador_FK` FOREIGN KEY (`registrado_por`) REFERENCES `trabajador` (`cedula`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -614,7 +652,7 @@ CREATE TABLE `seguimiento_fisico` (
 
 LOCK TABLES `seguimiento_fisico` WRITE;
 /*!40000 ALTER TABLE `seguimiento_fisico` DISABLE KEYS */;
-INSERT INTO `seguimiento_fisico` VALUES (3,'V-11111111',NULL,'2026-05-17',2.00,4.00,NULL,NULL,NULL,NULL,NULL,NULL),(14,'V-22222222',NULL,'2026-05-20',111.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(17,'V-22222222',NULL,'2026-05-24',210.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(20,'V-22222222',NULL,'2026-05-30',200.00,50.00,50.00,50.00,50.00,50.00,50.00,50.00),(30,'V-11773948','V-00000001','2026-06-24',200.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(33,'V-11773948','V-00000002','2026-06-27',200.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(35,'V-11773948','V-00000001','2026-07-08',120.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `seguimiento_fisico` VALUES (3,'V-11111111',NULL,'2026-05-17',2.00,4.00,NULL,NULL,NULL,NULL,NULL,NULL),(14,'V-22222222',NULL,'2026-05-20',111.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(17,'V-22222222',NULL,'2026-05-24',210.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(20,'V-22222222',NULL,'2026-05-30',200.00,50.00,50.00,50.00,50.00,50.00,50.00,50.00),(30,'V-11773948','V-00000001','2026-06-24',200.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(33,'V-11773948','V-00000002','2026-06-27',200.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(35,'V-11773948','V-00000001','2026-07-08',120.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(36,'V-11773948',NULL,'2026-09-07',NULL,190.00,NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `seguimiento_fisico` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -738,13 +776,19 @@ ALTER DATABASE `sofit_gym` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `tg_delete_trabajador` AFTER DELETE ON `trabajador` FOR EACH ROW begin
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `tg_delete_trabajador` AFTER DELETE ON `trabajador` FOR EACH ROW begin
+
+
 
 
-	delete from persona
+	delete from persona
+
+
 
 
-	where cedula = old.cedula;
+	where cedula = old.cedula;
+
+
 
 
 end */;;
@@ -825,16 +869,24 @@ ALTER DATABASE `sofit_gym` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `tg_actualizar_stock_venta` AFTER INSERT ON `venta_producto` FOR EACH ROW begin
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `tg_actualizar_stock_venta` AFTER INSERT ON `venta_producto` FOR EACH ROW begin
+
+
 
 
-	update producto
+	update producto
+
+
 
 
-	set stock_actual = stock_actual - new.cantidad_vendida
+	set stock_actual = stock_actual - new.cantidad_vendida
+
+
 
 
-	where codigo_producto = new.codigo_producto;
+	where codigo_producto = new.codigo_producto;
+
+
 
 
 end */;;
@@ -862,14 +914,20 @@ ALTER DATABASE `sofit_gym` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
 /*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `fn_dias_restantes`(p_fecha_fin DATE
+CREATE DEFINER=`root`@`localhost` FUNCTION `fn_dias_restantes`(p_fecha_fin DATE
+
 ) RETURNS int(11)
     READS SQL DATA
-BEGIN
-    IF p_fecha_fin IS NULL THEN
-        RETURN NULL;
-    END IF;
-    RETURN DATEDIFF(p_fecha_fin, CURDATE());
+BEGIN
+
+    IF p_fecha_fin IS NULL THEN
+
+        RETURN NULL;
+
+    END IF;
+
+    RETURN DATEDIFF(p_fecha_fin, CURDATE());
+
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -886,22 +944,36 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
 /*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `fn_estado_membresia`(p_fecha_fin DATE,
-    p_estado_pago VARCHAR(20)
+CREATE DEFINER=`root`@`localhost` FUNCTION `fn_estado_membresia`(p_fecha_fin DATE,
+
+    p_estado_pago VARCHAR(20)
+
 ) RETURNS varchar(20) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci
     READS SQL DATA
-BEGIN
-    IF p_fecha_fin IS NULL THEN
-        RETURN 'Sin membresía';
-    ELSEIF p_fecha_fin < CURDATE() THEN
-        RETURN 'Vencido';
-    ELSEIF p_estado_pago = 'Atrasado' THEN
-        RETURN 'Moroso';
-    ELSEIF DATEDIFF(p_fecha_fin, CURDATE()) <= 7 THEN
-        RETURN 'Próximo a vencer';
-    ELSE
-        RETURN 'Activo';
-    END IF;
+BEGIN
+
+    IF p_fecha_fin IS NULL THEN
+
+        RETURN 'Sin membresía';
+
+    ELSEIF p_fecha_fin < CURDATE() THEN
+
+        RETURN 'Vencido';
+
+    ELSEIF p_estado_pago = 'Atrasado' THEN
+
+        RETURN 'Moroso';
+
+    ELSEIF DATEDIFF(p_fecha_fin, CURDATE()) <= 7 THEN
+
+        RETURN 'Próximo a vencer';
+
+    ELSE
+
+        RETURN 'Activo';
+
+    END IF;
+
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -918,19 +990,31 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
 /*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_obtener_totales_asistencias_por_rango`(
-    IN p_fecha_inicio DATE,
-    IN p_fecha_fin DATE
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_obtener_totales_asistencias_por_rango`(
+
+    IN p_fecha_inicio DATE,
+
+    IN p_fecha_fin DATE
+
 )
-BEGIN
-    SELECT 
-        DATE(a.fecha) AS dia,
-        COUNT(*) AS total_asistencias
-    FROM asistencia_gimnasio a
-    WHERE DATE(a.fecha) BETWEEN p_fecha_inicio AND p_fecha_fin
-      AND a.tipo = 'Entrada'
-    GROUP BY DATE(a.fecha)
-    ORDER BY dia ASC;
+BEGIN
+
+    SELECT 
+
+        DATE(a.fecha) AS dia,
+
+        COUNT(*) AS total_asistencias
+
+    FROM asistencia_gimnasio a
+
+    WHERE DATE(a.fecha) BETWEEN p_fecha_inicio AND p_fecha_fin
+
+      AND a.tipo = 'Entrada'
+
+    GROUP BY DATE(a.fecha)
+
+    ORDER BY dia ASC;
+
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -947,53 +1031,53 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
 /*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_registrar_entrada_cliente`(
-    IN p_cedula VARCHAR(15),
-    IN p_hora TIME,          
-    OUT p_success BOOLEAN,
-    OUT p_message VARCHAR(255),
-    OUT p_id_asistencia INT,
-    OUT p_fecha_registro DATETIME
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_registrar_entrada_cliente`(
+    IN p_cedula VARCHAR(15),
+    IN p_hora TIME,          
+    OUT p_success BOOLEAN,
+    OUT p_message VARCHAR(255),
+    OUT p_id_asistencia INT,
+    OUT p_fecha_registro DATETIME
 )
-BEGIN
-    DECLARE v_cliente_nombre VARCHAR(101);
-    DECLARE v_membresia_valida INT DEFAULT 0;
-
-    
-    SELECT 
-        CONCAT(p.nombre, ' ', p.apellido),
-        COUNT(m.id_membresia)
-    INTO
-        v_cliente_nombre,
-        v_membresia_valida
-    FROM persona p
-    JOIN cliente c ON c.cedula = p.cedula
-    JOIN membresia m ON m.cedula_cliente = c.cedula
-    WHERE c.cedula = p_cedula
-      AND m.fecha_fin >= CURDATE()
-      AND m.id_estado = 1
-    GROUP BY p.cedula;
-
-    IF v_membresia_valida = 0 THEN
-        SET p_success = FALSE;
-        SET p_message = 'Cliente no encontrado o membresía inactiva/vencida.';
-        SET p_id_asistencia = NULL;
-        SET p_fecha_registro = NULL;
-    ELSE
-        
-        IF p_hora IS NOT NULL THEN
-            INSERT INTO asistencia_gimnasio (cedula_persona, fecha, tipo)
-            VALUES (p_cedula, CONCAT(CURDATE(), ' ', p_hora), 'Entrada');
-        ELSE
-            INSERT INTO asistencia_gimnasio (cedula_persona, fecha, tipo)
-            VALUES (p_cedula, NOW(), 'Entrada');
-        END IF;
-
-        SET p_id_asistencia = LAST_INSERT_ID();
-        SELECT fecha INTO p_fecha_registro FROM asistencia_gimnasio WHERE id_asistencia = p_id_asistencia;
-        SET p_success = TRUE;
-        SET p_message = CONCAT('Entrada registrada para ', v_cliente_nombre);
-    END IF;
+BEGIN
+    DECLARE v_cliente_nombre VARCHAR(101);
+    DECLARE v_membresia_valida INT DEFAULT 0;
+
+    
+    SELECT 
+        CONCAT(p.nombre, ' ', p.apellido),
+        COUNT(m.id_membresia)
+    INTO
+        v_cliente_nombre,
+        v_membresia_valida
+    FROM persona p
+    JOIN cliente c ON c.cedula = p.cedula
+    JOIN membresia m ON m.cedula_cliente = c.cedula
+    WHERE c.cedula = p_cedula
+      AND m.fecha_fin >= CURDATE()
+      AND m.id_estado = 1
+    GROUP BY p.cedula;
+
+    IF v_membresia_valida = 0 THEN
+        SET p_success = FALSE;
+        SET p_message = 'Cliente no encontrado o membresía inactiva/vencida.';
+        SET p_id_asistencia = NULL;
+        SET p_fecha_registro = NULL;
+    ELSE
+        
+        IF p_hora IS NOT NULL THEN
+            INSERT INTO asistencia_gimnasio (cedula_persona, fecha, tipo)
+            VALUES (p_cedula, CONCAT(CURDATE(), ' ', p_hora), 'Entrada');
+        ELSE
+            INSERT INTO asistencia_gimnasio (cedula_persona, fecha, tipo)
+            VALUES (p_cedula, NOW(), 'Entrada');
+        END IF;
+
+        SET p_id_asistencia = LAST_INSERT_ID();
+        SELECT fecha INTO p_fecha_registro FROM asistencia_gimnasio WHERE id_asistencia = p_id_asistencia;
+        SET p_success = TRUE;
+        SET p_message = CONCAT('Entrada registrada para ', v_cliente_nombre);
+    END IF;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1010,4 +1094,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-07-08 16:05:20
+-- Dump completed on 2026-09-07  1:27:49
