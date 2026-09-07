@@ -6,7 +6,7 @@ use App\Core\Validator;
 use DateTimeImmutable;
 
 /**
- * Base para compartir tipos y validaciones con las clases: ClienteDTO y Trabajador.
+ * Base para compartir tipos y validaciones con las clases: Cliente y Trabajador.
  */
 readonly class Persona
 {
@@ -30,6 +30,15 @@ readonly class Persona
         }
         if ($this->telefono) {
             Validator::telefono($this->telefono, "telefono");
+        }
+        if ($this->nombre) {
+            Validator::length($this->nombre, "nombre", 2, 25);
+        }
+        if ($this->apellido) {
+            Validator::length($this->nombre, "apellido", 2, 25);
+        }
+        if ($this->direccion) {
+            Validator::maxLength($this->direccion, "direccion", 100);
         }
     }
 

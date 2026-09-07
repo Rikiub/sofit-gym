@@ -19,6 +19,29 @@ class Validator
         return $value;
     }
 
+    public static function length(string $value, string $key, int $min, int $max): string
+    {
+        Validator::minLength($value, $key, $min);
+        Validator::maxLength($value, $key, $max);
+        return $value;
+    }
+
+    public static function minLength(string $value, string $key, int $min): string
+    {
+        if (strlen($value) < $min) {
+            throw new InvalidArgumentException("El campo '{$key}' no cumple el minimo de {$min} caracteres");
+        }
+        return $value;
+    }
+
+    public static function maxLength(string $value, string $key, int $max): string
+    {
+        if (strlen($value) > $max) {
+            throw new InvalidArgumentException("El campo '{$key}' excede el limite de {$max} caracteres");
+        }
+        return $value;
+    }
+
     public static function cedula(string $value, string $key): string
     {
         // Limpiar espacios y convertir la letra a mayúscula automáticamente

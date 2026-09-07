@@ -18,13 +18,13 @@
 
     <label class="col">
         <span class="form-label">Nombre</span>
-        <input class="form-control" required name="nombre" type="text" maxlength="25">
+        <input class="form-control" required name="nombre" type="text" minlength="2" maxlength="25">
         <small class="text-danger" x-text="errors.nombre"></small>
     </label>
 
     <label class="col">
         <span class="form-label">Apellido</span>
-        <input class="form-control" required name="apellido" type="text" maxlength="25">
+        <input class="form-control" required name="apellido" type="text" minlength="2" maxlength="25">
         <small class="text-danger" x-text="errors.apellido"></small>
     </label>
 </fieldset>
