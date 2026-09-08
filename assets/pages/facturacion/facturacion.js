@@ -1,10 +1,9 @@
-// facturacion.js - Toda la lógica JavaScript
+// facturacion.js
 
 document.addEventListener('DOMContentLoaded', function() {
-    // ==================== AUTO-CERRAR ALERTAS ====================
+    // ===== Auto-cerrar alertas existentes (de sesión) =====
     function autoCloseAlerts() {
-        const alerts = document.querySelectorAll('.alert');
-        alerts.forEach(alert => {
+        document.querySelectorAll('.alert:not(.alert-dynamic)').forEach(alert => {
             setTimeout(() => {
                 alert.classList.add('fade-out');
                 setTimeout(() => alert.remove(), 500);
@@ -13,30 +12,36 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     autoCloseAlerts();
 
-    // ==================== PESTAÑAS ====================
-    const tabs = document.querySelectorAll('.tab-btn');
-    const contents = document.querySelectorAll('.tab-content');
-    function activateTab(tabId) {
-        tabs.forEach(btn => btn.classList.remove('active'));
-        contents.forEach(c => c.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
-        const url = new URL(window.location.href);
-        url.searchParams.set('tab', tabId);
-        window.history.pushState({}, '', url);
-    }
-    tabs.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const target = btn.getAttribute('data-tab');
-            activateTab(target);
-        });
-    });
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlTab = urlParams.get('tab');
-    if (urlTab && document.getElementById(urlTab)) activateTab(urlTab);
-    else activateTab('tab-pagos');
+    // ===== Mostrar alerta dinámica dentro del contenedor =====
+    function showAlert(message, type = 'danger') {
+        const container = document.getElementById('alertContainer');
+        if (!container) return;
 
-    // ==================== BUSCADOR AJAX ====================
+        container.querySelectorAll('.alert-dynamic').forEach(el => el.remove());
+
+        const iconMap = {
+            danger: 'exclamation-triangle',
+            success: 'check-circle',
+            warning: 'info-circle'
+        };
+
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show alert-dynamic`;
+        alertDiv.role = 'alert';
+        alertDiv.innerHTML = `
+            <i class="fas fa-${iconMap[type] || 'info-circle'}"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        container.prepend(alertDiv);
+
+        setTimeout(() => {
+            alertDiv.classList.add('fade-out');
+            setTimeout(() => alertDiv.remove(), 500);
+        }, 4000);
+    }
+
+    // ===== Buscador AJAX =====
     const searchInput = document.getElementById('searchPagos');
     const tablaBody = document.getElementById('tablaPagosBody');
     let timeoutId = null;
@@ -121,8 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         data-metodo="${escapeHtml(p.metodo_pago)}"
                                         data-estado="${escapeHtml(p.estado_pago)}"
                                         data-fecha_pago="${p.fecha_pago}"
-                                        data-fecha_vencimiento="${p.fecha_vencimiento}"
-                                        data-comprobante="${escapeHtml(p.comprobante_url) || 'No disponible'}">
+                                        data-fecha_vencimiento="${p.fecha_vencimiento}">
                                         <i class="fas fa-eye"></i> Ver
                                     </button>
                                 </div>
@@ -131,41 +135,45 @@ document.addEventListener('DOMContentLoaded', function() {
                     `;
                 });
                 tablaBody.innerHTML = html;
-                // Reasignar eventos a los botones dinámicos
-                document.querySelectorAll('.editar-btn').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
-                        document.getElementById('edit_id').value = this.dataset.id;
-                        document.getElementById('edit_cliente').value = this.dataset.cliente;
-                        document.getElementById('edit_nombre').value = this.dataset.nombre;
-                        document.getElementById('edit_monto').value = this.dataset.monto;
-                        document.getElementById('edit_metodo').value = this.dataset.metodo;
-                        document.getElementById('edit_estado').value = this.dataset.estado;
-                        document.getElementById('edit_fecha_pago').value = this.dataset.fecha_pago;
-                        document.getElementById('edit_fecha_vencimiento').value = this.dataset.fecha_vencimiento;
-                    });
-                });
-                document.querySelectorAll('.eliminar-btn').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
-                        document.getElementById('delete_id').value = this.dataset.id;
-                        document.getElementById('confirmDeleteBtn').href = `?page=facturacion&action=eliminar&eliminar_pago=${this.dataset.id}&tab=tab-lista`;
-                    });
-                });
-                document.querySelectorAll('.ver-btn').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
-                        document.getElementById('ver_id').innerText = this.dataset.id;
-                        document.getElementById('ver_cedula').innerText = this.dataset.cliente;
-                        document.getElementById('ver_nombre').innerText = this.dataset.nombre;
-                        document.getElementById('ver_monto').innerText = `$ ${parseFloat(this.dataset.monto).toFixed(2)}`;
-                        document.getElementById('ver_metodo').innerText = this.dataset.metodo;
-                        document.getElementById('ver_estado').innerText = this.dataset.estado;
-                        document.getElementById('ver_fecha_pago').innerText = this.dataset.fecha_pago;
-                        document.getElementById('ver_fecha_vencimiento').innerText = this.dataset.fecha_vencimiento;
-                        document.getElementById('ver_comprobante').innerText = this.dataset.comprobante;
-                    });
-                });
+                asignarEventosBotones();
             })
             .catch(error => console.error('Error en búsqueda:', error));
     }
+
+    function asignarEventosBotones() {
+        document.querySelectorAll('.editar-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.getElementById('edit_id').value = this.dataset.id;
+                document.getElementById('edit_cliente').value = this.dataset.cliente;
+                document.getElementById('edit_nombre').value = this.dataset.nombre;
+                document.getElementById('edit_monto').value = this.dataset.monto;
+                document.getElementById('edit_metodo').value = this.dataset.metodo;
+                document.getElementById('edit_estado').value = this.dataset.estado;
+                document.getElementById('edit_fecha_pago').value = this.dataset.fecha_pago;
+                document.getElementById('edit_fecha_vencimiento').value = this.dataset.fecha_vencimiento;
+            });
+        });
+        document.querySelectorAll('.eliminar-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.getElementById('delete_id').value = this.dataset.id;
+                document.getElementById('confirmDeleteBtn').href = `?page=facturacion&action=eliminar&eliminar_pago=${this.dataset.id}`;
+            });
+        });
+        document.querySelectorAll('.ver-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.getElementById('ver_id').innerText = this.dataset.id;
+                document.getElementById('ver_cedula').innerText = this.dataset.cliente;
+                document.getElementById('ver_nombre').innerText = this.dataset.nombre;
+                document.getElementById('ver_monto').innerText = `$ ${parseFloat(this.dataset.monto).toFixed(2)}`;
+                document.getElementById('ver_metodo').innerText = this.dataset.metodo;
+                document.getElementById('ver_estado').innerText = this.dataset.estado;
+                document.getElementById('ver_fecha_pago').innerText = this.dataset.fecha_pago;
+                document.getElementById('ver_fecha_vencimiento').innerText = this.dataset.fecha_vencimiento;
+            });
+        });
+    }
+
+    asignarEventosBotones();
 
     if (searchInput) {
         searchInput.addEventListener('keyup', function() {
@@ -175,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     document.getElementById('btnBuscar')?.addEventListener('click', buscarPagos);
 
-    // ==================== MODAL CLIENTE ====================
+    // ===== Modal Cliente =====
     const searchClient = document.getElementById('searchClient');
     const clienteModal = document.getElementById('clienteModal');
     function filterClientTable() {
@@ -200,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // ==================== MÉTODO DE PAGO ====================
+    // ===== Método de pago =====
     document.querySelectorAll('.method-item').forEach(item => {
         item.addEventListener('click', () => {
             const metodo = item.getAttribute('data-metodo');
@@ -210,32 +218,74 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ==================== PLAN ====================
+    // ===== Plan (SIN autocompletar monto) =====
     document.querySelectorAll('.plan-item').forEach(item => {
         item.addEventListener('click', () => {
             const plan = item.getAttribute('data-plan');
             const text = item.getAttribute('data-text');
+
             document.getElementById('selected_plan').value = plan;
             document.getElementById('plan_selected_text').innerText = text;
+
             bootstrap.Modal.getInstance(document.getElementById('planModal')).hide();
         });
     });
 
-    // ==================== FORMULARIO REGISTRO ====================
+    // ===== VALIDACIÓN DEL MONTO EN TIEMPO REAL (CORREGIDA) =====
+    function validarMonto(input) {
+        const valor = input.value.trim();
+        let esValido = false;
+
+        // Si está vacío, eliminar ambas clases (borde normal)
+        if (valor === '') {
+            input.classList.remove('monto-valid', 'monto-invalid');
+            esValido = false;
+        } else {
+            const numero = parseFloat(valor);
+            // Validar: número > 0 y con formato de máximo 2 decimales
+            if (!isNaN(numero) && numero > 0 && /^\d+(\.\d{1,2})?$/.test(valor)) {
+                esValido = true;
+                input.classList.remove('monto-invalid');
+                input.classList.add('monto-valid');   // Azul
+            } else {
+                esValido = false;
+                input.classList.remove('monto-valid');
+                input.classList.add('monto-invalid'); // Rojo
+            }
+        }
+        return esValido;
+    }
+
+    const montoInput = document.getElementById('monto_input');
+    if (montoInput) {
+        montoInput.addEventListener('input', function() {
+            validarMonto(this);
+        });
+        montoInput.addEventListener('blur', function() {
+            validarMonto(this);
+        });
+        // Si el campo tiene un valor al cargar, validarlo
+        if (montoInput.value.trim() !== '') {
+            validarMonto(montoInput);
+        }
+    }
+
+    // ===== Formulario Registro (con alerta estilizada) =====
     const formRegistro = document.getElementById('formRegistroPago');
     if (formRegistro) {
         formRegistro.addEventListener('submit', (e) => {
-            const montoInput = document.getElementById('monto_input');
             if (!document.getElementById('selected_cliente_id').value) {
-                alert('Debe seleccionar un cliente.');
+                showAlert('⚠️ Debe seleccionar un cliente.', 'warning');
                 e.preventDefault();
                 return;
             }
-            if (!montoInput.value || parseFloat(montoInput.value) <= 0) {
-                alert('Monto inválido.');
+
+            if (!validarMonto(montoInput)) {
+                showAlert('⚠️ El monto ingresado no es válido. Debe ser un número positivo con máximo dos decimales (ej. 25.50).', 'danger');
                 e.preventDefault();
                 return;
             }
+
             const hiddenMonto = document.createElement('input');
             hiddenMonto.type = 'hidden';
             hiddenMonto.name = 'monto';
@@ -244,41 +294,4 @@ document.addEventListener('DOMContentLoaded', function() {
             montoInput.disabled = true;
         });
     }
-
-    // ==================== EDITAR (estáticos) ====================
-    document.querySelectorAll('.editar-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            document.getElementById('edit_id').value = this.dataset.id;
-            document.getElementById('edit_cliente').value = this.dataset.cliente;
-            document.getElementById('edit_nombre').value = this.dataset.nombre;
-            document.getElementById('edit_monto').value = this.dataset.monto;
-            document.getElementById('edit_metodo').value = this.dataset.metodo;
-            document.getElementById('edit_estado').value = this.dataset.estado;
-            document.getElementById('edit_fecha_pago').value = this.dataset.fecha_pago;
-            document.getElementById('edit_fecha_vencimiento').value = this.dataset.fecha_vencimiento;
-        });
-    });
-
-    // ==================== ELIMINAR (estáticos) ====================
-    document.querySelectorAll('.eliminar-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            document.getElementById('delete_id').value = this.dataset.id;
-            document.getElementById('confirmDeleteBtn').href = `?page=facturacion&action=eliminar&eliminar_pago=${this.dataset.id}&tab=tab-lista`;
-        });
-    });
-
-    // ==================== VER (estáticos) ====================
-    document.querySelectorAll('.ver-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            document.getElementById('ver_id').innerText = this.dataset.id;
-            document.getElementById('ver_cedula').innerText = this.dataset.cliente;
-            document.getElementById('ver_nombre').innerText = this.dataset.nombre;
-            document.getElementById('ver_monto').innerText = `$ ${parseFloat(this.dataset.monto).toFixed(2)}`;
-            document.getElementById('ver_metodo').innerText = this.dataset.metodo;
-            document.getElementById('ver_estado').innerText = this.dataset.estado;
-            document.getElementById('ver_fecha_pago').innerText = this.dataset.fecha_pago;
-            document.getElementById('ver_fecha_vencimiento').innerText = this.dataset.fecha_vencimiento;
-            document.getElementById('ver_comprobante').innerText = this.dataset.comprobante;
-        });
-    });
 });

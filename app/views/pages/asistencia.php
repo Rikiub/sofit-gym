@@ -49,9 +49,9 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
     <div class="card">
         <div class="card-header"><i class="fas fa-list"></i> Entradas de hoy</div>
         <div class="card-body">
-            <div class="buscador">
-                <input type="text" id="searchInput" class="form-control" placeholder="Buscar por hora, cédula o nombre...">
-                <button id="btnBuscar" class="btn-secondary">Buscar</button>
+            <div class="buscador-pagos">
+                <input type="text" id="searchInput" class="form-control" placeholder="🔍 Buscar por hora, cédula o nombre...">
+                <button id="btnBuscar" class="btn btn-secondary">Buscar</button>
             </div>
             <div class="table-responsive">
                 <table class="table table-striped" id="tablaEntradas">
@@ -79,7 +79,7 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
                         <?php endforeach; ?>
                         <?php if (empty($entradasHoy)): ?>
                             <tr>
-                                <td colspan="4" class="text-center">No hay entradas registradas hoy.<?php echo ""; ?></td>
+                                <td colspan="4" class="text-center">No hay entradas registradas hoy.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -89,6 +89,9 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
     </div>
 </div>
 
+<!-- ===== MODALES ===== -->
+
+<!-- Cliente Modal -->
 <div class="modal fade asistencia-scope" id="clienteModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
@@ -120,6 +123,7 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
     </div>
 </div>
 
+<!-- Editar Modal -->
 <div class="modal fade asistencia-scope" id="editarModal" tabindex="-1">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -150,21 +154,25 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
     </div>
 </div>
 
+<!-- ===== ELIMINAR MODAL (AJUSTADO: más compacto) ===== -->
 <div class="modal fade asistencia-scope" id="eliminarModal" tabindex="-1">
-    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
+            <div class="modal-header bg-danger">
                 <h5 class="modal-title"><i class="fas fa-trash-alt"></i> Confirmar eliminación</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body text-center">
+                <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                <p class="fw-bold">¿Está seguro de eliminar esta entrada?</p>
+                <div class="bg-light p-3 rounded text-start" style="margin: 0 auto; max-width: 350px;">
+                    <div><strong>Hora:</strong> <span id="delete_hora"></span></div>
+                    <div><strong>Cédula:</strong> <span id="delete_cedula"></span></div>
+                    <div><strong>Cliente:</strong> <span id="delete_nombre"></span></div>
+                </div>
                 <input type="hidden" id="delete_id">
-                <p>¿Está seguro de eliminar esta entrada?</p>
-                <div class="mb-2"><strong>Hora:</strong> <span id="delete_hora"></span></div>
-                <div class="mb-2"><strong>Cédula:</strong> <span id="delete_cedula"></span></div>
-                <div class="mb-2"><strong>Cliente:</strong> <span id="delete_nombre"></span></div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer justify-content-center">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-danger" id="confirmarEliminar">Eliminar</button>
             </div>
@@ -198,13 +206,6 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
             font-size: 1.6rem;
             font-weight: 600;
             margin: 0;
-        }
-
-        .header .badge {
-            background: #8B0000;
-            padding: 0.3rem 1rem;
-            border-radius: 40px;
-            font-size: 0.8rem;
         }
 
         .card {
@@ -243,7 +244,7 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
 
         .form-group .form-control,
         .form-group select,
-        .buscador .form-control,
+        .buscador-pagos .form-control,
         .search-client {
             padding: 0.7rem 1rem;
             border-radius: 14px;
@@ -288,10 +289,18 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
         .btn-secondary {
             background: #6c757d !important;
             color: white !important;
+            padding: 0.7rem 1.5rem !important;
+            border-radius: 14px !important;
+            border: none !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            white-space: nowrap !important;
+            transition: background 0.2s, transform 0.2s !important;
         }
 
         .btn-secondary:hover {
             background: #5a6268 !important;
+            transform: translateY(-1px) !important;
         }
 
         .btn-warning {
@@ -366,39 +375,25 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
             color: #8b1e1e;
         }
 
-        footer {
-            text-align: center;
-            padding: 1rem;
-            background: #fafbfc;
-            color: #7f8c8d;
-            font-size: 0.75rem;
-        }
-
-        .buscador {
+        .buscador-pagos {
             margin-bottom: 1rem;
             display: flex;
             gap: 0.5rem;
             align-items: center;
         }
 
-        .buscador input {
+        .buscador-pagos input {
             flex: 1;
-            width: auto;
-        }
-
-        .buscador button {
-            width: auto;
-            background: #6c757d;
             padding: 0.5rem 1rem;
-            font-size: 0.85rem;
-            border-radius: 14px;
-            border: none;
-            color: white;
-            cursor: pointer;
+            border-radius: 20px;
+            border: 1px solid #cfdfe8;
+            font-size: 0.9rem;
         }
 
-        .buscador button:hover {
-            background: #5a6268;
+        .buscador-pagos input:focus {
+            outline: none;
+            border-color: #C62828;
+            box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1);
         }
 
         .modal-select-btn {
@@ -465,12 +460,31 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
             background-color: #C62828 !important;
         }
 
-        @media (max-width: 768px) {
+        .modal-header.bg-danger .btn-close-white {
+            filter: brightness(0) invert(1);
+        }
 
+        .modal-body .bg-light {
+            background-color: #f8f9fa !important;
+        }
+
+        @media (max-width: 768px) {
             td:last-child,
             th:last-child {
                 width: auto;
                 white-space: normal;
+            }
+
+            .buscador-pagos {
+                flex-wrap: wrap;
+            }
+
+            .buscador-pagos input {
+                flex: 1 1 100%;
+            }
+
+            .buscador-pagos .btn-secondary {
+                width: 100%;
             }
         }
     }

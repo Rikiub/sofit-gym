@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
     const btnBuscar = document.getElementById('btnBuscar');
     let currentSearchTerm = '';
+    let timeoutId = null;
 
     // Modales
     const clienteModalEl = document.getElementById('clienteModal');
@@ -112,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function actualizarTabla(entradas) {
         if (!tablaBody) return;
         if (entradas.length === 0) {
-            tablaBody.innerHTML = '<tr><td colspan="4" class="text-center">No hay entradas registradas hoy.‹tr›';
+            tablaBody.innerHTML = '<tr><td colspan="4" class="text-center">No hay entradas registradas hoy.</td></tr>';
             return;
         }
         let html = '';
@@ -133,25 +134,25 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
         });
         tablaBody.innerHTML = html;
-        // Reasignar eventos a botones dinámicos
         document.querySelectorAll('.editar-btn').forEach(btn => btn.addEventListener('click', abrirEditarModal));
         document.querySelectorAll('.eliminar-btn').forEach(btn => btn.addEventListener('click', abrirEliminarModal));
     }
 
+    // ===== BÚSQUEDA EN TIEMPO REAL + BOTÓN (IGUAL QUE FACTURACIÓN) =====
     function buscarEntradas() {
         const termino = searchInput.value.trim();
         cargarEntradas(termino);
     }
+
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+            if (timeoutId) clearTimeout(timeoutId);
+            timeoutId = setTimeout(buscarEntradas, 400);
+        });
+    }
+
     if (btnBuscar) {
         btnBuscar.addEventListener('click', buscarEntradas);
-    }
-    if (searchInput) {
-        searchInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                buscarEntradas();
-            }
-        });
     }
 
     // ==================== MODAL EDITAR ====================
@@ -164,7 +165,12 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('edit_id').value = id;
         document.getElementById('edit_cedula').value = cedula;
         document.getElementById('edit_nombre').value = nombre;
-        document.getElementById('edit_hora').value = hora;
+        if (hora) {
+            const parts = hora.split(':');
+            document.getElementById('edit_hora').value = parts[0] + ':' + parts[1];
+        } else {
+            document.getElementById('edit_hora').value = '';
+        }
         editarModal.show();
     }
 
@@ -224,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(() => showMessage('❌ Error de conexión', 'error'));
     });
 
-    // ==================== GRÁFICO DE OCUPACIÓN (RF-10) ====================
+    // ==================== GRÁFICO ====================
     let chart = null;
     function loadChart() {
         if (typeof window.ocupacionData === 'undefined') return;
@@ -254,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ==================== PESTAÑAS (con recarga del gráfico) ====================
+    // ==================== PESTAÑAS ====================
     const tabs = document.querySelectorAll('.tab-btn');
     const contents = document.querySelectorAll('.tab-content');
     function activateTab(tabId) {
@@ -274,12 +280,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Activar la pestaña inicial (según la que venga marcada)
     const activeTab = document.querySelector('.tab-content.active');
     if (!activeTab) {
         activateTab('tab-registrar');
     } else {
-        // Si la pestaña de métricas está activa al cargar, cargar gráfico
         if (activeTab.id === 'tab-metricas') {
             setTimeout(loadChart, 100);
         }
@@ -291,9 +295,8 @@ document.addEventListener('DOMContentLoaded', function() {
         return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m] || m));
     }
 
-    // Carga inicial de entradas
+    // Carga inicial
     cargarEntradas('');
-    // Asignar eventos a botones estáticos
     document.querySelectorAll('.editar-btn').forEach(btn => btn.addEventListener('click', abrirEditarModal));
     document.querySelectorAll('.eliminar-btn').forEach(btn => btn.addEventListener('click', abrirEliminarModal));
 });
