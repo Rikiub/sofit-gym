@@ -9,17 +9,17 @@ import FormDataJson from "form-data-json";
  */
 export async function fetchApi(params = "", options = {}) {
     let { headers = {}, body, ...restOptions } = options;
-    let defaultHeaders = {"Accept": "application/json"};
+    let defaultHeaders = { "Accept": "application/json" };
 
     // Convertir el body en JSON
     if (body) {
         defaultHeaders["Content-Type"] = "application/json";
-        
+
         if (body instanceof FormData) {
             body = FormDataJson.toJson(body);
         }
-        
-        if (body?.constructor === Object) {
+
+        if (body?.constructor === Object || Array.isArray(body)) {
             body = JSON.stringify(body);
         }
     }
@@ -53,10 +53,10 @@ async function handleResponse(response) {
         if (self.DEBUG) console.error(errorBody);
 
         // Si es un objeto (JSON) se esparce, si es un string se guarda en una propiedad 'message'
-        const errorCause = typeof errorBody === "object" 
-            ? { ...errorBody } 
+        const errorCause = typeof errorBody === "object"
+            ? { ...errorBody }
             : { message: errorBody };
-        
+
         throw new Error(
             `API error ${response.status}: ${response.statusText}`,
             { cause: { ...errorCause, status: response.status } },

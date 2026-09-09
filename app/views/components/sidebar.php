@@ -242,10 +242,16 @@ $dropdown = function (
 			title: "Auditoría y seguridad",
 			items: [
 				[
+					"permiso" => "opciones:ver",
+					"url" => "?page=opciones",
+					"icon" => "fa-cogs",
+					"title" => "Opciones del Sistema"
+				],
+				[
 					"permiso" => "usuarios:ver",
 					"url" => "?page=usuarios",
 					"icon" => "fa-user",
-					"title" => "Usuarios"
+					"title" => "Gestión de Usuarios"
 				],
 				[
 					"permiso" => "roles:ver",

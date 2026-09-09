@@ -12,6 +12,7 @@ use App\Core\Http\Status;
 use App\Models\AsistenteMensaje;
 use App\Models\AsistenteModel;
 use App\Models\AsistenteSesion;
+use App\Models\OpcionModel;
 use App\Models\RolAsistente;
 use Error;
 use LLPhant\Chat\FunctionInfo\FunctionBuilder;
@@ -32,9 +33,10 @@ class AsistenteController extends Controller
 
     public function __construct(
         private $asistenteModel = new AsistenteModel(),
+        private $opcionModel = new OpcionModel(),
     ) {
-        $apiKey = Config::get("ai.api_key");
-        $model = Config::get("ai.model");
+        $apiKey = $opcionModel->get("ai.api_key") ?: Config::get("ai.api_key");
+        $model = $opcionModel->get("ai.modelo") ?: Config::get("ai.model");
 
         if (!$apiKey) {
             throw new Error("Debes definir la variable de entorno AI_API_KEY en el archivo .env");
