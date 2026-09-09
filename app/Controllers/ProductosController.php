@@ -6,7 +6,6 @@ use App\Controllers\Controller;
 use App\Models\ProductoModel;
 use App\Models\BitacoraModel;
 use App\Services\Reportes\ReporteInventario;
-use App\Services\Reportes\ReporteProductosMasVendidos;
 
 class ProductosController extends Controller
 {
@@ -16,7 +15,7 @@ class ProductosController extends Controller
     ) {}
 
     /**
-     * Muestra la vista principal de productos (Catálogo, Inventario y Ventas)
+     * Muestra la vista principal de productos (Catálogo e Inventario)
      */
     public function index()
     {
@@ -28,7 +27,6 @@ class ProductosController extends Controller
         // Obtener productos activos y aquellos que se encuentran bajo el stock de alerta mínimo
         $productos = $this->model->obtenerTodos($termino);
         $bajoStock = $this->model->obtenerBajoStock();
-        $clientes = $this->model->obtenerClientes();
 
         // Obtener mensajes de sesión temporales (Toasts/Alertas)
         $mensaje = $_SESSION['mensaje'] ?? '';
@@ -39,7 +37,6 @@ class ProductosController extends Controller
         echo $this->render('productos', [
             'productos' => $productos,
             'bajoStock' => $bajoStock,
-            'clientes'  => $clientes,
             'mensaje' => $mensaje,
             'tipoMensaje' => $tipoMensaje,
             'termino' => $termino
@@ -68,16 +65,28 @@ class ProductosController extends Controller
     }
 
     /**
-     * Endpoint API AJAX para obtener clientes activos
+     * Maneja la subida de la imagen y retorna la ruta
      */
-    public function obtenerClientesAjax()
+    private function procesarImagen($archivo)
     {
-        $this->protect("productos:ver");
-
-        $clientes = $this->model->obtenerClientes();
-        header('Content-Type: application/json');
-        echo json_encode($clientes);
-        exit;
+        if (isset($archivo) && $archivo['error'] === UPLOAD_ERR_OK) {
+            $permitidos = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+            if (in_array($archivo['type'], $permitidos)) {
+                $directorio = 'public/uploads/productos/';
+                if (!file_exists($directorio)) {
+                    mkdir($directorio, 0777, true);
+                }
+                
+                $extension = pathinfo($archivo['name'], PATHINFO_EXTENSION);
+                $nombreArchivo = uniqid('prod_') . '.' . $extension;
+                $rutaDestino = $directorio . $nombreArchivo;
+                
+                if (move_uploaded_file($archivo['tmp_name'], $rutaDestino)) {
+                    return $rutaDestino;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -102,6 +111,9 @@ class ProductosController extends Controller
             return;
         }
 
+        // Procesar subida de imagen si existe
+        $rutaImagen = $this->procesarImagen($_FILES['imagen'] ?? null);
+
         $datos = [
             'codigo_producto' => strip_tags(trim($codigo)),
             'nombre' => strip_tags(trim($nombre)),
@@ -110,8 +122,10 @@ class ProductosController extends Controller
             'stock_minimo' => isset($_POST['stock_minimo']) ? intval($_POST['stock_minimo']) : 0,
             'stock_actual' => isset($_POST['stock_actual']) ? intval($_POST['stock_actual']) : 0,
             'id_unidad' => !empty($_POST['id_unidad']) ? strip_tags(trim($_POST['id_unidad'])) : 'unidad',
-            'activo' => 1
+            'activo' => 1,
+            'imagen' => $rutaImagen
         ];
+        
         $exito = $this->model->crear($datos);
 
         $this->logger->log("Producto '{codigo_producto}' creado", [
@@ -161,6 +175,12 @@ class ProductosController extends Controller
             $datosNuevos['stock_actual'] = intval($_POST['stock_actual']);
         if (isset($_POST['id_unidad']))
             $datosNuevos['id_unidad'] = strip_tags(trim($_POST['id_unidad']));
+
+        // Actualizar la imagen si se envía una nueva
+        $rutaImagen = $this->procesarImagen($_FILES['imagen'] ?? null);
+        if ($rutaImagen) {
+            $datosNuevos['imagen'] = $rutaImagen;
+        }
 
         $exito = $this->model->actualizar($codigo, $datosNuevos);
 
@@ -255,107 +275,39 @@ class ProductosController extends Controller
     }
 
     /**
-     * Registra una nueva transacción de venta de uno o más productos
+     * Aumenta el precio de los suplementos (Categoría 1) en un 10%
      */
-    public function registrarVenta()
+    public function aumentarPreciosSuplementos()
     {
-        $this->protect("productos:crear");
+        $this->protect("productos:editar"); // Validamos permisos
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
-            echo json_encode(['success' => false, 'message' => 'Método no permitido']);
+            echo json_encode(['error' => 'Método no permitido']);
             return;
         }
 
-        // Obtener el cuerpo de la petición (JSON)
-        $input = json_decode(file_get_contents('php://input'), true);
+        // Llamamos a la función del modelo que retorna un array asociativo
+        $resultado = $this->model->aumentarPrecioSuplementos();
 
-        $cedulaCliente = !empty($input['cedula']) ? strip_tags(trim($input['cedula'])) : null;
-        $metodoPago = !empty($input['metodo_pago']) ? intval($input['metodo_pago'] ?? 0) : 1;
-        $items = $input['productos'] ?? [];
-
-        if (empty($items)) {
-            header('Content-Type: application/json');
-            echo json_encode(['success' => false, 'message' => '⚠️ Debe agregar al menos un producto a la lista de venta.']);
-            return;
+        if ($resultado['success']) {
+            $this->logger->log("Aumento global de precios en suplementos (10%)", [
+                "modulo" => "productos",
+                "accion" => "aumentar_precios_suplementos"
+            ]);
         }
-
-        // Procesar en el modelo bajo una sola transacción segura
-        $resultado = $this->model->registrarVentaMultiplesProductos($cedulaCliente, $metodoPago, $items);
-        $this->logger->log("Venta de productos registrada al cliente '{cedula_cliente}'", [
-            "modulo" => "productos",
-            "accion" => "registrar_ventar",
-
-            "cedula_cliente" => $cedulaCliente,
-            "metodoPago" => $metodoPago,
-            "cantidad_productos" => count($items),
-        ]);
 
         header('Content-Type: application/json');
         echo json_encode($resultado);
         exit;
     }
 
-    // Reportes
-
     /**
-     * Muestra exclusivamente la interfaz visual del formulario de reportes
-     * Invocado mediante ?url=productos&action=vistaReporte
+     * Muestra exclusivamente la interfaz visual del formulario de reportes de inventario
      */
-    public function vistaReporte()
-    {
-        // Renderiza el formulario usando el motor Plates cargando tu nueva vista
-        $this->protect("productos:ver");
-        echo $this->render('reportes/productos');
-        exit;
-    }
-
-    /**
-     * Genera y descarga el reporte en formato PDF de los productos más vendidos.
-     * Guiado de la lógica de negocio y control de flujo de formacionControl.php
-     */
-    public function generarReporteMasVendidos()
-    {
-        $this->protect("productos:ver");
-        // Soporte para filtros opcionales de rango de fecha desde la URL (?fecha_inicio= & fecha_fin=)
-        $fechaInicio = !empty($_GET['fecha_inicio']) ? strip_tags(trim($_GET['fecha_inicio'])) : null;
-        $fechaFin    = !empty($_GET['fecha_fin'])    ? strip_tags(trim($_GET['fecha_fin']))    : null;
-
-        // 1. Consultar los datos al Modelo estructurado
-        $productosData = $this->model->obtenerProductosMasVendidos($fechaInicio, $fechaFin);
-
-        // 2. Control de flujo adaptado de formacionControl (Verificar si es un array con datos)
-        if (is_array($productosData) && count($productosData) > 0) {
-
-            // Instanciar el helper del reporte PDF
-            $pdf = new ReporteProductosMasVendidos();
-
-            // Establecer metadatos básicos del documento PDF
-            $pdf->SetTitle(utf8_decode('Reporte de Productos Más Vendidos - SOFIT GYM'));
-            $pdf->SetAuthor('Sistema SOFIT GYM');
-
-            // Invocar el renderizado de la tabla con los parámetros correspondientes
-            $pdf->crearReporte($productosData, $fechaInicio, $fechaFin);
-
-            // Enviar los headers HTTP correspondientes e imprimir el flujo binario del PDF en el navegador
-            // I: Envía el fichero al navegador de forma limpia para previsualización / descarga
-            $pdf->Output('I', 'reporte_productos_mas_vendidos.pdf');
-            exit;
-        } else {
-            // Si es falso o vacío, preparamos la alerta de SweetAlert como en formacionControl
-            $_SESSION['mensaje'] = "No se encontraron registros de ventas para generar el reporte de productos.";
-            $_SESSION['tipo_mensaje'] = "warning"; // Usado para disparar tus Toasts/Alertas en la vista
-
-            // Redireccionar de vuelta al catálogo/inventario general de productos
-            header("Location: ?page=productos");
-            exit;
-        }
-    }
-
     public function vistaInventario()
     {
         $this->protect("productos:ver");
-        // Renderiza el formulario usando el motor Plates cargando tu nueva vista
         echo $this->render('reportes/inventario');
         exit;
     }
@@ -373,14 +325,9 @@ class ProductosController extends Controller
         // Instanciar el helper específico de inventario que creamos
         $pdf = new ReporteInventario();
 
-        // Establecer los metadatos obligatorios de FPDF
         $pdf->SetTitle(utf8_decode('Reporte General de Inventario - SOFIT GYM'));
         $pdf->SetAuthor('Sistema SOFIT GYM');
-
-        // Construir el cuerpo de las páginas y la tabla del reporte
         $pdf->crearReporte($inventarioData);
-
-        // Renderizar y forzar la visualización en el navegador de manera limpia
         $pdf->Output('I', 'reporte_general_inventario.pdf');
     }
 }

@@ -256,10 +256,91 @@ class RutinaModel extends Model
     public function eliminarAsignacion(int $idAsignacion): bool
     {
         try {
-            $filasAfectadas = $this->db->dbDelete('rutina_asignada', ['id_asignacion' => $idAsignacion]);
-            return $filasAfectadas > 0;
+            $this->db->dbDelete('rutina_asignada', ['id_asignacion' => $idAsignacion]);
+            return true;
         } catch (\PDOException $e) {
             return false;
+        }
+    }
+
+    // =========================================================================
+    // CONSULTAS Y TRANSACCIONES AVANZADAS
+    // =========================================================================
+
+    /**
+     * Subconsulta 2: Obtener las asignaciones de rutinas con nivel Avanzado.
+     *
+     * @return array Listado de asignaciones
+     */
+    public function obtenerAsignacionesAvanzadas(): array
+    {
+        try {
+            $sql = "SELECT id_asignacion, cedula_cliente, fecha_inicio, estado 
+                    FROM rutina_asignada 
+                    WHERE id_rutina IN (
+                        SELECT r.id_rutina FROM rutina r 
+                        JOIN tipo_dificultad td ON r.id_dificultad = td.id_dificultad 
+                        WHERE td.nombre = 'Avanzado'
+                    )";
+            $stmt = $this->db->query($sql);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            error_log("Error en RutinaModel::obtenerAsignacionesAvanzadas: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Subconsulta 3: Obtener las rutinas con la mayor cantidad de semanas de duración.
+     *
+     * @return array Listado de rutinas
+     */
+    public function obtenerRutinasMasLargas(): array
+    {
+        try {
+            $sql = "SELECT 
+                        r.id_rutina, 
+                        r.nombre AS nombre_rutina, 
+                        r.duracion_semanas, 
+                        r.objetivo,
+                        ra.cedula_cliente,
+                        CONCAT(p.nombre, ' ', p.apellido) AS nombre_cliente
+                    FROM rutina r 
+                    LEFT JOIN rutina_asignada ra ON r.id_rutina = ra.id_rutina
+                    LEFT JOIN persona p ON ra.cedula_cliente = p.cedula
+                    WHERE r.duracion_semanas = (SELECT MAX(duracion_semanas) FROM rutina)";
+            $stmt = $this->db->query($sql);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            error_log("Error en RutinaModel::obtenerRutinasMasLargas: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Transacción 3: Cancelar rutinas activas (Se hace dinámica pasando la cédula por parámetro)
+     *
+     * @param string $cedula_cliente Cédula del cliente
+     * @return array
+     */
+    public function cancelarRutinasCliente(string $cedula_cliente): array
+    {
+        try {
+            $this->db->beginTransaction();
+            
+            $sql = "UPDATE rutina_asignada SET estado = 'Cancelada' 
+                    WHERE cedula_cliente = ? AND estado = 'Activa'";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$cedula_cliente]);
+            
+            $this->db->commit();
+            return ['success' => true, 'message' => 'Rutinas canceladas exitosamente.'];
+        } catch (\PDOException $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            error_log("Error en RutinaModel::cancelarRutinasCliente: " . $e->getMessage());
+            return ['success' => false, 'message' => 'Error al procesar la cancelacion.'];
         }
     }
 

@@ -19,7 +19,6 @@ $this->layout("layout", ["title" => "Asignar Rutinas"]);
 
     <div id="toastMessage"></div>
 
-    <!-- Formulario de Asignación -->
     <div class="card">
         <div class="card-header"><i class="fas fa-handshake"></i> Vincular Rutina a un Cliente</div>
         <div class="card-body">
@@ -46,18 +45,22 @@ $this->layout("layout", ["title" => "Asignar Rutinas"]);
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <!-- Parámetros de Fechas y Estado -->
+                
                 <div class="form-group">
                     <label><i class="fas fa-calendar-plus"></i> Fecha Asignación</label>
-                    <input type="date" id="fecha_asignacion" name="fecha_asignacion" class="form-control" value="<?= date('Y-m-d') ?>" required>
+                    <!-- Se agregó min para bloquear fechas anteriores a hoy -->
+                    <input type="date" id="fecha_asignacion" name="fecha_asignacion" class="form-control" value="<?= date('Y-m-d') ?>" min="<?= date('Y-m-d') ?>" required>
+                    <div class="error-msg"></div>
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-calendar-day"></i> Fecha Inicio Plan</label>
-                    <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control">
+                    <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" min="<?= date('Y-m-d') ?>">
+                    <div class="error-msg"></div>
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-calendar-times"></i> Fecha Fin Plan</label>
-                    <input type="date" id="fecha_fin" name="fecha_fin" class="form-control">
+                    <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" min="<?= date('Y-m-d') ?>">
+                    <div class="error-msg"></div>
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-toggle-on"></i> Estado Inicial</label>
@@ -70,26 +73,52 @@ $this->layout("layout", ["title" => "Asignar Rutinas"]);
                 <div class="form-group">
                     <label><i class="fas fa-tasks"></i> Progreso Inicial (%)</label>
                     <input type="number" id="progreso_asignacion" name="progreso" class="form-control" min="0" max="100" step="1" value="0">
+                    <div class="error-msg"></div>
                 </div>
-                <div class="form-group">
-                    <button type="submit" id="btnAsignar"><i class="fas fa-save"></i> Registrar Asignación</button>
+                <div class="form-group" style="grid-column: 1 / -1; display: flex; flex-direction: row; gap: 1rem;">
+                    <button type="submit" id="btnAsignar" style="flex: 1;"><i class="fas fa-save"></i> Registrar Asignación</button>
+                    <button type="button" id="btnCancelarMasivoUI" class="btn-secondary" style="flex: 1; background: #343a40; color: white;"><i class="fas fa-ban"></i> Cancelar Rutinas Seleccionadas</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Tabla de Asignaciones Actuales -->
     <div class="card">
         <div class="card-header"><i class="fas fa-stream"></i> Clientes con Planificaciones Activas</div>
         <div class="card-body">
+            <!-- Barra de Búsqueda unificada con el Botón de Filtros Especiales -->
             <div class="buscador">
                 <input type="text" id="searchInputAsignaciones" class="form-control" placeholder="Buscar por cédula, cliente o rutina asignada...">
-                <button id="btnBuscarAsignacion" class="btn-secondary">Buscar</button>
+                <button id="btnBuscarAsignacion" class="btn-secondary" type="button"><i class="fas fa-search"></i> Buscar</button>
+                
+                <!-- Botón Dropdown de Filtros Avanzados -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" type="button" id="btnFiltrosAvanzados" data-bs-toggle="dropdown" aria-expanded="false" style="padding: 0.5rem 1rem; border-radius: 14px;">
+                        <i class="fas fa-filter"></i> Filtros
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="btnFiltrosAvanzados">
+                        <li><h6 class="dropdown-header">Consultas Especiales</h6></li>
+                        <li>
+                            <a class="dropdown-item py-2" href="#" id="btnSub2">
+                                <i class="fas fa-fire-alt text-warning me-2"></i> Asignaciones Nivel Avanzado
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item py-2" href="#" id="btnSub3">
+                                <i class="fas fa-stopwatch text-info me-2"></i> Rutinas más largas
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
+
             <div class="table-responsive">
                 <table class="table table-striped" id="tablaAsignaciones">
                     <thead>
                         <tr>
+                            <th style="width: 40px; text-align: center;">
+                                <input type="checkbox" id="checkAllAsignaciones" style="width: 16px; height: 16px; cursor: pointer;">
+                            </th>
                             <th>Cliente</th>
                             <th>Rutina</th>
                             <th>Asignado</th>
@@ -102,6 +131,9 @@ $this->layout("layout", ["title" => "Asignar Rutinas"]);
                     <tbody id="tablaAsignacionesBody">
                         <?php foreach ($asignaciones as $a): ?>
                             <tr data-id="<?= $a['id_asignacion'] ?>">
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <input type="checkbox" class="check-asignacion" data-cedula="<?= htmlspecialchars($a['cedula_cliente']) ?>" style="width: 16px; height: 16px; cursor: pointer;">
+                                </td>
                                 <td>
                                     <strong><?= htmlspecialchars($a['nombre_cliente']) ?></strong><br>
                                     <small class="text-muted"><i class="fas fa-id-card"></i> <?= htmlspecialchars($a['cedula_cliente']) ?></small>
@@ -156,7 +188,7 @@ $this->layout("layout", ["title" => "Asignar Rutinas"]);
                         <?php endforeach; ?>
                         <?php if (empty($asignaciones)): ?>
                             <tr>
-                                <td colspan="7" class="text-center">No hay rutinas asignadas a ningún cliente actualmente.</td>
+                                <td colspan="8" class="text-center">No hay rutinas asignadas a ningún cliente actualmente.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -164,11 +196,9 @@ $this->layout("layout", ["title" => "Asignar Rutinas"]);
             </div>
         </div>
     </div>
-
-
 </div>
 
-<!-- Modal Buscar Cliente (Igual que en AsistenciaVista.php) -->
+<!-- Modal Buscar Cliente -->
 <div class="modal fade" id="clienteModalAsignacion" tabindex="-1">
     <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
@@ -190,6 +220,29 @@ $this->layout("layout", ["title" => "Asignar Rutinas"]);
                             </tr>
                         </thead>
                         <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Mostrar Resultados Avanzados (Requerido por rutinas.js) -->
+<div class="modal fade" id="modalResultadosAvanzados" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="tituloModalAvanzados"><i class="fas fa-list"></i> Resultados de Consulta</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead id="theadResultadosAvanzados"></thead>
+                        <tbody id="tbodyResultadosAvanzados"></tbody>
                     </table>
                 </div>
             </div>
@@ -225,16 +278,19 @@ $this->layout("layout", ["title" => "Asignar Rutinas"]);
                 </div>
                 <div class="mb-3">
                     <label class="form-label-modal">Fecha de Asignación</label>
-                    <input type="date" id="edit_fecha_asignacion" class="form-control" required>
+                    <!-- Se agregó min para bloquear fechas anteriores a hoy -->
+                    <input type="date" id="edit_fecha_asignacion" class="form-control" min="<?= date('Y-m-d') ?>" required>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label-modal">Fecha de Inicio</label>
-                        <input type="date" id="edit_fecha_inicio" class="form-control">
+                        <input type="date" id="edit_fecha_inicio" class="form-control" min="<?= date('Y-m-d') ?>">
+                        <div class="error-msg"></div>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label-modal">Fecha de Vencimiento</label>
-                        <input type="date" id="edit_fecha_fin" class="form-control">
+                        <input type="date" id="edit_fecha_fin" class="form-control" min="<?= date('Y-m-d') ?>">
+                        <div class="error-msg"></div>
                     </div>
                 </div>
                 <div class="row">
@@ -249,6 +305,7 @@ $this->layout("layout", ["title" => "Asignar Rutinas"]);
                     <div class="col-md-6 mb-3">
                         <label class="form-label-modal">Progreso Actual (%)</label>
                         <input type="number" id="edit_progreso" class="form-control" min="0" max="100" step="1">
+                        <div class="error-msg"></div>
                     </div>
                 </div>
             </div>
@@ -277,6 +334,27 @@ $this->layout("layout", ["title" => "Asignar Rutinas"]);
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-danger" id="confirmarEliminarAsignacion">Desvincular</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Confirmar Cancelación Masiva (Baja) -->
+<div class="modal fade" id="modalConfirmarCancelacionMasiva" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title"><i class="fas fa-exclamation-triangle text-warning"></i> Cancelar Múltiples Rutinas</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro que desea cancelar <strong>todas</strong> las rutinas activas para los clientes seleccionados?</p>
+                <p class="text-muted small">Al confirmar, se procesará la cancelación para las rutinas de estos clientes.</p>
+                <div id="listaClientesCancelacion" class="mb-3"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-danger" id="btnConfirmarBajaMedicaMasiva"><i class="fas fa-ban"></i> Confirmar Cancelación</button>
             </div>
         </div>
     </div>
@@ -341,7 +419,28 @@ $this->layout("layout", ["title" => "Asignar Rutinas"]);
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
         gap: 1.2rem;
-        align-items: flex-end;
+        align-items: flex-start;
+    }
+    
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        position: relative;
+    }
+
+    /* Clases de validación de error */
+    .error-msg {
+        display: none;
+        color: #dc3545;
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+        font-weight: 500;
+    }
+
+    .form-control.is-invalid {
+        border-color: #dc3545;
+        background-image: none;
     }
 
     label,
@@ -588,21 +687,25 @@ $this->layout("layout", ["title" => "Asignar Rutinas"]);
         display: flex;
         gap: 0.5rem;
         align-items: center;
+        flex-wrap: wrap;
     }
 
     .buscador input {
         flex: 1;
-        width: auto;
+        min-width: 200px;
     }
 
     .buscador button {
         width: auto;
+    }
+
+    .buscador .btn-secondary {
         background: #6c757d;
         padding: 0.5rem 1rem;
         font-size: 0.85rem;
     }
 
-    .buscador button:hover {
+    .buscador .btn-secondary:hover {
         background: #5a6268;
     }
 

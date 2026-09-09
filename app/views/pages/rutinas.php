@@ -19,7 +19,6 @@ $this->layout("layout", ["title" => "Gestion de Rutinas"]);
 
     <div id="toastMessage"></div>
 
-    <!-- Formulario de Registro de Nueva Rutina -->
     <div class="card">
         <div class="card-header"><i class="fas fa-plus-circle"></i> Crear Nueva Rutina Base</div>
         <div class="card-body">
@@ -27,7 +26,7 @@ $this->layout("layout", ["title" => "Gestion de Rutinas"]);
                 <div class="form-group">
                     <label><i class="fas fa-tag"></i> Nombre de la Rutina</label>
                     <input type="text" id="nombre_rutina" name="nombre" class="form-control" placeholder="Ej. Fuerza Básica de Piernas" required>
-                </div>
+                    <div class="error-msg"></div> </div>
                 <div class="form-group">
                     <label><i class="fas fa-layer-group"></i> Dificultad</label>
                     <select id="id_dificultad" name="id_dificultad" class="form-control" required>
@@ -40,15 +39,15 @@ $this->layout("layout", ["title" => "Gestion de Rutinas"]);
                 <div class="form-group">
                     <label><i class="fas fa-calendar-alt"></i> Duración (Semanas)</label>
                     <input type="number" id="duracion_semanas" name="duracion_semanas" class="form-control" placeholder="Ej. 6" min="1">
-                </div>
+                    <div class="error-msg"></div> </div>
                 <div class="form-group">
                     <label><i class="fas fa-bullseye"></i> Objetivo Principal</label>
                     <input type="text" id="objetivo" name="objetivo" class="form-control" placeholder="Ej. Hipertrofia de cuádriceps">
-                </div>
+                    <div class="error-msg"></div> </div>
                 <div class="form-group col-span-full">
                     <label><i class="fas fa-align-left"></i> Descripción de la Rutina</label>
                     <textarea id="descripcion" name="descripcion" class="form-control form-control-textarea" placeholder="Describe los ejercicios y las especificaciones básicas de la rutina..."></textarea>
-                </div>
+                    <div class="error-msg"></div> </div>
                 <div class="form-group btn-submit-group">
                     <button type="submit" id="btnGuardarRutina"><i class="fas fa-save"></i> Guardar Rutina</button>
                 </div>
@@ -56,12 +55,11 @@ $this->layout("layout", ["title" => "Gestion de Rutinas"]);
         </div>
     </div>
 
-    <!-- Tabla de Rutinas Disponibles -->
     <div class="card">
         <div class="card-header"><i class="fas fa-folder-open"></i> Rutinas en el Catálogo</div>
         <div class="card-body">
             <div class="buscador">
-                <input type="text" id="searchInputRutinas" class="form-control" placeholder="Buscar por nombre o descripción de la rutina...">
+                <input type="text" id="searchInputRutinas" class="form-control" placeholder="Buscar por Nombre, Dificultad, Duración u Objetivo...">
                 <button id="btnBuscarRutina" class="btn-secondary">Buscar</button>
             </div>
             <div class="table-responsive">
@@ -118,7 +116,6 @@ $this->layout("layout", ["title" => "Gestion de Rutinas"]);
     </div>
 </div>
 
-<!-- Modal Editar Rutina -->
 <div class="modal fade" id="editarRutinaModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -131,7 +128,7 @@ $this->layout("layout", ["title" => "Gestion de Rutinas"]);
                 <div class="mb-3">
                     <label class="form-label-modal">Nombre de la Rutina</label>
                     <input type="text" id="edit_nombre_rutina" class="form-control" required>
-                </div>
+                    <div class="error-msg"></div> </div>
                 <div class="mb-3">
                     <label class="form-label-modal">Dificultad</label>
                     <select id="edit_id_dificultad" class="form-control" required>
@@ -143,15 +140,15 @@ $this->layout("layout", ["title" => "Gestion de Rutinas"]);
                 <div class="mb-3">
                     <label class="form-label-modal">Duración (Semanas)</label>
                     <input type="number" id="edit_duracion_semanas" class="form-control" min="1">
-                </div>
+                    <div class="error-msg"></div> </div>
                 <div class="mb-3">
                     <label class="form-label-modal">Objetivo Principal</label>
                     <input type="text" id="edit_objetivo" class="form-control">
-                </div>
+                    <div class="error-msg"></div> </div>
                 <div class="mb-3">
                     <label class="form-label-modal">Descripción</label>
                     <textarea id="edit_descripcion" class="form-control form-control-textarea" rows="4"></textarea>
-                </div>
+                    <div class="error-msg"></div> </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -161,7 +158,6 @@ $this->layout("layout", ["title" => "Gestion de Rutinas"]);
     </div>
 </div>
 
-<!-- Modal Confirmar Eliminación de Rutina -->
 <div class="modal fade" id="eliminarRutinaModal" tabindex="-1">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -241,7 +237,7 @@ $this->layout("layout", ["title" => "Gestion de Rutinas"]);
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
         gap: 1.2rem;
-        align-items: flex-end;
+        align-items: flex-start; /* Cambiado a flex-start para que el texto de error no descuadre */
     }
 
     .col-span-full {
@@ -252,6 +248,7 @@ $this->layout("layout", ["title" => "Gestion de Rutinas"]);
         display: flex;
         flex-direction: column;
         gap: 0.4rem;
+        position: relative;
     }
 
     .btn-submit-group {
@@ -287,6 +284,20 @@ $this->layout("layout", ["title" => "Gestion de Rutinas"]);
         min-height: 80px;
         font-family: inherit;
         resize: vertical;
+    }
+
+    /* Clases de validación de error */
+    .error-msg {
+        display: none;
+        color: #dc3545;
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+        font-weight: 500;
+    }
+
+    .form-control.is-invalid, .input-custom.is-invalid {
+        border-color: #dc3545;
+        background-image: none;
     }
 
     button {

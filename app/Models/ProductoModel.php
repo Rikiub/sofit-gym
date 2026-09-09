@@ -11,11 +11,6 @@ class ProductoModel extends Model
 
     /**
      * Obtener todos los productos activos de la base de datos.
-     * Realiza un LEFT JOIN para unificar los nombres de las categorías y unidades de medida.
-     * Permite opcionalmente buscar por un término (código, nombre o categoría).
-     *
-     * @param string|null $termino Término de búsqueda opcional
-     * @return array Listado de productos
      */
     public function obtenerTodos(?string $termino = null): array
     {
@@ -49,10 +44,7 @@ class ProductoModel extends Model
     }
 
     /**
-     * Obtener un producto específico por su código único de barra/identificador
-     *
-     * @param string $codigo Código único del producto
-     * @return array|null Datos del producto o null si no existe
+     * Obtener un producto específico por su código.
      */
     public function obtenerPorCodigo(string $codigo): ?array
     {
@@ -73,10 +65,7 @@ class ProductoModel extends Model
     }
 
     /**
-     * Insertar un nuevo producto utilizando dbInsert de la clase abstracta
-     *
-     * @param array $datos Estructura asociativa con los campos del producto
-     * @return bool True si se completó con éxito
+     * Insertar un nuevo producto.
      */
     public function crear(array $datos): bool
     {
@@ -89,7 +78,8 @@ class ProductoModel extends Model
                 'precio_venta'    => floatval($datos['precio_venta']),
                 'stock_minimo'    => isset($datos['stock_minimo']) ? intval($datos['stock_minimo']) : 0,
                 'stock_actual'    => isset($datos['stock_actual']) ? intval($datos['stock_actual']) : 0,
-                'activo'          => isset($datos['activo']) ? intval($datos['activo']) : 1
+                'activo'          => isset($datos['activo']) ? intval($datos['activo']) : 1,
+                'imagen'          => $datos['imagen'] ?? null // NUEVO: Guardar la ruta de la imagen
             ];
 
             $this->db->dbInsert($this->tabla, $nuevoProducto);
@@ -101,16 +91,12 @@ class ProductoModel extends Model
     }
 
     /**
-     * Actualizar los datos de un producto utilizando dbUpdate
-     *
-     * @param string $codigo Código del producto a editar
-     * @param array $datos Campos modificados a actualizar
-     * @return bool True si se realizó correctamente
+     * Actualizar los datos de un producto.
      */
     public function actualizar(string $codigo, array $datos): bool
     {
         try {
-            unset($datos['codigo_producto']); // Seguridad: No alterar la clave primaria primaria
+            unset($datos['codigo_producto']); // Seguridad: No alterar la clave primaria
             $this->db->dbUpdate($this->tabla, $datos, ['codigo_producto' => $codigo]);
             return true;
         } catch (PDOException $e) {
@@ -120,11 +106,7 @@ class ProductoModel extends Model
     }
 
     /**
-     * Eliminación de producto (Lógica/soft delete por defecto para preservar integridad referencial)
-     *
-     * @param string $codigo Código del producto
-     * @param bool $fisico Definir si se borra permanentemente de la base de datos
-     * @return bool True si la operación se realizó de manera correcta
+     * Eliminar producto (Lógico o físico).
      */
     public function eliminar(string $codigo, bool $fisico = false): bool
     {
@@ -142,11 +124,7 @@ class ProductoModel extends Model
     }
 
     /**
-     * Actualizar únicamente el inventario/stock de un producto específico manualmente
-     *
-     * @param string $codigo Código del producto
-     * @param int $cantidad Cantidad física a descontar o añadir (positivo o negativo)
-     * @return bool True si el inventario se actualizó correctamente
+     * Actualizar únicamente el inventario/stock de un producto.
      */
     public function actualizarStock(string $codigo, int $cantidad): bool
     {
@@ -163,9 +141,30 @@ class ProductoModel extends Model
     }
 
     /**
-     * Obtener listado de productos que se encuentren por debajo o igual de su stock mínimo
-     *
-     * @return array Productos en alerta de reposición
+     * Aumento del 10% en el precio de los suplementos (Transacción).
+     */
+    public function aumentarPrecioSuplementos(): array
+    {
+        try {
+            $this->db->beginTransaction();
+            
+            $sql = "UPDATE {$this->tabla} SET precio_venta = precio_venta * 1.10 WHERE id_categoria = 1";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            
+            $this->db->commit();
+            return ['success' => true, 'message' => 'Precios de suplementos actualizados correctamente.'];
+        } catch (PDOException $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            error_log("Error en ProductoModel::aumentarPrecioSuplementos: " . $e->getMessage());
+            return ['success' => false, 'message' => 'Error al intentar actualizar los precios.'];
+        }
+    }
+
+    /**
+     * Obtener listado de productos con stock por debajo del mínimo (Auxiliar de inventario)
      */
     public function obtenerBajoStock(): array
     {
@@ -186,205 +185,7 @@ class ProductoModel extends Model
     }
 
     /**
-     * Obtener todos los clientes activos del gimnasio usando las columnas de cédula reales
-     *
-     * @return array Listado de clientes con su cédula y nombre completo
-     */
-    public function obtenerClientes(): array
-    {
-        try {
-            $sql = "SELECT c.cedula, p.nombre, p.apellido 
-                    FROM cliente c 
-                    INNER JOIN persona p ON c.cedula = p.cedula 
-                    WHERE p.activo = 1 
-                    ORDER BY p.nombre ASC, p.apellido ASC";
-            $stmt = $this->db->query($sql);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Error en ProductoModel::obtenerClientes: " . $e->getMessage());
-            return [];
-        }
-    }
-
-    /**
-     * Registrar la venta de uno o múltiples productos en una transacción segura.
-     * * @param string|null $cedulaCliente Cédula del cliente (puede ser null para ventas rápidas)
-     * @param int|null $idMetodo ID numérico del método de pago (1=Efectivo, 2=Crédito, 3=Pago móvil, 4=Transf.)
-     * @param array $items Listado de productos comprados conteniendo ['codigo', 'cantidad']
-     * @return array Arreglo con el resultado de la operación, estado y detalles
-     */
-    public function registrarVentaMultiplesProductos(?string $cedulaCliente, ?int $idMetodo, array $items): array
-    {
-        if (empty($items)) {
-            return ['success' => false, 'message' => 'No se han especificado productos para la venta.'];
-        }
-
-        try {
-            // Iniciar transacción atómica de base de datos
-            $this->db->beginTransaction();
-
-            $detallesVenta = [];
-            $montoTotalVenta = 0;
-
-            // Verificar si el cliente existe utilizando la columna física 'cedula'
-            if (!empty($cedulaCliente)) {
-                $sqlCliente = "SELECT COUNT(*) FROM cliente WHERE cedula = ?";
-                $stmtCliente = $this->db->prepare($sqlCliente);
-                $stmtCliente->execute([$cedulaCliente]);
-                if ($stmtCliente->fetchColumn() == 0) {
-                    $this->db->rollBack();
-                    return ['success' => false, 'message' => "El cliente con cédula '{$cedulaCliente}' no está registrado."];
-                }
-            } else {
-                $cedulaCliente = null;
-            }
-
-            // Validar que el método de pago exista en la tabla maestra
-            if (!empty($idMetodo)) {
-                $sqlMetodo = "SELECT COUNT(*) FROM metodo_pago WHERE id_metodo = ?";
-                $stmtMetodo = $this->db->prepare($sqlMetodo);
-                $stmtMetodo->execute([$idMetodo]);
-                if ($stmtMetodo->fetchColumn() == 0) {
-                    $this->db->rollBack();
-                    return ['success' => false, 'message' => "El método de pago especificado no es válido."];
-                }
-            } else {
-                $idMetodo = null;
-            }
-
-            // Primer ciclo: Validar rigurosamente existencias y estados
-            foreach ($items as $item) {
-                $codigo = $item['codigo'];
-                $cantidad = floatval($item['cantidad']);
-
-                if ($cantidad <= 0) {
-                    $this->db->rollBack();
-                    return ['success' => false, 'message' => 'La cantidad a vender debe ser mayor que cero.'];
-                }
-
-                // Obtener datos del producto directo del estado real de la base de datos
-                $sqlProd = "SELECT nombre, precio_venta, stock_actual, activo FROM {$this->tabla} WHERE codigo_producto = ? LIMIT 1";
-                $stmtProd = $this->db->prepare($sqlProd);
-                $stmtProd->execute([$codigo]);
-                $prod = $stmtProd->fetch(PDO::FETCH_ASSOC);
-
-                if (!$prod || $prod['activo'] == 0) {
-                    $this->db->rollBack();
-                    return ['success' => false, 'message' => "El producto con código '{$codigo}' no existe o está inactivo."];
-                }
-
-                if ($prod['stock_actual'] < $cantidad) {
-                    $this->db->rollBack();
-                    return [
-                        'success' => false,
-                        'message' => "Stock insuficiente para '{$prod['nombre']}'. Inventario actual: {$prod['stock_actual']}, solicitado: {$cantidad}."
-                    ];
-                }
-
-                $montoItem = $prod['precio_venta'] * $cantidad;
-                $montoTotalVenta += $montoItem;
-
-                $detallesVenta[] = [
-                    'codigo_producto'  => $codigo,
-                    'nombre'           => $prod['nombre'],
-                    'precio_unitario'  => floatval($prod['precio_venta']),
-                    'cantidad_vendida' => $cantidad,
-                    'monto_total'      => $montoItem
-                ];
-            }
-
-            // Segundo ciclo: Insertar registros en 'venta_producto'
-            // Nota: Tu Trigger 'tg_actualizar_stock_venta' restará de forma automática el stock de la tabla producto
-            $sqlInsert = "INSERT INTO venta_producto (id_metodo, codigo_producto, cedula_cliente, cantidad_vendida, monto_total) 
-                          VALUES (:id_metodo, :codigo, :cedula, :cantidad, :monto)";
-            $stmtInsert = $this->db->prepare($sqlInsert);
-
-            $idsVenta = [];
-            foreach ($detallesVenta as &$detalle) {
-                $stmtInsert->execute([
-                    'id_metodo' => $idMetodo,
-                    'codigo'    => $detalle['codigo_producto'],
-                    'cedula'    => $cedulaCliente,
-                    'cantidad'  => $detalle['cantidad_vendida'],
-                    'monto'     => $detalle['monto_total']
-                ]);
-                $idsVenta[] = $this->db->lastInsertId();
-            }
-
-            // Confirmar transacción definitiva si todo culminó bien
-            $this->db->commit();
-
-            return [
-                'success' => true,
-                'message' => '✅ Venta registrada y procesada con éxito.',
-                'comprobante' => [
-                    'nro_transacciones' => $idsVenta,
-                    'cedula_cliente'    => $cedulaCliente,
-                    'id_metodo'         => $idMetodo,
-                    'fecha'             => date('Y-m-d H:i:s'),
-                    'items'             => $detallesVenta,
-                    'total'             => $montoTotalVenta
-                ]
-            ];
-        } catch (PDOException $e) {
-            if ($this->db->inTransaction()) {
-                $this->db->rollBack();
-            }
-            error_log("Error en ProductoModel::registrarVentaMultiplesProductos: " . $e->getMessage());
-            return ['success' => false, 'message' => '❌ Error de base de datos al procesar la venta. Contacte soporte técnico.'];
-        }
-    }
-
-    // REPORTES
-
-    /**
-     * Obtiene los productos más vendidos para el módulo de reportes.
-     */
-    public function obtenerProductosMasVendidos(?string $fechaInicio = null, ?string $fechaFin = null): array
-    {
-        $sql = "SELECT 
-                    vp.codigo_producto, 
-                    p.nombre AS nombre_producto, 
-                    SUM(vp.cantidad_vendida) AS total_vendido, 
-                    AVG(vp.monto_total / vp.cantidad_vendida) AS precio_unitario_promedio,
-                    SUM(vp.monto_total) AS ingreso_total
-                FROM venta_producto vp
-                INNER JOIN producto p ON vp.codigo_producto = p.codigo_producto";
-
-        $where = [];
-        $params = [];
-
-        // 2. CORRECCIÓN: Se añaden las horas límites (00:00:00 y 23:59:59) para garantizar 
-        // que las ventas del último día no se queden por fuera de la consulta SQL.
-        if (!empty($fechaInicio) && !empty($fechaFin)) {
-            $where[] = "vp.fecha BETWEEN :fechaInicio AND :fechaFin";
-            $params['fechaInicio'] = $fechaInicio . " 00:00:00";
-            $params['fechaFin'] = $fechaFin . " 23:59:59";
-        }
-
-        if (!empty($where)) {
-            $sql .= " WHERE " . implode(" AND ", $where);
-        }
-
-        $sql .= " GROUP BY vp.codigo_producto, p.nombre
-                  ORDER BY total_vendido DESC";
-
-        try {
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute($params);
-
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Error en ProductoModel::obtenerProductosMasVendidos: " . $e->getMessage());
-            return [];
-        }
-    }
-
-    /**
-     * Obtener los datos limpios y ordenados para el reporte de inventario general.
-     * Reutiliza la estructura de consulta general sin necesidad de duplicar código SQL.
-     *
-     * @return array Listado completo de productos activos
+     * Obtener los datos para el reporte de inventario general.
      */
     public function obtenerReporteInventario(): array
     {

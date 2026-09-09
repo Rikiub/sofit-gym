@@ -388,4 +388,77 @@ class RutinasController extends Controller
         echo json_encode($resultados);
         exit;
     }
+
+    // =========================================================================
+    // CONSULTAS Y TRANSACCIONES AVANZADAS (AJAX)
+    // =========================================================================
+
+    /**
+     * Obtener asignaciones de nivel Avanzado (AJAX - GET)
+     * Responde a la subconsulta 2 solicitada.
+     */
+    public function obtener_asignaciones_avanzadas_ajax()
+    {
+        $this->protect("rutinas:ver");
+
+        $resultados = $this->model->obtenerAsignacionesAvanzadas();
+        
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true, 'data' => $resultados]);
+        exit;
+    }
+
+    /**
+     * Obtener rutinas con mayor duración en semanas (AJAX - GET)
+     * Responde a la subconsulta 3 solicitada.
+     */
+    public function obtener_rutinas_mas_largas_ajax()
+    {
+        $this->protect("rutinas:ver");
+
+        $resultados = $this->model->obtenerRutinasMasLargas();
+        
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true, 'data' => $resultados]);
+        exit;
+    }
+
+    /**
+     * Cancelar todas las rutinas activas de un cliente por baja médica (AJAX - POST)
+     * Ejecuta la Transacción 3 solicitada.
+     */
+    public function cancelar_rutinas_cliente()
+    {
+        $this->protect("rutinas:editar");
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Método no permitido']);
+            return;
+        }
+
+        $cedula = trim($_POST['cedula_cliente'] ?? '');
+        if (empty($cedula)) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'La cédula del cliente es obligatoria.']);
+            return;
+        }
+
+        // Ejecutamos la transacción en el modelo
+        $resultado = $this->model->cancelarRutinasCliente($cedula);
+        
+        if ($resultado['success']) {
+            // Registramos la acción masiva en la bitácora
+            $this->logger->log("Rutinas canceladas por baja médica para cliente '{cedula}'", [
+                "modulo" => "rutinas",
+                "accion" => "cancelar_masivo",
+                'cedula' => $cedula
+            ]);
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode($resultado);
+        exit;
+    }
 }

@@ -191,6 +191,13 @@ $dropdown = function (
 			title: "Inventario de Productos"
 		) ?>
 
+		<?= $link(
+			permiso: "ventas:ver",
+			url: "?page=ventas",
+			icon: "fa-shop",
+			title: "Realizar Venta"
+		) ?>
+
 		<?= $dropdown(
 			icon: "fa-chart-bar",
 			title: "Reportes estadisticos",
@@ -251,7 +258,7 @@ $dropdown = function (
 					"permiso" => "usuarios:ver",
 					"url" => "?page=usuarios",
 					"icon" => "fa-user",
-					"title" => "Gestión de Usuarios"
+					"title" => "Usuarios"
 				],
 				[
 					"permiso" => "roles:ver",
