@@ -2,6 +2,7 @@
 
 namespace App\Core;
 
+use App\Models\OpcionModel;
 use CuyZ\Valinor\Cache\FileSystemCache;
 use CuyZ\Valinor\Cache\FileWatchingCache;
 use CuyZ\Valinor\MapperBuilder;
@@ -17,6 +18,7 @@ class Tools
     public static function getMailer(): PHPMailer
     {
         $mail = new PHPMailer(true);
+        $opcion = new OpcionModel();
 
         // Configuración SMTP
         $mail->isSMTP();
@@ -29,12 +31,12 @@ class Tools
         $mail->CharSet = 'UTF-8';
 
         // Credenciales
-        $mail->Username = Config::get("mail.username");
-        $mail->Password = Config::get("mail.password");
+        $mail->Username = $opcion->get("mail.username") ?: Config::get("mail.username");
+        $mail->Password = $opcion->get("mail.password") ?: Config::get("mail.password");
 
         // Remitente
-        $from = Config::get("mail.from_address");
-        $name = Config::get("mail.from_name");
+        $from = $opcion->get("mail.username") ?: Config::get("mail.from_address");
+        $name =  $opcion->get("mail.name") ?: Config::get("mail.from_name");
 
         if ($from) {
             $mail->setFrom(

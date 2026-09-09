@@ -526,7 +526,11 @@ LOCK TABLES `opcion` WRITE;
 /*!40000 ALTER TABLE `opcion` DISABLE KEYS */;
 INSERT INTO `opcion` VALUES
 (1,'ai.api_key','','Clave de API','Necesario para acceder a la IA remota.'),
-(1,'ai.model','gemini-2.5-flash-lite','Modelo IA','Modelo especifico a utilizar.');
+(1,'ai.model','gemini-2.5-flash-lite','Modelo IA','Modelo especifico a utilizar.'),
+(2,'mail.host','smtp.gmail.com','Host','Dominio donde iniciar sesión.'),
+(2,'mail.name','Soporte Sofit GYM','Nombre de empresa','Nombre comercial a mostrar en los correos.'),
+(2,'mail.password','','Contraseña','Contraseña de la cuenta.'),
+(2,'mail.username','','Nombre de usuario','Nombre de usuario de la cuenta.');
 /*!40000 ALTER TABLE `opcion` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -542,7 +546,7 @@ CREATE TABLE `opcion_grupo` (
   `nombre` varchar(100) DEFAULT NULL,
   `descripcion` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id_grupo`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -552,7 +556,8 @@ CREATE TABLE `opcion_grupo` (
 LOCK TABLES `opcion_grupo` WRITE;
 /*!40000 ALTER TABLE `opcion_grupo` DISABLE KEYS */;
 INSERT INTO `opcion_grupo` VALUES
-(1,'Inteligencia Artificial',NULL);
+(1,'Inteligencia Artificial',NULL),
+(2,'Correo',NULL);
 /*!40000 ALTER TABLE `opcion_grupo` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -891,4 +896,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2026-09-08 21:14:11
+-- Dump completed on 2026-09-09  0:51:45
