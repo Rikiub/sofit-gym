@@ -11,7 +11,7 @@ class ProductosController extends Controller
 {
     public function __construct(
         private $logger = new BitacoraModel(),
-        private $model = new ProductoModel()
+        private $model = new ProductoModel(),
     ) {}
 
     /**
@@ -76,11 +76,11 @@ class ProductosController extends Controller
                 if (!file_exists($directorio)) {
                     mkdir($directorio, 0777, true);
                 }
-                
+
                 $extension = pathinfo($archivo['name'], PATHINFO_EXTENSION);
                 $nombreArchivo = uniqid('prod_') . '.' . $extension;
                 $rutaDestino = $directorio . $nombreArchivo;
-                
+
                 if (move_uploaded_file($archivo['tmp_name'], $rutaDestino)) {
                     return $rutaDestino;
                 }
@@ -125,7 +125,7 @@ class ProductosController extends Controller
             'activo' => 1,
             'imagen' => $rutaImagen
         ];
-        
+
         $exito = $this->model->crear($datos);
 
         $this->logger->log("Producto '{codigo_producto}' creado", [

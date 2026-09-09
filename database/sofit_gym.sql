@@ -758,10 +758,11 @@ LOCK TABLES `producto` WRITE;
 INSERT INTO `producto` VALUES
 ('1313131',1,1,NULL,'asfasfasfas',4444.00,5,10,0),
 ('2352323',1,1,NULL,'asfa',5.00,10,5,0),
-('as-525',4,1,NULL,'ASF',5.00,5,2,0),
+('55125',2,1,'','agdlñgasgggggggggggggggggggggggggggggggggg',5.00,5,0,1),
+('as-525',4,1,'','ASF',5.00,5,2,0),
 ('PROT001',1,1,NULL,'Proteína Whe',45.00,0,19,0),
 ('xcbxb',1,1,NULL,'Proteinas',5.00,5,0,1),
-('ZAR-0012',2,1,NULL,'Gatorade',1.00,5,2,1);
+('ZAR-0012',2,1,NULL,'Gatorade',1.00,5,1,1);
 /*!40000 ALTER TABLE `producto` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1172,7 +1173,7 @@ CREATE TABLE `venta_producto` (
   CONSTRAINT `venta_producto_ibfk_1` FOREIGN KEY (`codigo_producto`) REFERENCES `producto` (`codigo_producto`) ON UPDATE CASCADE,
   CONSTRAINT `venta_producto_ibfk_2` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula`) ON UPDATE CASCADE,
   CONSTRAINT `venta_producto_metodo_pago_FK` FOREIGN KEY (`id_metodo`) REFERENCES `metodo_pago` (`id_metodo`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1184,7 +1185,8 @@ LOCK TABLES `venta_producto` WRITE;
 INSERT INTO `venta_producto` VALUES
 (7,1,'xcbxb','V-11773948',3.00,15.00,'2026-06-20 18:24:33'),
 (8,1,'ZAR-0012','V-22222222',2.00,2.00,'2026-06-20 18:26:23'),
-(9,1,'ZAR-0012','V-24119384',1.00,1.00,'2026-07-05 17:37:03');
+(9,1,'ZAR-0012','V-24119384',1.00,1.00,'2026-07-05 17:37:03'),
+(10,1,'ZAR-0012','V-21059483',1.00,1.00,'2026-09-08 20:53:16');
 /*!40000 ALTER TABLE `venta_producto` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1620,4 +1622,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2026-09-08 20:44:24
+-- Dump completed on 2026-09-08 21:14:12

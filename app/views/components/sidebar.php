@@ -258,7 +258,7 @@ $dropdown = function (
 					"permiso" => "usuarios:ver",
 					"url" => "?page=usuarios",
 					"icon" => "fa-user",
-					"title" => "Usuarios"
+					"title" => "Gestión de Usuarios"
 				],
 				[
 					"permiso" => "roles:ver",
