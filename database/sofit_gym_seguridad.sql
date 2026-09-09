@@ -109,7 +109,7 @@ CREATE TABLE `bitacora` (
   KEY `bitacora_modulo_FK` (`id_modulo`),
   CONSTRAINT `bitacora_modulo_FK` FOREIGN KEY (`id_modulo`) REFERENCES `modulo` (`id_modulo`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `bitacora_usuario_FK` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=214 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=220 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -199,7 +199,13 @@ INSERT INTO `bitacora` VALUES
 (210,2,426,'iniciar_sesion','Usuario admin ha iniciado sesión','info','{\"nombre_usuario\":\"admin\"}',NULL,NULL,'2026-09-08 20:16:23'),
 (211,2,426,'iniciar_sesion','Usuario admin ha iniciado sesión','info','{\"nombre_usuario\":\"admin\"}',NULL,NULL,'2026-09-08 20:16:25'),
 (212,2,358,'backup','Respaldo de base de datos creado con exito','info',NULL,NULL,NULL,'2026-09-08 20:23:57'),
-(213,2,358,'backup','Respaldo de base de datos creado con exito','info',NULL,NULL,NULL,'2026-09-08 20:28:55');
+(213,2,358,'backup','Respaldo de base de datos creado con exito','info',NULL,NULL,NULL,'2026-09-08 20:28:55'),
+(214,2,52,'editar','Producto \'ZAR-0012\' actualizado','info','{\"codigo_producto\":\"ZAR-0012\"}',NULL,NULL,'2026-09-08 20:34:57'),
+(215,2,52,'editar','Producto \'ZAR-0012\' actualizado','info','{\"codigo_producto\":\"ZAR-0012\"}',NULL,NULL,'2026-09-08 20:35:18'),
+(216,2,426,'cerrar_sesion','Usuario admin ha cerrado sesión','info','{\"nombre_usuario\":\"admin\"}',NULL,NULL,'2026-09-08 20:37:19'),
+(217,2,426,'iniciar_sesion','Usuario admin ha iniciado sesión','info','{\"nombre_usuario\":\"admin\"}',NULL,NULL,'2026-09-08 20:37:24'),
+(218,2,426,'iniciar_sesion','Usuario admin ha iniciado sesión','info','{\"nombre_usuario\":\"admin\"}',NULL,NULL,'2026-09-08 20:37:26'),
+(219,2,52,'editar','Producto \'ZAR-0012\' actualizado','info','{\"codigo_producto\":\"ZAR-0012\"}',NULL,NULL,'2026-09-08 20:38:22');
 /*!40000 ALTER TABLE `bitacora` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -244,7 +250,7 @@ CREATE TABLE `intento_acceso` (
   PRIMARY KEY (`id_acceso`),
   KEY `intento_acceso_usuario_FK` (`id_usuario`),
   CONSTRAINT `intento_acceso_usuario_FK` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=125 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=127 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -352,7 +358,9 @@ INSERT INTO `intento_acceso` VALUES
 (121,2,'::1',1,'2026-09-08 16:02:08'),
 (122,2,'::1',1,'2026-09-08 16:02:09'),
 (123,2,'::1',1,'2026-09-08 20:16:22'),
-(124,2,'::1',1,'2026-09-08 20:16:25');
+(124,2,'::1',1,'2026-09-08 20:16:25'),
+(125,2,'::1',1,'2026-09-08 20:37:24'),
+(126,2,'::1',1,'2026-09-08 20:37:26');
 /*!40000 ALTER TABLE `intento_acceso` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -368,7 +376,7 @@ CREATE TABLE `modulo` (
   `nombre` varchar(100) NOT NULL,
   PRIMARY KEY (`id_modulo`),
   UNIQUE KEY `modulo_unique` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=488 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=494 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -545,7 +553,7 @@ CREATE TABLE `permiso` (
   `nombre` varchar(100) NOT NULL,
   PRIMARY KEY (`id_permiso`),
   UNIQUE KEY `permiso_unique` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -601,7 +609,12 @@ INSERT INTO `permiso` VALUES
 (1,'usuarios:crear'),
 (3,'usuarios:editar'),
 (29,'usuarios:eliminar'),
-(6,'usuarios:ver');
+(6,'usuarios:ver'),
+(54,'ventas:actualizar'),
+(56,'ventas:crear'),
+(53,'ventas:editar'),
+(55,'ventas:eliminar'),
+(52,'ventas:ver');
 /*!40000 ALTER TABLE `permiso` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -732,6 +745,10 @@ INSERT INTO `rol_permiso` VALUES
 (1,49),
 (1,50),
 (1,51),
+(1,52),
+(1,53),
+(1,54),
+(1,55),
 (2,9),
 (2,11),
 (2,25),
@@ -808,7 +825,7 @@ CREATE TABLE `usuario` (
 LOCK TABLES `usuario` WRITE;
 /*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
 INSERT INTO `usuario` VALUES
-(2,1,1,'admin','$2a$12$Q1uh7kx4HfV6KGxVnbtjM.89TH76T48xwNRCVVy7fT.r5Sx06HAP2','/sofit-gym/uploads/usuarios/20260703_160903_267338e72170.jpg','jesusviloriaolivar@gmail.com','2026-05-25','2026-09-08 20:16:25'),
+(2,1,1,'admin','$2a$12$Q1uh7kx4HfV6KGxVnbtjM.89TH76T48xwNRCVVy7fT.r5Sx06HAP2','/sofit-gym/uploads/usuarios/20260703_160903_267338e72170.jpg','jesusviloriaolivar@gmail.com','2026-05-25','2026-09-08 20:37:26'),
 (14,2,1,'entrenador','$2y$10$Sq7q1ktxN7GvrWmK7OJzSeov0KX.Z0IJQHgBKyc7xZwADmrx7IhIO','/sofit-gym/uploads/usuarios/20260702_194849_c349687f5cfe.jpg',NULL,'2026-06-11','2026-07-05 01:24:54'),
 (15,3,1,'recepcionista','$2a$12$UjxSRFwnK76cgPKQTYp8yudaHRv45gJUMl3NsABHlwqbIPQ2QWKga','/sofit-gym/uploads/usuarios/20260702_194855_995e1cc586b6.jpg',NULL,'2026-06-11','2026-07-03 16:41:57');
 /*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
@@ -860,4 +877,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2026-09-08 20:29:35
+-- Dump completed on 2026-09-08 20:44:23

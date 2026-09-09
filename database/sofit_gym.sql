@@ -735,6 +735,7 @@ CREATE TABLE `producto` (
   `codigo_producto` varchar(20) NOT NULL,
   `id_categoria` int(11) NOT NULL,
   `id_unidad` int(11) NOT NULL,
+  `imagen` varchar(255) DEFAULT NULL,
   `nombre` varchar(100) NOT NULL,
   `precio_venta` decimal(10,2) NOT NULL,
   `stock_minimo` int(11) NOT NULL DEFAULT 0,
@@ -755,12 +756,12 @@ CREATE TABLE `producto` (
 LOCK TABLES `producto` WRITE;
 /*!40000 ALTER TABLE `producto` DISABLE KEYS */;
 INSERT INTO `producto` VALUES
-('1313131',1,1,'asfasfasfas',4444.00,5,10,0),
-('2352323',1,1,'asfa',5.00,10,5,0),
-('as-525',4,1,'ASF',5.00,5,2,0),
-('PROT001',1,1,'Proteína Whe',45.00,0,19,0),
-('xcbxb',1,1,'Proteinas',5.00,5,0,1),
-('ZAR-0012',2,1,'Gatorade',1.00,5,2,1);
+('1313131',1,1,NULL,'asfasfasfas',4444.00,5,10,0),
+('2352323',1,1,NULL,'asfa',5.00,10,5,0),
+('as-525',4,1,NULL,'ASF',5.00,5,2,0),
+('PROT001',1,1,NULL,'Proteína Whe',45.00,0,19,0),
+('xcbxb',1,1,NULL,'Proteinas',5.00,5,0,1),
+('ZAR-0012',2,1,NULL,'Gatorade',1.00,5,2,1);
 /*!40000 ALTER TABLE `producto` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -843,6 +844,7 @@ CREATE TABLE `rutina_asignada` (
   KEY `cedula_cliente` (`cedula_cliente`),
   KEY `id_rutina` (`id_rutina`),
   KEY `rutina_asignada_trabajador_FK` (`asignado_por`),
+  KEY `idx_rutinas_estado_fecha` (`estado`,`fecha_fin`),
   CONSTRAINT `rutina_asignada_ibfk_1` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `rutina_asignada_ibfk_2` FOREIGN KEY (`id_rutina`) REFERENCES `rutina` (`id_rutina`) ON DELETE CASCADE,
   CONSTRAINT `rutina_asignada_trabajador_FK` FOREIGN KEY (`asignado_por`) REFERENCES `trabajador` (`cedula`) ON DELETE SET NULL ON UPDATE CASCADE
@@ -860,6 +862,28 @@ INSERT INTO `rutina_asignada` VALUES
 (2,1,'V-11773948',NULL,'2026-06-20','2026-06-21','2026-06-30','Activa',3.00);
 /*!40000 ALTER TABLE `rutina_asignada` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER tg_auto_completar_rutina
+BEFORE UPDATE ON rutina_asignada
+FOR EACH ROW
+BEGIN
+IF NEW.progreso >= 100.00 AND OLD.estado = 'Activa' THEN
+SET NEW.estado = 'Completada';
+END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `seguimiento_fisico`
@@ -1089,6 +1113,43 @@ INSERT INTO `unidad_medida` VALUES
 UNLOCK TABLES;
 
 --
+-- Temporary table structure for view `v_rutinas_clientes`
+--
+
+DROP TABLE IF EXISTS `v_rutinas_clientes`;
+/*!50001 DROP VIEW IF EXISTS `v_rutinas_clientes`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8mb4;
+/*!50001 CREATE VIEW `v_rutinas_clientes` AS SELECT
+ 1 AS `id_asignacion`,
+  1 AS `cedula_cliente`,
+  1 AS `nombre_rutina`,
+  1 AS `dificultad`,
+  1 AS `fecha_inicio`,
+  1 AS `fecha_fin`,
+  1 AS `estado`,
+  1 AS `progreso` */;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary table structure for view `v_ventas_detalladas`
+--
+
+DROP TABLE IF EXISTS `v_ventas_detalladas`;
+/*!50001 DROP VIEW IF EXISTS `v_ventas_detalladas`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8mb4;
+/*!50001 CREATE VIEW `v_ventas_detalladas` AS SELECT
+ 1 AS `id_venta`,
+  1 AS `fecha`,
+  1 AS `cedula_cliente`,
+  1 AS `nombre_producto`,
+  1 AS `cantidad_vendida`,
+  1 AS `monto_total`,
+  1 AS `metodo_pago` */;
+SET character_set_client = @saved_cs_client;
+
+--
 -- Table structure for table `venta_producto`
 --
 
@@ -1126,6 +1187,33 @@ INSERT INTO `venta_producto` VALUES
 (9,1,'ZAR-0012','V-24119384',1.00,1.00,'2026-07-05 17:37:03');
 /*!40000 ALTER TABLE `venta_producto` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER tg_verificar_stock_preventivo
+BEFORE INSERT ON venta_producto
+FOR EACH ROW
+BEGIN
+DECLARE v_stock_actual INT;
+SELECT stock_actual INTO v_stock_actual
+FROM producto
+WHERE codigo_producto = NEW.codigo_producto;
+IF NEW.cantidad_vendida > v_stock_actual THEN
+SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'Error: No hay suficiente stock para realizar la venta.';
+END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -1194,6 +1282,55 @@ DELIMITER ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP FUNCTION IF EXISTS `fn_dias_restantes_rutina` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `fn_dias_restantes_rutina`(p_id_asignacion INT) RETURNS int(11)
+    READS SQL DATA
+BEGIN
+DECLARE v_fecha_fin DATE;
+SELECT fecha_fin INTO v_fecha_fin
+FROM rutina_asignada
+WHERE id_asignacion = p_id_asignacion;
+RETURN DATEDIFF(v_fecha_fin, CURDATE());
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP FUNCTION IF EXISTS `fn_dificultad_rutina_texto` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `fn_dificultad_rutina_texto`(p_id_rutina INT) RETURNS varchar(100) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci
+    READS SQL DATA
+BEGIN
+DECLARE v_dificultad VARCHAR(100);
+SELECT td.nombre INTO v_dificultad
+FROM rutina r
+JOIN tipo_dificultad td ON r.id_dificultad = td.id_dificultad
+WHERE r.id_rutina = p_id_rutina;
+RETURN v_dificultad;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 /*!50003 DROP FUNCTION IF EXISTS `fn_estado_membresia` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1229,6 +1366,86 @@ BEGIN
 
     END IF;
 
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP FUNCTION IF EXISTS `fn_total_ingresos_producto` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `fn_total_ingresos_producto`(p_codigo VARCHAR(20)) RETURNS decimal(10,2)
+    READS SQL DATA
+BEGIN
+DECLARE v_total DECIMAL(10,2);
+SELECT SUM(monto_total) INTO v_total
+FROM venta_producto
+WHERE codigo_producto = p_codigo;
+RETURN IFNULL(v_total, 0.00);
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_actualizar_progreso_rutina` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_actualizar_progreso_rutina`(
+IN p_id_asignacion INT,
+ IN p_nuevo_progreso DECIMAL(5,2)
+)
+BEGIN
+UPDATE rutina_asignada
+SET progreso = p_nuevo_progreso
+WHERE id_asignacion = p_id_asignacion;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_asignar_nueva_rutina` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_asignar_nueva_rutina`(
+IN p_id_rutina INT,
+IN p_cedula_cliente VARCHAR(15),
+IN p_asignado_por VARCHAR(15),
+IN p_fecha_inicio DATE
+)
+BEGIN
+DECLARE v_semanas INT;
+DECLARE v_fecha_fin DATE;
+SELECT duracion_semanas INTO v_semanas
+FROM rutina WHERE id_rutina = p_id_rutina;
+SET v_fecha_fin = DATE_ADD(p_fecha_inicio, INTERVAL v_semanas WEEK);
+INSERT INTO rutina_asignada (id_rutina, cedula_cliente, asignado_por, fecha_asignacion,
+fecha_inicio, fecha_fin)
+VALUES (p_id_rutina, p_cedula_cliente, p_asignado_por, CURDATE(), p_fecha_inicio,
+v_fecha_fin);
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1326,6 +1543,73 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_registrar_venta_segura` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_registrar_venta_segura`(
+IN p_id_metodo INT,
+IN p_codigo_producto VARCHAR(20),
+IN p_cedula_cliente VARCHAR(15),
+IN p_cantidad DECIMAL(10,2)
+)
+BEGIN
+DECLARE v_precio DECIMAL(10,2);
+DECLARE v_monto_total DECIMAL(10,2);
+SELECT precio_venta INTO v_precio
+FROM producto WHERE codigo_producto = p_codigo_producto;
+SET v_monto_total = v_precio * p_cantidad;
+ INSERT INTO venta_producto (id_metodo, codigo_producto, cedula_cliente, cantidad_vendida,
+monto_total)
+VALUES (p_id_metodo, p_codigo_producto, p_cedula_cliente, p_cantidad, v_monto_total);
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+
+--
+-- Final view structure for view `v_rutinas_clientes`
+--
+
+/*!50001 DROP VIEW IF EXISTS `v_rutinas_clientes`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `v_rutinas_clientes` AS select `ra`.`id_asignacion` AS `id_asignacion`,`ra`.`cedula_cliente` AS `cedula_cliente`,`r`.`nombre` AS `nombre_rutina`,`td`.`nombre` AS `dificultad`,`ra`.`fecha_inicio` AS `fecha_inicio`,`ra`.`fecha_fin` AS `fecha_fin`,`ra`.`estado` AS `estado`,`ra`.`progreso` AS `progreso` from ((`rutina_asignada` `ra` join `rutina` `r` on(`ra`.`id_rutina` = `r`.`id_rutina`)) join `tipo_dificultad` `td` on(`r`.`id_dificultad` = `td`.`id_dificultad`)) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `v_ventas_detalladas`
+--
+
+/*!50001 DROP VIEW IF EXISTS `v_ventas_detalladas`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `v_ventas_detalladas` AS select `vp`.`id_venta` AS `id_venta`,`vp`.`fecha` AS `fecha`,`vp`.`cedula_cliente` AS `cedula_cliente`,`p`.`nombre` AS `nombre_producto`,`vp`.`cantidad_vendida` AS `cantidad_vendida`,`vp`.`monto_total` AS `monto_total`,`mp`.`nombre` AS `metodo_pago` from ((`venta_producto` `vp` join `producto` `p` on(`vp`.`codigo_producto` = `p`.`codigo_producto`)) join `metodo_pago` `mp` on(`vp`.`id_metodo` = `mp`.`id_metodo`)) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -1336,4 +1620,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2026-09-08 20:29:38
+-- Dump completed on 2026-09-08 20:44:24
