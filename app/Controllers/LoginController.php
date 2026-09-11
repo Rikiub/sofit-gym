@@ -45,7 +45,7 @@ class LoginController extends Controller
 
         # Comprobar intentos
         $maximoIntentos = 3;
-        $minutosBloqueo = 15;
+        $minutosBloqueo = 1;
         $duracion = new DateTimeImmutable("-{$minutosBloqueo} minutes");
 
         if ($this->usuarioModel->intentosFallidos(
