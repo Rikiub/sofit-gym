@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Controllers\Controller;
 use App\Services\Auth\UserSession;
 use App\Services\Auth\CurrentUser;
 use App\Core\Http\Request;
@@ -12,7 +11,7 @@ use App\Models\Notificacion;
 use App\Models\NotificacionModel;
 use Exception;
 
-class NotificacionesController extends Controller
+class NotificacionesController
 {
     private CurrentUser $user;
 

@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Core;
 
 use App\Core\Config;
-use App\Services\Auth\UserSession;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
 use App\Core\Plates\AssetExtension;
+use App\Services\Auth\UserSession;
 use League\Plates\Engine;
 use League\Plates\Template\Theme;
 
-abstract class Controller
+class ControllerTools
 {
     /** Renderiza una plantilla HTML */
-    protected function render(string $name, array $data = []): string
+    public static function render(string $name, array $data = []): string
     {
         // Listado de directorios donde buscar plantillas
         $dir = 'app/views/';
@@ -35,7 +35,7 @@ abstract class Controller
     }
 
     /** Bloquea el acceso a una ruta y redirige a la pagina de error si el usuario no tiene el permiso. */
-    protected function protect(string $permiso): void
+    public static function protect(string $permiso): void
     {
         $user = UserSession::get();
 

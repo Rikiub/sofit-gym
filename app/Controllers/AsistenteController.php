@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Controllers\Controller;
+use App\Core\ControllerTools;
 use App\Services\Auth\UserSession;
 use App\Services\Auth\CurrentUser;
 use App\Core\Config;
@@ -21,7 +21,7 @@ use LLPhant\Chat\OpenAIChat;
 use LLPhant\GeminiOpenAIConfig;
 use LLPhant\Tool\HumanInTheLoopTool;
 
-class AsistenteController extends Controller
+class AsistenteController
 {
     private OpenAIChat $chat;
 
@@ -56,7 +56,7 @@ class AsistenteController extends Controller
     public function index()
     {
         $this->initSesion();
-        return $this->render("asistente");
+        return ControllerTools::render("asistente");
     }
 
     public function initSesion(): void

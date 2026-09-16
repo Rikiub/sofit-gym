@@ -20,11 +20,11 @@ class VentasController extends Controller
      */
     public function index()
     {
-        $this->protect("ventas:ver");
+        ControllerTools::protect("ventas:ver");
 
         $ventas = $this->model->obtenerVentas();
         $clientes = $this->model->obtenerClientes();
-        
+
         // Instanciamos el modelo de productos para el POS
         $productoModel = new ProductoModel();
         $productos = $productoModel->obtenerTodos();
@@ -34,7 +34,7 @@ class VentasController extends Controller
         $tipoMensaje = $_SESSION['tipo_mensaje'] ?? '';
         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
-        echo $this->render('ventas', [
+        echo ControllerTools::render('ventas', [
             'ventas' => $ventas,
             'clientes' => $clientes,
             'productos' => $productos,
@@ -48,7 +48,7 @@ class VentasController extends Controller
      */
     public function obtenerClientesAjax()
     {
-        $this->protect("ventas:ver");
+        ControllerTools::protect("ventas:ver");
 
         $clientes = $this->model->obtenerClientes();
         header('Content-Type: application/json');
@@ -61,7 +61,7 @@ class VentasController extends Controller
      */
     public function crear()
     {
-        $this->protect("ventas:crear");
+        ControllerTools::protect("ventas:crear");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -73,7 +73,7 @@ class VentasController extends Controller
             'codigo_producto' => $_POST['codigo_producto'] ?? '',
             'cedula_cliente'  => !empty($_POST['cedula_cliente']) ? strip_tags(trim($_POST['cedula_cliente'])) : null,
             'id_metodo'       => !empty($_POST['id_metodo']) ? intval($_POST['id_metodo']) : 1,
-            'cantidad_vendida'=> isset($_POST['cantidad_vendida']) ? floatval($_POST['cantidad_vendida']) : 0,
+            'cantidad_vendida' => isset($_POST['cantidad_vendida']) ? floatval($_POST['cantidad_vendida']) : 0,
             'monto_total'     => isset($_POST['monto_total']) ? floatval($_POST['monto_total']) : 0,
         ];
 
@@ -104,7 +104,7 @@ class VentasController extends Controller
      */
     public function editar()
     {
-        $this->protect("ventas:editar");
+        ControllerTools::protect("ventas:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -147,7 +147,7 @@ class VentasController extends Controller
      */
     public function eliminar()
     {
-        $this->protect("ventas:eliminar");
+        ControllerTools::protect("ventas:eliminar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -162,7 +162,7 @@ class VentasController extends Controller
         }
 
         $exito = $this->model->eliminarVenta($idVenta);
-        
+
         $this->logger->log("Venta ID '{id}' eliminada", [
             "modulo" => "ventas",
             "accion" => "eliminar",
@@ -183,7 +183,7 @@ class VentasController extends Controller
      */
     public function registrarVenta()
     {
-        $this->protect("ventas:crear");
+        ControllerTools::protect("ventas:crear");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -206,7 +206,7 @@ class VentasController extends Controller
 
         // Procesar en el modelo bajo una sola transacción segura
         $resultado = $this->model->registrarVentaMultiplesProductos($cedulaCliente, $metodoPago, $items);
-        
+
         if ($resultado['success']) {
             $this->logger->log("Transacción de venta múltiple registrada. Cliente '{cedula_cliente}'", [
                 "modulo" => "ventas",
@@ -227,7 +227,7 @@ class VentasController extends Controller
      */
     public function obtenerProductosSinVenderAjax()
     {
-        $this->protect("ventas:ver"); // Validación de permisos
+        ControllerTools::protect("ventas:ver"); // Validación de permisos
 
         // Llamamos a la función del modelo
         $productos = $this->model->obtenerProductosSinVender();
@@ -250,8 +250,8 @@ class VentasController extends Controller
      */
     public function vistaReporte()
     {
-        $this->protect("ventas:ver");
-        echo $this->render('reportes/productos');
+        ControllerTools::protect("ventas:ver");
+        echo ControllerTools::render('reportes/productos');
         exit;
     }
 
@@ -260,8 +260,8 @@ class VentasController extends Controller
      */
     public function generarReporteMasVendidos()
     {
-        $this->protect("ventas:ver");
-        
+        ControllerTools::protect("ventas:ver");
+
         // Soporte para filtros opcionales de rango de fecha desde la URL
         $fechaInicio = !empty($_GET['fecha_inicio']) ? strip_tags(trim($_GET['fecha_inicio'])) : null;
         $fechaFin    = !empty($_GET['fecha_fin'])    ? strip_tags(trim($_GET['fecha_fin']))    : null;
@@ -273,13 +273,13 @@ class VentasController extends Controller
             $pdf = new ReporteProductosMasVendidos();
             $pdf->SetTitle(utf8_decode('Reporte de Productos Más Vendidos - SOFIT GYM'));
             $pdf->SetAuthor('Sistema SOFIT GYM');
-            
+
             $pdf->crearReporte($productosData, $fechaInicio, $fechaFin);
             $pdf->Output('I', 'reporte_productos_mas_vendidos.pdf');
             exit;
         } else {
             $_SESSION['mensaje'] = "No se encontraron registros de ventas para generar el reporte de productos.";
-            $_SESSION['tipo_mensaje'] = "warning"; 
+            $_SESSION['tipo_mensaje'] = "warning";
 
             // Redireccionar a la vista de historial de ventas o reportes
             header("Location: ?page=ventas");

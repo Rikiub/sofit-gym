@@ -2,14 +2,14 @@
 
 namespace App\Controllers;
 
-use App\Controllers\Controller;
+use App\Core\ControllerTools;
 use App\Core\Http\Response;
 use App\Models\FacturacionModel;
 use App\Models\BitacoraModel;
 use App\Services\Reportes\ReporteFinanciero;
 use Exception;
 
-class FacturacionController extends Controller
+class FacturacionController
 {
     public function __construct(
         private $logger = new BitacoraModel(),
@@ -18,7 +18,7 @@ class FacturacionController extends Controller
 
     public function index()
     {
-        $this->protect("facturacion:ver");
+        ControllerTools::protect("facturacion:ver");
 
         // Recuperar mensajes de sesión y luego limpiarlos
         $mensaje = $_SESSION['mensaje'] ?? '';
@@ -37,7 +37,7 @@ class FacturacionController extends Controller
             $tipoMensaje = 'danger';
         }
 
-        return $this->render('facturacion', [
+        return ControllerTools::render('facturacion', [
             'clientes' => $clientes,
             'pagos' => $pagos,
             'tiposMembresia' => $tiposMembresia,
@@ -49,7 +49,7 @@ class FacturacionController extends Controller
 
     public function registrar()
     {
-        $this->protect("facturacion:crear");
+        ControllerTools::protect("facturacion:crear");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $_SESSION['mensaje'] = '❌ Método no permitido.';
@@ -101,7 +101,7 @@ class FacturacionController extends Controller
 
     public function editar()
     {
-        $this->protect("facturacion:editar");
+        ControllerTools::protect("facturacion:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             Response::redirect(['page' => 'facturacion']);
@@ -144,7 +144,7 @@ class FacturacionController extends Controller
 
     public function eliminar()
     {
-        $this->protect("facturacion:eliminar");
+        ControllerTools::protect("facturacion:eliminar");
 
         if (!isset($_GET['eliminar_pago'])) {
             Response::redirect(['page' => 'facturacion']);
@@ -179,7 +179,7 @@ class FacturacionController extends Controller
 
     public function buscar_ajax()
     {
-        $this->protect("facturacion:ver");
+        ControllerTools::protect("facturacion:ver");
 
         if (!isset($_GET['ajax']) || $_GET['ajax'] !== 'buscar_pagos') {
             return;
@@ -192,7 +192,7 @@ class FacturacionController extends Controller
 
     public function ingresos_mensuales()
     {
-        $this->protect("facturacion:ver");
+        ControllerTools::protect("facturacion:ver");
         $ingresos = $this->model->obtenerIngresosMesActual();
         return Response::json($ingresos);
     }
@@ -217,13 +217,13 @@ class FacturacionController extends Controller
     // REPORTES
     public function reporteVista()
     {
-        $this->protect("facturacion:ver");
-        return $this->render('reportes/facturacion');
+        ControllerTools::protect("facturacion:ver");
+        return ControllerTools::render('reportes/facturacion');
     }
 
     public function reporte()
     {
-        $this->protect("facturacion:ver");
+        ControllerTools::protect("facturacion:ver");
 
         $mes = $_GET['mes'] ?? null;
         $anio = $_GET['anio'] ?? null;

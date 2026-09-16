@@ -28,15 +28,15 @@ class UsuariosController extends Controller
 
     public function index(): string
     {
-        $this->protect("usuarios:ver");
-        return $this->render('usuarios/index', [
+        ControllerTools::protect("usuarios:ver");
+        return ControllerTools::render('usuarios/index', [
             "usuario" => $this->user,
         ]);
     }
 
     public function query(): string
     {
-        $this->protect("usuarios:ver");
+        ControllerTools::protect("usuarios:ver");
         $usuarios = $this->usuarioModel->query();
         return Response::json($usuarios);
     }
@@ -56,7 +56,7 @@ class UsuariosController extends Controller
 
     public function insert(): string
     {
-        $this->protect("usuarios:crear");
+        ControllerTools::protect("usuarios:crear");
         $new = $this->validateBody();
 
         if ($this->usuarioModel->findByUsername($new->nombre_usuario)) {
@@ -114,7 +114,7 @@ class UsuariosController extends Controller
 
     public function delete(): string|null
     {
-        $this->protect("usuarios:eliminar");
+        ControllerTools::protect("usuarios:eliminar");
 
         $id = $this->getId();
         $old = $this->usuarioModel->findById($id);

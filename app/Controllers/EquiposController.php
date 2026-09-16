@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Controllers\Controller;
+use App\Core\ControllerTools;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
@@ -11,7 +11,7 @@ use App\Models\BitacoraModel;
 use App\Models\Equipos\Equipo;
 use App\Models\Equipos\EquipoModel;
 
-class EquiposController extends Controller
+class EquiposController
 {
     public function __construct(
         private $logger = new BitacoraModel(),
@@ -20,19 +20,19 @@ class EquiposController extends Controller
 
     public function index()
     {
-        return $this->render('equipos');
+        return ControllerTools::render('equipos');
     }
 
     public function query()
     {
-        $this->protect("equipos:ver");
+        ControllerTools::protect("equipos:ver");
         $equipos = $this->equipoModel->query();
         return Response::json($equipos);
     }
 
     public function find(): ?string
     {
-        $this->protect("equipos:ver");
+        ControllerTools::protect("equipos:ver");
 
         $id = $this->getId();
         $equipo = $this->equipoModel->find($id);
@@ -44,7 +44,7 @@ class EquiposController extends Controller
 
     public function insert(): string
     {
-        $this->protect("equipos:crear");
+        ControllerTools::protect("equipos:crear");
 
         $new = $this->validateBody();
         $id = $equipo->codigo_equipo ?? "";
@@ -70,7 +70,7 @@ class EquiposController extends Controller
 
     public function update(): string
     {
-        $this->protect("equipos:editar");
+        ControllerTools::protect("equipos:editar");
 
         $new = $this->validateBody();
         $id = $this->getId();
@@ -95,7 +95,7 @@ class EquiposController extends Controller
 
     public function delete(): string|null
     {
-        $this->protect("equipos:eliminar");
+        ControllerTools::protect("equipos:eliminar");
         $id = $this->getId();
 
         $old = $this->equipoModel->find($id);

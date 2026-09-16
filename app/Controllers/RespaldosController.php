@@ -2,10 +2,11 @@
 
 namespace App\Controllers;
 
+use App\Core\ControllerTools;
 use App\Core\Http\Response;
 use App\Services\RespaldoService;
 
-class RespaldosController extends Controller
+class RespaldosController
 {
     public function __construct(
         private $respaldo = new RespaldoService()
@@ -13,20 +14,20 @@ class RespaldosController extends Controller
 
     public function index()
     {
-        $this->protect("respaldos:ver");
-        return $this->render('respaldos');
+        ControllerTools::protect("respaldos:ver");
+        return ControllerTools::render('respaldos');
     }
 
     public function query()
     {
-        $this->protect("respaldos:ver");
+        ControllerTools::protect("respaldos:ver");
         $respaldos = $this->respaldo->getAll();
         return Response::json($respaldos);
     }
 
     public function backup()
     {
-        $this->protect("respaldos:respaldar");
+        ControllerTools::protect("respaldos:respaldar");
         $this->respaldo->backup();
         return Response::noContent();
     }

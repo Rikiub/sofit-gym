@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Controllers\Controller;
+use App\Core\ControllerTools;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
@@ -11,7 +11,7 @@ use App\Models\BitacoraModel;
 use App\Models\Trabajador;
 use App\Models\TrabajadorModel;
 
-class TrabajadoresController extends Controller
+class TrabajadoresController
 {
     public function __construct(
         private $logger = new BitacoraModel(),
@@ -20,13 +20,13 @@ class TrabajadoresController extends Controller
 
     public function index(): string
     {
-        $this->protect("trabajadores:ver");
-        return $this->render('trabajadores');
+        ControllerTools::protect("trabajadores:ver");
+        return ControllerTools::render('trabajadores');
     }
 
     public function query(): string
     {
-        $this->protect("trabajadores:ver");
+        ControllerTools::protect("trabajadores:ver");
 
         $search = Request::query("search") ?? null;
         $id_rol = Request::queryInt("id_rol") ?? 0;
@@ -37,14 +37,14 @@ class TrabajadoresController extends Controller
 
     public function summary(): string
     {
-        $this->protect("trabajadores:ver");
+        ControllerTools::protect("trabajadores:ver");
         $summary = $this->trabajadorModel->getSummary();
         return Response::json($summary);
     }
 
     public function find(): ?string
     {
-        $this->protect("trabajadores:ver");
+        ControllerTools::protect("trabajadores:ver");
 
         $id = $this->getId();
         $trabajador = $this->trabajadorModel->find($id);
@@ -56,7 +56,7 @@ class TrabajadoresController extends Controller
 
     public function insert(): string
     {
-        $this->protect("trabajadores:crear");
+        ControllerTools::protect("trabajadores:crear");
 
         $new = $this->validateBody();
         $id = $new->cedula;
@@ -82,7 +82,7 @@ class TrabajadoresController extends Controller
 
     public function update(): string
     {
-        $this->protect("trabajadores:editar");
+        ControllerTools::protect("trabajadores:editar");
 
         $id = $this->getId();
         $new = $this->validateBody();
@@ -107,7 +107,7 @@ class TrabajadoresController extends Controller
 
     public function delete(): string|null
     {
-        $this->protect("trabajadores:eliminar");
+        ControllerTools::protect("trabajadores:eliminar");
         $id = $this->getId();
 
         $old = $this->trabajadorModel->find($id);

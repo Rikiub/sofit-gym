@@ -2,12 +2,12 @@
 
 namespace App\Controllers;
 
-use App\Controllers\Controller;
+use App\Core\ControllerTools;
 use App\Models\AsistenciaModel;
 use App\Models\BitacoraModel;
 use App\Services\Reportes\ReporteAsistencia;
 
-class AsistenciaController extends Controller
+class AsistenciaController
 {
     public function __construct(
         private $logger = new BitacoraModel(),
@@ -16,12 +16,12 @@ class AsistenciaController extends Controller
 
     public function index()
     {
-        $this->protect("asistencia:ver");
+        ControllerTools::protect("asistencia:ver");
 
         $fechaSeleccionada = $_GET['fecha'] ?? date('Y-m-d');
         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
-        return $this->render('asistencia', [
+        return ControllerTools::render('asistencia', [
             'entradasHoy' => $this->model->obtenerEntradasHoy(),
             'fechaSeleccionada' => $fechaSeleccionada,
             'ocupacion' => $this->model->obtenerOcupacionPorFranjas($fechaSeleccionada),
@@ -33,7 +33,7 @@ class AsistenciaController extends Controller
 
     public function buscar_clientes_ajax()
     {
-        $this->protect("asistencia:ver");
+        ControllerTools::protect("asistencia:ver");
 
         if (!isset($_GET['ajax']) || $_GET['ajax'] !== 'buscar_clientes')
             return;
@@ -46,7 +46,7 @@ class AsistenciaController extends Controller
 
     public function registrar()
     {
-        $this->protect("asistencia:crear");
+        ControllerTools::protect("asistencia:crear");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -78,7 +78,7 @@ class AsistenciaController extends Controller
 
     public function buscar_entradas_ajax()
     {
-        $this->protect("asistencia:ver");
+        ControllerTools::protect("asistencia:ver");
 
         if (!isset($_GET['ajax']) || $_GET['ajax'] !== 'buscar_entradas')
             return;
@@ -91,7 +91,7 @@ class AsistenciaController extends Controller
 
     public function buscar_entradas_hoy()
     {
-        $this->protect("asistencia:ver");
+        ControllerTools::protect("asistencia:ver");
 
         $resultados = $this->model->obtenerEntradasHoy();
         header('Content-Type: application/json');
@@ -101,7 +101,7 @@ class AsistenciaController extends Controller
 
     public function obtener_totales()
     {
-        $this->protect("asistencia:ver");
+        ControllerTools::protect("asistencia:ver");
 
         $inicio = $_GET["inicio"] ?? null;
         $fin = $_GET["fin"] ?? null;
@@ -114,7 +114,7 @@ class AsistenciaController extends Controller
 
     public function editar()
     {
-        $this->protect("asistencia:editar");
+        ControllerTools::protect("asistencia:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -149,7 +149,7 @@ class AsistenciaController extends Controller
 
     public function eliminar()
     {
-        $this->protect("asistencia:eliminar");
+        ControllerTools::protect("asistencia:eliminar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -178,8 +178,8 @@ class AsistenciaController extends Controller
     public function vistaAsistencia()
     {
         // Renderiza el formulario usando el motor Plates cargando tu nueva vista
-        $this->protect("clientes:ver");
-        echo $this->render('reportes/asistencia');
+        ControllerTools::protect("clientes:ver");
+        echo ControllerTools::render('reportes/asistencia');
         exit;
     }
 
@@ -189,7 +189,7 @@ class AsistenciaController extends Controller
     public function generarReporte()
     {
         // 1. Proteger la ruta bajo el permiso correspondiente
-        $this->protect("asistencia:ver");
+        ControllerTools::protect("asistencia:ver");
 
         // 2. Capturar los filtros opcionales de fecha desde la URL ($_GET)
         $fechaInicio = $_GET['inicio'] ?? null;

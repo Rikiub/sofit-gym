@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Controllers\Controller;
+use App\Core\ControllerTools;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
@@ -11,7 +11,7 @@ use App\Models\BitacoraModel;
 use App\Models\ClaseGrupal;
 use App\Models\ClaseGrupalModel;
 
-class ClasesGrupalesController extends Controller
+class ClasesGrupalesController
 {
     public function __construct(
         private $logger = new BitacoraModel(),
@@ -20,20 +20,20 @@ class ClasesGrupalesController extends Controller
 
     public function index(): string
     {
-        $this->protect("clases:ver");
-        return $this->render('clases');
+        ControllerTools::protect("clases:ver");
+        return ControllerTools::render('clases');
     }
 
     public function query(): string
     {
-        $this->protect("clases:ver");
+        ControllerTools::protect("clases:ver");
         $clases = $this->claseModel->query();
         return Response::json($clases);
     }
 
     public function find(): ?string
     {
-        $this->protect("clases:ver");
+        ControllerTools::protect("clases:ver");
 
         $id = $this->getId();
         $clase = $this->claseModel->find($id);
@@ -45,7 +45,7 @@ class ClasesGrupalesController extends Controller
 
     public function insert(): string
     {
-        $this->protect("clases:crear");
+        ControllerTools::protect("clases:crear");
 
         $new = $this->validateBody();
         $new = $this->claseModel->insert($new);
@@ -64,7 +64,7 @@ class ClasesGrupalesController extends Controller
 
     public function update(): string
     {
-        $this->protect("clases:editar");
+        ControllerTools::protect("clases:editar");
 
         $id = $this->getId();
         $new = $this->validateBody();
@@ -90,7 +90,7 @@ class ClasesGrupalesController extends Controller
 
     public function delete(): string|null
     {
-        $this->protect("clases:eliminar");
+        ControllerTools::protect("clases:eliminar");
         $id = $this->getId();
 
         $old = $this->claseModel->find($id);

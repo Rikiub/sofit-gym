@@ -2,13 +2,13 @@
 
 namespace App\Controllers;
 
-use App\Controllers\Controller;
+use App\Core\ControllerTools;
 use App\Services\Auth\UserSession;
 use App\Models\AsistenciaModel;
 use App\Models\FacturacionModel;
 use App\Models\Clientes\ClienteModel;
 
-class DashboardController extends Controller
+class DashboardController
 {
     public function __construct(
         private $asistenciaModel = new AsistenciaModel(),
@@ -26,7 +26,7 @@ class DashboardController extends Controller
         $ingresosMensuales = $this->facturacionModel->obtenerIngresosMesActual();
 
         $usuario = UserSession::get();
-        return $this->render('dashboard', [
+        return ControllerTools::render('dashboard', [
             "usuario" => $usuario,
             "asistencias" => $asistencias,
             "clientesMensuales" => $clientesMensuales,

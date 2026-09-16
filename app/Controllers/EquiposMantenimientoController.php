@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Controllers\Controller;
+use App\Core\ControllerTools;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
@@ -11,7 +11,7 @@ use App\Models\Equipos\MantenimientoEquipo;
 use App\Models\Equipos\MantenimientoEquipoModel;
 use App\Models\BitacoraModel;
 
-class EquiposMantenimientoController extends Controller
+class EquiposMantenimientoController
 {
     public function __construct(
         private $logger = new BitacoraModel(),
@@ -20,20 +20,20 @@ class EquiposMantenimientoController extends Controller
 
     public function index()
     {
-        $this->protect("equipos:ver");
-        return $this->render('equipos_mantenimiento');
+        ControllerTools::protect("equipos:ver");
+        return ControllerTools::render('equipos_mantenimiento');
     }
 
     public function query()
     {
-        $this->protect("equipos:ver");
+        ControllerTools::protect("equipos:ver");
         $data = $this->model->query();
         return Response::json($data);
     }
 
     public function find(): ?string
     {
-        $this->protect("equipos:ver");
+        ControllerTools::protect("equipos:ver");
 
         $id = $this->getId();
         $data = $this->model->find($id);
@@ -45,7 +45,7 @@ class EquiposMantenimientoController extends Controller
 
     public function insert(): string
     {
-        $this->protect("equipos:crear");
+        ControllerTools::protect("equipos:crear");
 
         $new = $this->validateBody();
         $new = $this->model->insert($new);
@@ -64,7 +64,7 @@ class EquiposMantenimientoController extends Controller
 
     public function update(): string
     {
-        $this->protect("equipos:editar");
+        ControllerTools::protect("equipos:editar");
 
         $id = $this->getId();
         $old = $this->model->find($id);
@@ -91,7 +91,7 @@ class EquiposMantenimientoController extends Controller
 
     public function delete(): string|null
     {
-        $this->protect("equipos:eliminar");
+        ControllerTools::protect("equipos:eliminar");
         $id = $this->getId();
 
         $old = $this->model->find($id);

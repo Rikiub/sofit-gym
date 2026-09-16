@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Controllers\Controller;
+use App\Core\ControllerTools;
 use App\Services\Auth\UserSession;
 use App\Services\Auth\CurrentUser;
 use App\Core\Http\Request;
@@ -15,7 +15,7 @@ use App\Models\Level;
 use PHPMailer\PHPMailer\PHPMailer;
 use DateTimeImmutable;
 
-class LoginController extends Controller
+class LoginController
 {
     private PHPMailer $mailer;
 
@@ -33,7 +33,7 @@ class LoginController extends Controller
             Response::redirect(["page" => "dashboard"]);
         }
 
-        return $this->render("login");
+        return ControllerTools::render("login");
     }
 
     public function login(): string
@@ -165,7 +165,7 @@ class LoginController extends Controller
         $this->mailer->addAddress($email);
         $this->mailer->isHTML(true);
         $this->mailer->Subject = 'Recuperación de cuenta - Sofit Gym';
-        $this->mailer->Body = $this->render("recuperacionContrasena", [
+        $this->mailer->Body = ControllerTools::render("recuperacionContrasena", [
             "codigo" => $codigo,
         ]);
         $this->mailer->send();

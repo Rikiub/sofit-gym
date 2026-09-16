@@ -2,11 +2,11 @@
 
 namespace App\Controllers;
 
-use App\Controllers\Controller;
+use App\Core\ControllerTools;
 use App\Models\RutinaModel;
 use App\Models\BitacoraModel;
 
-class RutinasController extends Controller
+class RutinasController
 {
     public function __construct(
         private $logger = new BitacoraModel(),
@@ -19,12 +19,12 @@ class RutinasController extends Controller
      */
     public function index()
     {
-        $this->protect("rutinas:ver");
+        ControllerTools::protect("rutinas:ver");
 
         // Limpiamos mensajes de sesión previos
         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
-        return $this->render('rutinas', [
+        return ControllerTools::render('rutinas', [
             'rutinas' => $this->model->obtenerTodasLasRutinas(),
             'dificultades' => $this->model->obtenerDificultades(),
             'mensaje' => $_SESSION['mensaje'] ?? '',
@@ -38,13 +38,13 @@ class RutinasController extends Controller
      */
     public function asignadas()
     {
-        $this->protect("rutinas:ver");
+        ControllerTools::protect("rutinas:ver");
 
         // Limpiamos mensajes de sesión previos
         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
         // Renderizamos la vista 'rutinasAsignadas' enviándole las asignaciones y las rutinas bases cargadas
-        return $this->render('rutinas_asignadas', [
+        return ControllerTools::render('rutinas_asignadas', [
             'asignaciones' => $this->model->obtenerTodasLasAsignaciones(),
             'rutinas' => $this->model->obtenerTodasLasRutinas(),
             'mensaje' => $_SESSION['mensaje'] ?? '',
@@ -61,7 +61,7 @@ class RutinasController extends Controller
      */
     public function buscar_rutinas_ajax()
     {
-        $this->protect("rutinas:ver");
+        ControllerTools::protect("rutinas:ver");
 
         if (!isset($_GET['ajax']) || $_GET['ajax'] !== 'buscar_rutinas')
             return;
@@ -77,7 +77,7 @@ class RutinasController extends Controller
      */
     public function registrar_rutina()
     {
-        $this->protect("rutinas:ver");
+        ControllerTools::protect("rutinas:ver");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -122,7 +122,7 @@ class RutinasController extends Controller
      */
     public function editar_rutina()
     {
-        $this->protect("rutinas:editar");
+        ControllerTools::protect("rutinas:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -183,7 +183,7 @@ class RutinasController extends Controller
      */
     public function eliminar_rutina()
     {
-        $this->protect("rutinas:eliminar");
+        ControllerTools::protect("rutinas:eliminar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -227,7 +227,7 @@ class RutinasController extends Controller
      */
     public function asignar_rutina()
     {
-        $this->protect("rutinas:crear");
+        ControllerTools::protect("rutinas:crear");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -278,7 +278,7 @@ class RutinasController extends Controller
      */
     public function editar_asignacion()
     {
-        $this->protect("rutinas:editar");
+        ControllerTools::protect("rutinas:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -336,7 +336,7 @@ class RutinasController extends Controller
      */
     public function eliminar_asignacion()
     {
-        $this->protect("rutinas:eliminar");
+        ControllerTools::protect("rutinas:eliminar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -376,7 +376,7 @@ class RutinasController extends Controller
      */
     public function buscar_asignaciones_cliente_ajax()
     {
-        $this->protect("rutinas:ver");
+        ControllerTools::protect("rutinas:ver");
 
         $cedula = $_GET['cedula_cliente'] ?? '';
         if (empty($cedula)) {
@@ -399,10 +399,10 @@ class RutinasController extends Controller
      */
     public function obtener_asignaciones_avanzadas_ajax()
     {
-        $this->protect("rutinas:ver");
+        ControllerTools::protect("rutinas:ver");
 
         $resultados = $this->model->obtenerAsignacionesAvanzadas();
-        
+
         header('Content-Type: application/json');
         echo json_encode(['success' => true, 'data' => $resultados]);
         exit;
@@ -414,10 +414,10 @@ class RutinasController extends Controller
      */
     public function obtener_rutinas_mas_largas_ajax()
     {
-        $this->protect("rutinas:ver");
+        ControllerTools::protect("rutinas:ver");
 
         $resultados = $this->model->obtenerRutinasMasLargas();
-        
+
         header('Content-Type: application/json');
         echo json_encode(['success' => true, 'data' => $resultados]);
         exit;
@@ -429,7 +429,7 @@ class RutinasController extends Controller
      */
     public function cancelar_rutinas_cliente()
     {
-        $this->protect("rutinas:editar");
+        ControllerTools::protect("rutinas:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -447,7 +447,7 @@ class RutinasController extends Controller
 
         // Ejecutamos la transacción en el modelo
         $resultado = $this->model->cancelarRutinasCliente($cedula);
-        
+
         if ($resultado['success']) {
             // Registramos la acción masiva en la bitácora
             $this->logger->log("Rutinas canceladas por baja médica para cliente '{cedula}'", [

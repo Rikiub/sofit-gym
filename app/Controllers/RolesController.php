@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Controllers\Controller;
+use App\Core\ControllerTools;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
@@ -10,7 +10,7 @@ use App\Core\Tools;
 use App\Models\Rol;
 use App\Models\RolModel;
 
-class RolesController extends Controller
+class RolesController
 {
     public function __construct(
         private $rolModel = new RolModel(),
@@ -19,21 +19,21 @@ class RolesController extends Controller
     public function index(): string
     {
         $permisos = $this->rolModel->queryPermisos();
-        return $this->render('roles', [
+        return ControllerTools::render('roles', [
             "permisos" => $permisos
         ]);
     }
 
     public function query(): string
     {
-        $this->protect("roles:ver");
+        ControllerTools::protect("roles:ver");
         $roles = $this->rolModel->query();
         return Response::json($roles);
     }
 
     public function find(): ?string
     {
-        $this->protect("roles:ver");
+        ControllerTools::protect("roles:ver");
 
         $id = $this->getId();
         $rol = $this->rolModel->find($id);
@@ -47,7 +47,7 @@ class RolesController extends Controller
 
     public function update(): string
     {
-        $this->protect("roles:editar");
+        ControllerTools::protect("roles:editar");
 
         $id = $this->getId();
         $rol = $this->validateBody();

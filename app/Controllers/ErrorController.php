@@ -2,11 +2,11 @@
 
 namespace App\Controllers;
 
-use App\Controllers\Controller;
+use App\Core\ControllerTools;
 use App\Core\Http\Request;
 use App\Core\Http\Status;
 
-class ErrorController extends Controller
+class ErrorController
 {
     public function index(): string
     {
@@ -20,7 +20,7 @@ class ErrorController extends Controller
             default => 'Ocurrio un error inesperado en el servidor',
         };
 
-        return $this->render('error', [
+        return ControllerTools::render('error', [
             'message' => "{$status->value}: {$message}"
         ]);
     }

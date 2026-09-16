@@ -2,11 +2,12 @@
 
 namespace App\Controllers;
 
+use App\Core\ControllerTools;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Models\OpcionModel;
 
-class OpcionesController extends Controller
+class OpcionesController
 {
     public function __construct(
         private $model = new OpcionModel()
@@ -14,22 +15,22 @@ class OpcionesController extends Controller
 
     public function index()
     {
-        $this->protect("opciones:ver");
+        ControllerTools::protect("opciones:ver");
 
         $datos = $this->model->query();
-        return $this->render("opciones", ["opciones" => $datos]);
+        return ControllerTools::render("opciones", ["opciones" => $datos]);
     }
 
     public function query()
     {
-        $this->protect("opciones:ver");
+        ControllerTools::protect("opciones:ver");
         $datos = $this->model->query();
         return Response::json($datos);
     }
 
     public function find()
     {
-        $this->protect("opciones:ver");
+        ControllerTools::protect("opciones:ver");
 
         $clave = Request::query("id");
         $datos = $this->model->find($clave);
@@ -41,7 +42,7 @@ class OpcionesController extends Controller
 
     public function update()
     {
-        $this->protect("opciones:editar");
+        ControllerTools::protect("opciones:editar");
         $datos = Request::getParsedBody();
 
         if (is_array($datos)) {

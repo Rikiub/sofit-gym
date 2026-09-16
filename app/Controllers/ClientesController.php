@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Controllers\Controller;
+use App\Core\ControllerTools;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
@@ -12,7 +12,7 @@ use App\Models\Clientes\Cliente;
 use App\Models\Clientes\ClienteModel;
 use App\Services\Reportes\ReporteClientes;
 
-class ClientesController extends Controller
+class ClientesController
 {
     public function __construct(
         private $logger = new BitacoraModel(),
@@ -21,13 +21,13 @@ class ClientesController extends Controller
 
     public function index(): string
     {
-        $this->protect("clientes:ver");
-        return $this->render('clientes/index');
+        ControllerTools::protect("clientes:ver");
+        return ControllerTools::render('clientes/index');
     }
 
     public function query(): string
     {
-        $this->protect("clientes:ver");
+        ControllerTools::protect("clientes:ver");
 
         $search = Request::query("search");
         $filters = Request::query("filters") ?? [];
@@ -38,14 +38,14 @@ class ClientesController extends Controller
 
     public function summary(): string
     {
-        $this->protect("clientes:ver");
+        ControllerTools::protect("clientes:ver");
         $clientes = $this->clienteModelo->getSummary();
         return Response::json($clientes);
     }
 
     public function find(): ?string
     {
-        $this->protect("clientes:ver");
+        ControllerTools::protect("clientes:ver");
 
         $id = $this->getId();
         $cliente = $this->clienteModelo->find($id);
@@ -57,7 +57,7 @@ class ClientesController extends Controller
 
     public function insert(): string
     {
-        $this->protect("clientes:crear");
+        ControllerTools::protect("clientes:crear");
 
         $new = $this->validateBody();
         $id = $new->cedula;
@@ -86,7 +86,7 @@ class ClientesController extends Controller
 
     public function update(): string
     {
-        $this->protect("clientes:editar");
+        ControllerTools::protect("clientes:editar");
 
         $new = $this->validateBody();
         $id = $this->getId();
@@ -114,7 +114,7 @@ class ClientesController extends Controller
 
     public function delete(): string|null
     {
-        $this->protect("clientes:eliminar");
+        ControllerTools::protect("clientes:eliminar");
         $id = $this->getId();
 
         if (!$this->clienteModelo->find($id)) {
@@ -156,8 +156,8 @@ class ClientesController extends Controller
     // REPORTES
     public function reporteVista()
     {
-        $this->protect("clientes:ver");
-        return $this->render('reportes/clientes');
+        ControllerTools::protect("clientes:ver");
+        return ControllerTools::render('reportes/clientes');
     }
 
     /**
@@ -165,7 +165,7 @@ class ClientesController extends Controller
      */
     public function reporteGeneral()
     {
-        $this->protect("clientes:ver");
+        ControllerTools::protect("clientes:ver");
 
         // Opcional: Permitir filtrar desde la URL por estado (ej: ?page=clientes&action=reporte&estado=Activo)
         $estadoFiltro = $_GET['estado'] ?? null;

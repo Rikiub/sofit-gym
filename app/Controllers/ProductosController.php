@@ -2,12 +2,12 @@
 
 namespace App\Controllers;
 
-use App\Controllers\Controller;
+use App\Core\ControllerTools;
 use App\Models\ProductoModel;
 use App\Models\BitacoraModel;
 use App\Services\Reportes\ReporteInventario;
 
-class ProductosController extends Controller
+class ProductosController
 {
     public function __construct(
         private $logger = new BitacoraModel(),
@@ -19,7 +19,7 @@ class ProductosController extends Controller
      */
     public function index()
     {
-        $this->protect("productos:ver");
+        ControllerTools::protect("productos:ver");
 
         // Soporte para término de búsqueda en URL (?buscar=)
         $termino = $_GET['buscar'] ?? null;
@@ -34,7 +34,7 @@ class ProductosController extends Controller
         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
         // Renderizado usando el método heredado de Controller
-        echo $this->render('productos', [
+        echo ControllerTools::render('productos', [
             'productos' => $productos,
             'bajoStock' => $bajoStock,
             'mensaje' => $mensaje,
@@ -48,7 +48,7 @@ class ProductosController extends Controller
      */
     public function buscarAjax()
     {
-        $this->protect("productos:ver");
+        ControllerTools::protect("productos:ver");
 
         if (!isset($_GET['ajax']) || $_GET['ajax'] !== 'buscar_productos') {
             http_response_code(400);
@@ -94,7 +94,7 @@ class ProductosController extends Controller
      */
     public function crear()
     {
-        $this->protect("productos:crear");
+        ControllerTools::protect("productos:crear");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -148,7 +148,7 @@ class ProductosController extends Controller
      */
     public function editar()
     {
-        $this->protect("productos:editar");
+        ControllerTools::protect("productos:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -204,7 +204,7 @@ class ProductosController extends Controller
      */
     public function eliminar()
     {
-        $this->protect("productos:eliminar");
+        ControllerTools::protect("productos:eliminar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -241,7 +241,7 @@ class ProductosController extends Controller
      */
     public function actualizarStock()
     {
-        $this->protect("productos:editar");
+        ControllerTools::protect("productos:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -279,7 +279,7 @@ class ProductosController extends Controller
      */
     public function aumentarPreciosSuplementos()
     {
-        $this->protect("productos:editar"); // Validamos permisos
+        ControllerTools::protect("productos:editar"); // Validamos permisos
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -307,8 +307,8 @@ class ProductosController extends Controller
      */
     public function vistaInventario()
     {
-        $this->protect("productos:ver");
-        echo $this->render('reportes/inventario');
+        ControllerTools::protect("productos:ver");
+        echo ControllerTools::render('reportes/inventario');
         exit;
     }
 
@@ -317,7 +317,7 @@ class ProductosController extends Controller
      */
     public function reporteInventario()
     {
-        $this->protect("productos:ver");
+        ControllerTools::protect("productos:ver");
 
         // Solicitar al modelo los productos activos con sus uniones de categoría y unidad
         $inventarioData = $this->model->obtenerReporteInventario();

@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Controllers\Controller;
+use App\Core\ControllerTools;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
@@ -14,7 +14,7 @@ use App\Models\Clientes\SeguimientoNutricional;
 use App\Models\Clientes\SegumientoFisicoModel;
 use App\Models\Clientes\SegumientoNutricionalModel;
 
-class ClienteInfoController extends Controller
+class ClienteInfoController
 {
     public function __construct(
         private $logger = new BitacoraModel(),
@@ -26,7 +26,7 @@ class ClienteInfoController extends Controller
     // INFORMACIÓN DE CLIENTE
     public function index(): string
     {
-        $this->protect("clientes:ver");
+        ControllerTools::protect("clientes:ver");
         $cedula = $this->getCedula();
 
         if (!$this->clienteModel->find($cedula)) {
@@ -36,7 +36,7 @@ class ClienteInfoController extends Controller
             ]);
         }
 
-        return $this->render('clientes/info', [
+        return ControllerTools::render('clientes/info', [
             "cedula" => $cedula,
         ]);
     }
@@ -44,7 +44,7 @@ class ClienteInfoController extends Controller
     // SEGUIMIENTO FISICO
     public function queryFisico(): ?string
     {
-        $this->protect("clientes:ver");
+        ControllerTools::protect("clientes:ver");
         $cedula = $this->getCedula();
 
         if (!$this->clienteModel->find($cedula)) {
@@ -57,7 +57,7 @@ class ClienteInfoController extends Controller
 
     public function insertFisico(): string
     {
-        $this->protect("clientes:crear");
+        ControllerTools::protect("clientes:crear");
 
         $seguimiento = $this->validateBodyFisico();
         $cedula = $this->getCedula();
@@ -81,7 +81,7 @@ class ClienteInfoController extends Controller
 
     public function deleteFisico(): string|null
     {
-        $this->protect("clientes:eliminar");
+        ControllerTools::protect("clientes:eliminar");
         $id = $this->getIdSeguimiento();
 
         $old = $this->fisicoModel->find($id);
@@ -111,7 +111,7 @@ class ClienteInfoController extends Controller
     // SEGUMIENTO NUTRICIONAL
     public function queryNutricion(): ?string
     {
-        $this->protect("clientes:ver");
+        ControllerTools::protect("clientes:ver");
         $cedula = $this->getCedula();
 
         if (!$this->clienteModel->find($cedula)) {
@@ -124,7 +124,7 @@ class ClienteInfoController extends Controller
 
     public function insertNutricion(): string
     {
-        $this->protect("clientes:crear");
+        ControllerTools::protect("clientes:crear");
 
         $seguimiento = $this->validateBodyNutricion();
         $cedula = $this->getCedula();
@@ -148,7 +148,7 @@ class ClienteInfoController extends Controller
 
     public function deleteNutricion(): string|null
     {
-        $this->protect("clientes:eliminar");
+        ControllerTools::protect("clientes:eliminar");
         $id = $this->getIdSeguimiento();
 
         $old = $this->nutricionalModel->find($id);
