@@ -40,6 +40,7 @@ $modalForm = $this->fetch('modalForm', [
                         name="descripcion"
                         rows="2" 
                         maxlength="1000"
+                        required
                     ></textarea>
                     <small class="text-danger" x-text="errors.descripcion"></small>
                 </label>
