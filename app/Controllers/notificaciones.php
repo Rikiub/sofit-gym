@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\ControllerTools;
+use App\Core\Route;
 use App\Services\Auth\UserSession;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
@@ -14,7 +14,7 @@ use Exception;
 $notifModel = new NotificacionModel();
 $user = UserSession::get();
 
-switch (ControllerTools::action()) {
+switch (Route::action()) {
     case "query":
         $id_usuario = Request::queryInt("id") ?? $user->id;
         $results = $notifModel->query($id_usuario);

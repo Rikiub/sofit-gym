@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\ControllerTools;
+use App\Core\Route;
 use App\Services\Auth\UserSession;
 use App\Services\Auth\CurrentUser;
 use App\Services\ImageStorage;
@@ -53,15 +53,15 @@ function protectAccess(string $permiso, Usuario $usuario, ?CurrentUser $user): v
     }
 }
 
-switch (ControllerTools::action()) {
+switch (Route::action()) {
     case "index":
-        ControllerTools::protect("usuarios:ver");
-        return ControllerTools::render('usuarios/index', [
+        Route::protect("usuarios:ver");
+        return Route::render('usuarios/index', [
             "usuario" => $user,
         ]);
 
     case "query":
-        ControllerTools::protect("usuarios:ver");
+        Route::protect("usuarios:ver");
         $usuarios = $usuarioModel->query();
         return Response::json($usuarios);
 
@@ -77,7 +77,7 @@ switch (ControllerTools::action()) {
         return Response::json($usuario);
 
     case "insert":
-        ControllerTools::protect("usuarios:crear");
+        Route::protect("usuarios:crear");
         $new = validateBody();
 
         if ($usuarioModel->findByUsername($new->nombre_usuario)) {
@@ -131,7 +131,7 @@ switch (ControllerTools::action()) {
         return Response::json($new, Status::CREATED);
 
     case "delete":
-        ControllerTools::protect("usuarios:eliminar");
+        Route::protect("usuarios:eliminar");
 
         $id = getId();
         $old = $usuarioModel->findById($id);

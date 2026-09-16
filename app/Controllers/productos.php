@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\ControllerTools;
+use App\Core\Route;
 use App\Models\ProductoModel;
 use App\Models\BitacoraModel;
 use App\Services\Reportes\ReporteInventario;
@@ -35,12 +35,12 @@ function procesarImagen($archivo)
     return null;
 }
 
-switch (ControllerTools::action()) {
+switch (Route::action()) {
     /**
      * Muestra la vista principal de productos (Catálogo e Inventario)
      */
     case "index":
-        ControllerTools::protect("productos:ver");
+        Route::protect("productos:ver");
 
         // Soporte para término de búsqueda en URL (?buscar=)
         $termino = $_GET['buscar'] ?? null;
@@ -55,7 +55,7 @@ switch (ControllerTools::action()) {
         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
         // Renderizado usando el método heredado de Controller
-        echo ControllerTools::render('productos', [
+        echo Route::render('productos', [
             'productos' => $productos,
             'bajoStock' => $bajoStock,
             'mensaje' => $mensaje,
@@ -68,7 +68,7 @@ switch (ControllerTools::action()) {
      * Endpoint API AJAX para buscar productos dinámicamente
      */
     case "buscarAjax":
-        ControllerTools::protect("productos:ver");
+        Route::protect("productos:ver");
 
         if (!isset($_GET['ajax']) || $_GET['ajax'] !== 'buscar_productos') {
             http_response_code(400);
@@ -87,7 +87,7 @@ switch (ControllerTools::action()) {
      * Registra un nuevo producto en el gimnasio
      */
     case "crear":
-        ControllerTools::protect("productos:crear");
+        Route::protect("productos:crear");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -139,7 +139,7 @@ switch (ControllerTools::action()) {
      * Edita o modifica un producto existente
      */
     case "editar":
-        ControllerTools::protect("productos:editar");
+        Route::protect("productos:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -193,7 +193,7 @@ switch (ControllerTools::action()) {
      * Elimina un producto de la base de datos (lógica o físicamente)
      */
     case "eliminar":
-        ControllerTools::protect("productos:eliminar");
+        Route::protect("productos:eliminar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -228,7 +228,7 @@ switch (ControllerTools::action()) {
      * Actualiza o modifica la cantidad física en stock (Entrada/Salida de Inventario)
      */
     case "actualizarStock":
-        ControllerTools::protect("productos:editar");
+        Route::protect("productos:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -264,7 +264,7 @@ switch (ControllerTools::action()) {
      * Aumenta el precio de los suplementos (Categoría 1) en un 10%
      */
     case "aumentarPreciosSuplementos":
-        ControllerTools::protect("productos:editar"); // Validamos permisos
+        Route::protect("productos:editar"); // Validamos permisos
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -290,15 +290,15 @@ switch (ControllerTools::action()) {
      * Muestra exclusivamente la interfaz visual del formulario de reportes de inventario
      */
     case "vistaInventario":
-        ControllerTools::protect("productos:ver");
-        echo ControllerTools::render('reportes/inventario');
+        Route::protect("productos:ver");
+        echo Route::render('reportes/inventario');
         exit;
 
     /**
      * Generar reporte PDF del inventario general actual del catálogo de productos
      */
     case "reporteInventario":
-        ControllerTools::protect("productos:ver");
+        Route::protect("productos:ver");
 
         // Solicitar al modelo los productos activos con sus uniones de categoría y unidad
         $inventarioData = $model->obtenerReporteInventario();

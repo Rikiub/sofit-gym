@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\ControllerTools;
+use App\Core\Route;
 use App\Services\Auth\UserSession;
 use App\Services\Auth\CurrentUser;
 use App\Core\Http\Request;
@@ -28,14 +28,14 @@ function invalidInput(): string
     );
 }
 
-switch (ControllerTools::action()) {
+switch (Route::action()) {
     case "index":
         if (UserSession::get()) {
             // Si el usuario ya inicio sesión, redirigir a pagina de inicio.
             Response::redirect(["page" => "dashboard"]);
         }
 
-        return ControllerTools::render("login");
+        return Route::render("login");
 
     case "login":
         $body = Request::getParsedBody();
@@ -152,7 +152,7 @@ switch (ControllerTools::action()) {
         $mailer->addAddress($email);
         $mailer->isHTML(true);
         $mailer->Subject = 'Recuperación de cuenta - Sofit Gym';
-        $mailer->Body = ControllerTools::render("recuperacionContrasena", [
+        $mailer->Body = Route::render("recuperacionContrasena", [
             "codigo" => $codigo,
         ]);
         $mailer->send();

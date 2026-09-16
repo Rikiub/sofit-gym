@@ -2,11 +2,11 @@
 
 namespace App\Controllers;
 
-use App\Core\ControllerTools;
+use App\Core\Route;
 use App\Core\Http\Request;
 use App\Core\Http\Status;
 
-switch (ControllerTools::action()) {
+switch (Route::action()) {
     case "index":
         $status = Status::from(
             Request::queryInt("status") ?? 500
@@ -18,7 +18,7 @@ switch (ControllerTools::action()) {
             default => 'Ocurrio un error inesperado en el servidor',
         };
 
-        return ControllerTools::render('error', [
+        return Route::render('error', [
             'message' => "{$status->value}: {$message}"
         ]);
 }

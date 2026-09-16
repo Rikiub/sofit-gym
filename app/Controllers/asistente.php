@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\ControllerTools;
+use App\Core\Route;
 use App\Services\Auth\UserSession;
 use App\Services\Auth\CurrentUser;
 use App\Core\Config;
@@ -120,10 +120,10 @@ function initSesion(): void
     }
 }
 
-switch (ControllerTools::action()) {
+switch (Route::action()) {
     case "index":
         initSesion();
-        return ControllerTools::render("asistente");
+        return Route::render("asistente");
 
     case "generateText":
         initSesion();

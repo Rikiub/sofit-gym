@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\ControllerTools;
+use App\Core\Route;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
@@ -30,18 +30,18 @@ function validateBody(): ClaseGrupal
     return Tools::map(ClaseGrupal::class, $body);
 }
 
-switch (ControllerTools::action()) {
+switch (Route::action()) {
     case "index":
-        ControllerTools::protect("clases:ver");
-        return ControllerTools::render('clases');
+        Route::protect("clases:ver");
+        return Route::render('clases');
 
     case "query":
-        ControllerTools::protect("clases:ver");
+        Route::protect("clases:ver");
         $clases = $claseModel->query();
         return Response::json($clases);
 
     case "find":
-        ControllerTools::protect("clases:ver");
+        Route::protect("clases:ver");
 
         $id = getId();
         $clase = $claseModel->find($id);
@@ -51,7 +51,7 @@ switch (ControllerTools::action()) {
             : Response::noContent();
 
     case "insert":
-        ControllerTools::protect("clases:crear");
+        Route::protect("clases:crear");
 
         $new = validateBody();
         $new = $claseModel->insert($new);
@@ -68,7 +68,7 @@ switch (ControllerTools::action()) {
         return Response::json($new, Status::CREATED);
 
     case "update":
-        ControllerTools::protect("clases:editar");
+        Route::protect("clases:editar");
 
         $id = getId();
         $new = validateBody();
@@ -92,7 +92,7 @@ switch (ControllerTools::action()) {
         return Response::json($new, Status::CREATED);
 
     case "delete":
-        ControllerTools::protect("clases:eliminar");
+        Route::protect("clases:eliminar");
         $id = getId();
 
         $old = $claseModel->find($id);

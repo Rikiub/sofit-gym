@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\ControllerTools;
+use App\Core\Route;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
@@ -30,18 +30,18 @@ function validateBody(): MantenimientoEquipo
     return Tools::map(MantenimientoEquipo::class, $body);
 }
 
-switch (ControllerTools::action()) {
+switch (Route::action()) {
     case "index":
-        ControllerTools::protect("equipos:ver");
-        return ControllerTools::render('equipos_mantenimiento');
+        Route::protect("equipos:ver");
+        return Route::render('equipos_mantenimiento');
 
     case "query":
-        ControllerTools::protect("equipos:ver");
+        Route::protect("equipos:ver");
         $data = $model->query();
         return Response::json($data);
 
     case "find":
-        ControllerTools::protect("equipos:ver");
+        Route::protect("equipos:ver");
 
         $id = getId();
         $data = $model->find($id);
@@ -51,7 +51,7 @@ switch (ControllerTools::action()) {
             : Response::noContent();
 
     case "insert":
-        ControllerTools::protect("equipos:crear");
+        Route::protect("equipos:crear");
 
         $new = validateBody();
         $new = $model->insert($new);
@@ -68,7 +68,7 @@ switch (ControllerTools::action()) {
         return Response::json($new, Status::CREATED);
 
     case "update":
-        ControllerTools::protect("equipos:editar");
+        Route::protect("equipos:editar");
 
         $id = getId();
         $old = $model->find($id);
@@ -93,7 +93,7 @@ switch (ControllerTools::action()) {
         return Response::json($new, Status::CREATED);
 
     case "delete":
-        ControllerTools::protect("equipos:eliminar");
+        Route::protect("equipos:eliminar");
         $id = getId();
 
         $old = $model->find($id);

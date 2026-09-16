@@ -2,27 +2,27 @@
 
 namespace App\Controllers;
 
-use App\Core\ControllerTools;
+use App\Core\Route;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Models\OpcionModel;
 
 $model = new OpcionModel();
 
-switch (ControllerTools::action()) {
+switch (Route::action()) {
     case "index":
-        ControllerTools::protect("opciones:ver");
+        Route::protect("opciones:ver");
 
         $datos = $model->query();
-        return ControllerTools::render("opciones", ["opciones" => $datos]);
+        return Route::render("opciones", ["opciones" => $datos]);
 
     case "query":
-        ControllerTools::protect("opciones:ver");
+        Route::protect("opciones:ver");
         $datos = $model->query();
         return Response::json($datos);
 
     case "find":
-        ControllerTools::protect("opciones:ver");
+        Route::protect("opciones:ver");
 
         $clave = Request::query("id");
         $datos = $model->find($clave);
@@ -32,7 +32,7 @@ switch (ControllerTools::action()) {
             : Response::noContent();
 
     case "update":
-        ControllerTools::protect("opciones:editar");
+        Route::protect("opciones:editar");
         $datos = Request::getParsedBody();
 
         if (is_array($datos)) {

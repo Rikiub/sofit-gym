@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\ControllerTools;
+use App\Core\Route;
 use App\Core\Http\Response;
 use App\Models\FacturacionModel;
 use App\Models\BitacoraModel;
@@ -24,9 +24,9 @@ function obtenerPagoPorId(int $idPago): ?array
     return null;
 }
 
-switch (ControllerTools::action()) {
+switch (Route::action()) {
     case "index":
-        ControllerTools::protect("facturacion:ver");
+        Route::protect("facturacion:ver");
 
         // Recuperar mensajes de sesión y luego limpiarlos
         $mensaje = $_SESSION['mensaje'] ?? '';
@@ -45,7 +45,7 @@ switch (ControllerTools::action()) {
             $tipoMensaje = 'danger';
         }
 
-        return ControllerTools::render('facturacion', [
+        return Route::render('facturacion', [
             'clientes' => $clientes,
             'pagos' => $pagos,
             'tiposMembresia' => $tiposMembresia,
@@ -55,7 +55,7 @@ switch (ControllerTools::action()) {
         ]);
 
     case "registrar":
-        ControllerTools::protect("facturacion:crear");
+        Route::protect("facturacion:crear");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $_SESSION['mensaje'] = '❌ Método no permitido.';
@@ -106,7 +106,7 @@ switch (ControllerTools::action()) {
         break;
 
     case "editar":
-        ControllerTools::protect("facturacion:editar");
+        Route::protect("facturacion:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             Response::redirect(['page' => 'facturacion']);
@@ -148,7 +148,7 @@ switch (ControllerTools::action()) {
         break;
 
     case "eliminar":
-        ControllerTools::protect("facturacion:eliminar");
+        Route::protect("facturacion:eliminar");
 
         if (!isset($_GET['eliminar_pago'])) {
             Response::redirect(['page' => 'facturacion']);
@@ -182,7 +182,7 @@ switch (ControllerTools::action()) {
         break;
 
     case "buscar_ajax":
-        ControllerTools::protect("facturacion:ver");
+        Route::protect("facturacion:ver");
 
         if (!isset($_GET['ajax']) || $_GET['ajax'] !== 'buscar_pagos') {
             return;
@@ -193,7 +193,7 @@ switch (ControllerTools::action()) {
         return Response::json($resultados);
 
     case "ingresos_mensuales":
-        ControllerTools::protect("facturacion:ver");
+        Route::protect("facturacion:ver");
         $ingresos = $model->obtenerIngresosMesActual();
         return Response::json($ingresos);
 
@@ -203,11 +203,11 @@ switch (ControllerTools::action()) {
 
         // REPORTES
     case "reporteVista":
-        ControllerTools::protect("facturacion:ver");
-        return ControllerTools::render('reportes/facturacion');
+        Route::protect("facturacion:ver");
+        return Route::render('reportes/facturacion');
 
     case "reporte":
-        ControllerTools::protect("facturacion:ver");
+        Route::protect("facturacion:ver");
 
         $mes = $_GET['mes'] ?? null;
         $anio = $_GET['anio'] ?? null;

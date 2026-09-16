@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\ControllerTools;
+use App\Core\Route;
 use App\Services\Auth\UserSession;
 use App\Models\AsistenciaModel;
 use App\Models\FacturacionModel;
@@ -12,7 +12,7 @@ $asistenciaModel = new AsistenciaModel();
 $clienteModel = new ClienteModel();
 $facturacionModel = new FacturacionModel();
 
-switch (ControllerTools::action()) {
+switch (Route::action()) {
     case "index":
         $asistencias = $asistenciaModel->obtenerEntradasHoy();
         $clientesMensuales = $clienteModel->query(filters: [
@@ -22,7 +22,7 @@ switch (ControllerTools::action()) {
         $ingresosMensuales = $facturacionModel->obtenerIngresosMesActual();
 
         $usuario = UserSession::get();
-        return ControllerTools::render('dashboard', [
+        return Route::render('dashboard', [
             "usuario" => $usuario,
             "asistencias" => $asistencias,
             "clientesMensuales" => $clientesMensuales,

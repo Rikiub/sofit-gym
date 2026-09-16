@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\ControllerTools;
+use App\Core\Route;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
@@ -33,13 +33,13 @@ function validateBody(): Trabajador
     return Tools::map(Trabajador::class, $body);
 }
 
-switch (ControllerTools::action()) {
+switch (Route::action()) {
     case "index":
-        ControllerTools::protect("trabajadores:ver");
-        return ControllerTools::render('trabajadores');
+        Route::protect("trabajadores:ver");
+        return Route::render('trabajadores');
 
     case "query":
-        ControllerTools::protect("trabajadores:ver");
+        Route::protect("trabajadores:ver");
 
         $search = Request::query("search") ?? null;
         $id_rol = Request::queryInt("id_rol") ?? 0;
@@ -48,12 +48,12 @@ switch (ControllerTools::action()) {
         return Response::json($trabajadores);
 
     case "summary":
-        ControllerTools::protect("trabajadores:ver");
+        Route::protect("trabajadores:ver");
         $summary = $trabajadorModel->getSummary();
         return Response::json($summary);
 
     case "find":
-        ControllerTools::protect("trabajadores:ver");
+        Route::protect("trabajadores:ver");
 
         $id = getId();
         $trabajador = $trabajadorModel->find($id);
@@ -63,7 +63,7 @@ switch (ControllerTools::action()) {
             : Response::noContent();
 
     case "insert":
-        ControllerTools::protect("trabajadores:crear");
+        Route::protect("trabajadores:crear");
 
         $new = validateBody();
         $id = $new->cedula;
@@ -87,7 +87,7 @@ switch (ControllerTools::action()) {
         return Response::json($new, Status::CREATED);
 
     case "update":
-        ControllerTools::protect("trabajadores:editar");
+        Route::protect("trabajadores:editar");
 
         $id = getId();
         $new = validateBody();
@@ -110,7 +110,7 @@ switch (ControllerTools::action()) {
         return Response::json($new, Status::CREATED);
 
     case "delete":
-        ControllerTools::protect("trabajadores:eliminar");
+        Route::protect("trabajadores:eliminar");
         $id = getId();
 
         $old = $trabajadorModel->find($id);

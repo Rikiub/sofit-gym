@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\ControllerTools;
+use App\Core\Route;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
@@ -34,13 +34,13 @@ function validateBody(): Cliente
     return Tools::map(Cliente::class, $body);
 }
 
-switch (ControllerTools::action()) {
+switch (Route::action()) {
     case "index":
-        ControllerTools::protect("clientes:ver");
-        return ControllerTools::render('clientes/index');
+        Route::protect("clientes:ver");
+        return Route::render('clientes/index');
 
     case "query":
-        ControllerTools::protect("clientes:ver");
+        Route::protect("clientes:ver");
 
         $search = Request::query("search");
         $filters = Request::query("filters") ?? [];
@@ -49,12 +49,12 @@ switch (ControllerTools::action()) {
         return Response::json($clientes);
 
     case "summary":
-        ControllerTools::protect("clientes:ver");
+        Route::protect("clientes:ver");
         $clientes = $clienteModelo->getSummary();
         return Response::json($clientes);
 
     case "find":
-        ControllerTools::protect("clientes:ver");
+        Route::protect("clientes:ver");
 
         $id = getId();
         $cliente = $clienteModelo->find($id);
@@ -64,7 +64,7 @@ switch (ControllerTools::action()) {
             : Response::noContent();
 
     case "insert":
-        ControllerTools::protect("clientes:crear");
+        Route::protect("clientes:crear");
 
         $new = validateBody();
         $id = $new->cedula;
@@ -91,7 +91,7 @@ switch (ControllerTools::action()) {
         return Response::json($new, Status::CREATED);
 
     case "update":
-        ControllerTools::protect("clientes:editar");
+        Route::protect("clientes:editar");
 
         $new = validateBody();
         $id = getId();
@@ -117,7 +117,7 @@ switch (ControllerTools::action()) {
         return Response::json($new, Status::CREATED);
 
     case "delete":
-        ControllerTools::protect("clientes:eliminar");
+        Route::protect("clientes:eliminar");
         $id = getId();
 
         if (!$clienteModelo->find($id)) {
@@ -138,11 +138,11 @@ switch (ControllerTools::action()) {
 
         // REPORTES
     case "reporteVista":
-        ControllerTools::protect("clientes:ver");
-        return ControllerTools::render('reportes/clientes');
+        Route::protect("clientes:ver");
+        return Route::render('reportes/clientes');
 
     case "reporteGeneral":
-        ControllerTools::protect("clientes:ver");
+        Route::protect("clientes:ver");
 
         $estadoFiltro = $_GET['estado'] ?? null;
 

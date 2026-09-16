@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\ControllerTools;
+use App\Core\Route;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
@@ -28,20 +28,20 @@ function validateBody(): Rol
     return Tools::map(Rol::class, $body);
 }
 
-switch (ControllerTools::action()) {
+switch (Route::action()) {
     case "index":
         $permisos = $rolModel->queryPermisos();
-        return ControllerTools::render('roles', [
+        return Route::render('roles', [
             "permisos" => $permisos
         ]);
 
     case "query":
-        ControllerTools::protect("roles:ver");
+        Route::protect("roles:ver");
         $roles = $rolModel->query();
         return Response::json($roles);
 
     case "find":
-        ControllerTools::protect("roles:ver");
+        Route::protect("roles:ver");
 
         $id = getId();
         $rol = $rolModel->find($id);
@@ -53,7 +53,7 @@ switch (ControllerTools::action()) {
         return Response::json($rol);
 
     case "update":
-        ControllerTools::protect("roles:editar");
+        Route::protect("roles:editar");
 
         $id = getId();
         $rol = validateBody();

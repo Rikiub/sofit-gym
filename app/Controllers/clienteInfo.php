@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\ControllerTools;
+use App\Core\Route;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
@@ -51,10 +51,10 @@ function validateBodyNutricion(): SeguimientoNutricional
     return Tools::map(SeguimientoNutricional::class, $body);
 }
 
-switch (ControllerTools::action()) {
+switch (Route::action()) {
     // INFORMACIÓN DE CLIENTE
     case "index":
-        ControllerTools::protect("clientes:ver");
+        Route::protect("clientes:ver");
         $cedula = getCedula();
 
         if (!$clienteModel->find($cedula)) {
@@ -64,13 +64,13 @@ switch (ControllerTools::action()) {
             ]);
         }
 
-        return ControllerTools::render('clientes/info', [
+        return Route::render('clientes/info', [
             "cedula" => $cedula,
         ]);
 
         // SEGUIMIENTO FISICO
     case "queryFisico":
-        ControllerTools::protect("clientes:ver");
+        Route::protect("clientes:ver");
         $cedula = getCedula();
 
         if (!$clienteModel->find($cedula)) {
@@ -81,7 +81,7 @@ switch (ControllerTools::action()) {
         return Response::json($seguimiento);
 
     case "insertFisico":
-        ControllerTools::protect("clientes:crear");
+        Route::protect("clientes:crear");
 
         $seguimiento = validateBodyFisico();
         $cedula = getCedula();
@@ -103,7 +103,7 @@ switch (ControllerTools::action()) {
         return Response::json($new, Status::CREATED);
 
     case "deleteFisico":
-        ControllerTools::protect("clientes:eliminar");
+        Route::protect("clientes:eliminar");
         $id = getIdSeguimiento();
 
         $old = $fisicoModel->find($id);
@@ -125,7 +125,7 @@ switch (ControllerTools::action()) {
 
         // SEGUMIENTO NUTRICIONAL
     case "queryNutricion":
-        ControllerTools::protect("clientes:ver");
+        Route::protect("clientes:ver");
         $cedula = getCedula();
 
         if (!$clienteModel->find($cedula)) {
@@ -136,7 +136,7 @@ switch (ControllerTools::action()) {
         return Response::json($seguimientos);
 
     case "insertNutricion":
-        ControllerTools::protect("clientes:crear");
+        Route::protect("clientes:crear");
 
         $seguimiento = validateBodyNutricion();
         $cedula = getCedula();
@@ -158,7 +158,7 @@ switch (ControllerTools::action()) {
         return Response::json($new, Status::CREATED);
 
     case "deleteNutricion":
-        ControllerTools::protect("clientes:eliminar");
+        Route::protect("clientes:eliminar");
         $id = getIdSeguimiento();
 
         $old = $nutricionalModel->find($id);

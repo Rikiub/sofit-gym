@@ -11,8 +11,10 @@ use App\Services\Auth\UserSession;
 use League\Plates\Engine;
 use League\Plates\Template\Theme;
 
-class ControllerTools
+/** Helpers para manejar rutas/paginas de los controladores. */
+class Route
 {
+    /** Verifica y enruta la acción pedida. */
     public static function action(): string
     {
         $action = $_GET['action'] ?? "index";

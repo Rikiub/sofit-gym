@@ -2,24 +2,24 @@
 
 namespace App\Controllers;
 
-use App\Core\ControllerTools;
+use App\Core\Route;
 use App\Core\Http\Response;
 use App\Services\RespaldoService;
 
 $respaldo = new RespaldoService();
 
-switch (ControllerTools::action()) {
+switch (Route::action()) {
     case "index":
-        ControllerTools::protect("respaldos:ver");
-        return ControllerTools::render('respaldos');
+        Route::protect("respaldos:ver");
+        return Route::render('respaldos');
 
     case "query":
-        ControllerTools::protect("respaldos:ver");
+        Route::protect("respaldos:ver");
         $respaldos = $respaldo->getAll();
         return Response::json($respaldos);
 
     case "backup":
-        ControllerTools::protect("respaldos:respaldar");
+        Route::protect("respaldos:respaldar");
         $respaldo->backup();
         return Response::noContent();
 }

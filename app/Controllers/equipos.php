@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\ControllerTools;
+use App\Core\Route;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
@@ -30,17 +30,17 @@ function notFound(): string
     return Response::json(['message' => 'El equipo no existe'], Status::NOT_FOUND);
 }
 
-switch (ControllerTools::action()) {
+switch (Route::action()) {
     case "index":
-        return ControllerTools::render('equipos');
+        return Route::render('equipos');
 
     case "query":
-        ControllerTools::protect("equipos:ver");
+        Route::protect("equipos:ver");
         $equipos = $equipoModel->query();
         return Response::json($equipos);
 
     case "find":
-        ControllerTools::protect("equipos:ver");
+        Route::protect("equipos:ver");
 
         $id = getId();
         $equipo = $equipoModel->find($id);
@@ -50,7 +50,7 @@ switch (ControllerTools::action()) {
             : Response::noContent();
 
     case "insert":
-        ControllerTools::protect("equipos:crear");
+        Route::protect("equipos:crear");
 
         $new = validateBody();
         $id = $equipo->codigo_equipo ?? "";
@@ -74,7 +74,7 @@ switch (ControllerTools::action()) {
         return Response::json($new, Status::CREATED);
 
     case "update":
-        ControllerTools::protect("equipos:editar");
+        Route::protect("equipos:editar");
 
         $new = validateBody();
         $id = getId();
@@ -97,7 +97,7 @@ switch (ControllerTools::action()) {
         return Response::json($new, Status::CREATED);
 
     case "delete":
-        ControllerTools::protect("equipos:eliminar");
+        Route::protect("equipos:eliminar");
         $id = getId();
 
         $old = $equipoModel->find($id);

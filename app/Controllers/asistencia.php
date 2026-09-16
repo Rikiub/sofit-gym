@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\ControllerTools;
+use App\Core\Route;
 use App\Models\AsistenciaModel;
 use App\Models\BitacoraModel;
 use App\Services\Reportes\ReporteAsistencia;
@@ -10,14 +10,14 @@ use App\Services\Reportes\ReporteAsistencia;
 $logger = new BitacoraModel();
 $model = new AsistenciaModel();
 
-switch (ControllerTools::action()) {
+switch (Route::action()) {
     case "index":
-        ControllerTools::protect("asistencia:ver");
+        Route::protect("asistencia:ver");
 
         $fechaSeleccionada = $_GET['fecha'] ?? date('Y-m-d');
         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
-        return ControllerTools::render('asistencia', [
+        return Route::render('asistencia', [
             'entradasHoy' => $model->obtenerEntradasHoy(),
             'fechaSeleccionada' => $fechaSeleccionada,
             'ocupacion' => $model->obtenerOcupacionPorFranjas($fechaSeleccionada),
@@ -27,7 +27,7 @@ switch (ControllerTools::action()) {
         ]);
 
     case "buscar_clientes_ajax":
-        ControllerTools::protect("asistencia:ver");
+        Route::protect("asistencia:ver");
 
         if (!isset($_GET['ajax']) || $_GET['ajax'] !== 'buscar_clientes')
             return;
@@ -38,7 +38,7 @@ switch (ControllerTools::action()) {
         exit;
 
     case "registrar":
-        ControllerTools::protect("asistencia:crear");
+        Route::protect("asistencia:crear");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -69,7 +69,7 @@ switch (ControllerTools::action()) {
         break;
 
     case "buscar_entradas_ajax":
-        ControllerTools::protect("asistencia:ver");
+        Route::protect("asistencia:ver");
 
         if (!isset($_GET['ajax']) || $_GET['ajax'] !== 'buscar_entradas')
             return;
@@ -80,7 +80,7 @@ switch (ControllerTools::action()) {
         exit;
 
     case "buscar_entradas_hoy":
-        ControllerTools::protect("asistencia:ver");
+        Route::protect("asistencia:ver");
 
         $resultados = $model->obtenerEntradasHoy();
         header('Content-Type: application/json');
@@ -88,7 +88,7 @@ switch (ControllerTools::action()) {
         exit;
 
     case "obtener_totales":
-        ControllerTools::protect("asistencia:ver");
+        Route::protect("asistencia:ver");
 
         $inicio = $_GET["inicio"] ?? null;
         $fin = $_GET["fin"] ?? null;
@@ -99,7 +99,7 @@ switch (ControllerTools::action()) {
         exit;
 
     case "editar":
-        ControllerTools::protect("asistencia:editar");
+        Route::protect("asistencia:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -133,7 +133,7 @@ switch (ControllerTools::action()) {
         break;
 
     case "eliminar":
-        ControllerTools::protect("asistencia:eliminar");
+        Route::protect("asistencia:eliminar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -161,8 +161,8 @@ switch (ControllerTools::action()) {
     // Reportes
     case "vistaAsistencia":
         // Renderiza el formulario usando el motor Plates cargando tu nueva vista
-        ControllerTools::protect("clientes:ver");
-        echo ControllerTools::render('reportes/asistencia');
+        Route::protect("clientes:ver");
+        echo Route::render('reportes/asistencia');
         exit;
 
     /**
@@ -170,7 +170,7 @@ switch (ControllerTools::action()) {
      */
     case "generarReporte":
         // 1. Proteger la ruta bajo el permiso correspondiente
-        ControllerTools::protect("asistencia:ver");
+        Route::protect("asistencia:ver");
 
         // 2. Capturar los filtros opcionales de fecha desde la URL ($_GET)
         $fechaInicio = $_GET['inicio'] ?? null;

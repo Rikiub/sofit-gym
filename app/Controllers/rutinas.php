@@ -2,25 +2,25 @@
 
 namespace App\Controllers;
 
-use App\Core\ControllerTools;
+use App\Core\Route;
 use App\Models\RutinaModel;
 use App\Models\BitacoraModel;
 
 $logger = new BitacoraModel();
 $model = new RutinaModel();
 
-switch (ControllerTools::action()) {
+switch (Route::action()) {
     /**
      * Vista principal: Gestión de Rutinas Base
      * Acceso: ?page=rutinas
      */
     case "index":
-        ControllerTools::protect("rutinas:ver");
+        Route::protect("rutinas:ver");
 
         // Limpiamos mensajes de sesión previos
         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
-        return ControllerTools::render('rutinas', [
+        return Route::render('rutinas', [
             'rutinas' => $model->obtenerTodasLasRutinas(),
             'dificultades' => $model->obtenerDificultades(),
             'mensaje' => $_SESSION['mensaje'] ?? '',
@@ -32,13 +32,13 @@ switch (ControllerTools::action()) {
      * Acceso: ?page=rutinas&action=asignadas
      */
     case "asignadas":
-        ControllerTools::protect("rutinas:ver");
+        Route::protect("rutinas:ver");
 
         // Limpiamos mensajes de sesión previos
         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
         // Renderizamos la vista 'rutinasAsignadas' enviándole las asignaciones y las rutinas bases cargadas
-        return ControllerTools::render('rutinas_asignadas', [
+        return Route::render('rutinas_asignadas', [
             'asignaciones' => $model->obtenerTodasLasAsignaciones(),
             'rutinas' => $model->obtenerTodasLasRutinas(),
             'mensaje' => $_SESSION['mensaje'] ?? '',
@@ -53,7 +53,7 @@ switch (ControllerTools::action()) {
      * Buscar rutinas por coincidencia de término (AJAX)
      */
     case "buscar_rutinas_ajax":
-        ControllerTools::protect("rutinas:ver");
+        Route::protect("rutinas:ver");
 
         if (!isset($_GET['ajax']) || $_GET['ajax'] !== 'buscar_rutinas')
             return;
@@ -67,7 +67,7 @@ switch (ControllerTools::action()) {
      * Registrar una nueva rutina (AJAX - POST)
      */
     case "registrar_rutina":
-        ControllerTools::protect("rutinas:ver");
+        Route::protect("rutinas:ver");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -111,7 +111,7 @@ switch (ControllerTools::action()) {
      * Editar una rutina existente (AJAX - POST)
      */
     case "editar_rutina":
-        ControllerTools::protect("rutinas:editar");
+        Route::protect("rutinas:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -171,7 +171,7 @@ switch (ControllerTools::action()) {
      * Eliminar una rutina (AJAX - POST)
      */
     case "eliminar_rutina":
-        ControllerTools::protect("rutinas:eliminar");
+        Route::protect("rutinas:eliminar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -214,7 +214,7 @@ switch (ControllerTools::action()) {
      * Asignar rutina a un cliente (AJAX - POST)
      */
     case "asignar_rutina":
-        ControllerTools::protect("rutinas:crear");
+        Route::protect("rutinas:crear");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -264,7 +264,7 @@ switch (ControllerTools::action()) {
      * Editar asignación de rutina (AJAX - POST)
      */
     case "editar_asignacion":
-        ControllerTools::protect("rutinas:editar");
+        Route::protect("rutinas:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -321,7 +321,7 @@ switch (ControllerTools::action()) {
      * Eliminar asignación de rutina (AJAX - POST)
      */
     case "eliminar_asignacion":
-        ControllerTools::protect("rutinas:eliminar");
+        Route::protect("rutinas:eliminar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -360,7 +360,7 @@ switch (ControllerTools::action()) {
      * Obtener asignaciones de un cliente específico en JSON (AJAX)
      */
     case "buscar_asignaciones_cliente_ajax":
-        ControllerTools::protect("rutinas:ver");
+        Route::protect("rutinas:ver");
 
         $cedula = $_GET['cedula_cliente'] ?? '';
         if (empty($cedula)) {
@@ -381,7 +381,7 @@ switch (ControllerTools::action()) {
      * Responde a la subconsulta 2 solicitada.
      */
     case "obtener_asignaciones_avanzadas_ajax":
-        ControllerTools::protect("rutinas:ver");
+        Route::protect("rutinas:ver");
 
         $resultados = $model->obtenerAsignacionesAvanzadas();
 
@@ -394,7 +394,7 @@ switch (ControllerTools::action()) {
      * Responde a la subconsulta 3 solicitada.
      */
     case "obtener_rutinas_mas_largas_ajax":
-        ControllerTools::protect("rutinas:ver");
+        Route::protect("rutinas:ver");
 
         $resultados = $model->obtenerRutinasMasLargas();
 
@@ -407,7 +407,7 @@ switch (ControllerTools::action()) {
      * Ejecuta la Transacción 3 solicitada.
      */
     case "cancelar_rutinas_cliente":
-        ControllerTools::protect("rutinas:editar");
+        Route::protect("rutinas:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);

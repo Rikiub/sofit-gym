@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\ControllerTools;
+use App\Core\Route;
 use App\Models\VentasModel;
 use App\Models\BitacoraModel;
 use App\Models\ProductoModel;
@@ -11,12 +11,12 @@ use App\Services\Reportes\ReporteProductosMasVendidos;
 $logger = new BitacoraModel();
 $model = new VentasModel();
 
-switch (ControllerTools::action()) {
+switch (Route::action()) {
     /**
      * Muestra la vista principal del historial de ventas
      */
     case "index":
-        ControllerTools::protect("ventas:ver");
+        Route::protect("ventas:ver");
 
         $ventas = $model->obtenerVentas();
         $clientes = $model->obtenerClientes();
@@ -30,7 +30,7 @@ switch (ControllerTools::action()) {
         $tipoMensaje = $_SESSION['tipo_mensaje'] ?? '';
         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
-        echo ControllerTools::render('ventas', [
+        echo Route::render('ventas', [
             'ventas' => $ventas,
             'clientes' => $clientes,
             'productos' => $productos,
@@ -43,7 +43,7 @@ switch (ControllerTools::action()) {
      * Endpoint API AJAX para obtener clientes activos (útil para el POS)
      */
     case "obtenerClientesAjax":
-        ControllerTools::protect("ventas:ver");
+        Route::protect("ventas:ver");
 
         $clientes = $model->obtenerClientes();
         header('Content-Type: application/json');
@@ -54,7 +54,7 @@ switch (ControllerTools::action()) {
      * Registra una nueva venta manual individual (CRUD de venta)
      */
     case "crear":
-        ControllerTools::protect("ventas:crear");
+        Route::protect("ventas:crear");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -95,7 +95,7 @@ switch (ControllerTools::action()) {
      * Edita un registro de venta existente (ej. corrección de método de pago o montos)
      */
     case "editar":
-        ControllerTools::protect("ventas:editar");
+        Route::protect("ventas:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -136,7 +136,7 @@ switch (ControllerTools::action()) {
      * Elimina un registro de venta
      */
     case "eliminar":
-        ControllerTools::protect("ventas:eliminar");
+        Route::protect("ventas:eliminar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -170,7 +170,7 @@ switch (ControllerTools::action()) {
      * Registra una nueva transacción (Punto de Venta) procesando múltiples productos
      */
     case "registrarVenta":
-        ControllerTools::protect("ventas:crear");
+        Route::protect("ventas:crear");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -212,7 +212,7 @@ switch (ControllerTools::action()) {
      * Endpoint API AJAX para obtener los productos que nunca han sido vendidos
      */
     case "obtenerProductosSinVenderAjax":
-        ControllerTools::protect("ventas:ver"); // Validación de permisos
+        Route::protect("ventas:ver"); // Validación de permisos
 
         // Llamamos a la función del modelo
         $productos = $model->obtenerProductosSinVender();
@@ -233,15 +233,15 @@ switch (ControllerTools::action()) {
      * Muestra exclusivamente la interfaz visual del formulario de reportes de ventas
      */
     case "vistaReporte":
-        ControllerTools::protect("ventas:ver");
-        echo ControllerTools::render('reportes/productos');
+        Route::protect("ventas:ver");
+        echo Route::render('reportes/productos');
         exit;
 
     /**
      * Genera y descarga el reporte en formato PDF de los productos más vendidos.
      */
     case "generarReporteMasVendidos":
-        ControllerTools::protect("ventas:ver");
+        Route::protect("ventas:ver");
 
         // Soporte para filtros opcionales de rango de fecha desde la URL
         $fechaInicio = !empty($_GET['fecha_inicio']) ? strip_tags(trim($_GET['fecha_inicio'])) : null;
