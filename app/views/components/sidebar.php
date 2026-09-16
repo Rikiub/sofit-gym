@@ -222,7 +222,7 @@ $dropdown = function (
 				],
 				[
 					"permiso" => "productos:ver",
-					"url" => "?page=productos&action=vistaReporte",
+					"url" => "?page=ventas&action=vistaReporte",
 					"icon" => "fa-chart-bar",
 					"title" => "Productos Más Vendidos"
 				],

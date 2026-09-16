@@ -11,7 +11,7 @@ $this->layout("layout", ["title" => "Reporte"]);
             <p class="text-muted small mb-4">Seleccione un rango de fechas opcional para el filtrado semestral o presione descargar directamente para obtener el historial completo.</p>
 
             <form method="GET" action="" target="_blank">
-                <input type="hidden" name="page" value="productos">
+                <input type="hidden" name="page" value="ventas">
                 <input type="hidden" name="action" value="generarReporteMasVendidos">
 
                 <div class="row">
@@ -40,7 +40,7 @@ $this->layout("layout", ["title" => "Reporte"]);
                 $primerDiaSemestre = date('Y-m-d', strtotime('-6 months'));
                 $hoy = date('Y-m-d');
                 ?>
-                <a href="?page=productos&action=generarReporteMasVendidos&fecha_inicio=<?php echo $primerDiaSemestre; ?>&fecha_fin=<?php echo $hoy; ?>"
+                <a href="?page=ventas&action=generarReporteMasVendidos&fecha_inicio=<?php echo $primerDiaSemestre; ?>&fecha_fin=<?php echo $hoy; ?>"
                     target="_blank"
                     class="btn btn-outline-primary btn-sm w-100">
                     <i class="fas fa-calendar-alt"></i> Descargar Reporte Semestral Automático
