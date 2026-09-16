@@ -31,8 +31,8 @@ CREATE TABLE `asistencia_gimnasio` (
   PRIMARY KEY (`id_asistencia`),
   KEY `cedula_cliente` (`cedula_persona`),
   KEY `idx_asistencias_fecha` (`fecha`),
-  CONSTRAINT `asistencia_gimnasio_ibfk_1` FOREIGN KEY (`cedula_persona`) REFERENCES `cliente` (`cedula`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=132 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  CONSTRAINT `asistencia_gimnasio_ibfk_1` FOREIGN KEY (`cedula_persona`) REFERENCES `cliente` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=133 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -49,8 +49,6 @@ INSERT INTO `asistencia_gimnasio` VALUES
 (11,'V-11111111','Entrada','2026-06-09 20:00:00'),
 (12,'V-11111111','Entrada','2026-05-09 12:12:12'),
 (13,'V-33333333','Entrada','2026-06-09 12:00:00'),
-(14,'V-11773948','Entrada','2026-06-20 20:07:08'),
-(15,'V-11773948','Entrada','2026-06-22 12:00:00'),
 (16,'V-10556291','Entrada','2026-06-22 06:28:00'),
 (17,'V-10556291','Entrada','2026-06-20 16:40:00'),
 (18,'V-10556291','Entrada','2026-06-18 18:22:00'),
@@ -63,11 +61,6 @@ INSERT INTO `asistencia_gimnasio` VALUES
 (25,'V-11111111','Entrada','2026-06-20 14:00:00'),
 (26,'V-11111111','Entrada','2026-06-18 12:13:00'),
 (27,'V-11111111','Entrada','2026-06-16 19:45:00'),
-(28,'V-11773948','Entrada','2026-06-22 14:52:00'),
-(29,'V-11773948','Entrada','2026-06-21 14:47:00'),
-(30,'V-11773948','Entrada','2026-06-19 13:41:00'),
-(31,'V-11773948','Entrada','2026-06-18 15:35:00'),
-(32,'V-11773948','Entrada','2026-06-16 17:13:00'),
 (33,'V-12894355','Entrada','2026-06-22 07:23:00'),
 (34,'V-12894355','Entrada','2026-06-21 13:57:00'),
 (35,'V-12894355','Entrada','2026-06-18 07:14:00'),
@@ -113,9 +106,6 @@ INSERT INTO `asistencia_gimnasio` VALUES
 (75,'V-20556114','Entrada','2026-06-20 15:37:00'),
 (76,'V-20556114','Entrada','2026-06-18 18:20:00'),
 (77,'V-20556114','Entrada','2026-06-16 15:40:00'),
-(78,'V-21059483','Entrada','2026-06-20 15:00:00'),
-(79,'V-21059483','Entrada','2026-06-19 15:42:00'),
-(80,'V-21059483','Entrada','2026-06-18 17:55:00'),
 (81,'V-22222222','Entrada','2026-06-21 15:01:00'),
 (82,'V-22222222','Entrada','2026-06-18 19:37:00'),
 (83,'V-22884711','Entrada','2026-06-22 14:36:00'),
@@ -158,11 +148,7 @@ INSERT INTO `asistencia_gimnasio` VALUES
 (120,'V-33333333','Entrada','2026-06-19 09:05:00'),
 (121,'V-33333333','Entrada','2026-06-18 15:58:00'),
 (122,'V-33333333','Entrada','2026-06-16 10:55:00'),
-(124,'V-11773948','Entrada','2026-06-23 17:42:54'),
 (126,'V-24119384','Entrada','2026-06-23 12:00:00'),
-(127,'V-21059483','Entrada','2026-06-24 12:00:00'),
-(129,'V-21059483','Entrada','2026-07-05 17:36:36'),
-(130,'V-21059483','Entrada','2026-09-06 21:06:42'),
 (131,'V-18943201','Entrada','2026-09-06 21:07:03');
 /*!40000 ALTER TABLE `asistencia_gimnasio` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -215,7 +201,7 @@ CREATE TABLE `clase` (
   PRIMARY KEY (`id_clase`),
   KEY `cedula_trabajador` (`cedula_trabajador`),
   CONSTRAINT `clase_ibfk_1` FOREIGN KEY (`cedula_trabajador`) REFERENCES `trabajador` (`cedula`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -227,7 +213,8 @@ LOCK TABLES `clase` WRITE;
 INSERT INTO `clase` VALUES
 (2,'V-00000002','Dia de pierna','¡Hora de fortalecer esas piernas!',15,'Programado','2026-05-26 12:00:00','2026-05-12 03:00:00'),
 (13,'V-00000002','Hola','Adios',20,'Programado','2026-05-29 11:00:00','2026-05-29 02:00:00'),
-(26,'V-00000002','assa','asf',2,'Programado','2026-06-30 00:35:00','2026-07-01 00:35:00');
+(26,'V-00000002','assa','asf',2,'Programado','2026-06-30 00:35:00','2026-07-01 00:35:00'),
+(27,'V-00000002','Dia de pierna','hola',1,'Programado','2026-09-15 20:10:00','2026-09-16 20:11:00');
 /*!40000 ALTER TABLE `clase` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -262,8 +249,8 @@ INSERT INTO `clase_cliente` VALUES
 (2,'V-33333333',0,'2026-06-20 19:45:42'),
 (13,'V-11111111',0,'2026-06-20 19:45:42'),
 (13,'V-33333333',0,'2026-06-20 19:45:42'),
-(26,'V-21059483',0,'2026-07-08 15:54:33'),
-(26,'V-27338194',0,'2026-07-08 15:54:33');
+(26,'V-27338194',0,'2026-07-08 15:54:33'),
+(27,'V-33333333',0,'2026-09-15 20:11:28');
 /*!40000 ALTER TABLE `clase_cliente` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -387,7 +374,6 @@ INSERT INTO `cliente` VALUES
 ('V-10556291','2026-06-18 13:30:12'),
 ('V-11029384','2026-06-18 13:30:12'),
 ('V-11111111','2026-06-18 13:30:12'),
-('V-11773948','2026-06-18 13:30:12'),
 ('V-12894355','2026-06-18 13:30:12'),
 ('V-13449582','2026-06-18 13:30:12'),
 ('V-13556294','2026-06-18 13:30:12'),
@@ -399,7 +385,6 @@ INSERT INTO `cliente` VALUES
 ('V-19442039','2026-06-18 13:30:12'),
 ('V-19882043','2026-06-18 13:30:12'),
 ('V-20556114','2026-06-18 13:30:12'),
-('V-21059483','2026-06-18 13:30:12'),
 ('V-22222222','2026-06-18 13:30:12'),
 ('V-22884711','2026-06-18 13:30:12'),
 ('V-23991048','2026-06-18 13:30:12'),
@@ -520,7 +505,7 @@ CREATE TABLE `mantenimiento_equipo` (
   PRIMARY KEY (`id_mantenimiento`),
   KEY `codigo_equipo` (`codigo_equipo`),
   KEY `mantenimiento_equipo_trabajador_FK` (`cedula_trabajador`),
-  CONSTRAINT `mantenimiento_equipo_ibfk_1` FOREIGN KEY (`codigo_equipo`) REFERENCES `equipo` (`codigo_equipo`) ON UPDATE CASCADE,
+  CONSTRAINT `mantenimiento_equipo_ibfk_1` FOREIGN KEY (`codigo_equipo`) REFERENCES `equipo` (`codigo_equipo`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `mantenimiento_equipo_trabajador_FK` FOREIGN KEY (`cedula_trabajador`) REFERENCES `trabajador` (`cedula`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -569,17 +554,11 @@ CREATE TABLE `membresia` (
 LOCK TABLES `membresia` WRITE;
 /*!40000 ALTER TABLE `membresia` DISABLE KEYS */;
 INSERT INTO `membresia` VALUES
-(40,1,2,'V-11773948','2026-06-20','2026-07-20','2026-06-20 16:30:17'),
-(41,1,2,'V-21059483','2026-06-20','2026-07-20','2026-06-20 19:14:40'),
 (42,1,2,'V-24119384','2026-06-22','2026-07-22','2026-06-22 20:43:23'),
-(43,1,2,'V-11773948','2026-07-01','2026-07-31','2026-07-01 12:25:36'),
-(44,1,2,'V-21059483','2026-07-02','2026-08-01','2026-07-02 20:53:03'),
-(45,1,1,'V-11773948','2026-09-02','2026-10-02','2026-09-02 18:15:00'),
 (46,1,2,'V-27338194','2026-09-02','2026-10-02','2026-09-02 18:48:47'),
 (47,1,1,'V-18943201','2026-09-03','2026-10-03','2026-09-03 23:54:19'),
 (48,1,1,'V-24119384','2026-09-03','2026-10-03','2026-09-03 23:58:49'),
 (49,1,1,'V-24589122','2026-09-04','2026-10-04','2026-09-04 00:32:51'),
-(50,1,1,'V-21059483','2026-09-04','2026-10-04','2026-09-04 00:35:20'),
 (51,1,1,'V-25001948','2026-09-04','2026-10-04','2026-09-04 00:45:27'),
 (52,1,1,'V-15667281','2026-09-06','2026-10-06','2026-09-06 17:31:30'),
 (53,4,1,'V-13556294','2026-09-06','2026-09-13','2026-09-06 18:16:06'),
@@ -653,7 +632,6 @@ INSERT INTO `pago` VALUES
 (27,47,3,20.00,'uploads/comprobantes/comp_6a9a40eb31003.png','Pagado','2026-09-03'),
 (28,48,1,20.00,NULL,'Pagado','2026-09-03'),
 (29,49,1,30.00,NULL,'Pagado','2026-09-04'),
-(30,50,3,20.00,NULL,'Pagado','2026-09-04'),
 (31,51,1,30.85,NULL,'Pagado','2026-09-04'),
 (32,52,1,10.55,NULL,'Pagado','2026-09-06'),
 (33,53,1,5.00,NULL,'Pagado','2026-09-06'),
@@ -697,7 +675,6 @@ INSERT INTO `persona` VALUES
 ('V-10556291','Lucía','Rojas','lucia.rojas@example.com','0426-3335555','La Guaira',NULL,'1971-12-10','2026-06-16 19:37:52',1),
 ('V-11029384','Gabriela','López','gabriela.lopez@example.com','0416-8888888','Mérida',NULL,'1973-08-24','2026-06-16 19:37:52',1),
 ('V-11111111','María','Torres','maria@example.com','0412-1234567',NULL,NULL,'2026-05-17','2026-06-07 20:12:40',1),
-('V-11773948','Andrea','Machado','andrea.machado@example.com','0414-5557777','Puerto Ayacucho',NULL,'1975-10-31','2026-06-16 19:37:52',1),
 ('V-12894355','María','Martínez','maria.martinez@example.com','0424-4444444','Barquisimeto',NULL,'1978-02-14','2026-06-16 19:37:52',1),
 ('V-13449582','Laura','Flores','laura.flores@example.com','0424-9992222','Los Teques',NULL,'1979-04-03','2026-06-16 19:37:52',1),
 ('V-13556294','José','Gutiérrez','jose.gutierrez@example.com','0426-8880000','Carora',NULL,'1979-01-23','2026-06-16 19:37:52',1),
@@ -709,7 +686,6 @@ INSERT INTO `persona` VALUES
 ('V-19442039','Patricia','Hernández','patricia.hernandez@example.com','0426-0000000','Maturín',NULL,'1989-10-07','2026-06-16 19:37:52',1),
 ('V-19882043','Manuel','Rondón','manuel.rondon@example.com','0416-6668888','San Carlos',NULL,'1990-06-14','2026-06-16 19:37:52',1),
 ('V-20556114','Luis','Gómez','luis.gomez@example.com','0416-3333333','Valencia',NULL,'1991-07-05','2026-06-16 19:37:52',1),
-('V-21059483','Alejandro','Sánchez','alejandro.sanchez@example.com','0412-1234567','Puerto La Cruz',NULL,'1992-01-29','2026-06-16 19:37:52',1),
 ('V-22222222','Luis','Martínez','luis@example.com','0412-7654321',NULL,NULL,'2026-05-17','2026-06-07 14:36:07',1),
 ('V-22884711','Pedro','Castillo','pedro.castillo@example.com','0414-7777777','Barcelona',NULL,'1993-12-01','2026-06-16 19:37:52',1),
 ('V-23991048','Daniel','Delgado','daniel.delgado@example.com','0414-7778888','San Felipe',NULL,'1994-02-17','2026-06-16 19:37:52',1),
@@ -762,7 +738,7 @@ INSERT INTO `producto` VALUES
 ('as-525',4,1,'','ASF',5.00,5,2,0),
 ('PROT001',1,1,NULL,'Proteína Whe',45.00,0,19,0),
 ('xcbxb',1,1,NULL,'Proteinas',5.00,5,0,1),
-('ZAR-0012',2,1,NULL,'Gatorade',1.00,5,1,1);
+('ZAR-0012',2,1,NULL,'Gatorade',1.00,5,0,1);
 /*!40000 ALTER TABLE `producto` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -859,8 +835,7 @@ CREATE TABLE `rutina_asignada` (
 LOCK TABLES `rutina_asignada` WRITE;
 /*!40000 ALTER TABLE `rutina_asignada` DISABLE KEYS */;
 INSERT INTO `rutina_asignada` VALUES
-(1,1,'V-33333333',NULL,'2026-05-21','2026-05-20','2026-05-30','Activa',0.00),
-(2,1,'V-11773948',NULL,'2026-06-20','2026-06-21','2026-06-30','Activa',3.00);
+(1,1,'V-33333333',NULL,'2026-05-21','2026-05-20','2026-05-30','Activa',0.00);
 /*!40000 ALTER TABLE `rutina_asignada` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -924,10 +899,7 @@ INSERT INTO `seguimiento_fisico` VALUES
 (3,'V-11111111',NULL,'2026-05-17',2.00,4.00,NULL,NULL,NULL,NULL,NULL,NULL),
 (14,'V-22222222',NULL,'2026-05-20',111.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
 (17,'V-22222222',NULL,'2026-05-24',210.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
-(20,'V-22222222',NULL,'2026-05-30',200.00,50.00,50.00,50.00,50.00,50.00,50.00,50.00),
-(30,'V-11773948','V-00000001','2026-06-24',200.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
-(33,'V-11773948','V-00000002','2026-06-27',200.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
-(35,'V-11773948','V-00000001','2026-07-08',120.00,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+(20,'V-22222222',NULL,'2026-05-30',200.00,50.00,50.00,50.00,50.00,50.00,50.00,50.00);
 /*!40000 ALTER TABLE `seguimiento_fisico` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -963,8 +935,7 @@ LOCK TABLES `seguimiento_nutricional` WRITE;
 INSERT INTO `seguimiento_nutricional` VALUES
 (3,'V-11111111',NULL,'2026-05-17',112.40,325.30,326.60),
 (5,'V-22222222',NULL,'2026-05-30',50.00,50.00,50.00),
-(7,'V-22222222',NULL,'2026-06-06',50.00,NULL,NULL),
-(11,'V-11773948','V-00000002','2026-06-24',200.00,NULL,NULL);
+(7,'V-22222222',NULL,'2026-06-06',50.00,NULL,NULL);
 /*!40000 ALTER TABLE `seguimiento_nutricional` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1170,10 +1141,10 @@ CREATE TABLE `venta_producto` (
   KEY `cedula_cliente` (`cedula_cliente`),
   KEY `idx_ventas_fecha` (`fecha`),
   KEY `venta_producto_metodo_pago_FK` (`id_metodo`),
-  CONSTRAINT `venta_producto_ibfk_1` FOREIGN KEY (`codigo_producto`) REFERENCES `producto` (`codigo_producto`) ON UPDATE CASCADE,
-  CONSTRAINT `venta_producto_ibfk_2` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula`) ON UPDATE CASCADE,
+  CONSTRAINT `venta_producto_ibfk_1` FOREIGN KEY (`codigo_producto`) REFERENCES `producto` (`codigo_producto`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `venta_producto_ibfk_2` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `venta_producto_metodo_pago_FK` FOREIGN KEY (`id_metodo`) REFERENCES `metodo_pago` (`id_metodo`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1183,10 +1154,11 @@ CREATE TABLE `venta_producto` (
 LOCK TABLES `venta_producto` WRITE;
 /*!40000 ALTER TABLE `venta_producto` DISABLE KEYS */;
 INSERT INTO `venta_producto` VALUES
-(7,1,'xcbxb','V-11773948',3.00,15.00,'2026-06-20 18:24:33'),
+(7,1,'xcbxb',NULL,3.00,15.00,'2026-06-20 18:24:33'),
 (8,1,'ZAR-0012','V-22222222',2.00,2.00,'2026-06-20 18:26:23'),
 (9,1,'ZAR-0012','V-24119384',1.00,1.00,'2026-07-05 17:37:03'),
-(10,1,'ZAR-0012','V-21059483',1.00,1.00,'2026-09-08 20:53:16');
+(10,1,'ZAR-0012',NULL,1.00,1.00,'2026-09-08 20:53:16'),
+(11,1,'ZAR-0012',NULL,1.00,1.00,'2026-09-15 20:10:51');
 /*!40000 ALTER TABLE `venta_producto` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1622,4 +1594,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2026-09-09  0:51:47
+-- Dump completed on 2026-09-15 21:11:07

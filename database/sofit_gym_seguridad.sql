@@ -109,7 +109,7 @@ CREATE TABLE `bitacora` (
   KEY `bitacora_modulo_FK` (`id_modulo`),
   CONSTRAINT `bitacora_modulo_FK` FOREIGN KEY (`id_modulo`) REFERENCES `modulo` (`id_modulo`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `bitacora_usuario_FK` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=234 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=244 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -219,7 +219,17 @@ INSERT INTO `bitacora` VALUES
 (230,2,52,'editar','Producto \'55125\' actualizado','info','{\"codigo_producto\":\"55125\"}',NULL,NULL,'2026-09-08 21:10:21'),
 (231,2,52,'editar','Producto \'55125\' actualizado','info','{\"codigo_producto\":\"55125\"}',NULL,NULL,'2026-09-08 21:11:06'),
 (232,2,52,'editar','Producto \'55125\' actualizado','info','{\"codigo_producto\":\"55125\"}',NULL,NULL,'2026-09-08 21:13:24'),
-(233,2,52,'editar','Producto \'55125\' actualizado','info','{\"codigo_producto\":\"55125\"}',NULL,NULL,'2026-09-08 21:13:28');
+(233,2,52,'editar','Producto \'55125\' actualizado','info','{\"codigo_producto\":\"55125\"}',NULL,NULL,'2026-09-08 21:13:28'),
+(234,2,426,'iniciar_sesion','Usuario admin ha iniciado sesión','info','{\"nombre_usuario\":\"admin\"}',NULL,NULL,'2026-09-10 22:28:59'),
+(235,2,426,'cerrar_sesion','Usuario admin ha cerrado sesión','info','{\"nombre_usuario\":\"admin\"}',NULL,NULL,'2026-09-10 22:32:18'),
+(236,2,426,'iniciar_sesion','Usuario admin ha iniciado sesión','info','{\"nombre_usuario\":\"admin\"}',NULL,NULL,'2026-09-10 22:32:31'),
+(237,2,426,'cerrar_sesion','Usuario admin ha cerrado sesión','info','{\"nombre_usuario\":\"admin\"}',NULL,NULL,'2026-09-10 22:33:00'),
+(238,2,426,'iniciar_sesion','Usuario admin ha iniciado sesión','info','{\"nombre_usuario\":\"admin\"}',NULL,NULL,'2026-09-15 20:05:01'),
+(239,2,486,'registrar_venta_pos','Transacción de venta múltiple registrada. Cliente \'V-11773948\'','info','{\"cedula_cliente\":\"V-11773948\",\"metodoPago\":1,\"cantidad_productos\":1}',NULL,NULL,'2026-09-15 20:10:51'),
+(240,2,421,'crear','Clase grupal \'Dia de pierna\' creada','info','{\"nombre\":\"Dia de pierna\",\"id_clase\":27}',NULL,'{\"id_clase\":27,\"cedula_trabajador\":\"V-00000002\",\"clientes\":[{\"cedula\":\"V-33333333\",\"nombre\":\"Juan\",\"apellido\":\"Garcia\",\"asistio\":false}],\"nombre\":\"Dia de pierna\",\"descripcion\":\"hola\",\"capacidad_actual\":1,\"capacidad_maxima\":1,\"estado\":\"Programado\",\"fecha_inicio\":{\"date\":\"2026-09-15 20:10:00.000000\",\"timezone_type\":3,\"timezone\":\"America\\/Caracas\"},\"fecha_fin\":{\"date\":\"2026-09-16 20:11:00.000000\",\"timezone_type\":3,\"timezone\":\"America\\/Caracas\"}}','2026-09-15 20:11:28'),
+(241,2,19,'eliminar','Cliente \'V-11773948\' eliminado','info','{\"cedula\":\"V-11773948\"}',NULL,NULL,'2026-09-15 21:07:03'),
+(242,2,51,'registrar','Entrada registrada para cliente \'V-21059483\'','info','{\"cedula\":\"V-21059483\",\"id_asistencia\":132,\"fecha\":\"2026-09-15 21:08:01\"}',NULL,'{\"success\":true,\"id\":132,\"fecha\":\"2026-09-15 21:08:01\",\"cedula\":\"V-21059483\",\"nombre\":\"Alejandro S\\u00e1nchez\"}','2026-09-15 21:08:03'),
+(243,2,19,'eliminar','Cliente \'V-21059483\' eliminado','info','{\"cedula\":\"V-21059483\"}',NULL,NULL,'2026-09-15 21:08:16');
 /*!40000 ALTER TABLE `bitacora` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -264,7 +274,7 @@ CREATE TABLE `intento_acceso` (
   PRIMARY KEY (`id_acceso`),
   KEY `intento_acceso_usuario_FK` (`id_usuario`),
   CONSTRAINT `intento_acceso_usuario_FK` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=128 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=134 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -375,7 +385,13 @@ INSERT INTO `intento_acceso` VALUES
 (124,2,'::1',1,'2026-09-08 20:16:25'),
 (125,2,'::1',1,'2026-09-08 20:37:24'),
 (126,2,'::1',1,'2026-09-08 20:37:26'),
-(127,2,'::1',1,'2026-09-08 20:53:07');
+(127,2,'::1',1,'2026-09-08 20:53:07'),
+(128,2,'::1',1,'2026-09-10 22:28:58'),
+(129,2,'::1',1,'2026-09-10 22:32:31'),
+(130,NULL,'::1',0,'2026-09-10 22:33:06'),
+(131,NULL,'::1',0,'2026-09-10 22:33:07'),
+(132,NULL,'::1',0,'2026-09-10 22:33:08'),
+(133,2,'::1',1,'2026-09-15 20:05:00');
 /*!40000 ALTER TABLE `intento_acceso` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -391,7 +407,7 @@ CREATE TABLE `modulo` (
   `nombre` varchar(100) NOT NULL,
   PRIMARY KEY (`id_modulo`),
   UNIQUE KEY `modulo_unique` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=508 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=518 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -844,7 +860,7 @@ CREATE TABLE `usuario` (
 LOCK TABLES `usuario` WRITE;
 /*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
 INSERT INTO `usuario` VALUES
-(2,1,1,'admin','$2a$12$Q1uh7kx4HfV6KGxVnbtjM.89TH76T48xwNRCVVy7fT.r5Sx06HAP2','/sofit-gym/uploads/usuarios/20260703_160903_267338e72170.jpg','jesusviloriaolivar@gmail.com','2026-05-25','2026-09-08 20:53:07'),
+(2,1,1,'admin','$2a$12$Q1uh7kx4HfV6KGxVnbtjM.89TH76T48xwNRCVVy7fT.r5Sx06HAP2','/sofit-gym/uploads/usuarios/20260703_160903_267338e72170.jpg','jesusviloriaolivar@gmail.com','2026-05-25','2026-09-15 20:05:01'),
 (14,2,1,'entrenador','$2y$10$Sq7q1ktxN7GvrWmK7OJzSeov0KX.Z0IJQHgBKyc7xZwADmrx7IhIO','/sofit-gym/uploads/usuarios/20260702_194849_c349687f5cfe.jpg',NULL,'2026-06-11','2026-07-05 01:24:54'),
 (15,3,1,'recepcionista','$2a$12$UjxSRFwnK76cgPKQTYp8yudaHRv45gJUMl3NsABHlwqbIPQ2QWKga','/sofit-gym/uploads/usuarios/20260702_194855_995e1cc586b6.jpg',NULL,'2026-06-11','2026-07-03 16:41:57');
 /*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
@@ -896,4 +912,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2026-09-09  0:51:45
+-- Dump completed on 2026-09-15 21:11:08
