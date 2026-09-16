@@ -25,18 +25,27 @@ class ClienteModel extends Model
                 -- Cantidad de clientes totales
                 (SELECT COUNT(*) FROM cliente) AS total_clientes,
 
-                -- Número de membresías activas
-                (SELECT COUNT(*) FROM membresia WHERE fecha_fin >= CURDATE()) AS membresias_activas,
+                -- Número de membresías activas (aún vigentes)
+                (SELECT COUNT(*) 
+                    FROM membresia 
+                    WHERE fecha_fin >= CURDATE()) AS membresias_activas,
 
-                -- Ganancias totales de estas membresías activas en el mes actual
-                (SELECT COALESCE(SUM(p.monto), 0)
+                    -- Ganancias del mes actual por membresías de clientes con membresía activa
+                    (SELECT COALESCE(SUM(p.monto), 0)
                     FROM pago p
-                    JOIN membresia m ON p.id_membresia = m.id_membresia
-                    WHERE m.fecha_fin >= CURDATE()
-                    AND YEAR(p.fecha_pago) = YEAR(CURDATE())
+                    WHERE YEAR(p.fecha_pago)  = YEAR(CURDATE())
                     AND MONTH(p.fecha_pago) = MONTH(CURDATE())
+                    AND p.cedula_cliente IS NOT NULL
+                    AND p.id_pago NOT IN (SELECT id_pago FROM venta_producto)
+                    AND EXISTS (
+                        SELECT 1
+                        FROM membresia m
+                        WHERE m.cedula_cliente = p.cedula_cliente
+                            AND m.fecha_fin     >= CURDATE()
+                    )
                 ) AS ganancias_totales;
         SQL)->fetch();
+
         return $rows;
     }
 
