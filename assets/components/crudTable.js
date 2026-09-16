@@ -25,7 +25,7 @@ export function crudTableComponent({
         init() {
             const {
                 crudButtons = {
-                    onView: null 
+                    onView: null
                 },
                 ...restOptions
             } = gridOptions;
@@ -74,7 +74,12 @@ export function crudTableComponent({
         },
 
         refreshGrid() {
-            this.grid.forceRender();
+            this.grid.updateConfig({
+                search: {
+                    keyword: ''
+                },
+                data: async () => await fetchApi(params)
+            }).forceRender();
         },
     };
 }

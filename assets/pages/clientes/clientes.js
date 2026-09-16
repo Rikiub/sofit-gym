@@ -93,7 +93,7 @@ Alpine.data("modalClientes", () => ({
                     action: this.actions.onEditFind,
                     id: input.value,
                 });
-            } catch {}
+            } catch { }
 
             if (cliente) {
                 this.setInputValidity(input, false, "El cliente ya existe");
@@ -107,7 +107,7 @@ const clienteInfoPage = "clienteInfo";
 
 Alpine.data("clienteInfo", () => ({
     cliente: {},
-    
+
     async init() {
         this.cliente = await fetchApi({
             page: "clientes",
