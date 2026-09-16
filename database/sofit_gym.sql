@@ -607,16 +607,16 @@ DROP TABLE IF EXISTS `pago`;
 /*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `pago` (
   `id_pago` int(11) NOT NULL AUTO_INCREMENT,
-  `id_membresia` int(11) NOT NULL,
   `id_metodo` int(11) NOT NULL,
+  `cedula_cliente` varchar(15) DEFAULT NULL,
   `monto` decimal(10,2) NOT NULL,
   `comprobante_url` varchar(255) DEFAULT NULL,
   `estado` enum('Pagado','Pendiente','Atrasado') NOT NULL DEFAULT 'Pagado',
   `fecha_pago` date NOT NULL,
   PRIMARY KEY (`id_pago`),
-  KEY `pago_membresia_FK` (`id_membresia`),
   KEY `pago_metodo_pago_FK` (`id_metodo`),
-  CONSTRAINT `pago_membresia_FK` FOREIGN KEY (`id_membresia`) REFERENCES `membresia` (`id_membresia`) ON DELETE CASCADE ON UPDATE CASCADE,
+  KEY `pago_cliente_FK` (`cedula_cliente`),
+  CONSTRAINT `pago_cliente_FK` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `pago_metodo_pago_FK` FOREIGN KEY (`id_metodo`) REFERENCES `metodo_pago` (`id_metodo`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -628,16 +628,16 @@ CREATE TABLE `pago` (
 LOCK TABLES `pago` WRITE;
 /*!40000 ALTER TABLE `pago` DISABLE KEYS */;
 INSERT INTO `pago` VALUES
-(26,46,1,10.95,'uploads/comprobantes/comp_6a98a7cf6e17d.jpg','Pagado','2026-09-02'),
-(27,47,3,20.00,'uploads/comprobantes/comp_6a9a40eb31003.png','Pagado','2026-09-03'),
-(28,48,1,20.00,NULL,'Pagado','2026-09-03'),
-(29,49,1,30.00,NULL,'Pagado','2026-09-04'),
-(31,51,1,30.85,NULL,'Pagado','2026-09-04'),
-(32,52,1,10.55,NULL,'Pagado','2026-09-06'),
-(33,53,1,5.00,NULL,'Pagado','2026-09-06'),
-(34,54,1,2.00,NULL,'Pagado','2026-09-06'),
-(35,55,1,1.00,NULL,'Pagado','2026-09-06'),
-(37,57,1,20.00,NULL,'Pagado','2026-09-06');
+(26,1,NULL,10.95,'uploads/comprobantes/comp_6a98a7cf6e17d.jpg','Pagado','2026-09-02'),
+(27,3,NULL,20.00,'uploads/comprobantes/comp_6a9a40eb31003.png','Pagado','2026-09-03'),
+(28,1,NULL,20.00,NULL,'Pagado','2026-09-03'),
+(29,1,NULL,30.00,NULL,'Pagado','2026-09-04'),
+(31,1,NULL,30.85,NULL,'Pagado','2026-09-04'),
+(32,1,NULL,10.55,NULL,'Pagado','2026-09-06'),
+(33,1,NULL,5.00,NULL,'Pagado','2026-09-06'),
+(34,1,NULL,2.00,NULL,'Pagado','2026-09-06'),
+(35,1,NULL,1.00,NULL,'Pagado','2026-09-06'),
+(37,1,NULL,20.00,NULL,'Pagado','2026-09-06');
 /*!40000 ALTER TABLE `pago` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1130,20 +1130,14 @@ DROP TABLE IF EXISTS `venta_producto`;
 /*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `venta_producto` (
   `id_venta` int(11) NOT NULL AUTO_INCREMENT,
-  `id_metodo` int(11) NOT NULL,
+  `id_pago` int(11) NOT NULL,
   `codigo_producto` varchar(20) NOT NULL,
-  `cedula_cliente` varchar(15) DEFAULT NULL,
   `cantidad_vendida` decimal(10,2) NOT NULL,
-  `monto_total` decimal(10,2) NOT NULL,
-  `fecha` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id_venta`),
   KEY `codigo_producto` (`codigo_producto`),
-  KEY `cedula_cliente` (`cedula_cliente`),
-  KEY `idx_ventas_fecha` (`fecha`),
-  KEY `venta_producto_metodo_pago_FK` (`id_metodo`),
+  KEY `venta_producto_pago_FK` (`id_pago`),
   CONSTRAINT `venta_producto_ibfk_1` FOREIGN KEY (`codigo_producto`) REFERENCES `producto` (`codigo_producto`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `venta_producto_ibfk_2` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula`) ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT `venta_producto_metodo_pago_FK` FOREIGN KEY (`id_metodo`) REFERENCES `metodo_pago` (`id_metodo`) ON UPDATE CASCADE
+  CONSTRAINT `venta_producto_pago_FK` FOREIGN KEY (`id_pago`) REFERENCES `pago` (`id_pago`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1154,11 +1148,11 @@ CREATE TABLE `venta_producto` (
 LOCK TABLES `venta_producto` WRITE;
 /*!40000 ALTER TABLE `venta_producto` DISABLE KEYS */;
 INSERT INTO `venta_producto` VALUES
-(7,1,'xcbxb',NULL,3.00,15.00,'2026-06-20 18:24:33'),
-(8,1,'ZAR-0012','V-22222222',2.00,2.00,'2026-06-20 18:26:23'),
-(9,1,'ZAR-0012','V-24119384',1.00,1.00,'2026-07-05 17:37:03'),
-(10,1,'ZAR-0012',NULL,1.00,1.00,'2026-09-08 20:53:16'),
-(11,1,'ZAR-0012',NULL,1.00,1.00,'2026-09-15 20:10:51');
+(7,26,'xcbxb',3.00),
+(8,26,'ZAR-0012',2.00),
+(9,26,'ZAR-0012',1.00),
+(10,26,'ZAR-0012',1.00),
+(11,26,'ZAR-0012',1.00);
 /*!40000 ALTER TABLE `venta_producto` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1580,7 +1574,7 @@ DELIMITER ;
 /*!50001 SET collation_connection      = utf8mb4_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-/*!50001 VIEW `v_ventas_detalladas` AS select `vp`.`id_venta` AS `id_venta`,`vp`.`fecha` AS `fecha`,`vp`.`cedula_cliente` AS `cedula_cliente`,`p`.`nombre` AS `nombre_producto`,`vp`.`cantidad_vendida` AS `cantidad_vendida`,`vp`.`monto_total` AS `monto_total`,`mp`.`nombre` AS `metodo_pago` from ((`venta_producto` `vp` join `producto` `p` on(`vp`.`codigo_producto` = `p`.`codigo_producto`)) join `metodo_pago` `mp` on(`vp`.`id_metodo` = `mp`.`id_metodo`)) */;
+/*!50001 VIEW `v_ventas_detalladas` AS select `vp`.`id_venta` AS `id_venta`,`pago`.`fecha_pago` AS `fecha`,`pago`.`cedula_cliente` AS `cedula_cliente`,`p`.`nombre` AS `nombre_producto`,`vp`.`cantidad_vendida` AS `cantidad_vendida`,`pago`.`monto` AS `monto_total`,`mp`.`nombre` AS `metodo_pago` from (((`venta_producto` `vp` join `producto` `p` on(`vp`.`codigo_producto` = `p`.`codigo_producto`)) join `pago` on(`pago`.`id_pago` = `vp`.`id_pago`)) join `metodo_pago` `mp` on(`pago`.`id_metodo` = `mp`.`id_metodo`)) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -1594,4 +1588,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2026-09-15 21:11:07
+-- Dump completed on 2026-09-15 21:42:39

@@ -147,11 +147,11 @@ class ProductoModel extends Model
     {
         try {
             $this->db->beginTransaction();
-            
+
             $sql = "UPDATE {$this->tabla} SET precio_venta = precio_venta * 1.10 WHERE id_categoria = 1";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
-            
+
             $this->db->commit();
             return ['success' => true, 'message' => 'Precios de suplementos actualizados correctamente.'];
         } catch (PDOException $e) {
