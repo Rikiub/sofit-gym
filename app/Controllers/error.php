@@ -6,10 +6,8 @@ use App\Core\ControllerTools;
 use App\Core\Http\Request;
 use App\Core\Http\Status;
 
-class ErrorController
-{
-    public function index(): string
-    {
+switch (ControllerTools::action()) {
+    case "index":
         $status = Status::from(
             Request::queryInt("status") ?? 500
         );
@@ -23,5 +21,4 @@ class ErrorController
         return ControllerTools::render('error', [
             'message' => "{$status->value}: {$message}"
         ]);
-    }
 }

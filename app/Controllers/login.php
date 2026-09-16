@@ -15,29 +15,29 @@ use App\Models\Level;
 use PHPMailer\PHPMailer\PHPMailer;
 use DateTimeImmutable;
 
-class LoginController
+$logger = new BitacoraModel();
+$usuarioModel = new UsuarioModel();
+$mailer = Tools::getMailer();
+
+/** Mensaje de error generico en caso de ingresar datos incorrectos */
+function invalidInput(): string
 {
-    private PHPMailer $mailer;
+    return Response::json(
+        ["message" => "Usuario o contraseña incorrectos"],
+        Status::UNAUTHORIZED
+    );
+}
 
-    public function __construct(
-        private $logger = new BitacoraModel(),
-        private $usuarioModel = new UsuarioModel(),
-    ) {
-        $this->mailer = Tools::getMailer();
-    }
-
-    public function index()
-    {
+switch (ControllerTools::action()) {
+    case "index":
         if (UserSession::get()) {
             // Si el usuario ya inicio sesión, redirigir a pagina de inicio.
             Response::redirect(["page" => "dashboard"]);
         }
 
         return ControllerTools::render("login");
-    }
 
-    public function login(): string
-    {
+    case "login":
         $body = Request::getParsedBody();
         $nombre_usuario = $body["nombre_usuario"] ?? null;
         $contrasena = $body["contrasena"] ?? null;
@@ -48,7 +48,7 @@ class LoginController
         $minutosBloqueo = 1;
         $duracion = new DateTimeImmutable("-{$minutosBloqueo} minutes");
 
-        if ($this->usuarioModel->intentosFallidos(
+        if ($usuarioModel->intentosFallidos(
             duracion: $duracion,
             direccion_ip: $direccion_ip
         ) >= $maximoIntentos) {
@@ -59,14 +59,14 @@ class LoginController
         }
 
         # Validar y registrar intento
-        $usuario = $this->usuarioModel->findByUsername($nombre_usuario);
+        $usuario = $usuarioModel->findByUsername($nombre_usuario);
         if (!$usuario) {
-            $this->usuarioModel->insertIntentoAcceso(exito: false, direccion_ip: $direccion_ip);
-            return $this->invalidInput();
+            $usuarioModel->insertIntentoAcceso(exito: false, direccion_ip: $direccion_ip);
+            return invalidInput();
         };
 
         if (!password_verify($contrasena, $usuario->contrasena_hash)) {
-            $this->logger->log(
+            $logger->log(
                 "Usuario {nombre_usuario} ha fallado al iniciar sesión",
                 [
                     "modulo" => "login",
@@ -76,22 +76,22 @@ class LoginController
                 nivel: Level::ERROR,
             );
 
-            $this->usuarioModel->insertIntentoAcceso(
+            $usuarioModel->insertIntentoAcceso(
                 exito: false,
                 direccion_ip: $direccion_ip,
                 id_usuario: $usuario->id_usuario
             );
 
-            return $this->invalidInput();
+            return invalidInput();
         }
 
         // Actualizar estado
-        $this->usuarioModel->insertIntentoAcceso(
+        $usuarioModel->insertIntentoAcceso(
             direccion_ip: $direccion_ip,
             id_usuario: $usuario->id_usuario,
             exito: true
         );
-        $this->usuarioModel->updateUltimoAcceso($usuario->id_usuario);
+        $usuarioModel->updateUltimoAcceso($usuario->id_usuario);
 
         // Guardar la sesión utilizando un helper
         UserSession::login(new CurrentUser(
@@ -103,7 +103,7 @@ class LoginController
             ultimo_acceso: $usuario->ultimo_acceso,
         ));
 
-        $this->logger->log(
+        $logger->log(
             "Usuario {nombre_usuario} ha iniciado sesión",
             [
                 "modulo" => "login",
@@ -116,12 +116,10 @@ class LoginController
         return Response::json([
             "redirect" => "?" . Request::buildQuery(["page" => "dashboard"])
         ]);
-    }
 
-    public function logout(): void
-    {
+    case "logout":
         $user = UserSession::get();
-        $this->logger->log(
+        $logger->log(
             "Usuario {nombre_usuario} ha cerrado sesión",
             [
                 "modulo" => "login",
@@ -133,24 +131,13 @@ class LoginController
 
         Response::redirect(["page" => "login"]);
         exit;
-    }
 
-    /** Mensaje de error generico en caso de ingresar datos incorrectos */
-    private function invalidInput(): string
-    {
-        return Response::json(
-            ["message" => "Usuario o contraseña incorrectos"],
-            Status::UNAUTHORIZED
-        );
-    }
-
-    // --- MÓDULO RECUPERACIÓN ---
-    public function recover(): string
-    {
+        // --- MÓDULO RECUPERACIÓN ---
+    case "recover":
         $body = Request::getParsedBody();
         $email = $body["email"] ?? null;
 
-        $usuario = $this->usuarioModel->findByEmail($email);
+        $usuario = $usuarioModel->findByEmail($email);
         if (!$usuario) {
             return Response::json(
                 ["message" => "Correo no registrado"],
@@ -159,26 +146,24 @@ class LoginController
         }
 
         // Crear codigo de recuperacion
-        $codigo = $this->usuarioModel->createRecoveryCode($usuario->id_usuario);
+        $codigo = $usuarioModel->createRecoveryCode($usuario->id_usuario);
 
         // Enviar correo
-        $this->mailer->addAddress($email);
-        $this->mailer->isHTML(true);
-        $this->mailer->Subject = 'Recuperación de cuenta - Sofit Gym';
-        $this->mailer->Body = ControllerTools::render("recuperacionContrasena", [
+        $mailer->addAddress($email);
+        $mailer->isHTML(true);
+        $mailer->Subject = 'Recuperación de cuenta - Sofit Gym';
+        $mailer->Body = ControllerTools::render("recuperacionContrasena", [
             "codigo" => $codigo,
         ]);
-        $this->mailer->send();
+        $mailer->send();
 
         return Response::json(["success" => true]);
-    }
 
-    public function verify(): string
-    {
+    case "verify":
         $body = Request::getParsedBody();
         $codigo = $body["codigo"] ?? '';
 
-        $usuario = $this->usuarioModel->verifyRecoveryCode($codigo);
+        $usuario = $usuarioModel->verifyRecoveryCode($codigo);
         if (!$usuario) {
             return Response::json(
                 ["message" => "Código inválido o expirado"],
@@ -188,10 +173,8 @@ class LoginController
 
         $_SESSION['recover_user_id'] = $usuario->id_usuario;
         return Response::json(["success" => true]);
-    }
 
-    public function reset(): string
-    {
+    case "reset":
         $body = Request::getParsedBody();
         $new_pass = $body["new_pass"] ?? '';
 
@@ -202,12 +185,11 @@ class LoginController
             );
         }
 
-        $this->usuarioModel->updatePassword(
+        $usuarioModel->updatePassword(
             $_SESSION['recover_user_id'],
             $new_pass,
         );
 
         unset($_SESSION['recover_user_id']);
         return Response::json(["success" => true]);
-    }
 }

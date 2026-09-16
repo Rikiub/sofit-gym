@@ -11,53 +11,59 @@ use App\Models\BitacoraModel;
 use App\Models\Equipos\Equipo;
 use App\Models\Equipos\EquipoModel;
 
-class EquiposController
+$logger = new BitacoraModel();
+$equipoModel = new EquipoModel();
+
+function getId(): string
 {
-    public function __construct(
-        private $logger = new BitacoraModel(),
-        private $equipoModel = new EquipoModel(),
-    ) {}
+    return Request::query("id") ?? "";
+}
 
-    public function index()
-    {
+function validateBody(): Equipo
+{
+    $body = Request::getParsedBody();
+    return Tools::map(Equipo::class, $body);
+}
+
+function notFound(): string
+{
+    return Response::json(['message' => 'El equipo no existe'], Status::NOT_FOUND);
+}
+
+switch (ControllerTools::action()) {
+    case "index":
         return ControllerTools::render('equipos');
-    }
 
-    public function query()
-    {
+    case "query":
         ControllerTools::protect("equipos:ver");
-        $equipos = $this->equipoModel->query();
+        $equipos = $equipoModel->query();
         return Response::json($equipos);
-    }
 
-    public function find(): ?string
-    {
+    case "find":
         ControllerTools::protect("equipos:ver");
 
-        $id = $this->getId();
-        $equipo = $this->equipoModel->find($id);
+        $id = getId();
+        $equipo = $equipoModel->find($id);
 
         return $equipo
             ? Response::json($equipo)
             : Response::noContent();
-    }
 
-    public function insert(): string
-    {
+    case "insert":
         ControllerTools::protect("equipos:crear");
 
-        $new = $this->validateBody();
+        $new = validateBody();
         $id = $equipo->codigo_equipo ?? "";
 
-        if ($this->equipoModel->find($id)) {
+        if ($equipoModel->find($id)) {
             return Response::json(
                 ['message' => 'El equipo ya existe'],
                 Status::CONFLICT
             );
         }
 
-        $new = $this->equipoModel->insert($new);
-        $this->logger->log("Equipo '{codigo_equipo}' creado", [
+        $new = $equipoModel->insert($new);
+        $logger->log("Equipo '{codigo_equipo}' creado", [
             "modulo" => "equipos",
             "accion" => "crear",
 
@@ -66,22 +72,20 @@ class EquiposController
         ]);
 
         return Response::json($new, Status::CREATED);
-    }
 
-    public function update(): string
-    {
+    case "update":
         ControllerTools::protect("equipos:editar");
 
-        $new = $this->validateBody();
-        $id = $this->getId();
+        $new = validateBody();
+        $id = getId();
 
-        $old = $this->equipoModel->find($id);
+        $old = $equipoModel->find($id);
         if (!$old) {
-            return $this->notFound();
+            return notFound();
         }
 
-        $new = $this->equipoModel->update($id, $new);
-        $this->logger->log("Equipo '{codigo_equipo}' actualizado", [
+        $new = $equipoModel->update($id, $new);
+        $logger->log("Equipo '{codigo_equipo}' actualizado", [
             "modulo" => "equipos",
             "accion" => "editar",
 
@@ -91,20 +95,18 @@ class EquiposController
         ]);
 
         return Response::json($new, Status::CREATED);
-    }
 
-    public function delete(): string|null
-    {
+    case "delete":
         ControllerTools::protect("equipos:eliminar");
-        $id = $this->getId();
+        $id = getId();
 
-        $old = $this->equipoModel->find($id);
+        $old = $equipoModel->find($id);
         if (!$old) {
-            return $this->notFound();
+            return notFound();
         }
 
-        $this->equipoModel->delete($id);
-        $this->logger->log("Equipo '{codigo_equipo}' eliminado", [
+        $equipoModel->delete($id);
+        $logger->log("Equipo '{codigo_equipo}' eliminado", [
             "modulo" => "equipos",
             "accion" => "eliminar",
 
@@ -113,21 +115,4 @@ class EquiposController
         ]);
 
         return Response::noContent();
-    }
-
-    private function getId(): string
-    {
-        return Request::query("id") ?? "";
-    }
-
-    private function validateBody(): Equipo
-    {
-        $body = Request::getParsedBody();
-        return Tools::map(Equipo::class, $body);
-    }
-
-    private function notFound(): string
-    {
-        return Response::json(['message' => 'El equipo no existe'], Status::NOT_FOUND);
-    }
 }

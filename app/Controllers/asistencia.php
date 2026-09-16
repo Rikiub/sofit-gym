@@ -7,45 +7,37 @@ use App\Models\AsistenciaModel;
 use App\Models\BitacoraModel;
 use App\Services\Reportes\ReporteAsistencia;
 
-class AsistenciaController
-{
-    public function __construct(
-        private $logger = new BitacoraModel(),
-        private $model = new AsistenciaModel(),
-    ) {}
+$logger = new BitacoraModel();
+$model = new AsistenciaModel();
 
-    public function index()
-    {
+switch (ControllerTools::action()) {
+    case "index":
         ControllerTools::protect("asistencia:ver");
 
         $fechaSeleccionada = $_GET['fecha'] ?? date('Y-m-d');
         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
         return ControllerTools::render('asistencia', [
-            'entradasHoy' => $this->model->obtenerEntradasHoy(),
+            'entradasHoy' => $model->obtenerEntradasHoy(),
             'fechaSeleccionada' => $fechaSeleccionada,
-            'ocupacion' => $this->model->obtenerOcupacionPorFranjas($fechaSeleccionada),
-            'detalleEntradas' => $this->model->obtenerEntradasPorFecha($fechaSeleccionada),
+            'ocupacion' => $model->obtenerOcupacionPorFranjas($fechaSeleccionada),
+            'detalleEntradas' => $model->obtenerEntradasPorFecha($fechaSeleccionada),
             'mensaje' => $_SESSION['mensaje'] ?? '',
             'tipoMensaje' => $_SESSION['tipo_mensaje'] ?? '',
         ]);
-    }
 
-    public function buscar_clientes_ajax()
-    {
+    case "buscar_clientes_ajax":
         ControllerTools::protect("asistencia:ver");
 
         if (!isset($_GET['ajax']) || $_GET['ajax'] !== 'buscar_clientes')
             return;
         $termino = $_GET['termino'] ?? '';
-        $resultados = $this->model->buscarClientes($termino);
+        $resultados = $model->buscarClientes($termino);
         header('Content-Type: application/json');
         echo json_encode($resultados);
         exit;
-    }
 
-    public function registrar()
-    {
+    case "registrar":
         ControllerTools::protect("asistencia:crear");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -60,9 +52,9 @@ class AsistenciaController
             return;
         }
 
-        $resultado = $this->model->registrarEntrada($cedula, $hora);
+        $resultado = $model->registrarEntrada($cedula, $hora);
         if ($resultado['success']) {
-            $this->logger->log("Entrada registrada para cliente '{cedula}'", [
+            $logger->log("Entrada registrada para cliente '{cedula}'", [
                 "modulo" => "asistencia",
                 "accion" => "registrar",
 
@@ -74,46 +66,39 @@ class AsistenciaController
         }
 
         echo json_encode($resultado);
-    }
+        break;
 
-    public function buscar_entradas_ajax()
-    {
+    case "buscar_entradas_ajax":
         ControllerTools::protect("asistencia:ver");
 
         if (!isset($_GET['ajax']) || $_GET['ajax'] !== 'buscar_entradas')
             return;
         $termino = $_GET['termino'] ?? '';
-        $resultados = $this->model->buscarEntradas($termino);
+        $resultados = $model->buscarEntradas($termino);
         header('Content-Type: application/json');
         echo json_encode($resultados);
         exit;
-    }
 
-    public function buscar_entradas_hoy()
-    {
+    case "buscar_entradas_hoy":
         ControllerTools::protect("asistencia:ver");
 
-        $resultados = $this->model->obtenerEntradasHoy();
+        $resultados = $model->obtenerEntradasHoy();
         header('Content-Type: application/json');
         echo json_encode($resultados);
         exit;
-    }
 
-    public function obtener_totales()
-    {
+    case "obtener_totales":
         ControllerTools::protect("asistencia:ver");
 
         $inicio = $_GET["inicio"] ?? null;
         $fin = $_GET["fin"] ?? null;
-        $resultados = $this->model->obtenerTotalesPorRango($inicio, $fin);
+        $resultados = $model->obtenerTotalesPorRango($inicio, $fin);
 
         header('Content-Type: application/json');
         echo json_encode($resultados);
         exit;
-    }
 
-    public function editar()
-    {
+    case "editar":
         ControllerTools::protect("asistencia:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -129,13 +114,13 @@ class AsistenciaController
         }
 
         // Obtener datos previos usando el modelo
-        $old = $this->model->findCliente($id);
-        $ok = $this->model->actualizarEntrada($id, $nuevaHora);
+        $old = $model->findCliente($id);
+        $ok = $model->actualizarEntrada($id, $nuevaHora);
 
         if ($ok) {
             // Obtener datos nuevos después de la actualización
-            $new = $this->model->findCliente($id);
-            $this->logger->log("Entrada '{id_asistencia}' actualizada", [
+            $new = $model->findCliente($id);
+            $logger->log("Entrada '{id_asistencia}' actualizada", [
                 "modulo" => "asistencia",
                 "accion" => "editar",
 
@@ -145,10 +130,9 @@ class AsistenciaController
             ]);
         }
         echo json_encode(['success' => $ok]);
-    }
+        break;
 
-    public function eliminar()
-    {
+    case "eliminar":
         ControllerTools::protect("asistencia:eliminar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -158,11 +142,11 @@ class AsistenciaController
         }
 
         $id = intval($_POST['id']);
-        $old = $this->model->findCliente($id);
+        $old = $model->findCliente($id);
 
-        $ok = $this->model->eliminarEntrada($id);
+        $ok = $model->eliminarEntrada($id);
         if ($ok) {
-            $this->logger->log("Entrada '{id_asistencia}' eliminada", [
+            $logger->log("Entrada '{id_asistencia}' eliminada", [
                 "modulo" => "asistencia",
                 "accion" => "eliminar",
 
@@ -172,22 +156,19 @@ class AsistenciaController
         }
 
         echo json_encode(['success' => $ok]);
-    }
+        break;
 
     // Reportes
-    public function vistaAsistencia()
-    {
+    case "vistaAsistencia":
         // Renderiza el formulario usando el motor Plates cargando tu nueva vista
         ControllerTools::protect("clientes:ver");
         echo ControllerTools::render('reportes/asistencia');
         exit;
-    }
 
     /**
      * Generar reporte PDF del histórico de asistencias (opcionalmente filtrado por rango de fechas)
      */
-    public function generarReporte()
-    {
+    case "generarReporte":
         // 1. Proteger la ruta bajo el permiso correspondiente
         ControllerTools::protect("asistencia:ver");
 
@@ -196,7 +177,7 @@ class AsistenciaController
         $fechaFin = $_GET['fin'] ?? null;
 
         // 3. Solicitar los datos procesados al modelo
-        $asistenciasData = $this->model->obtenerAsistenciasParaReporte($fechaInicio, $fechaFin);
+        $asistenciasData = $model->obtenerAsistenciasParaReporte($fechaInicio, $fechaFin);
 
         // Instanciar la clase FPDF del reporte de asistencia
         $pdf = new ReporteAsistencia();
@@ -210,5 +191,5 @@ class AsistenciaController
 
         // Renderizar y forzar la visualización limpia en el navegador ('I')
         $pdf->Output('I', 'reporte_asistencias.pdf');
-    }
+        break;
 }

@@ -9,15 +9,23 @@ use App\Models\BitacoraModel;
 use App\Services\Reportes\ReporteFinanciero;
 use Exception;
 
-class FacturacionController
-{
-    public function __construct(
-        private $logger = new BitacoraModel(),
-        private $model = new FacturacionModel(),
-    ) {}
+$logger = new BitacoraModel();
+$model = new FacturacionModel();
 
-    public function index()
-    {
+function obtenerPagoPorId(int $idPago): ?array
+{
+    global $model;
+    $resultados = $model->buscarPagos((string)$idPago);
+    foreach ($resultados as $pago) {
+        if ((int)$pago['id_pago'] === $idPago) {
+            return $pago;
+        }
+    }
+    return null;
+}
+
+switch (ControllerTools::action()) {
+    case "index":
         ControllerTools::protect("facturacion:ver");
 
         // Recuperar mensajes de sesión y luego limpiarlos
@@ -26,9 +34,9 @@ class FacturacionController
         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
         try {
-            $pagos = $this->model->obtenerTodosPagos();
-            $clientes = $this->model->obtenerClientesSimples();
-            $tiposMembresia = $this->model->obtenerTiposMembresia();
+            $pagos = $model->obtenerTodosPagos();
+            $clientes = $model->obtenerClientesSimples();
+            $tiposMembresia = $model->obtenerTiposMembresia();
         } catch (Exception $e) {
             $pagos = [];
             $clientes = [];
@@ -45,10 +53,8 @@ class FacturacionController
             'mensaje' => $mensaje,
             'tipoMensaje' => $tipoMensaje,
         ]);
-    }
 
-    public function registrar()
-    {
+    case "registrar":
         ControllerTools::protect("facturacion:crear");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -78,11 +84,11 @@ class FacturacionController
         }
 
         try {
-            $res = $this->model->registrarPago($cedula, $monto, $metodo, $planTipo);
+            $res = $model->registrarPago($cedula, $monto, $metodo, $planTipo);
             $_SESSION['mensaje'] = '✅ ' . $res['mensaje'];
             $_SESSION['tipo_mensaje'] = 'success';
 
-            $this->logger->log("Pago registrado", [
+            $logger->log("Pago registrado", [
                 'modulo' => 'facturacion',
                 'accion' => 'crear',
                 'cedula' => $cedula,
@@ -97,10 +103,9 @@ class FacturacionController
         }
 
         Response::redirect(['page' => 'facturacion']);
-    }
+        break;
 
-    public function editar()
-    {
+    case "editar":
         ControllerTools::protect("facturacion:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -115,15 +120,15 @@ class FacturacionController
         $fechaPago = $_POST['fecha_pago'];
         $fechaVencimiento = $_POST['fecha_vencimiento'];
 
-        $old = $this->obtenerPagoPorId($idPago);
+        $old = obtenerPagoPorId($idPago);
 
         try {
-            $success = $this->model->actualizarPago($idPago, $monto, $metodo, $estado, $fechaPago, $fechaVencimiento);
+            $success = $model->actualizarPago($idPago, $monto, $metodo, $estado, $fechaPago, $fechaVencimiento);
             if ($success) {
                 $_SESSION['mensaje'] = '✅ Pago actualizado correctamente.';
                 $_SESSION['tipo_mensaje'] = 'success';
-                $new = $this->obtenerPagoPorId($idPago);
-                $this->logger->log("Pago actualizado", [
+                $new = obtenerPagoPorId($idPago);
+                $logger->log("Pago actualizado", [
                     'modulo' => 'facturacion',
                     'accion' => 'editar',
                     'id_pago' => $idPago,
@@ -140,10 +145,9 @@ class FacturacionController
         }
 
         Response::redirect(['page' => 'facturacion']);
-    }
+        break;
 
-    public function eliminar()
-    {
+    case "eliminar":
         ControllerTools::protect("facturacion:eliminar");
 
         if (!isset($_GET['eliminar_pago'])) {
@@ -152,14 +156,14 @@ class FacturacionController
         }
 
         $idPago = intval($_GET['eliminar_pago']);
-        $old = $this->obtenerPagoPorId($idPago);
+        $old = obtenerPagoPorId($idPago);
 
         try {
-            $success = $this->model->eliminarPago($idPago);
+            $success = $model->eliminarPago($idPago);
             if ($success) {
                 $_SESSION['mensaje'] = '🗑️ Pago eliminado correctamente.';
                 $_SESSION['tipo_mensaje'] = 'warning';
-                $this->logger->log("Pago eliminado", [
+                $logger->log("Pago eliminado", [
                     'modulo' => 'facturacion',
                     'accion' => 'eliminar',
                     'id_pago' => $idPago,
@@ -175,10 +179,9 @@ class FacturacionController
         }
 
         Response::redirect(['page' => 'facturacion']);
-    }
+        break;
 
-    public function buscar_ajax()
-    {
+    case "buscar_ajax":
         ControllerTools::protect("facturacion:ver");
 
         if (!isset($_GET['ajax']) || $_GET['ajax'] !== 'buscar_pagos') {
@@ -186,43 +189,24 @@ class FacturacionController
         }
 
         $termino = $_GET['termino'] ?? '';
-        $resultados = $this->model->buscarPagos($termino);
+        $resultados = $model->buscarPagos($termino);
         return Response::json($resultados);
-    }
 
-    public function ingresos_mensuales()
-    {
+    case "ingresos_mensuales":
         ControllerTools::protect("facturacion:ver");
-        $ingresos = $this->model->obtenerIngresosMesActual();
+        $ingresos = $model->obtenerIngresosMesActual();
         return Response::json($ingresos);
-    }
 
-    public function resumen_semana(): string
-    {
-        $resultados = $this->model->obtenerResumenFinancieroSemanal();
+    case "resumen_semana":
+        $resultados = $model->obtenerResumenFinancieroSemanal();
         return Response::json($resultados);
-    }
 
-    private function obtenerPagoPorId(int $idPago): ?array
-    {
-        $resultados = $this->model->buscarPagos((string)$idPago);
-        foreach ($resultados as $pago) {
-            if ((int)$pago['id_pago'] === $idPago) {
-                return $pago;
-            }
-        }
-        return null;
-    }
-
-    // REPORTES
-    public function reporteVista()
-    {
+        // REPORTES
+    case "reporteVista":
         ControllerTools::protect("facturacion:ver");
         return ControllerTools::render('reportes/facturacion');
-    }
 
-    public function reporte()
-    {
+    case "reporte":
         ControllerTools::protect("facturacion:ver");
 
         $mes = $_GET['mes'] ?? null;
@@ -233,7 +217,7 @@ class FacturacionController
             $anio = date('Y');
         }
 
-        $pagosData = $this->model->obtenerPagosPorPeriodo($mes, $anio);
+        $pagosData = $model->obtenerPagosPorPeriodo($mes, $anio);
 
         $pdf = new ReporteFinanciero();
         $pdf->SetTitle(utf8_decode('Reporte Financiero - SOFIT GYM'));
@@ -245,5 +229,5 @@ class FacturacionController
 
         $nombreArchivo = 'reporte_financiero_' . ($mes ? $mes . '_' : '') . $anio . '.pdf';
         $pdf->Output('I', $nombreArchivo);
-    }
+        break;
 }

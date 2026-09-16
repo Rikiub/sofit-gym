@@ -11,46 +11,52 @@ use App\Models\Equipos\MantenimientoEquipo;
 use App\Models\Equipos\MantenimientoEquipoModel;
 use App\Models\BitacoraModel;
 
-class EquiposMantenimientoController
-{
-    public function __construct(
-        private $logger = new BitacoraModel(),
-        private $model = new MantenimientoEquipoModel(),
-    ) {}
+$logger = new BitacoraModel();
+$model = new MantenimientoEquipoModel();
 
-    public function index()
-    {
+function notFound(): string
+{
+    return Response::json(['message' => 'El mantenimiento no existe'], Status::NOT_FOUND);
+}
+
+function getId(): int
+{
+    return Request::queryInt("id") ?? 0;
+}
+
+function validateBody(): MantenimientoEquipo
+{
+    $body = Request::getParsedBody();
+    return Tools::map(MantenimientoEquipo::class, $body);
+}
+
+switch (ControllerTools::action()) {
+    case "index":
         ControllerTools::protect("equipos:ver");
         return ControllerTools::render('equipos_mantenimiento');
-    }
 
-    public function query()
-    {
+    case "query":
         ControllerTools::protect("equipos:ver");
-        $data = $this->model->query();
+        $data = $model->query();
         return Response::json($data);
-    }
 
-    public function find(): ?string
-    {
+    case "find":
         ControllerTools::protect("equipos:ver");
 
-        $id = $this->getId();
-        $data = $this->model->find($id);
+        $id = getId();
+        $data = $model->find($id);
 
         return $data
             ? Response::json($data)
             : Response::noContent();
-    }
 
-    public function insert(): string
-    {
+    case "insert":
         ControllerTools::protect("equipos:crear");
 
-        $new = $this->validateBody();
-        $new = $this->model->insert($new);
+        $new = validateBody();
+        $new = $model->insert($new);
 
-        $this->logger->log("Mantenimiento de equipo '{id_mantenimiento}' registrado", [
+        $logger->log("Mantenimiento de equipo '{id_mantenimiento}' registrado", [
             "modulo" => "equipos",
             "accion" => "crear",
 
@@ -60,23 +66,21 @@ class EquiposMantenimientoController
         ]);
 
         return Response::json($new, Status::CREATED);
-    }
 
-    public function update(): string
-    {
+    case "update":
         ControllerTools::protect("equipos:editar");
 
-        $id = $this->getId();
-        $old = $this->model->find($id);
+        $id = getId();
+        $old = $model->find($id);
 
         if (!$old) {
-            return $this->notFound();
+            return notFound();
         }
 
-        $new = $this->validateBody();
-        $new = $this->model->update($id, $new);
+        $new = validateBody();
+        $new = $model->update($id, $new);
 
-        $this->logger->log("Mantenimiento de equipo '{id_mantenimiento}' actualizado", [
+        $logger->log("Mantenimiento de equipo '{id_mantenimiento}' actualizado", [
             "modulo" => "equipos",
             "accion" => "editar",
 
@@ -87,20 +91,18 @@ class EquiposMantenimientoController
         ]);
 
         return Response::json($new, Status::CREATED);
-    }
 
-    public function delete(): string|null
-    {
+    case "delete":
         ControllerTools::protect("equipos:eliminar");
-        $id = $this->getId();
+        $id = getId();
 
-        $old = $this->model->find($id);
+        $old = $model->find($id);
         if (!$old) {
-            return $this->notFound();
+            return notFound();
         }
 
-        $this->model->delete($id);
-        $this->logger->log("Mantenimiento de equipo '{id_mantenimiento}' eliminado", [
+        $model->delete($id);
+        $logger->log("Mantenimiento de equipo '{id_mantenimiento}' eliminado", [
             "modulo" => "equipos",
             "accion" => "eliminar",
 
@@ -110,21 +112,4 @@ class EquiposMantenimientoController
         ]);
 
         return Response::noContent();
-    }
-
-    private function notFound(): string
-    {
-        return Response::json(['message' => 'El mantenimiento no existe'], Status::NOT_FOUND);
-    }
-
-    private function getId(): int
-    {
-        return Request::queryInt("id") ?? 0;
-    }
-
-    private function validateBody(): MantenimientoEquipo
-    {
-        $body = Request::getParsedBody();
-        return Tools::map(MantenimientoEquipo::class, $body);
-    }
 }

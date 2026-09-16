@@ -6,29 +6,20 @@ use App\Core\ControllerTools;
 use App\Core\Http\Response;
 use App\Services\RespaldoService;
 
-class RespaldosController
-{
-    public function __construct(
-        private $respaldo = new RespaldoService()
-    ) {}
+$respaldo = new RespaldoService();
 
-    public function index()
-    {
+switch (ControllerTools::action()) {
+    case "index":
         ControllerTools::protect("respaldos:ver");
         return ControllerTools::render('respaldos');
-    }
 
-    public function query()
-    {
+    case "query":
         ControllerTools::protect("respaldos:ver");
-        $respaldos = $this->respaldo->getAll();
+        $respaldos = $respaldo->getAll();
         return Response::json($respaldos);
-    }
 
-    public function backup()
-    {
+    case "backup":
         ControllerTools::protect("respaldos:respaldar");
-        $this->respaldo->backup();
+        $respaldo->backup();
         return Response::noContent();
-    }
 }

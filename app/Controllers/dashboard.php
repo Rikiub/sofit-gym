@@ -8,22 +8,18 @@ use App\Models\AsistenciaModel;
 use App\Models\FacturacionModel;
 use App\Models\Clientes\ClienteModel;
 
-class DashboardController
-{
-    public function __construct(
-        private $asistenciaModel = new AsistenciaModel(),
-        private $clienteModel = new ClienteModel(),
-        private $facturacionModel = new FacturacionModel(),
-    ) {}
+$asistenciaModel = new AsistenciaModel();
+$clienteModel = new ClienteModel();
+$facturacionModel = new FacturacionModel();
 
-    public function index(): string
-    {
-        $asistencias = $this->asistenciaModel->obtenerEntradasHoy();
-        $clientesMensuales = $this->clienteModel->query(filters: [
+switch (ControllerTools::action()) {
+    case "index":
+        $asistencias = $asistenciaModel->obtenerEntradasHoy();
+        $clientesMensuales = $clienteModel->query(filters: [
             'fecha_inicio_desde' => date('Y-m-01'),
             'fecha_inicio_hasta' => date('Y-m-t'),
         ]);
-        $ingresosMensuales = $this->facturacionModel->obtenerIngresosMesActual();
+        $ingresosMensuales = $facturacionModel->obtenerIngresosMesActual();
 
         $usuario = UserSession::get();
         return ControllerTools::render('dashboard', [
@@ -32,5 +28,4 @@ class DashboardController
             "clientesMensuales" => $clientesMensuales,
             "ingresosMensuales" => $ingresosMensuales,
         ]);
-    }
 }

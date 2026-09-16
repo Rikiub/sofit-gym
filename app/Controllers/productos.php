@@ -7,26 +7,47 @@ use App\Models\ProductoModel;
 use App\Models\BitacoraModel;
 use App\Services\Reportes\ReporteInventario;
 
-class ProductosController
-{
-    public function __construct(
-        private $logger = new BitacoraModel(),
-        private $model = new ProductoModel(),
-    ) {}
+$logger = new BitacoraModel();
+$model = new ProductoModel();
 
+/**
+ * Maneja la subida de la imagen y retorna la ruta
+ */
+function procesarImagen($archivo)
+{
+    if (isset($archivo) && $archivo['error'] === UPLOAD_ERR_OK) {
+        $permitidos = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        if (in_array($archivo['type'], $permitidos)) {
+            $directorio = 'public/uploads/productos/';
+            if (!file_exists($directorio)) {
+                mkdir($directorio, 0777, true);
+            }
+
+            $extension = pathinfo($archivo['name'], PATHINFO_EXTENSION);
+            $nombreArchivo = uniqid('prod_') . '.' . $extension;
+            $rutaDestino = $directorio . $nombreArchivo;
+
+            if (move_uploaded_file($archivo['tmp_name'], $rutaDestino)) {
+                return $rutaDestino;
+            }
+        }
+    }
+    return null;
+}
+
+switch (ControllerTools::action()) {
     /**
      * Muestra la vista principal de productos (Catálogo e Inventario)
      */
-    public function index()
-    {
+    case "index":
         ControllerTools::protect("productos:ver");
 
         // Soporte para término de búsqueda en URL (?buscar=)
         $termino = $_GET['buscar'] ?? null;
 
         // Obtener productos activos y aquellos que se encuentran bajo el stock de alerta mínimo
-        $productos = $this->model->obtenerTodos($termino);
-        $bajoStock = $this->model->obtenerBajoStock();
+        $productos = $model->obtenerTodos($termino);
+        $bajoStock = $model->obtenerBajoStock();
 
         // Obtener mensajes de sesión temporales (Toasts/Alertas)
         $mensaje = $_SESSION['mensaje'] ?? '';
@@ -41,13 +62,12 @@ class ProductosController
             'tipoMensaje' => $tipoMensaje,
             'termino' => $termino
         ]);
-    }
+        break;
 
     /**
      * Endpoint API AJAX para buscar productos dinámicamente
      */
-    public function buscarAjax()
-    {
+    case "buscarAjax":
         ControllerTools::protect("productos:ver");
 
         if (!isset($_GET['ajax']) || $_GET['ajax'] !== 'buscar_productos') {
@@ -57,43 +77,16 @@ class ProductosController
         }
 
         $termino = $_GET['termino'] ?? '';
-        $resultados = $this->model->obtenerTodos($termino);
+        $resultados = $model->obtenerTodos($termino);
 
         header('Content-Type: application/json');
         echo json_encode($resultados);
         exit;
-    }
-
-    /**
-     * Maneja la subida de la imagen y retorna la ruta
-     */
-    private function procesarImagen($archivo)
-    {
-        if (isset($archivo) && $archivo['error'] === UPLOAD_ERR_OK) {
-            $permitidos = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-            if (in_array($archivo['type'], $permitidos)) {
-                $directorio = 'public/uploads/productos/';
-                if (!file_exists($directorio)) {
-                    mkdir($directorio, 0777, true);
-                }
-
-                $extension = pathinfo($archivo['name'], PATHINFO_EXTENSION);
-                $nombreArchivo = uniqid('prod_') . '.' . $extension;
-                $rutaDestino = $directorio . $nombreArchivo;
-
-                if (move_uploaded_file($archivo['tmp_name'], $rutaDestino)) {
-                    return $rutaDestino;
-                }
-            }
-        }
-        return null;
-    }
 
     /**
      * Registra un nuevo producto en el gimnasio
      */
-    public function crear()
-    {
+    case "crear":
         ControllerTools::protect("productos:crear");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -112,7 +105,7 @@ class ProductosController
         }
 
         // Procesar subida de imagen si existe
-        $rutaImagen = $this->procesarImagen($_FILES['imagen'] ?? null);
+        $rutaImagen = procesarImagen($_FILES['imagen'] ?? null);
 
         $datos = [
             'codigo_producto' => strip_tags(trim($codigo)),
@@ -126,9 +119,9 @@ class ProductosController
             'imagen' => $rutaImagen
         ];
 
-        $exito = $this->model->crear($datos);
+        $exito = $model->crear($datos);
 
-        $this->logger->log("Producto '{codigo_producto}' creado", [
+        $logger->log("Producto '{codigo_producto}' creado", [
             "modulo" => "productos",
             "accion" => "crear",
             "codigo_producto" => $datos["codigo_producto"],
@@ -141,13 +134,11 @@ class ProductosController
             echo json_encode(['success' => false, 'message' => '❌ Error al registrar producto. Código duplicado.']);
         }
         exit;
-    }
 
     /**
      * Edita o modifica un producto existente
      */
-    public function editar()
-    {
+    case "editar":
         ControllerTools::protect("productos:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -177,14 +168,14 @@ class ProductosController
             $datosNuevos['id_unidad'] = strip_tags(trim($_POST['id_unidad']));
 
         // Actualizar la imagen si se envía una nueva
-        $rutaImagen = $this->procesarImagen($_FILES['imagen'] ?? null);
+        $rutaImagen = procesarImagen($_FILES['imagen'] ?? null);
         if ($rutaImagen) {
             $datosNuevos['imagen'] = $rutaImagen;
         }
 
-        $exito = $this->model->actualizar($codigo, $datosNuevos);
+        $exito = $model->actualizar($codigo, $datosNuevos);
 
-        $this->logger->log("Producto '{codigo_producto}' actualizado", [
+        $logger->log("Producto '{codigo_producto}' actualizado", [
             "modulo" => "productos",
             "accion" => "editar",
             "codigo_producto" => $codigo,
@@ -197,13 +188,11 @@ class ProductosController
             echo json_encode(['success' => false, 'message' => '❌ Error al intentar actualizar el producto.']);
         }
         exit;
-    }
 
     /**
      * Elimina un producto de la base de datos (lógica o físicamente)
      */
-    public function eliminar()
-    {
+    case "eliminar":
         ControllerTools::protect("productos:eliminar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -220,8 +209,8 @@ class ProductosController
             return;
         }
 
-        $exito = $this->model->eliminar($codigo, $borradoFisico);
-        $this->logger->log("Producto '{codigo_producto}' eliminado", [
+        $exito = $model->eliminar($codigo, $borradoFisico);
+        $logger->log("Producto '{codigo_producto}' eliminado", [
             "modulo" => "productos",
             "accion" => "eliminar",
             "codigo_producto" => $codigo,
@@ -234,13 +223,11 @@ class ProductosController
             echo json_encode(['success' => false, 'message' => '❌ No se pudo completar la eliminación del producto.']);
         }
         exit;
-    }
 
     /**
      * Actualiza o modifica la cantidad física en stock (Entrada/Salida de Inventario)
      */
-    public function actualizarStock()
-    {
+    case "actualizarStock":
         ControllerTools::protect("productos:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -257,8 +244,8 @@ class ProductosController
             return;
         }
 
-        $exito = $this->model->actualizarStock($codigo, $cantidad);
-        $this->logger->log("Stock del producto '{codigo_producto}' actualizado", [
+        $exito = $model->actualizarStock($codigo, $cantidad);
+        $logger->log("Stock del producto '{codigo_producto}' actualizado", [
             "modulo" => "productos",
             "accion" => "actualizar_stock",
             "codigo_producto" => $codigo,
@@ -272,13 +259,11 @@ class ProductosController
             echo json_encode(['success' => false, 'message' => '❌ El stock resultante no puede ser menor que cero.']);
         }
         exit;
-    }
 
     /**
      * Aumenta el precio de los suplementos (Categoría 1) en un 10%
      */
-    public function aumentarPreciosSuplementos()
-    {
+    case "aumentarPreciosSuplementos":
         ControllerTools::protect("productos:editar"); // Validamos permisos
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -288,10 +273,10 @@ class ProductosController
         }
 
         // Llamamos a la función del modelo que retorna un array asociativo
-        $resultado = $this->model->aumentarPrecioSuplementos();
+        $resultado = $model->aumentarPrecioSuplementos();
 
         if ($resultado['success']) {
-            $this->logger->log("Aumento global de precios en suplementos (10%)", [
+            $logger->log("Aumento global de precios en suplementos (10%)", [
                 "modulo" => "productos",
                 "accion" => "aumentar_precios_suplementos"
             ]);
@@ -300,27 +285,23 @@ class ProductosController
         header('Content-Type: application/json');
         echo json_encode($resultado);
         exit;
-    }
 
     /**
      * Muestra exclusivamente la interfaz visual del formulario de reportes de inventario
      */
-    public function vistaInventario()
-    {
+    case "vistaInventario":
         ControllerTools::protect("productos:ver");
         echo ControllerTools::render('reportes/inventario');
         exit;
-    }
 
     /**
      * Generar reporte PDF del inventario general actual del catálogo de productos
      */
-    public function reporteInventario()
-    {
+    case "reporteInventario":
         ControllerTools::protect("productos:ver");
 
         // Solicitar al modelo los productos activos con sus uniones de categoría y unidad
-        $inventarioData = $this->model->obtenerReporteInventario();
+        $inventarioData = $model->obtenerReporteInventario();
 
         // Instanciar el helper específico de inventario que creamos
         $pdf = new ReporteInventario();
@@ -329,5 +310,5 @@ class ProductosController
         $pdf->SetAuthor('Sistema SOFIT GYM');
         $pdf->crearReporte($inventarioData);
         $pdf->Output('I', 'reporte_general_inventario.pdf');
-    }
+        break;
 }

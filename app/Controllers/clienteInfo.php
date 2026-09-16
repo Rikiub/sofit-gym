@@ -1,0 +1,180 @@
+<?php
+
+namespace App\Controllers;
+
+use App\Core\ControllerTools;
+use App\Core\Http\Request;
+use App\Core\Http\Response;
+use App\Core\Http\Status;
+use App\Core\Tools;
+use App\Models\BitacoraModel;
+use App\Models\Clientes\ClienteModel;
+use App\Models\Clientes\SeguimientoFisico;
+use App\Models\Clientes\SeguimientoNutricional;
+use App\Models\Clientes\SegumientoFisicoModel;
+use App\Models\Clientes\SegumientoNutricionalModel;
+
+$logger = new BitacoraModel();
+$clienteModel = new ClienteModel();
+$fisicoModel = new SegumientoFisicoModel();
+$nutricionalModel = new SegumientoNutricionalModel();
+
+function getCedula(): string
+{
+    return Request::query("cedula") ?? "";
+}
+
+function getIdSeguimiento(): int
+{
+    return Request::queryInt("id_seguimiento") ?? 0;
+}
+
+function notFoundCliente(): string
+{
+    return Response::json(["message" => "Cliente no encontrado"], Status::NOT_FOUND);
+}
+
+function notFoundSeg(): string
+{
+    return Response::json(['message' => "El seguimiento no existe"], Status::NOT_FOUND);
+}
+
+function validateBodyFisico(): SeguimientoFisico
+{
+    $body = Request::getParsedBody();
+    return Tools::map(SeguimientoFisico::class, $body);
+}
+
+function validateBodyNutricion(): SeguimientoNutricional
+{
+    $body = Request::getParsedBody();
+    return Tools::map(SeguimientoNutricional::class, $body);
+}
+
+switch (ControllerTools::action()) {
+    // INFORMACIÓN DE CLIENTE
+    case "index":
+        ControllerTools::protect("clientes:ver");
+        $cedula = getCedula();
+
+        if (!$clienteModel->find($cedula)) {
+            Response::redirect([
+                "page" => "error",
+                "status" => Status::NOT_FOUND,
+            ]);
+        }
+
+        return ControllerTools::render('clientes/info', [
+            "cedula" => $cedula,
+        ]);
+
+        // SEGUIMIENTO FISICO
+    case "queryFisico":
+        ControllerTools::protect("clientes:ver");
+        $cedula = getCedula();
+
+        if (!$clienteModel->find($cedula)) {
+            return notFoundCliente();
+        }
+
+        $seguimiento = $fisicoModel->queryByCliente($cedula);
+        return Response::json($seguimiento);
+
+    case "insertFisico":
+        ControllerTools::protect("clientes:crear");
+
+        $seguimiento = validateBodyFisico();
+        $cedula = getCedula();
+
+        if (!$clienteModel->find($cedula)) {
+            return notFoundCliente();
+        }
+
+        $new = $fisicoModel->insert($cedula, $seguimiento);
+        $logger->log("Seguimiento físico para cliente '{cedula}' registrado", [
+            "modulo" => "cliente_info",
+            "accion" => "crear_seg_fisico",
+
+            'cedula'        => $cedula,
+            'id_seguimiento' => $new->id_seguimiento,
+            'datos_nuevos'  => $new,
+        ]);
+
+        return Response::json($new, Status::CREATED);
+
+    case "deleteFisico":
+        ControllerTools::protect("clientes:eliminar");
+        $id = getIdSeguimiento();
+
+        $old = $fisicoModel->find($id);
+        if (!$old) {
+            return notFoundSeg();
+        }
+
+        $fisicoModel->delete($id);
+        $logger->log("Seguimiento físico '{id_seguimiento}' eliminado", [
+            "modulo" => "cliente_info",
+            "accion" => "eliminar_seg_fisico",
+
+            'id_seguimiento' => $id,
+            'cedula' => $old->cedula_cliente,
+            'datos_previos'  => $old,
+        ]);
+
+        return Response::noContent();
+
+        // SEGUMIENTO NUTRICIONAL
+    case "queryNutricion":
+        ControllerTools::protect("clientes:ver");
+        $cedula = getCedula();
+
+        if (!$clienteModel->find($cedula)) {
+            return notFoundCliente();
+        }
+
+        $seguimientos = $nutricionalModel->queryByCliente($cedula);
+        return Response::json($seguimientos);
+
+    case "insertNutricion":
+        ControllerTools::protect("clientes:crear");
+
+        $seguimiento = validateBodyNutricion();
+        $cedula = getCedula();
+
+        if (!$clienteModel->find($cedula)) {
+            return notFoundCliente();
+        }
+
+        $new = $nutricionalModel->insert($cedula, $seguimiento);
+        $logger->log("Seguimiento nutricional para cliente '{cedula}' registrado", [
+            "modulo" => "cliente_info",
+            "accion" => "crear_seg_nutricion",
+
+            'cedula' => $cedula,
+            'id_seguimiento' => $new->id_seguimiento,
+            'datos_nuevos' => $new,
+        ]);
+
+        return Response::json($new, Status::CREATED);
+
+    case "deleteNutricion":
+        ControllerTools::protect("clientes:eliminar");
+        $id = getIdSeguimiento();
+
+        $old = $nutricionalModel->find($id);
+        if (!$old) {
+            return notFoundSeg();
+        }
+
+        $nutricionalModel->delete($id);
+        $logger->log("Seguimiento nutricional '{id_seguimiento}' eliminado", [
+            "modulo" => "cliente_info",
+            "accion" => "eliminar_seg_nutricion",
+
+            'id_seguimiento' => $id,
+            'cedula'         => $old->cedula_cliente,
+            'datos_previos'  => $old,
+        ]);
+
+        return Response::noContent();
+}

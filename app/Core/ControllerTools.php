@@ -13,6 +13,12 @@ use League\Plates\Template\Theme;
 
 class ControllerTools
 {
+    public static function action(): string
+    {
+        $action = $_GET['action'] ?? "index";
+        return $action;
+    }
+
     /** Renderiza una plantilla HTML */
     public static function render(string $name, array $data = []): string
     {

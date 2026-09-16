@@ -2,8 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Core\ControllerTools;
 use App\Services\Auth\UserSession;
-use App\Services\Auth\CurrentUser;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Tools;
@@ -11,63 +11,47 @@ use App\Models\Notificacion;
 use App\Models\NotificacionModel;
 use Exception;
 
-class NotificacionesController
-{
-    private CurrentUser $user;
+$notifModel = new NotificacionModel();
+$user = UserSession::get();
 
-    public function __construct(
-        private $notifModel = new NotificacionModel(),
-    ) {
-        $this->user = UserSession::get();
-    }
-
-    public function query()
-    {
-        $id_usuario = Request::queryInt("id") ?? $this->user->id;
-        $results = $this->notifModel->query($id_usuario);
+switch (ControllerTools::action()) {
+    case "query":
+        $id_usuario = Request::queryInt("id") ?? $user->id;
+        $results = $notifModel->query($id_usuario);
         return Response::json($results);
-    }
 
-    public function find(): ?string
-    {
+    case "find":
         $id = Request::queryInt("id") ?? 0;
-        $data = $this->notifModel->find($this->user->id, $id);
+        $data = $notifModel->find($user->id, $id);
 
         return $data
             ? Response::json($data)
             : Response::noContent();
-    }
 
-    public function leido()
-    {
+    case "leido":
         $id = Request::queryInt("id") ?? 0;
         $leido = Request::queryBool("leido") ?? true;
 
-        $this->notifModel->setLeido($this->user->id, $id, $leido);
+        $notifModel->setLeido($user->id, $id, $leido);
         return Response::noContent();
-    }
 
-    public function leerTodas()
-    {
-        $this->notifModel->setLeidoTodas($this->user->id);
+    case "leerTodas":
+        $notifModel->setLeidoTodas($user->id);
         return Response::noContent();
-    }
 
-    public function sendMultiple(): null
-    {
+    case "sendMultiple":
         $body = Request::getParsedBody();
 
         $id_usuarios =
             $body["id_usuarios"]
-            ?? [$this->user->id]
+            ?? [$user->id]
             ?? throw new Exception("Una lista de 'id_usuarios' es requerido");
         $data = Tools::map(Notificacion::class, $body);
 
-        $this->notifModel->sendByUsuarios(
+        $notifModel->sendByUsuarios(
             $id_usuarios,
             notificacion: $data,
         );
 
         return Response::noContent();
-    }
 }

@@ -12,65 +12,72 @@ use App\Models\Clientes\Cliente;
 use App\Models\Clientes\ClienteModel;
 use App\Services\Reportes\ReporteClientes;
 
-class ClientesController
-{
-    public function __construct(
-        private $logger = new BitacoraModel(),
-        private $clienteModelo = new ClienteModel(),
-    ) {}
+$logger = new BitacoraModel();
+$clienteModelo = new ClienteModel();
 
-    public function index(): string
-    {
+function notFound(): string
+{
+    return Response::json(
+        ['message' => "El cliente no existe"],
+        Status::NOT_FOUND
+    );
+}
+
+function getId()
+{
+    return Request::query("id") ?? "";
+}
+
+function validateBody(): Cliente
+{
+    $body = Request::getParsedBody();
+    return Tools::map(Cliente::class, $body);
+}
+
+switch (ControllerTools::action()) {
+    case "index":
         ControllerTools::protect("clientes:ver");
         return ControllerTools::render('clientes/index');
-    }
 
-    public function query(): string
-    {
+    case "query":
         ControllerTools::protect("clientes:ver");
 
         $search = Request::query("search");
         $filters = Request::query("filters") ?? [];
 
-        $clientes = $this->clienteModelo->query($search, $filters);
+        $clientes = $clienteModelo->query($search, $filters);
         return Response::json($clientes);
-    }
 
-    public function summary(): string
-    {
+    case "summary":
         ControllerTools::protect("clientes:ver");
-        $clientes = $this->clienteModelo->getSummary();
+        $clientes = $clienteModelo->getSummary();
         return Response::json($clientes);
-    }
 
-    public function find(): ?string
-    {
+    case "find":
         ControllerTools::protect("clientes:ver");
 
-        $id = $this->getId();
-        $cliente = $this->clienteModelo->find($id);
+        $id = getId();
+        $cliente = $clienteModelo->find($id);
 
         return $cliente
             ? Response::json($cliente)
             : Response::noContent();
-    }
 
-    public function insert(): string
-    {
+    case "insert":
         ControllerTools::protect("clientes:crear");
 
-        $new = $this->validateBody();
+        $new = validateBody();
         $id = $new->cedula;
 
-        if ($this->clienteModelo->checkDuplicate($id)) {
+        if ($clienteModelo->checkDuplicate($id)) {
             return Response::json(
                 ['message' => "El cliente {$id} ya existe"],
                 Status::CONFLICT
             );
         }
 
-        $new = $this->clienteModelo->insert($new);
-        $this->logger->log(
+        $new = $clienteModelo->insert($new);
+        $logger->log(
             "Cliente '{cedula}' creado",
             [
                 "modulo" => "clientes",
@@ -82,22 +89,20 @@ class ClientesController
         );
 
         return Response::json($new, Status::CREATED);
-    }
 
-    public function update(): string
-    {
+    case "update":
         ControllerTools::protect("clientes:editar");
 
-        $new = $this->validateBody();
-        $id = $this->getId();
+        $new = validateBody();
+        $id = getId();
 
-        $old = $this->clienteModelo->find($id);
+        $old = $clienteModelo->find($id);
         if (!$old) {
-            return $this->notFound();
+            return notFound();
         }
 
-        $new = $this->clienteModelo->update($id, $new);
-        $this->logger->log(
+        $new = $clienteModelo->update($id, $new);
+        $logger->log(
             "Cliente '{cedula}' actualizado",
             [
                 "modulo" => "clientes",
@@ -110,19 +115,17 @@ class ClientesController
         );
 
         return Response::json($new, Status::CREATED);
-    }
 
-    public function delete(): string|null
-    {
+    case "delete":
         ControllerTools::protect("clientes:eliminar");
-        $id = $this->getId();
+        $id = getId();
 
-        if (!$this->clienteModelo->find($id)) {
-            return $this->notFound();
+        if (!$clienteModelo->find($id)) {
+            return notFound();
         }
 
-        $this->clienteModelo->delete($id);
-        $this->logger->log(
+        $clienteModelo->delete($id);
+        $logger->log(
             "Cliente '{cedula}' eliminado",
             [
                 "modulo" => "clientes",
@@ -132,60 +135,28 @@ class ClientesController
         );
 
         return Response::noContent();
-    }
 
-    private function notFound(): string
-    {
-        return Response::json(
-            ['message' => "El cliente no existe"],
-            Status::NOT_FOUND
-        );
-    }
-
-    private function getId()
-    {
-        return Request::query("id") ?? "";
-    }
-
-    private function validateBody(): Cliente
-    {
-        $body = Request::getParsedBody();
-        return Tools::map(Cliente::class, $body);
-    }
-
-    // REPORTES
-    public function reporteVista()
-    {
+        // REPORTES
+    case "reporteVista":
         ControllerTools::protect("clientes:ver");
         return ControllerTools::render('reportes/clientes');
-    }
 
-    /**
-     * Generar reporte PDF del listado general de clientes y sus estados de membresía.
-     */
-    public function reporteGeneral()
-    {
+    case "reporteGeneral":
         ControllerTools::protect("clientes:ver");
 
-        // Opcional: Permitir filtrar desde la URL por estado (ej: ?page=clientes&action=reporte&estado=Activo)
         $estadoFiltro = $_GET['estado'] ?? null;
 
-        // Solicitar al modelo los datos estructurados en array asociativo
-        $clientesData = $this->clienteModelo->query(filters: [
+        $clientesData = $clienteModelo->query(filters: [
             "estado_membresia" => $estadoFiltro
         ]);
 
-        // Instanciar la clase FPDF encargada del reporte de clientes
         $pdf = new ReporteClientes();
 
-        // Establecer los metadatos obligatorios para el documento PDF
         $pdf->SetTitle(utf8_decode('Reporte General de Clientes - SOFIT GYM'));
         $pdf->SetAuthor('Sistema SOFIT GYM');
 
-        // Construir el cuerpo de las páginas pasando la data obtenida del modelo
         $pdf->crearReporte($clientesData);
 
-        // Renderizar y forzar la visualización directa en el navegador de manera limpia
         $pdf->Output('I', 'reporte_general_clientes.pdf');
-    }
+        break;
 }

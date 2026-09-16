@@ -2,28 +2,24 @@
 
 namespace App\Controllers;
 
-use App\Controllers\Controller;
+use App\Core\ControllerTools;
 use App\Models\VentasModel;
 use App\Models\BitacoraModel;
 use App\Models\ProductoModel;
 use App\Services\Reportes\ReporteProductosMasVendidos;
 
-class VentasController extends Controller
-{
-    public function __construct(
-        private $logger = new BitacoraModel(),
-        private $model = new VentasModel()
-    ) {}
+$logger = new BitacoraModel();
+$model = new VentasModel();
 
+switch (ControllerTools::action()) {
     /**
      * Muestra la vista principal del historial de ventas
      */
-    public function index()
-    {
+    case "index":
         ControllerTools::protect("ventas:ver");
 
-        $ventas = $this->model->obtenerVentas();
-        $clientes = $this->model->obtenerClientes();
+        $ventas = $model->obtenerVentas();
+        $clientes = $model->obtenerClientes();
 
         // Instanciamos el modelo de productos para el POS
         $productoModel = new ProductoModel();
@@ -41,26 +37,23 @@ class VentasController extends Controller
             'mensaje' => $mensaje,
             'tipoMensaje' => $tipoMensaje
         ]);
-    }
+        break;
 
     /**
      * Endpoint API AJAX para obtener clientes activos (útil para el POS)
      */
-    public function obtenerClientesAjax()
-    {
+    case "obtenerClientesAjax":
         ControllerTools::protect("ventas:ver");
 
-        $clientes = $this->model->obtenerClientes();
+        $clientes = $model->obtenerClientes();
         header('Content-Type: application/json');
         echo json_encode($clientes);
         exit;
-    }
 
     /**
      * Registra una nueva venta manual individual (CRUD de venta)
      */
-    public function crear()
-    {
+    case "crear":
         ControllerTools::protect("ventas:crear");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -82,9 +75,9 @@ class VentasController extends Controller
             return;
         }
 
-        $exito = $this->model->crearVenta($datos);
+        $exito = $model->crearVenta($datos);
 
-        $this->logger->log("Venta manual creada para el producto '{codigo}'", [
+        $logger->log("Venta manual creada para el producto '{codigo}'", [
             "modulo" => "ventas",
             "accion" => "crear",
             "codigo" => $datos['codigo_producto']
@@ -97,13 +90,11 @@ class VentasController extends Controller
             echo json_encode(['success' => false, 'message' => '❌ Error al registrar la venta manual.']);
         }
         exit;
-    }
 
     /**
      * Edita un registro de venta existente (ej. corrección de método de pago o montos)
      */
-    public function editar()
-    {
+    case "editar":
         ControllerTools::protect("ventas:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -125,9 +116,9 @@ class VentasController extends Controller
         if (isset($_POST['monto_total'])) $datosNuevos['monto_total'] = floatval($_POST['monto_total']);
         // Consideración: Si se edita la cantidad o producto, el stock no se ajusta automáticamente aquí, a menos que uses Triggers en BD.
 
-        $exito = $this->model->actualizarVenta($idVenta, $datosNuevos);
+        $exito = $model->actualizarVenta($idVenta, $datosNuevos);
 
-        $this->logger->log("Venta ID '{id}' actualizada", [
+        $logger->log("Venta ID '{id}' actualizada", [
             "modulo" => "ventas",
             "accion" => "editar",
             "id" => $idVenta,
@@ -140,13 +131,11 @@ class VentasController extends Controller
             echo json_encode(['success' => false, 'message' => '❌ Error al intentar actualizar la venta.']);
         }
         exit;
-    }
 
     /**
      * Elimina un registro de venta
      */
-    public function eliminar()
-    {
+    case "eliminar":
         ControllerTools::protect("ventas:eliminar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -161,9 +150,9 @@ class VentasController extends Controller
             return;
         }
 
-        $exito = $this->model->eliminarVenta($idVenta);
+        $exito = $model->eliminarVenta($idVenta);
 
-        $this->logger->log("Venta ID '{id}' eliminada", [
+        $logger->log("Venta ID '{id}' eliminada", [
             "modulo" => "ventas",
             "accion" => "eliminar",
             "id" => $idVenta,
@@ -176,13 +165,11 @@ class VentasController extends Controller
             echo json_encode(['success' => false, 'message' => '❌ No se pudo completar la eliminación de la venta.']);
         }
         exit;
-    }
 
     /**
      * Registra una nueva transacción (Punto de Venta) procesando múltiples productos
      */
-    public function registrarVenta()
-    {
+    case "registrarVenta":
         ControllerTools::protect("ventas:crear");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -205,10 +192,10 @@ class VentasController extends Controller
         }
 
         // Procesar en el modelo bajo una sola transacción segura
-        $resultado = $this->model->registrarVentaMultiplesProductos($cedulaCliente, $metodoPago, $items);
+        $resultado = $model->registrarVentaMultiplesProductos($cedulaCliente, $metodoPago, $items);
 
         if ($resultado['success']) {
-            $this->logger->log("Transacción de venta múltiple registrada. Cliente '{cedula_cliente}'", [
+            $logger->log("Transacción de venta múltiple registrada. Cliente '{cedula_cliente}'", [
                 "modulo" => "ventas",
                 "accion" => "registrar_venta_pos",
                 "cedula_cliente" => $cedulaCliente,
@@ -220,17 +207,15 @@ class VentasController extends Controller
         header('Content-Type: application/json');
         echo json_encode($resultado);
         exit;
-    }
 
     /**
      * Endpoint API AJAX para obtener los productos que nunca han sido vendidos
      */
-    public function obtenerProductosSinVenderAjax()
-    {
+    case "obtenerProductosSinVenderAjax":
         ControllerTools::protect("ventas:ver"); // Validación de permisos
 
         // Llamamos a la función del modelo
-        $productos = $this->model->obtenerProductosSinVender();
+        $productos = $model->obtenerProductosSinVender();
 
         // Retornamos los datos en formato JSON para poder consumirlos desde JS
         header('Content-Type: application/json');
@@ -239,7 +224,6 @@ class VentasController extends Controller
             'data' => $productos
         ]);
         exit;
-    }
 
     // ==========================================
     // REPORTES
@@ -248,18 +232,15 @@ class VentasController extends Controller
     /**
      * Muestra exclusivamente la interfaz visual del formulario de reportes de ventas
      */
-    public function vistaReporte()
-    {
+    case "vistaReporte":
         ControllerTools::protect("ventas:ver");
         echo ControllerTools::render('reportes/productos');
         exit;
-    }
 
     /**
      * Genera y descarga el reporte en formato PDF de los productos más vendidos.
      */
-    public function generarReporteMasVendidos()
-    {
+    case "generarReporteMasVendidos":
         ControllerTools::protect("ventas:ver");
 
         // Soporte para filtros opcionales de rango de fecha desde la URL
@@ -267,7 +248,7 @@ class VentasController extends Controller
         $fechaFin    = !empty($_GET['fecha_fin'])    ? strip_tags(trim($_GET['fecha_fin']))    : null;
 
         // Consultar los datos al Modelo estructurado de Ventas
-        $productosData = $this->model->obtenerProductosMasVendidos($fechaInicio, $fechaFin);
+        $productosData = $model->obtenerProductosMasVendidos($fechaInicio, $fechaFin);
 
         if (is_array($productosData) && count($productosData) > 0) {
             $pdf = new ReporteProductosMasVendidos();
@@ -285,5 +266,4 @@ class VentasController extends Controller
             header("Location: ?page=ventas");
             exit;
         }
-    }
 }

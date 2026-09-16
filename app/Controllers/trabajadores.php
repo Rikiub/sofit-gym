@@ -11,65 +11,72 @@ use App\Models\BitacoraModel;
 use App\Models\Trabajador;
 use App\Models\TrabajadorModel;
 
-class TrabajadoresController
-{
-    public function __construct(
-        private $logger = new BitacoraModel(),
-        private $trabajadorModel = new TrabajadorModel(),
-    ) {}
+$logger = new BitacoraModel();
+$trabajadorModel = new TrabajadorModel();
 
-    public function index(): string
-    {
+function notFound(): string
+{
+    return Response::json(
+        ["message" => "Trabajador no encontrado"],
+        Status::NOT_FOUND
+    );
+}
+
+function getId(): string
+{
+    return Request::query("id") ?? "";
+}
+
+function validateBody(): Trabajador
+{
+    $body = Request::getParsedBody();
+    return Tools::map(Trabajador::class, $body);
+}
+
+switch (ControllerTools::action()) {
+    case "index":
         ControllerTools::protect("trabajadores:ver");
         return ControllerTools::render('trabajadores');
-    }
 
-    public function query(): string
-    {
+    case "query":
         ControllerTools::protect("trabajadores:ver");
 
         $search = Request::query("search") ?? null;
         $id_rol = Request::queryInt("id_rol") ?? 0;
 
-        $trabajadores = $this->trabajadorModel->query($search, $id_rol);
+        $trabajadores = $trabajadorModel->query($search, $id_rol);
         return Response::json($trabajadores);
-    }
 
-    public function summary(): string
-    {
+    case "summary":
         ControllerTools::protect("trabajadores:ver");
-        $summary = $this->trabajadorModel->getSummary();
+        $summary = $trabajadorModel->getSummary();
         return Response::json($summary);
-    }
 
-    public function find(): ?string
-    {
+    case "find":
         ControllerTools::protect("trabajadores:ver");
 
-        $id = $this->getId();
-        $trabajador = $this->trabajadorModel->find($id);
+        $id = getId();
+        $trabajador = $trabajadorModel->find($id);
 
         return $trabajador
             ? Response::json($trabajador)
             : Response::noContent();
-    }
 
-    public function insert(): string
-    {
+    case "insert":
         ControllerTools::protect("trabajadores:crear");
 
-        $new = $this->validateBody();
+        $new = validateBody();
         $id = $new->cedula;
 
-        if ($this->trabajadorModel->checkDuplicate($id)) {
+        if ($trabajadorModel->checkDuplicate($id)) {
             return Response::json(
                 ['message' => 'El trabajador ya existe'],
                 Status::CONFLICT
             );
         }
 
-        $new = $this->trabajadorModel->insert($new);
-        $this->logger->log("Trabajador '{cedula}' creado", [
+        $new = $trabajadorModel->insert($new);
+        $logger->log("Trabajador '{cedula}' creado", [
             "modulo" => "trabajadores",
             "accion" => "crear",
 
@@ -78,22 +85,20 @@ class TrabajadoresController
         ]);
 
         return Response::json($new, Status::CREATED);
-    }
 
-    public function update(): string
-    {
+    case "update":
         ControllerTools::protect("trabajadores:editar");
 
-        $id = $this->getId();
-        $new = $this->validateBody();
+        $id = getId();
+        $new = validateBody();
 
-        $old = $this->trabajadorModel->find($id);
+        $old = $trabajadorModel->find($id);
         if (!$old) {
-            return $this->notFound();
+            return notFound();
         }
 
-        $new = $this->trabajadorModel->update($id, $new);
-        $this->logger->log("Trabajador '{cedula}' actualizado", [
+        $new = $trabajadorModel->update($id, $new);
+        $logger->log("Trabajador '{cedula}' actualizado", [
             "modulo" => "trabajadores",
             "accion" => "editar",
 
@@ -103,20 +108,18 @@ class TrabajadoresController
         ]);
 
         return Response::json($new, Status::CREATED);
-    }
 
-    public function delete(): string|null
-    {
+    case "delete":
         ControllerTools::protect("trabajadores:eliminar");
-        $id = $this->getId();
+        $id = getId();
 
-        $old = $this->trabajadorModel->find($id);
+        $old = $trabajadorModel->find($id);
         if (!$old) {
-            return $this->notFound();
+            return notFound();
         }
 
-        $this->trabajadorModel->delete($id);
-        $this->logger->log("Trabajador '{cedula}' eliminado", [
+        $trabajadorModel->delete($id);
+        $logger->log("Trabajador '{cedula}' eliminado", [
             "modulo" => "trabajadores",
             "accion" => "eliminar",
 
@@ -125,24 +128,4 @@ class TrabajadoresController
         ]);
 
         return Response::noContent();
-    }
-
-    private function notFound(): string
-    {
-        return Response::json(
-            ["message" => "Trabajador no encontrado"],
-            Status::NOT_FOUND
-        );
-    }
-
-    private function getId(): string
-    {
-        return Request::query("id") ?? "";
-    }
-
-    private function validateBody(): Trabajador
-    {
-        $body = Request::getParsedBody();
-        return Tools::map(Trabajador::class, $body);
-    }
 }

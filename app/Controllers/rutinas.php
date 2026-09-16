@@ -6,38 +6,32 @@ use App\Core\ControllerTools;
 use App\Models\RutinaModel;
 use App\Models\BitacoraModel;
 
-class RutinasController
-{
-    public function __construct(
-        private $logger = new BitacoraModel(),
-        private $model = new RutinaModel()
-    ) {}
+$logger = new BitacoraModel();
+$model = new RutinaModel();
 
+switch (ControllerTools::action()) {
     /**
      * Vista principal: Gestión de Rutinas Base
      * Acceso: ?page=rutinas
      */
-    public function index()
-    {
+    case "index":
         ControllerTools::protect("rutinas:ver");
 
         // Limpiamos mensajes de sesión previos
         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
         return ControllerTools::render('rutinas', [
-            'rutinas' => $this->model->obtenerTodasLasRutinas(),
-            'dificultades' => $this->model->obtenerDificultades(),
+            'rutinas' => $model->obtenerTodasLasRutinas(),
+            'dificultades' => $model->obtenerDificultades(),
             'mensaje' => $_SESSION['mensaje'] ?? '',
             'tipoMensaje' => $_SESSION['tipo_mensaje'] ?? '',
         ]);
-    }
 
     /**
      * Vista secundaria: Asignación de Rutinas a Clientes
      * Acceso: ?page=rutinas&action=asignadas
      */
-    public function asignadas()
-    {
+    case "asignadas":
         ControllerTools::protect("rutinas:ver");
 
         // Limpiamos mensajes de sesión previos
@@ -45,12 +39,11 @@ class RutinasController
 
         // Renderizamos la vista 'rutinasAsignadas' enviándole las asignaciones y las rutinas bases cargadas
         return ControllerTools::render('rutinas_asignadas', [
-            'asignaciones' => $this->model->obtenerTodasLasAsignaciones(),
-            'rutinas' => $this->model->obtenerTodasLasRutinas(),
+            'asignaciones' => $model->obtenerTodasLasAsignaciones(),
+            'rutinas' => $model->obtenerTodasLasRutinas(),
             'mensaje' => $_SESSION['mensaje'] ?? '',
             'tipoMensaje' => $_SESSION['tipo_mensaje'] ?? '',
         ]);
-    }
 
     // =========================================================================
     // CRUD AJAX: TABLA `rutina`
@@ -59,24 +52,21 @@ class RutinasController
     /**
      * Buscar rutinas por coincidencia de término (AJAX)
      */
-    public function buscar_rutinas_ajax()
-    {
+    case "buscar_rutinas_ajax":
         ControllerTools::protect("rutinas:ver");
 
         if (!isset($_GET['ajax']) || $_GET['ajax'] !== 'buscar_rutinas')
             return;
         $termino = $_GET['termino'] ?? '';
-        $resultados = $this->model->buscarRutinas($termino);
+        $resultados = $model->buscarRutinas($termino);
         header('Content-Type: application/json');
         echo json_encode($resultados);
         exit;
-    }
 
     /**
      * Registrar una nueva rutina (AJAX - POST)
      */
-    public function registrar_rutina()
-    {
+    case "registrar_rutina":
         ControllerTools::protect("rutinas:ver");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -104,9 +94,9 @@ class RutinasController
             'duracion_semanas' => $duracionSemanas
         ];
 
-        $ok = $this->model->crearRutina($datos);
+        $ok = $model->crearRutina($datos);
         if ($ok) {
-            $this->logger->log("Rutina '{nombre}' creada", [
+            $logger->log("Rutina '{nombre}' creada", [
                 "modulo" => "rutinas",
                 "accion" => "crear",
                 'nombre' => $nombre,
@@ -115,13 +105,12 @@ class RutinasController
         }
 
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Rutina creada correctamente.' : 'Error al registrar rutina en la base de datos.']);
-    }
+        break;
 
     /**
      * Editar una rutina existente (AJAX - POST)
      */
-    public function editar_rutina()
-    {
+    case "editar_rutina":
         ControllerTools::protect("rutinas:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -136,7 +125,7 @@ class RutinasController
             return;
         }
 
-        $old = $this->model->obtenerRutinaPorId($id);
+        $old = $model->obtenerRutinaPorId($id);
         if (!$old) {
             echo json_encode(['success' => false, 'message' => 'Rutina no encontrada.']);
             return;
@@ -160,11 +149,11 @@ class RutinasController
             return;
         }
 
-        $ok = $this->model->actualizarRutina($id, $datos);
+        $ok = $model->actualizarRutina($id, $datos);
         if ($ok) {
             // Obtener los datos actualizados para tener el objeto completo
-            $new = $this->model->obtenerRutinaPorId($id);
-            $this->logger->log("Rutina '{nombre}' actualizada", [
+            $new = $model->obtenerRutinaPorId($id);
+            $logger->log("Rutina '{nombre}' actualizada", [
                 "modulo" => "rutinas",
                 "accion" => "editar",
 
@@ -176,13 +165,12 @@ class RutinasController
         }
 
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Rutina actualizada correctamente.' : 'No se realizaron cambios o error al actualizar.']);
-    }
+        break;
 
     /**
      * Eliminar una rutina (AJAX - POST)
      */
-    public function eliminar_rutina()
-    {
+    case "eliminar_rutina":
         ControllerTools::protect("rutinas:eliminar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -197,15 +185,15 @@ class RutinasController
             return;
         }
 
-        $old = $this->model->obtenerRutinaPorId($id);
+        $old = $model->obtenerRutinaPorId($id);
         if (!$old) {
             echo json_encode(['success' => false, 'message' => 'Rutina no encontrada.']);
             return;
         }
 
-        $ok = $this->model->eliminarRutina($id);
+        $ok = $model->eliminarRutina($id);
         if ($ok) {
-            $this->logger->log("Rutina '{nombre}' eliminada", [
+            $logger->log("Rutina '{nombre}' eliminada", [
                 "modulo" => "rutinas",
                 "accion" => "eliminar",
 
@@ -216,7 +204,7 @@ class RutinasController
         }
 
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Rutina eliminada correctamente.' : 'Error al eliminar. Verifique que no esté asignada a un cliente.']);
-    }
+        break;
 
     // =========================================================================
     // CRUD AJAX: TABLA `rutina_asignada`
@@ -225,8 +213,7 @@ class RutinasController
     /**
      * Asignar rutina a un cliente (AJAX - POST)
      */
-    public function asignar_rutina()
-    {
+    case "asignar_rutina":
         ControllerTools::protect("rutinas:crear");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -258,9 +245,9 @@ class RutinasController
             'progreso' => $progreso
         ];
 
-        $ok = $this->model->asignarRutina($datos);
+        $ok = $model->asignarRutina($datos);
         if ($ok) {
-            $this->logger->log("Rutina asignada a cliente '{cedula}'", [
+            $logger->log("Rutina asignada a cliente '{cedula}'", [
                 "modulo" => "rutinas",
                 "accion" => "asignar",
 
@@ -271,13 +258,12 @@ class RutinasController
         }
 
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Rutina asignada exitosamente.' : 'Error al realizar la asignación.']);
-    }
+        break;
 
     /**
      * Editar asignación de rutina (AJAX - POST)
      */
-    public function editar_asignacion()
-    {
+    case "editar_asignacion":
         ControllerTools::protect("rutinas:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -292,7 +278,7 @@ class RutinasController
             return;
         }
 
-        $old = $this->model->obtenerAsignacionPorId($idAsignacion);
+        $old = $model->obtenerAsignacionPorId($idAsignacion);
         if (!$old) {
             echo json_encode(['success' => false, 'message' => 'Asignación no encontrada.']);
             return;
@@ -314,10 +300,10 @@ class RutinasController
         if (isset($_POST['progreso']))
             $datos['progreso'] = floatval($_POST['progreso']);
 
-        $ok = $this->model->actualizarAsignacion($idAsignacion, $datos);
+        $ok = $model->actualizarAsignacion($idAsignacion, $datos);
         if ($ok) {
-            $new = $this->model->obtenerAsignacionPorId($idAsignacion);
-            $this->logger->log("Asignación de rutina '{id_asignacion}' actualizada", [
+            $new = $model->obtenerAsignacionPorId($idAsignacion);
+            $logger->log("Asignación de rutina '{id_asignacion}' actualizada", [
                 "modulo" => "rutinas",
                 "accion" => "editar",
 
@@ -329,13 +315,12 @@ class RutinasController
         }
 
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Asignación modificada correctamente.' : 'No se realizaron cambios o error de base de datos.']);
-    }
+        break;
 
     /**
      * Eliminar asignación de rutina (AJAX - POST)
      */
-    public function eliminar_asignacion()
-    {
+    case "eliminar_asignacion":
         ControllerTools::protect("rutinas:eliminar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -350,15 +335,15 @@ class RutinasController
             return;
         }
 
-        $old = $this->model->obtenerAsignacionPorId($idAsignacion);
+        $old = $model->obtenerAsignacionPorId($idAsignacion);
         if (!$old) {
             echo json_encode(['success' => false, 'message' => 'Asignación no encontrada.']);
             return;
         }
 
-        $ok = $this->model->eliminarAsignacion($idAsignacion);
+        $ok = $model->eliminarAsignacion($idAsignacion);
         if ($ok) {
-            $this->logger->log("Asignación de rutina '{id_asignacion}' eliminada", [
+            $logger->log("Asignación de rutina '{id_asignacion}' eliminada", [
                 "modulo" => "rutinas",
                 "accion" => "eliminar",
 
@@ -369,13 +354,12 @@ class RutinasController
         }
 
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Asignación eliminada correctamente.' : 'Error al eliminar la asignación.']);
-    }
+        break;
 
     /**
      * Obtener asignaciones de un cliente específico en JSON (AJAX)
      */
-    public function buscar_asignaciones_cliente_ajax()
-    {
+    case "buscar_asignaciones_cliente_ajax":
         ControllerTools::protect("rutinas:ver");
 
         $cedula = $_GET['cedula_cliente'] ?? '';
@@ -383,11 +367,10 @@ class RutinasController
             echo json_encode([]);
             exit;
         }
-        $resultados = $this->model->obtenerAsignacionesPorCliente($cedula);
+        $resultados = $model->obtenerAsignacionesPorCliente($cedula);
         header('Content-Type: application/json');
         echo json_encode($resultados);
         exit;
-    }
 
     // =========================================================================
     // CONSULTAS Y TRANSACCIONES AVANZADAS (AJAX)
@@ -397,38 +380,33 @@ class RutinasController
      * Obtener asignaciones de nivel Avanzado (AJAX - GET)
      * Responde a la subconsulta 2 solicitada.
      */
-    public function obtener_asignaciones_avanzadas_ajax()
-    {
+    case "obtener_asignaciones_avanzadas_ajax":
         ControllerTools::protect("rutinas:ver");
 
-        $resultados = $this->model->obtenerAsignacionesAvanzadas();
+        $resultados = $model->obtenerAsignacionesAvanzadas();
 
         header('Content-Type: application/json');
         echo json_encode(['success' => true, 'data' => $resultados]);
         exit;
-    }
 
     /**
      * Obtener rutinas con mayor duración en semanas (AJAX - GET)
      * Responde a la subconsulta 3 solicitada.
      */
-    public function obtener_rutinas_mas_largas_ajax()
-    {
+    case "obtener_rutinas_mas_largas_ajax":
         ControllerTools::protect("rutinas:ver");
 
-        $resultados = $this->model->obtenerRutinasMasLargas();
+        $resultados = $model->obtenerRutinasMasLargas();
 
         header('Content-Type: application/json');
         echo json_encode(['success' => true, 'data' => $resultados]);
         exit;
-    }
 
     /**
      * Cancelar todas las rutinas activas de un cliente por baja médica (AJAX - POST)
      * Ejecuta la Transacción 3 solicitada.
      */
-    public function cancelar_rutinas_cliente()
-    {
+    case "cancelar_rutinas_cliente":
         ControllerTools::protect("rutinas:editar");
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -446,11 +424,11 @@ class RutinasController
         }
 
         // Ejecutamos la transacción en el modelo
-        $resultado = $this->model->cancelarRutinasCliente($cedula);
+        $resultado = $model->cancelarRutinasCliente($cedula);
 
         if ($resultado['success']) {
             // Registramos la acción masiva en la bitácora
-            $this->logger->log("Rutinas canceladas por baja médica para cliente '{cedula}'", [
+            $logger->log("Rutinas canceladas por baja médica para cliente '{cedula}'", [
                 "modulo" => "rutinas",
                 "accion" => "cancelar_masivo",
                 'cedula' => $cedula
@@ -460,5 +438,4 @@ class RutinasController
         header('Content-Type: application/json');
         echo json_encode($resultado);
         exit;
-    }
 }
