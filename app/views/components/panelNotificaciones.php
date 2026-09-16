@@ -8,6 +8,8 @@ $this->pushJs("components/panelNotificaciones.js");
         <ul class="list-unstyled mb-0">
             <template x-for="notif in notificaciones" :key="notif.id_notificacion">
                 <li class="d-flex justify-content-between align-items-start py-2 px-3 border-bottom"
+                    :class="notif.leido ? 'opacity-50' : ''"
+                    :style="notif.leido ? 'background-color: #f8f9fa;' : ''"
                     x-intersect.once="setTimeout(() => marcarLeida(notif.id_notificacion, true), 10000)">
 
                     <div class="me-2 flex-grow-1" style="min-width: 0;">
