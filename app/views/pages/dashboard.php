@@ -14,7 +14,8 @@ $this->pushJs('pages/dashboard/dashboard.js');
 function headerTitle(string $icon = "", string $titulo = "")
 {
     return <<<HTML
-        <h2 class="fs-3 fw-bold text-white mb-4 d-flex align-items-center gap-2" style="text-shadow: 0 1px 3px rgba(0,0,0,0.3);">
+        <h2 class="fs-3 fw-bold text-white mb-4 d-flex align-items-center gap-2"
+            style="text-shadow: 0 1px 2px rgba(0,0,0,0.6), 0 0 12px rgba(0,0,0,0.5);">
             <i class="fas {$icon}"></i>
             {$titulo}
         </h2>
@@ -30,28 +31,45 @@ function cardAcceso(
 ): string {
     return <<<HTML
         <div class="col-12 col-sm-6 col-md-3">
-            <a href="?page={$page}" class="glass-card d-flex align-items-start gap-3 p-3 rounded-4 text-decoration-none text-white h-100 hover-lift">
-                <div class="p-3 bg-opacity-25 rounded-3 text-info fs-3 d-flex align-items-center justify-content-center {$iconClass}" style="width: 56px; height: 56px;">
-                    <i class="fas {$icon}"></i>
-                </div>
+            <a href="?page={$page}" class="card h-100 text-decoration-none border-0 shadow-sm rounded-4 hover-lift">
+                <div class="card-body d-flex align-items-start gap-3">
+                    <div class="p-3 rounded-3 fs-3 d-flex align-items-center justify-content-center {$iconClass}"
+                        style="width: 56px; height: 56px; flex-shrink: 0;">
+                        <i class="fas {$icon}"></i>
+                    </div>
 
-                <div>
-                    <h4 class="fs-6 fw-bold mb-1 text-white">{$titulo}</h4>
-                    <span class="small text-white-50">{$descripcion}</span>
+                    <div class="flex-grow-1 min-w-0">
+                        <h4 class="card-title fs-6 fw-bold mb-1 text-dark">{$titulo}</h4>
+                        <p class="card-text small text-muted mb-0">{$descripcion}</p>
+                    </div>
                 </div>
             </a>
         </div>
     HTML;
 }
 
-function cardEstadistica(string $titulo, int|string $valor, string $footer)
-{
+function cardEstadistica(
+    string $titulo,
+    int|string $valor,
+    string $footer,
+    string $icon = "fa-chart-simple",
+    string $iconClass = "bg-danger bg-opacity-25 text-danger"
+): string {
     return <<<HTML
         <div class="col-12 col-sm-6 col-md-4">
-            <div class="glass-card d-block p-4 rounded-4 text-center text-decoration-none text-white h-100 hover-lift">
-                <h4 class="fs-6 fw-semibold text-white mb-2">{$titulo}</h4>
-                <div class="display-6 fw-bold text-danger my-2">{$valor}</div>
-                <span class="small text-white-50">{$footer}</span>
+            <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="p-3 rounded-3 fs-3 d-flex align-items-center justify-content-center {$iconClass}"
+                        style="width: 56px; height: 56px; flex-shrink: 0;">
+                        <i class="fas {$icon}"></i>
+                    </div>
+
+                    <div class="flex-grow-1 min-w-0">
+                        <h4 class="card-title fs-6 fw-semibold text-muted mb-1">{$titulo}</h4>
+                        <div class="fs-3 fw-bold text-dark mb-0">{$valor}</div>
+                        <span class="small text-muted">{$footer}</span>
+                    </div>
+                </div>
             </div>
         </div>
     HTML;
@@ -69,7 +87,7 @@ function cardEstadistica(string $titulo, int|string $valor, string $footer)
                 <?= cardAcceso(
                     page: "asistencia",
                     icon: "fa-fingerprint",
-                    iconClass: "bg-info text-info",
+                    iconClass: "bg-info text-info bg-opacity-25",
                     titulo: "Registro de asistencias",
                     descripcion: "Control de entradas al gimnasio",
                 ) ?>
@@ -77,7 +95,7 @@ function cardEstadistica(string $titulo, int|string $valor, string $footer)
                 <?= cardAcceso(
                     page: "facturacion",
                     icon: "fa-coins",
-                    iconClass: "bg-success text-success",
+                    iconClass: "bg-success text-success bg-opacity-25",
                     titulo: "Facturación y pagos",
                     descripcion: "Control de membresias y vencimientos",
                 ) ?>
@@ -85,7 +103,7 @@ function cardEstadistica(string $titulo, int|string $valor, string $footer)
                 <?= cardAcceso(
                     page: "clientes",
                     icon: "fa-id-card",
-                    iconClass: "bg-warning text-warning",
+                    iconClass: "bg-warning text-warning bg-opacity-25",
                     titulo: "Gestión de clientes",
                     descripcion: "Información y seguimiento biometrico",
                 ) ?>
@@ -93,7 +111,7 @@ function cardEstadistica(string $titulo, int|string $valor, string $footer)
                 <?= cardAcceso(
                     page: "clasesGrupales",
                     icon: "fa-calendar-alt",
-                    iconClass: "bg-danger text-danger",
+                    iconClass: "bg-danger text-danger bg-opacity-25",
                     titulo: "Clases grupales",
                     descripcion: "Calendario y horarios de clases",
                 ) ?>
@@ -108,39 +126,55 @@ function cardEstadistica(string $titulo, int|string $valor, string $footer)
                     titulo: "Asistencias de hoy",
                     valor: count($asistencias),
                     footer: "Registradas",
+                    icon: "fa-fingerprint",
+                    iconClass: "bg-info bg-opacity-25 text-info",
                 ) ?>
 
                 <?= cardEstadistica(
                     titulo: "Clientes del mes",
                     valor: count($clientesMensuales),
                     footer: "Membresías activas",
+                    icon: "fa-user-check",
+                    iconClass: "bg-success bg-opacity-25 text-success",
                 ) ?>
 
                 <?= cardEstadistica(
                     titulo: "Ingresos mensuales",
                     valor: "$" . round($ingresosMensuales["total_ingresado"]),
                     footer: "Ganancias totales",
+                    icon: "fa-coins",
+                    iconClass: "bg-warning bg-opacity-25 text-warning",
                 ) ?>
             </div>
 
             <div class="row g-3">
                 <div class="col-12 col-md">
-                    <div class="glass-card p-4 rounded-4 h-100 hover-lift" x-data="asistenciasChart">
-                        <h3 class="fs-5 text-white mb-3">
-                            <i class="fas fa-chart-line text-danger me-2"></i>
-                            Asistencias esta semana
-                        </h3>
-                        <canvas class="bg-white rounded-3 p-2 w-100" x-ref="canvas"></canvas>
+                    <div class="card border-0 shadow-sm rounded-4 h-100 hover-lift" x-data="asistenciasChart">
+                        <div class="card-body p-4">
+                            <h3 class="fs-5 text-dark mb-3 d-flex align-items-center gap-2">
+                                <span class="p-2 rounded-3 bg-danger bg-opacity-25 text-danger d-inline-flex align-items-center justify-content-center"
+                                    style="width: 36px; height: 36px;">
+                                    <i class="fas fa-chart-line"></i>
+                                </span>
+                                Asistencias esta semana
+                            </h3>
+                            <canvas class="rounded-3 w-100" x-ref="canvas"></canvas>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-12 col-md">
-                    <div class="glass-card p-4 rounded-4 h-100 hover-lift" x-data="facturacionChart">
-                        <h3 class="fs-5 text-white mb-3">
-                            <i class="fas fa-chart-line text-danger me-2"></i>
-                            Ventas esta semana
-                        </h3>
-                        <canvas class="bg-white rounded-3 p-2 w-100" x-ref="canvas"></canvas>
+                    <div class="card border-0 shadow-sm rounded-4 h-100 hover-lift" x-data="facturacionChart">
+                        <div class="card-body p-4">
+                            <h3 class="fs-5 text-dark mb-3 d-flex align-items-center gap-2">
+                                <span class="p-2 rounded-3 bg-danger bg-opacity-25 text-danger d-inline-flex align-items-center justify-content-center"
+                                    style="width: 36px; height: 36px;">
+                                    <i class="fas fa-chart-line"></i>
+                                </span>
+                                Ventas esta semana
+                            </h3>
+                            <canvas class="rounded-3 w-100" x-ref="canvas"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
