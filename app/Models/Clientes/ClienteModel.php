@@ -3,10 +3,10 @@
 namespace App\Models\Clientes;
 
 use App\Core\Tools;
-use App\Models\Model;
+use App\Models\Database;
 use App\Models\Personas\PersonaModel;
 
-class ClienteModel extends Model
+class ClienteModel extends Database
 {
     public string $table = 'cliente';
     public string $primaryKey = 'cedula';
@@ -20,7 +20,7 @@ class ClienteModel extends Model
     /** Resumen estadisticos */
     public function getSummary(): array
     {
-        $rows = $this->db->dbQuery(<<<SQL
+        $rows = $this->dbQuery(<<<SQL
             SELECT 
                 -- Cantidad de clientes totales
                 (SELECT COUNT(*) FROM cliente) AS total_clientes,
@@ -119,7 +119,7 @@ class ClienteModel extends Model
                 : ""
         );
 
-        $rows = $this->db->dbQuery($sql, $params)->fetchAll();
+        $rows = $this->dbQuery($sql, $params)->fetchAll();
         return array_map(
             $this->mapToCliente(...),
             $rows
@@ -128,7 +128,7 @@ class ClienteModel extends Model
 
     public function find(string $cedula): ?Cliente
     {
-        $row = $this->db->dbQuery(
+        $row = $this->dbQuery(
             $this->sqlSelect(where: "WHERE cliente.{$this->primaryKey} = ?"),
             [$cedula]
         )->fetch();
@@ -148,9 +148,9 @@ class ClienteModel extends Model
     {
         $cliente->validateInsert();
 
-        return $this->db->dbTransaction(function () use ($cliente) {
+        return $this->dbTransaction(function () use ($cliente) {
             $this->personaModel->insert($cliente);
-            $this->db->dbInsert(
+            $this->dbInsert(
                 $this->table,
                 [$this->primaryKey => $cliente->cedula]
             );
@@ -166,7 +166,7 @@ class ClienteModel extends Model
 
     public function delete(string $cedula): void
     {
-        $this->db->dbDelete($this->table, [$this->primaryKey => $cedula]);
+        $this->dbDelete($this->table, [$this->primaryKey => $cedula]);
     }
 
     private function mapToCliente(array $row): Cliente

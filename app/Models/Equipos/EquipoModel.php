@@ -4,10 +4,10 @@ namespace App\Models\Equipos;
 
 use App\Core\Tools;
 use App\Core\Validator;
-use App\Models\Model;
+use App\Models\Database;
 use DateTimeImmutable;
 
-class EquipoModel extends Model
+class EquipoModel extends Database
 {
     private string $table = 'equipo';
     private string $primaryKey = 'codigo_equipo';
@@ -17,7 +17,7 @@ class EquipoModel extends Model
      */
     public function query(): array
     {
-        $rows = $this->db->dbQuery($this->sqlSelect())->fetchAll();
+        $rows = $this->dbQuery($this->sqlSelect())->fetchAll();
         return array_map(
             fn($row) => Tools::map(Equipo::class, $row),
             $rows
@@ -30,13 +30,13 @@ class EquipoModel extends Model
     public function getEquiposEnMantenimiento(): array
     {
         $sql = "SELECT * FROM equipo WHERE estado IN ('Mantenimiento', 'Fuera de Servicio') AND activo = 1";
-        $stmt = $this->db->query($sql);
+        $stmt = $this->pdo->query($sql);
         return $stmt->fetchAll();
     }
 
     public function find(string $codigo): ?Equipo
     {
-        $row = $this->db->dbQuery(
+        $row = $this->dbQuery(
             $this->sqlSelect("WHERE {$this->primaryKey} = ?"),
             [$codigo]
         )->fetch();
@@ -50,7 +50,7 @@ class EquipoModel extends Model
     {
         $equipo->validateInsert();
 
-        $this->db->dbInsert(
+        $this->dbInsert(
             $this->table,
             $this->mapToColumns($equipo, includeId: true),
         );
@@ -60,7 +60,7 @@ class EquipoModel extends Model
 
     public function update(string $codigo, Equipo $equipo): Equipo
     {
-        $this->db->dbUpdate(
+        $this->dbUpdate(
             $this->table,
             $this->mapToColumns($equipo),
             [$this->primaryKey => $codigo],
@@ -70,7 +70,7 @@ class EquipoModel extends Model
 
     public function delete(string $codigo): void
     {
-        $this->db->dbDelete($this->table, [$this->primaryKey => $codigo]);
+        $this->dbDelete($this->table, [$this->primaryKey => $codigo]);
     }
 
     private function mapToColumns(Equipo $dto, bool $includeId = false): array

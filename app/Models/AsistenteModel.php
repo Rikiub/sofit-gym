@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Database;
 use App\Core\Tools;
 use App\Models\Clientes\ClienteModel;
 use App\Models\Clientes\SegumientoFisicoModel;
 use App\Models\Clientes\SegumientoNutricionalModel;
 use DateTimeImmutable;
 
-class AsistenteModel extends Model
+class AsistenteModel extends Database
 {
     public function __construct(
         private AsistenciaModel $asistenciaModel = new AsistenciaModel(),
@@ -29,8 +30,8 @@ class AsistenteModel extends Model
         unset($array["fecha_creacion"]);
         unset($array["mensajes"]);
 
-        $this->db->dbInsert($table, $array);
-        $id = (int) $this->db->lastInsertId();
+        $this->dbInsert($table, $array);
+        $id = (int) $this->pdo->lastInsertId();
 
         return $this->findSesion($id);
     }
@@ -43,13 +44,13 @@ class AsistenteModel extends Model
         unset($array["fecha_creacion"]);
         $array["rol"] = $mensaje->rol ? $mensaje->rol->value : null;
 
-        $this->db->dbInsert($table, $array);
+        $this->dbInsert($table, $array);
     }
 
     /** @return AsistenteSesion[] */
     public function querySesiones(): array
     {
-        $rows = $this->db->dbQuery(
+        $rows = $this->dbQuery(
             <<<SQL
                 SELECT * FROM {$this->dbSecurity("asistente_sesion")}
             SQL,
@@ -63,7 +64,7 @@ class AsistenteModel extends Model
 
     public function findSesion(int $id_sesion): ?AsistenteSesion
     {
-        $sesion = $this->db->dbQuery(
+        $sesion = $this->dbQuery(
             <<<SQL
                 SELECT *
                 FROM {$this->dbSecurity("asistente_sesion")}
@@ -73,7 +74,7 @@ class AsistenteModel extends Model
         )->fetch();
         if (!$sesion) return null;
 
-        $mensajes = $this->db->dbQuery(
+        $mensajes = $this->dbQuery(
             <<<SQL
                 SELECT *
                 FROM {$this->dbSecurity("asistente_mensaje")}
@@ -88,7 +89,7 @@ class AsistenteModel extends Model
 
     public function getLastSesion(int $id_usuario): ?AsistenteSesion
     {
-        $sesion = $this->db->dbQuery(<<<SQL
+        $sesion = $this->dbQuery(<<<SQL
             SELECT id_sesion
             FROM {$this->dbSecurity("asistente_sesion")}
             WHERE id_usuario = ?

@@ -1,15 +1,20 @@
 <?php
 
-namespace App\Core;
+namespace App\Models;
 
+use App\Core\Config;
 use PDO;
 use PDOException;
 use PDOStatement;
 use RuntimeException;
 use Throwable;
 
-class Database extends PDO
+class Database
 {
+    protected const DB_DEFAULT = "sofit_gym";
+    protected const DB_SECURITY = "sofit_gym_seguridad";
+    protected PDO $pdo;
+
     public function __construct(
         string $host = null,
         string $database = null,
@@ -34,7 +39,7 @@ class Database extends PDO
         $dsn = "mysql:host={$host};dbname={$database};charset={$charset};";
 
         try {
-            parent::__construct(
+            $this->pdo = new PDO(
                 dsn: $dsn,
                 username: $username,
                 password: $password,
@@ -45,12 +50,17 @@ class Database extends PDO
         }
     }
 
+    protected function dbSecurity(string $table): string
+    {
+        return self::DB_SECURITY . ".{$table}";
+    }
+
     /**
      * Prepara una consulta con parametros y la ejecuta inmediatamente.
      *
      * En pocas palabras, es un helper para evitar el repetitivo patron:
      * ```
-     * $stmt = $this->db->prepare($sql);
+     * $stmt = $this->pdo->prepare($sql);
      * $stmt->execute($params);
      * ```
      *
@@ -59,7 +69,7 @@ class Database extends PDO
      */
     public function dbQuery(string $sql, array $params = []): PDOStatement
     {
-        $stmt = $this->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         return $stmt;
     }
@@ -177,15 +187,15 @@ class Database extends PDO
      */
     public function dbTransaction(callable $callback)
     {
-        $this->beginTransaction();
+        $this->pdo->beginTransaction();
 
         try {
             $result = $callback($this);
-            $this->commit();
+            $this->pdo->commit();
             return $result;
         } catch (Throwable $error) {
-            if ($this->inTransaction()) {
-                $this->rollBack();
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
             }
             throw $error;
         }

@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Database;
 use App\Core\Tools;
 use App\Services\Auth\UserSession;
 use DateTimeImmutable;
 
-class BitacoraModel extends Model
+class BitacoraModel extends Database
 {
     private string $table = self::DB_SECURITY . ".bitacora";
     private string $primaryKey = 'id_bitacora';
@@ -84,7 +85,7 @@ class BitacoraModel extends Model
      */
     public function query(): array
     {
-        $rows = $this->db->dbQuery($this->sqlSelect())->fetchAll();
+        $rows = $this->dbQuery($this->sqlSelect())->fetchAll();
 
         return array_map(
             fn($row) => $this->mapToLog($row),
@@ -94,7 +95,7 @@ class BitacoraModel extends Model
 
     public function find(int $id): ?BitacoraLog
     {
-        $row = $this->db->dbQuery(
+        $row = $this->dbQuery(
             $this->sqlSelect(where: "WHERE {$this->table}.{$this->primaryKey} = ?"),
             [$id]
         )->fetch();
@@ -106,9 +107,9 @@ class BitacoraModel extends Model
 
     public function insert(BitacoraLog $bitacora): BitacoraLog
     {
-        return $this->db->dbTransaction(function () use ($bitacora) {
+        return $this->dbTransaction(function () use ($bitacora) {
             // Crear modulo dinamicamente si no existe
-            $this->db->dbQuery(
+            $this->dbQuery(
                 <<<SQL
                     INSERT INTO
                         {$this->dbSecurity("modulo")} (nombre)
@@ -119,22 +120,22 @@ class BitacoraModel extends Model
                 SQL,
                 [$bitacora->modulo],
             );
-            $idModulo = (int)$this->db->lastInsertId();
+            $idModulo = (int)$this->pdo->lastInsertId();
 
             // Insertar bitacora
-            $this->db->dbInsert($this->table, [
+            $this->dbInsert($this->table, [
                 ...$this->mapToColumns($bitacora),
                 "id_modulo" => $idModulo,
             ]);
 
-            $id = (int)$this->db->lastInsertId();
+            $id = (int)$this->pdo->lastInsertId();
             return $this->find($id);
         });
     }
 
     public function limpiarRegistros(int $dias_retencion): void
     {
-        $this->db->dbQuery(
+        $this->dbQuery(
             <<<SQL
                 CALL {$this->dbSecurity("sp_limpiar_registros")}(?)
             SQL,

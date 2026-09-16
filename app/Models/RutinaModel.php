@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Database;
 use PDO;
 
-class RutinaModel extends Model
+class RutinaModel extends Database
 {
     // =========================================================================
     // CRUD: TABLA `rutina`
@@ -20,7 +21,7 @@ class RutinaModel extends Model
                 FROM rutina r
                 INNER JOIN tipo_dificultad d ON r.id_dificultad = d.id_dificultad
                 ORDER BY r.id_rutina DESC";
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -36,7 +37,7 @@ class RutinaModel extends Model
                 FROM rutina r
                 INNER JOIN tipo_dificultad d ON r.id_dificultad = d.id_dificultad
                 WHERE r.id_rutina = ?";
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$id]);
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
         return $res ?: null;
@@ -55,7 +56,7 @@ class RutinaModel extends Model
                 INNER JOIN tipo_dificultad d ON r.id_dificultad = d.id_dificultad
                 WHERE r.nombre LIKE ? OR r.descripcion LIKE ?
                 ORDER BY r.nombre ASC";
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$terminoLike, $terminoLike]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -68,7 +69,7 @@ class RutinaModel extends Model
     public function crearRutina(array $datos): bool
     {
         try {
-            $this->db->dbInsert('rutina', [
+            $this->dbInsert('rutina', [
                 'id_dificultad'    => $datos['id_dificultad'],
                 'nombre'           => $datos['nombre'],
                 'descripcion'      => $datos['descripcion'] ?? null,
@@ -99,7 +100,7 @@ class RutinaModel extends Model
 
             if (empty($columnasAActualizar)) return false;
 
-            $this->db->dbUpdate('rutina', $columnasAActualizar, ['id_rutina' => $id]);
+            $this->dbUpdate('rutina', $columnasAActualizar, ['id_rutina' => $id]);
             return true;
         } catch (\PDOException $e) {
             return false;
@@ -114,7 +115,7 @@ class RutinaModel extends Model
     public function eliminarRutina(int $id): bool
     {
         try {
-            $this->db->dbDelete('rutina', ['id_rutina' => $id]);
+            $this->dbDelete('rutina', ['id_rutina' => $id]);
             return true;
         } catch (\PDOException $e) {
             return false;
@@ -142,7 +143,7 @@ class RutinaModel extends Model
                 INNER JOIN rutina r ON ra.id_rutina = r.id_rutina
                 LEFT JOIN tipo_dificultad d ON r.id_dificultad = d.id_dificultad
                 ORDER BY ra.fecha_asignacion DESC, ra.id_asignacion DESC";
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -162,7 +163,7 @@ class RutinaModel extends Model
                 INNER JOIN persona p ON c.cedula = p.cedula
                 INNER JOIN rutina r ON ra.id_rutina = r.id_rutina
                 WHERE ra.id_asignacion = ?";
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$idAsignacion]);
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
         return $res ?: null;
@@ -181,7 +182,7 @@ class RutinaModel extends Model
                 INNER JOIN tipo_dificultad d ON r.id_dificultad = d.id_dificultad
                 WHERE ra.cedula_cliente = ?
                 ORDER BY ra.fecha_asignacion DESC";
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$cedulaCliente]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -194,19 +195,19 @@ class RutinaModel extends Model
     public function asignarRutina(array $datos): bool
     {
         try {
-            $checkCliente = $this->db->prepare("SELECT 1 FROM cliente WHERE cedula = ?");
+            $checkCliente = $this->pdo->prepare("SELECT 1 FROM cliente WHERE cedula = ?");
             $checkCliente->execute([$datos['cedula_cliente']]);
             if (!$checkCliente->fetch()) {
                 return false;
             }
 
-            $checkRutina = $this->db->prepare("SELECT 1 FROM rutina WHERE id_rutina = ?");
+            $checkRutina = $this->pdo->prepare("SELECT 1 FROM rutina WHERE id_rutina = ?");
             $checkRutina->execute([$datos['id_rutina']]);
             if (!$checkRutina->fetch()) {
                 return false;
             }
 
-            $this->db->dbInsert('rutina_asignada', [
+            $this->dbInsert('rutina_asignada', [
                 'cedula_cliente'   => $datos['cedula_cliente'],
                 'id_rutina'        => $datos['id_rutina'],
                 'fecha_asignacion' => $datos['fecha_asignacion'] ?? date('Y-m-d'),
@@ -241,7 +242,7 @@ class RutinaModel extends Model
 
             if (empty($columnasAActualizar)) return false;
 
-            $this->db->dbUpdate('rutina_asignada', $columnasAActualizar, ['id_asignacion' => $idAsignacion]);
+            $this->dbUpdate('rutina_asignada', $columnasAActualizar, ['id_asignacion' => $idAsignacion]);
             return true;
         } catch (\PDOException $e) {
             return false;
@@ -256,7 +257,7 @@ class RutinaModel extends Model
     public function eliminarAsignacion(int $idAsignacion): bool
     {
         try {
-            $this->db->dbDelete('rutina_asignada', ['id_asignacion' => $idAsignacion]);
+            $this->dbDelete('rutina_asignada', ['id_asignacion' => $idAsignacion]);
             return true;
         } catch (\PDOException $e) {
             return false;
@@ -282,7 +283,7 @@ class RutinaModel extends Model
                         JOIN tipo_dificultad td ON r.id_dificultad = td.id_dificultad 
                         WHERE td.nombre = 'Avanzado'
                     )";
-            $stmt = $this->db->query($sql);
+            $stmt = $this->pdo->query($sql);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
             error_log("Error en RutinaModel::obtenerAsignacionesAvanzadas: " . $e->getMessage());
@@ -309,7 +310,7 @@ class RutinaModel extends Model
                     LEFT JOIN rutina_asignada ra ON r.id_rutina = ra.id_rutina
                     LEFT JOIN persona p ON ra.cedula_cliente = p.cedula
                     WHERE r.duracion_semanas = (SELECT MAX(duracion_semanas) FROM rutina)";
-            $stmt = $this->db->query($sql);
+            $stmt = $this->pdo->query($sql);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
             error_log("Error en RutinaModel::obtenerRutinasMasLargas: " . $e->getMessage());
@@ -326,18 +327,18 @@ class RutinaModel extends Model
     public function cancelarRutinasCliente(string $cedula_cliente): array
     {
         try {
-            $this->db->beginTransaction();
-            
+            $this->pdo->beginTransaction();
+
             $sql = "UPDATE rutina_asignada SET estado = 'Cancelada' 
                     WHERE cedula_cliente = ? AND estado = 'Activa'";
-            $stmt = $this->db->prepare($sql);
+            $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$cedula_cliente]);
-            
-            $this->db->commit();
+
+            $this->pdo->commit();
             return ['success' => true, 'message' => 'Rutinas canceladas exitosamente.'];
         } catch (\PDOException $e) {
-            if ($this->db->inTransaction()) {
-                $this->db->rollBack();
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
             }
             error_log("Error en RutinaModel::cancelarRutinasCliente: " . $e->getMessage());
             return ['success' => false, 'message' => 'Error al procesar la cancelacion.'];
@@ -354,7 +355,7 @@ class RutinaModel extends Model
      */
     public function obtenerDificultades(): array
     {
-        $stmt = $this->db->prepare("SELECT id_dificultad, nombre FROM tipo_dificultad ORDER BY id_dificultad");
+        $stmt = $this->pdo->prepare("SELECT id_dificultad, nombre FROM tipo_dificultad ORDER BY id_dificultad");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

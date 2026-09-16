@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Database;
 use App\Core\Tools;
 use App\Core\Validator;
 use DateTimeImmutable;
@@ -9,7 +10,7 @@ use InvalidArgumentException;
 
 use function App\Core\toDbDate;
 
-class ClaseGrupalModel extends Model
+class ClaseGrupalModel extends Database
 {
     private string $table = 'clase';
     private string $primaryKey = 'id_clase';
@@ -19,7 +20,7 @@ class ClaseGrupalModel extends Model
      */
     public function query(): array
     {
-        $rows = $this->db->dbQuery($this->sqlSelect())->fetchAll();
+        $rows = $this->dbQuery($this->sqlSelect())->fetchAll();
         return array_map(
             fn($row) => $this->mapToClase($row),
             $rows
@@ -28,7 +29,7 @@ class ClaseGrupalModel extends Model
 
     public function find(int $id): ?ClaseGrupal
     {
-        $row = $this->db->dbQuery(
+        $row = $this->dbQuery(
             $this->sqlSelect(where: "WHERE clase.{$this->primaryKey} = ? "),
             [$id]
         )->fetch();
@@ -42,13 +43,13 @@ class ClaseGrupalModel extends Model
     {
         $clase->validateInsert();
 
-        return $this->db->dbTransaction(function () use ($clase) {
-            $this->db->dbInsert(
+        return $this->dbTransaction(function () use ($clase) {
+            $this->dbInsert(
                 $this->table,
                 $this->mapToColumns($clase)
             );
 
-            $id_clase = (int) $this->db->lastInsertId();
+            $id_clase = (int) $this->pdo->lastInsertId();
             $this->syncClientes($id_clase, $clase->clientes);
 
             return $this->find($id_clase);
@@ -57,8 +58,8 @@ class ClaseGrupalModel extends Model
 
     public function update(int $id, ClaseGrupal $clase): ClaseGrupal
     {
-        return $this->db->dbTransaction(function () use ($id, $clase) {
-            $this->db->dbUpdate(
+        return $this->dbTransaction(function () use ($id, $clase) {
+            $this->dbUpdate(
                 $this->table,
                 $this->mapToColumns($clase),
                 [$this->primaryKey => $id]
@@ -71,7 +72,7 @@ class ClaseGrupalModel extends Model
 
     public function delete(int $id): void
     {
-        $this->db->dbDelete($this->table, [$this->primaryKey => $id]);
+        $this->dbDelete($this->table, [$this->primaryKey => $id]);
     }
 
     /** @param ClaseCliente[]|array<string> $clientes */
@@ -81,7 +82,7 @@ class ClaseGrupalModel extends Model
 
         // Eliminar todos los clientes
         foreach ($clientes as $cliente) {
-            $this->db->dbDelete($table, ["id_clase" => $id_clase]);
+            $this->dbDelete($table, ["id_clase" => $id_clase]);
         }
 
         // Insertar los nuevos clientes
@@ -93,7 +94,7 @@ class ClaseGrupalModel extends Model
                 $cedula = $cliente;
             }
 
-            $this->db->dbInsert($table, [
+            $this->dbInsert($table, [
                 "id_clase" => $id_clase,
                 "cedula_cliente" => $cedula,
                 "asistio" => $cliente->asistio,

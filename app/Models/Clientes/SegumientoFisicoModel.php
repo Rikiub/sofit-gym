@@ -3,13 +3,13 @@
 namespace App\Models\Clientes;
 
 use App\Core\Tools;
-use App\Models\Model;
+use App\Models\Database;
 use DateTimeImmutable;
 use InvalidArgumentException;
 
 use function App\Core\toDbDate;
 
-class SegumientoFisicoModel extends Model
+class SegumientoFisicoModel extends Database
 {
     private string $table = 'seguimiento_fisico';
     private string $primaryKey = 'id_seguimiento';
@@ -20,7 +20,7 @@ class SegumientoFisicoModel extends Model
      */
     public function queryByCliente(string $cedula): array
     {
-        $rows = $this->db->dbQuery(
+        $rows = $this->dbQuery(
             $this->sqlSelect(where: <<<SQL
                 WHERE cedula_cliente = ?
                 ORDER BY fecha DESC
@@ -39,7 +39,7 @@ class SegumientoFisicoModel extends Model
      */
     public function find(int $id): ?SeguimientoFisico
     {
-        $row = $this->db->dbQuery(
+        $row = $this->dbQuery(
             $this->sqlSelect(where: "WHERE {$this->primaryKey} = ?"),
             [$id],
         )->fetch();
@@ -56,7 +56,7 @@ class SegumientoFisicoModel extends Model
     {
         $seguimiento->validateInsert();
 
-        $this->db->dbInsert(
+        $this->dbInsert(
             $this->table,
             [
                 ...$this->mapToColumns($seguimiento),
@@ -64,7 +64,7 @@ class SegumientoFisicoModel extends Model
             ],
         );
 
-        $id = (int) $this->db->lastInsertId();
+        $id = (int) $this->pdo->lastInsertId();
         return $this->find($id);
     }
 
@@ -73,13 +73,13 @@ class SegumientoFisicoModel extends Model
      */
     public function update(int $id, SeguimientoFisico $seguimiento): SeguimientoFisico
     {
-        $this->db->dbUpdate(
+        $this->dbUpdate(
             $this->table,
             $this->mapToColumns($seguimiento),
             [$this->primaryKey => $id]
         );
 
-        $id = (int) $this->db->lastInsertId();
+        $id = (int) $this->pdo->lastInsertId();
         return $this->find($id);
     }
 
@@ -88,7 +88,7 @@ class SegumientoFisicoModel extends Model
      */
     public function delete(int $id): void
     {
-        $this->db->dbDelete($this->table, [$this->primaryKey => $id]);
+        $this->dbDelete($this->table, [$this->primaryKey => $id]);
     }
 
     private function sqlSelect(string $where = ""): string

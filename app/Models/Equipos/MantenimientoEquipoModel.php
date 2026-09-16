@@ -4,13 +4,13 @@ namespace App\Models\Equipos;
 
 use App\Core\Tools;
 use App\Core\Validator;
-use App\Models\Model;
+use App\Models\Database;
 use DateTimeImmutable;
 use InvalidArgumentException;
 
 use function App\Core\toDbDate;
 
-class MantenimientoEquipoModel extends Model
+class MantenimientoEquipoModel extends Database
 {
     private string $table = 'mantenimiento_equipo';
     private string $primaryKey = 'id_mantenimiento';
@@ -26,7 +26,7 @@ class MantenimientoEquipoModel extends Model
      */
     public function query(): array
     {
-        $rows = $this->db->dbQuery($this->sqlSelect())->fetchAll();
+        $rows = $this->dbQuery($this->sqlSelect())->fetchAll();
         return array_map(
             fn($row) => $this->mapToMantenimiento($row),
             $rows
@@ -44,14 +44,14 @@ class MantenimientoEquipoModel extends Model
             WHERE me.tipo = 'Preventivo'
               AND me.fecha BETWEEN CURDATE() + INTERVAL 1 DAY AND CURDATE() + INTERVAL ? DAY
               AND e.activo = 1";
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$dias]);
         return $stmt->fetchAll();
     }
 
     public function find(int $id): ?MantenimientoEquipo
     {
-        $row = $this->db->dbQuery(
+        $row = $this->dbQuery(
             $this->sqlSelect(where: "WHERE {$this->primaryKey} = ?"),
             [$id]
         )->fetch();
@@ -65,18 +65,18 @@ class MantenimientoEquipoModel extends Model
     {
         $mantenimiento->validateInsert();
 
-        $this->db->dbInsert(
+        $this->dbInsert(
             table: $this->table,
             data: $this->mapToColumns($mantenimiento),
         );
 
-        $id = (int) $this->db->lastInsertId();
+        $id = (int) $this->pdo->lastInsertId();
         return $this->find($id);
     }
 
     public function update(string $id, MantenimientoEquipo $mantenimiento): MantenimientoEquipo
     {
-        $this->db->dbUpdate(
+        $this->dbUpdate(
             table: $this->table,
             data: $this->mapToColumns($mantenimiento),
             conditions: [$this->primaryKey => $mantenimiento->id_mantenimiento],
@@ -86,7 +86,7 @@ class MantenimientoEquipoModel extends Model
 
     public function delete(int $id): void
     {
-        $this->db->dbDelete($this->table, [$this->primaryKey => $id]);
+        $this->dbDelete($this->table, [$this->primaryKey => $id]);
     }
 
     private function sqlSelect(string $where = ""): string

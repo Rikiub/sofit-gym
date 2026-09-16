@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
-class AsistenciaModel extends Model
+use App\Models\Database;
+
+class AsistenciaModel extends Database
 {
     /**
      * Obtener una entrada de asistencia por su ID
@@ -14,7 +16,7 @@ class AsistenciaModel extends Model
         $sql = "SELECT id_asistencia, cedula_persona as cedula, fecha 
             FROM asistencia_gimnasio 
             WHERE id_asistencia = ?";
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$id]);
         return $stmt->fetch() ?: null;
     }
@@ -39,7 +41,7 @@ class AsistenciaModel extends Model
                   AND m.id_estado = 1
                 ORDER BY p.nombre
                 LIMIT 50";
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$termino, $termino]);
         return $stmt->fetchAll();
     }
@@ -49,14 +51,14 @@ class AsistenciaModel extends Model
      */
     public function registrarEntrada(string $cedula, ?string $hora = null): array
     {
-        $stmt = $this->db->prepare(
+        $stmt = $this->pdo->prepare(
             <<<SQL
                 CALL sp_registrar_entrada_cliente(?, ?, @ok, @msg, @id, @fecha)
             SQL
         );
         $stmt->execute([$cedula, $hora]);
 
-        $stmt = $this->db->query(
+        $stmt = $this->pdo->query(
             <<<SQL
                 SELECT
                     @ok as exito,
@@ -68,7 +70,7 @@ class AsistenciaModel extends Model
         $asistencia = $stmt->fetch();
 
         // Verificar cliente y membresía activa
-        $stmt = $this->db->prepare("SELECT p.cedula AS cedula_persona, CONCAT(p.nombre, ' ', p.apellido) as nombre
+        $stmt = $this->pdo->prepare("SELECT p.cedula AS cedula_persona, CONCAT(p.nombre, ' ', p.apellido) as nombre
                                     FROM persona p
                                     JOIN cliente c ON p.cedula = c.cedula
                                     JOIN membresia m ON m.cedula_cliente = c.cedula
@@ -100,7 +102,7 @@ class AsistenciaModel extends Model
                 JOIN persona p ON c.cedula = p.cedula
                 WHERE DATE(a.fecha) = CURDATE() AND a.tipo = 'Entrada'
                 ORDER BY a.fecha DESC";
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -119,7 +121,7 @@ class AsistenciaModel extends Model
                 WHERE DATE(a.fecha) = CURDATE() AND a.tipo = 'Entrada'
                   AND (TIME(a.fecha) LIKE ? OR a.cedula_persona LIKE ? OR p.nombre LIKE ? OR p.apellido LIKE ?)
                 ORDER BY a.fecha DESC";
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$termino, $termino, $termino, $termino]);
         return $stmt->fetchAll();
     }
@@ -130,7 +132,7 @@ class AsistenciaModel extends Model
     public function actualizarEntrada(int $id, string $nuevaHora): bool
     {
         $fecha = date('Y-m-d') . ' ' . $nuevaHora;
-        $stmt = $this->db->prepare("UPDATE asistencia_gimnasio SET fecha = ? WHERE id_asistencia = ?");
+        $stmt = $this->pdo->prepare("UPDATE asistencia_gimnasio SET fecha = ? WHERE id_asistencia = ?");
         return $stmt->execute([$fecha, $id]);
     }
 
@@ -139,7 +141,7 @@ class AsistenciaModel extends Model
      */
     public function eliminarEntrada(int $id): bool
     {
-        $stmt = $this->db->prepare("DELETE FROM asistencia_gimnasio WHERE id_asistencia = ?");
+        $stmt = $this->pdo->prepare("DELETE FROM asistencia_gimnasio WHERE id_asistencia = ?");
         return $stmt->execute([$id]);
     }
 
@@ -160,7 +162,7 @@ class AsistenciaModel extends Model
                       AND TIME(fecha) >= ?
                       AND TIME(fecha) < ?
                       AND tipo = 'Entrada'";
-            $stmt = $this->db->prepare($sql);
+            $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$fecha, $franja['inicio'], $franja['fin']]);
             $total = (int)$stmt->fetchColumn();
             $resultado[] = [
@@ -182,14 +184,14 @@ class AsistenciaModel extends Model
                 JOIN persona p ON c.cedula = p.cedula
                 WHERE DATE(a.fecha) = ? AND a.tipo = 'Entrada'
                 ORDER BY a.fecha ASC";
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$fecha]);
         return $stmt->fetchAll();
     }
 
     public function obtenerTotalesPorRango(string $fechaInicio, string $fechaFin): array
     {
-        $stmt = $this->db->prepare("CALL sp_obtener_totales_asistencias_por_rango(?, ?)");
+        $stmt = $this->pdo->prepare("CALL sp_obtener_totales_asistencias_por_rango(?, ?)");
         $stmt->execute([$fechaInicio, $fechaFin]);
         return $stmt->fetchAll();
     }
@@ -228,7 +230,7 @@ class AsistenciaModel extends Model
         // 3. Ordenamos cronológicamente de forma descendente (más recientes primero)
         $sql .= " ORDER BY a.fecha DESC";
 
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
 
         return $stmt->fetchAll();

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Database;
 use App\Core\Tools;
 use App\Services\ImageStorage;
 use App\Core\Validator;
@@ -10,7 +11,7 @@ use Exception;
 
 use function App\Core\toDbDate;
 
-class UsuarioModel extends Model
+class UsuarioModel extends Database
 {
     private string $table = self::DB_SECURITY . ".usuario";
     private string $primaryKey = "id_usuario";
@@ -26,13 +27,13 @@ class UsuarioModel extends Model
      */
     public function query(): array
     {
-        $rows = $this->db->dbQuery($this->sqlSelect())->fetchAll();
+        $rows = $this->dbQuery($this->sqlSelect())->fetchAll();
         return array_map($this->mapUsuario(...), $rows);
     }
 
     public function findById(int $id): ?Usuario
     {
-        $row = $this->db->dbQuery(
+        $row = $this->dbQuery(
             $this->sqlSelect(where: "WHERE {$this->primaryKey} = ?"),
             [$id],
         )->fetch();
@@ -44,7 +45,7 @@ class UsuarioModel extends Model
 
     public function findByUsername(string $username): ?Usuario
     {
-        $row = $this->db->dbQuery(
+        $row = $this->dbQuery(
             $this->sqlSelect(where: "WHERE nombre_usuario = ?"),
             [$username],
         )->fetch();
@@ -56,7 +57,7 @@ class UsuarioModel extends Model
 
     public function findByEmail(string $email): ?Usuario
     {
-        $row = $this->db->dbQuery(
+        $row = $this->dbQuery(
             $this->sqlSelect(where: "WHERE {$this->table}.email = ?"),
             [$email]
         )->fetch();
@@ -77,13 +78,13 @@ class UsuarioModel extends Model
     {
         $usuario->validateInsert();
 
-        return $this->db->dbTransaction(function () use ($usuario) {
-            $this->db->dbInsert(
+        return $this->dbTransaction(function () use ($usuario) {
+            $this->dbInsert(
                 $this->table,
                 $this->mapToColumns($usuario, insertMode: true),
             );
 
-            $id = (int) $this->db->lastInsertId();
+            $id = (int) $this->pdo->lastInsertId();
             $this->syncImage($id, $usuario->imagen_url);
 
             return $this->findById($id);
@@ -92,8 +93,8 @@ class UsuarioModel extends Model
 
     public function update(int $id, Usuario $usuario): Usuario
     {
-        return $this->db->dbTransaction(function () use ($id, $usuario) {
-            $this->db->dbUpdate(
+        return $this->dbTransaction(function () use ($id, $usuario) {
+            $this->dbUpdate(
                 $this->table,
                 $this->mapToColumns($usuario),
                 [$this->primaryKey => $id],
@@ -106,7 +107,7 @@ class UsuarioModel extends Model
 
     public function updateUltimoAcceso(int $id): void
     {
-        $this->db->dbUpdate(
+        $this->dbUpdate(
             $this->table,
             ["ultimo_acceso" => toDbDate(new DateTimeImmutable())],
             [$this->primaryKey => $id]
@@ -117,8 +118,8 @@ class UsuarioModel extends Model
     {
         $usuario = $this->getById($id);
 
-        $this->db->dbTransaction(function () use ($usuario, $id) {
-            $this->db->dbDelete($this->table, [$this->primaryKey => $id]);
+        $this->dbTransaction(function () use ($usuario, $id) {
+            $this->dbDelete($this->table, [$this->primaryKey => $id]);
 
             if ($usuario->imagen_url) {
                 $this->image->delete($usuario->imagen_url);
@@ -133,7 +134,7 @@ class UsuarioModel extends Model
         if ($imagen_url && $imagen_url !== $oldUsuario->imagen_url) {
             $imagen_url = $this->image->moveFromTemp($imagen_url, "/usuarios");
 
-            $this->db->dbUpdate(
+            $this->dbUpdate(
                 $this->table,
                 ["imagen_url" => $imagen_url],
                 [$this->primaryKey => $id],
@@ -199,7 +200,7 @@ class UsuarioModel extends Model
 
     public function insertIntentoAcceso(bool $exito, string $direccion_ip, int $id_usuario = null): void
     {
-        $this->db->dbInsert(
+        $this->dbInsert(
             $this->dbSecurity('intento_acceso'),
             [
                 "direccion_ip" => $direccion_ip,
@@ -211,7 +212,7 @@ class UsuarioModel extends Model
 
     public function intentosFallidos(DateTimeImmutable $duracion, string $direccion_ip, int $id_usuario = null): int
     {
-        $intentos = $this->db->dbQuery(
+        $intentos = $this->dbQuery(
             <<<SQL
                 SELECT COUNT(*)
                 FROM
@@ -236,7 +237,7 @@ class UsuarioModel extends Model
         $codigo = $this->generateRecoveryCode();
         $expiracion = new DateTimeImmutable('+15 minutes');
 
-        $this->db->dbInsert(
+        $this->dbInsert(
             $this->dbSecurity("recuperacion_contrasena"),
             [
                 "id_usuario" => $id_usuario,
@@ -251,7 +252,7 @@ class UsuarioModel extends Model
 
     public function verifyRecoveryCode(string $codigo): ?Usuario
     {
-        $row = $this->db->dbQuery(
+        $row = $this->dbQuery(
             <<<SQL
                 SELECT id_usuario
                 FROM {$this->dbSecurity("recuperacion_contrasena")}
@@ -269,13 +270,13 @@ class UsuarioModel extends Model
 
     public function updatePassword(int $id_usuario, string $new_password): void
     {
-        $this->db->dbTransaction(function () use ($id_usuario, $new_password) {
-            $this->db->dbUpdate(
+        $this->dbTransaction(function () use ($id_usuario, $new_password) {
+            $this->dbUpdate(
                 table: $this->table,
                 data: ["contrasena_hash" => $this->hashPassword($new_password)],
                 conditions: ["id_usuario" => $id_usuario],
             );
-            $this->db->dbDelete(
+            $this->dbDelete(
                 table: $this->dbSecurity("recuperacion_contrasena"),
                 conditions: ["id_usuario" => $id_usuario],
             );

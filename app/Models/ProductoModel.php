@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\Database;
 use PDO;
 use PDOException;
 
-class ProductoModel extends Model
+class ProductoModel extends Database
 {
     private string $tabla = 'producto';
 
@@ -25,7 +26,7 @@ class ProductoModel extends Model
                              OR p.nombre LIKE :termino 
                              OR c.nombre LIKE :termino)
                         ORDER BY p.nombre ASC";
-                $stmt = $this->db->prepare($sql);
+                $stmt = $this->pdo->prepare($sql);
                 $stmt->execute(['termino' => "%{$termino}%"]);
             } else {
                 $sql = "SELECT p.*, c.nombre AS nombre_categoria, u.nombre AS nombre_unidad 
@@ -34,7 +35,7 @@ class ProductoModel extends Model
                         LEFT JOIN unidad_medida u ON p.id_unidad = u.id_unidad
                         WHERE p.activo = 1 
                         ORDER BY p.nombre ASC";
-                $stmt = $this->db->query($sql);
+                $stmt = $this->pdo->query($sql);
             }
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -54,7 +55,7 @@ class ProductoModel extends Model
                     LEFT JOIN categoria_producto c ON p.id_categoria = c.id_categoria
                     LEFT JOIN unidad_medida u ON p.id_unidad = u.id_unidad
                     WHERE p.codigo_producto = ? LIMIT 1";
-            $stmt = $this->db->prepare($sql);
+            $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$codigo]);
             $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
             return $resultado ?: null;
@@ -82,7 +83,7 @@ class ProductoModel extends Model
                 'imagen'          => $datos['imagen'] ?? null // NUEVO: Guardar la ruta de la imagen
             ];
 
-            $this->db->dbInsert($this->tabla, $nuevoProducto);
+            $this->dbInsert($this->tabla, $nuevoProducto);
             return true;
         } catch (PDOException $e) {
             error_log("Error en ProductoModel::crear: " . $e->getMessage());
@@ -97,7 +98,7 @@ class ProductoModel extends Model
     {
         try {
             unset($datos['codigo_producto']); // Seguridad: No alterar la clave primaria
-            $this->db->dbUpdate($this->tabla, $datos, ['codigo_producto' => $codigo]);
+            $this->dbUpdate($this->tabla, $datos, ['codigo_producto' => $codigo]);
             return true;
         } catch (PDOException $e) {
             error_log("Error en ProductoModel::actualizar: " . $e->getMessage());
@@ -112,7 +113,7 @@ class ProductoModel extends Model
     {
         try {
             if ($fisico) {
-                $filasAfectadas = $this->db->dbDelete($this->tabla, ['codigo_producto' => $codigo]);
+                $filasAfectadas = $this->dbDelete($this->tabla, ['codigo_producto' => $codigo]);
                 return $filasAfectadas > 0;
             } else {
                 return $this->actualizar($codigo, ['activo' => 0]);
@@ -132,7 +133,7 @@ class ProductoModel extends Model
             $sql = "UPDATE {$this->tabla} 
                     SET stock_actual = stock_actual + ? 
                     WHERE codigo_producto = ? AND (stock_actual + ?) >= 0";
-            $stmt = $this->db->prepare($sql);
+            $stmt = $this->pdo->prepare($sql);
             return $stmt->execute([$cantidad, $codigo, $cantidad]);
         } catch (PDOException $e) {
             error_log("Error en ProductoModel::actualizarStock: " . $e->getMessage());
@@ -146,17 +147,17 @@ class ProductoModel extends Model
     public function aumentarPrecioSuplementos(): array
     {
         try {
-            $this->db->beginTransaction();
+            $this->pdo->beginTransaction();
 
             $sql = "UPDATE {$this->tabla} SET precio_venta = precio_venta * 1.10 WHERE id_categoria = 1";
-            $stmt = $this->db->prepare($sql);
+            $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
 
-            $this->db->commit();
+            $this->pdo->commit();
             return ['success' => true, 'message' => 'Precios de suplementos actualizados correctamente.'];
         } catch (PDOException $e) {
-            if ($this->db->inTransaction()) {
-                $this->db->rollBack();
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
             }
             error_log("Error en ProductoModel::aumentarPrecioSuplementos: " . $e->getMessage());
             return ['success' => false, 'message' => 'Error al intentar actualizar los precios.'];
@@ -176,7 +177,7 @@ class ProductoModel extends Model
                     WHERE p.activo = 1 
                     AND p.stock_actual <= p.stock_minimo 
                     ORDER BY p.stock_actual ASC";
-            $stmt = $this->db->query($sql);
+            $stmt = $this->pdo->query($sql);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Error en ProductoModel::obtenerBajoStock: " . $e->getMessage());

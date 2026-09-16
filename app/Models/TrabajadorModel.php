@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Database;
 use App\Core\Tools;
 use App\Core\Validator;
 use App\Models\Personas\Persona;
@@ -10,7 +11,7 @@ use DateTimeImmutable;
 
 use function App\Core\toDbDate;
 
-class TrabajadorModel extends Model
+class TrabajadorModel extends Database
 {
     private string $table = 'trabajador';
     private string $primaryKey = 'cedula';
@@ -24,7 +25,7 @@ class TrabajadorModel extends Model
     /** Resumen estadisticos */
     public function getSummary(): array
     {
-        $rows = $this->db->dbQuery(<<<SQL
+        $rows = $this->dbQuery(<<<SQL
             SELECT 
                 COUNT(*) AS total_trabajadores,
                 COALESCE(SUM(salario), 0) AS salario_total_pagado
@@ -76,7 +77,7 @@ class TrabajadorModel extends Model
             $sql .= " WHERE " . implode(" AND ", $whereClauses);
         }
 
-        $rows = $this->db->dbQuery($sql, $params)->fetchAll();
+        $rows = $this->dbQuery($sql, $params)->fetchAll();
 
         return array_map(
             fn($row) => Tools::map(Trabajador::class, $row),
@@ -86,7 +87,7 @@ class TrabajadorModel extends Model
 
     public function find(string $cedula): ?Trabajador
     {
-        $row = $this->db->dbQuery(
+        $row = $this->dbQuery(
             $this->sqlSelect(where: "WHERE trabajador.{$this->primaryKey} = ?"),
             [$cedula]
         )->fetch();
@@ -106,9 +107,9 @@ class TrabajadorModel extends Model
     {
         $trabajador->validateInsert();
 
-        return $this->db->dbTransaction(function () use ($trabajador) {
+        return $this->dbTransaction(function () use ($trabajador) {
             $this->personaModel->insert($trabajador);
-            $this->db->dbInsert(
+            $this->dbInsert(
                 $this->table,
                 $this->mapToColumns($trabajador, includeId: true),
             );
@@ -118,10 +119,10 @@ class TrabajadorModel extends Model
 
     public function update(string $cedula, Trabajador $trabajador): Trabajador
     {
-        return $this->db->dbTransaction(function () use ($cedula, $trabajador) {
+        return $this->dbTransaction(function () use ($cedula, $trabajador) {
             $this->personaModel->update($cedula, $trabajador);
 
-            $this->db->dbUpdate(
+            $this->dbUpdate(
                 $this->table,
                 $this->mapToColumns($trabajador),
                 [$this->primaryKey => $cedula],
@@ -133,7 +134,7 @@ class TrabajadorModel extends Model
 
     public function delete(string $cedula): void
     {
-        $this->db->dbDelete($this->table, [$this->primaryKey => $cedula]);
+        $this->dbDelete($this->table, [$this->primaryKey => $cedula]);
     }
 
     private function mapToColumns(Trabajador $dto, bool $includeId = false): array

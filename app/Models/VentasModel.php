@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\Database;
 use PDO;
 use PDOException;
 
-class VentasModel extends Model
+class VentasModel extends Database
 {
     private string $tabla = 'venta_producto';
 
@@ -46,7 +47,7 @@ class VentasModel extends Model
                     LEFT JOIN metodo_pago mp ON pg.id_metodo = mp.id_metodo
                     ORDER BY vp.id_venta DESC";
 
-            $stmt = $this->db->query($sql);
+            $stmt = $this->pdo->query($sql);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Error en VentasModel::obtenerVentas: " . $e->getMessage());
@@ -88,7 +89,7 @@ class VentasModel extends Model
                     WHERE vp.id_venta = ? 
                     LIMIT 1";
 
-            $stmt = $this->db->prepare($sql);
+            $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$idVenta]);
             $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
             return $resultado ?: null;
@@ -139,7 +140,7 @@ class VentasModel extends Model
             $permitidos = ['id_pago', 'codigo_producto', 'cantidad_vendida'];
             $limpio = array_intersect_key($datos, array_flip($permitidos));
 
-            $this->db->dbInsert($this->tabla, $limpio);
+            $this->dbInsert($this->tabla, $limpio);
             return true;
         } catch (PDOException $e) {
             error_log("Error en VentasModel::crearVenta: " . $e->getMessage());
@@ -155,7 +156,7 @@ class VentasModel extends Model
     {
         try {
             // Obtener id_pago asociado
-            $stmt = $this->db->prepare("SELECT id_pago FROM {$this->tabla} WHERE id_venta = ?");
+            $stmt = $this->pdo->prepare("SELECT id_pago FROM {$this->tabla} WHERE id_venta = ?");
             $stmt->execute([$idVenta]);
             $idPago = $stmt->fetchColumn();
 
@@ -182,7 +183,7 @@ class VentasModel extends Model
             ]));
 
             if (!empty($ventaFields)) {
-                $this->db->dbUpdate($this->tabla, $ventaFields, ['id_venta' => $idVenta]);
+                $this->dbUpdate($this->tabla, $ventaFields, ['id_venta' => $idVenta]);
             }
 
             // --- Campos de pago ---
@@ -196,7 +197,7 @@ class VentasModel extends Model
             ]));
 
             if (!empty($pagoFields)) {
-                $this->db->dbUpdate('pago', $pagoFields, ['id_pago' => $idPago]);
+                $this->dbUpdate('pago', $pagoFields, ['id_pago' => $idPago]);
             }
 
             return true;
@@ -217,21 +218,21 @@ class VentasModel extends Model
     {
         try {
             // Recuperar id_pago antes de borrar
-            $stmt = $this->db->prepare("SELECT id_pago FROM {$this->tabla} WHERE id_venta = ?");
+            $stmt = $this->pdo->prepare("SELECT id_pago FROM {$this->tabla} WHERE id_venta = ?");
             $stmt->execute([$idVenta]);
             $idPago = $stmt->fetchColumn();
 
-            $resultado = $this->db->dbDelete($this->tabla, ['id_venta' => $idVenta]);
+            $resultado = $this->dbDelete($this->tabla, ['id_venta' => $idVenta]);
             if ($resultado === false) {
                 return false;
             }
 
             // Limpieza opcional del pago huérfano
             if ($eliminarPagoAsociado && $idPago) {
-                $stmt = $this->db->prepare("SELECT COUNT(*) FROM {$this->tabla} WHERE id_pago = ?");
+                $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM {$this->tabla} WHERE id_pago = ?");
                 $stmt->execute([$idPago]);
                 if ((int) $stmt->fetchColumn() === 0) {
-                    $this->db->dbDelete('pago', ['id_pago' => $idPago]);
+                    $this->dbDelete('pago', ['id_pago' => $idPago]);
                 }
             }
 
@@ -258,7 +259,7 @@ class VentasModel extends Model
                     WHERE p.activo = 1 
                     ORDER BY p.nombre ASC, p.apellido ASC";
 
-            $stmt = $this->db->query($sql);
+            $stmt = $this->pdo->query($sql);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Error en VentasModel::obtenerClientes: " . $e->getMessage());
@@ -283,17 +284,17 @@ class VentasModel extends Model
         }
 
         try {
-            $this->db->beginTransaction();
+            $this->pdo->beginTransaction();
 
             $detallesVenta = [];
             $montoTotalVenta = 0;
 
             if (!empty($cedulaCliente)) {
                 $sqlCliente = "SELECT COUNT(*) FROM cliente WHERE cedula = ?";
-                $stmtCliente = $this->db->prepare($sqlCliente);
+                $stmtCliente = $this->pdo->prepare($sqlCliente);
                 $stmtCliente->execute([$cedulaCliente]);
                 if ($stmtCliente->fetchColumn() == 0) {
-                    $this->db->rollBack();
+                    $this->pdo->rollBack();
                     return ['success' => false, 'message' => "El cliente con cédula '{$cedulaCliente}' no está registrado."];
                 }
             } else {
@@ -301,10 +302,10 @@ class VentasModel extends Model
             }
 
             $sqlMetodo = "SELECT COUNT(*) FROM metodo_pago WHERE id_metodo = ?";
-            $stmtMetodo = $this->db->prepare($sqlMetodo);
+            $stmtMetodo = $this->pdo->prepare($sqlMetodo);
             $stmtMetodo->execute([$idMetodo]);
             if ($stmtMetodo->fetchColumn() == 0) {
-                $this->db->rollBack();
+                $this->pdo->rollBack();
                 return ['success' => false, 'message' => "El método de pago especificado no es válido."];
             }
 
@@ -313,7 +314,7 @@ class VentasModel extends Model
                 $cantidad = floatval($item['cantidad']);
 
                 if ($cantidad <= 0) {
-                    $this->db->rollBack();
+                    $this->pdo->rollBack();
                     return ['success' => false, 'message' => 'La cantidad a vender debe ser mayor que cero.'];
                 }
 
@@ -321,17 +322,17 @@ class VentasModel extends Model
                             FROM producto 
                             WHERE codigo_producto = ? 
                             LIMIT 1";
-                $stmtProd = $this->db->prepare($sqlProd);
+                $stmtProd = $this->pdo->prepare($sqlProd);
                 $stmtProd->execute([$codigo]);
                 $prod = $stmtProd->fetch(PDO::FETCH_ASSOC);
 
                 if (!$prod || $prod['activo'] == 0) {
-                    $this->db->rollBack();
+                    $this->pdo->rollBack();
                     return ['success' => false, 'message' => "El producto con código '{$codigo}' no existe o está inactivo."];
                 }
 
                 if ($prod['stock_actual'] < $cantidad) {
-                    $this->db->rollBack();
+                    $this->pdo->rollBack();
                     return [
                         'success' => false,
                         'message' => "Stock insuficiente para '{$prod['nombre']}'. Inventario actual: {$prod['stock_actual']}, solicitado: {$cantidad}."
@@ -353,19 +354,19 @@ class VentasModel extends Model
             // 1. Insertar en pago
             $sqlPago = "INSERT INTO pago (id_metodo, cedula_cliente, monto, estado, fecha_pago) 
                         VALUES (:id_metodo, :cedula, :monto, 'Pagado', CURDATE())";
-            $stmtPago = $this->db->prepare($sqlPago);
+            $stmtPago = $this->pdo->prepare($sqlPago);
             $stmtPago->execute([
                 'id_metodo' => $idMetodo,
                 'cedula'    => $cedulaCliente,
                 'monto'     => $montoTotalVenta
             ]);
 
-            $idPago = $this->db->lastInsertId();
+            $idPago = $this->pdo->lastInsertId();
 
             // 2. Insertar cada producto en venta_producto
             $sqlInsert = "INSERT INTO {$this->tabla} (id_pago, codigo_producto, cantidad_vendida) 
                           VALUES (:id_pago, :codigo, :cantidad)";
-            $stmtInsert = $this->db->prepare($sqlInsert);
+            $stmtInsert = $this->pdo->prepare($sqlInsert);
 
             $idsVenta = [];
             foreach ($detallesVenta as $detalle) {
@@ -374,10 +375,10 @@ class VentasModel extends Model
                     'codigo'   => $detalle['codigo_producto'],
                     'cantidad' => $detalle['cantidad_vendida']
                 ]);
-                $idsVenta[] = $this->db->lastInsertId();
+                $idsVenta[] = $this->pdo->lastInsertId();
             }
 
-            $this->db->commit();
+            $this->pdo->commit();
 
             return [
                 'success' => true,
@@ -393,8 +394,8 @@ class VentasModel extends Model
                 ]
             ];
         } catch (PDOException $e) {
-            if ($this->db->inTransaction()) {
-                $this->db->rollBack();
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
             }
             error_log("Error en VentasModel::registrarVentaMultiplesProductos: " . $e->getMessage());
             return ['success' => false, 'message' => '❌ Error de base de datos al procesar la venta. Contacte soporte técnico.'];
@@ -439,7 +440,7 @@ class VentasModel extends Model
                   ORDER BY total_vendido DESC";
 
         try {
-            $stmt = $this->db->prepare($sql);
+            $stmt = $this->pdo->prepare($sql);
             $stmt->execute($params);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -459,7 +460,7 @@ class VentasModel extends Model
                     WHERE activo = 1 AND codigo_producto NOT IN (
                         SELECT DISTINCT codigo_producto FROM {$this->tabla}
                     )";
-            $stmt = $this->db->query($sql);
+            $stmt = $this->pdo->query($sql);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Error en VentasModel::obtenerProductosSinVender: " . $e->getMessage());

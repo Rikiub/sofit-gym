@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Database;
 use PDO;
 
-class OpcionModel extends Model
+class OpcionModel extends Database
 {
     private string $table = self::DB_SECURITY . ".opcion";
 
     public function query(): array
     {
-        return $this->db->dbQuery($this->sqlSelect())
+        return $this->dbQuery($this->sqlSelect())
             ->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC);
     }
 
@@ -26,7 +27,7 @@ class OpcionModel extends Model
     /** Obtener el array desde una clave. */
     public function find(string $clave): ?array
     {
-        $row = $this->db->dbQuery(
+        $row = $this->dbQuery(
             $this->sqlSelect(where: "WHERE opcion.clave = ?"),
             [$clave]
         )->fetch();
@@ -35,7 +36,7 @@ class OpcionModel extends Model
 
     public function update(string $clave, string $valor)
     {
-        $this->db->dbUpdate(
+        $this->dbUpdate(
             $this->table,
             ["valor" => $valor],
             ["clave" => $clave],

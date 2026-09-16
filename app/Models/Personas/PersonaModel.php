@@ -3,14 +3,14 @@
 namespace App\Models\Personas;
 
 use App\Core\Tools;
-use App\Models\Model;
+use App\Models\Database;
 
 use function App\Core\toDbDate;
 
 /**
  * Base para realizar operaciones sobre la tabla `persona`.
  */
-class PersonaModel extends Model
+class PersonaModel extends Database
 {
     public string $table = 'persona';
     public string $primaryKey = 'cedula';
@@ -20,7 +20,7 @@ class PersonaModel extends Model
      */
     public function query(): array
     {
-        $rows = $this->db->dbQuery($this->sqlSelect())->fetchAll();
+        $rows = $this->dbQuery($this->sqlSelect())->fetchAll();
         return array_map(
             fn($row) => Tools::map(Persona::class, $row),
             $rows
@@ -29,7 +29,7 @@ class PersonaModel extends Model
 
     public function find(string $cedula): ?Persona
     {
-        $row = $this->db->dbQuery(
+        $row = $this->dbQuery(
             "{$this->sqlSelect()} WHERE {$this->primaryKey} = ?",
             [$cedula]
         )->fetch();
@@ -43,7 +43,7 @@ class PersonaModel extends Model
     {
         $persona->validateInsert();
 
-        $this->db->dbInsert(
+        $this->dbInsert(
             $this->table,
             $this->mapToColumns($persona, includeId: true),
         );
@@ -52,7 +52,7 @@ class PersonaModel extends Model
 
     public function update(string $cedula, Persona $persona): Persona
     {
-        $this->db->dbUpdate(
+        $this->dbUpdate(
             $this->table,
             $this->mapToColumns($persona),
             [$this->primaryKey => $cedula],
@@ -62,7 +62,7 @@ class PersonaModel extends Model
 
     public function delete(string $cedula): void
     {
-        $this->db->dbDelete($this->table, [$this->primaryKey => $cedula]);
+        $this->dbDelete($this->table, [$this->primaryKey => $cedula]);
     }
 
     private function mapToColumns(Persona $dto, bool $includeId = false): array
