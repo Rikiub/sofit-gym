@@ -200,8 +200,13 @@ class ClienteModel extends Model
                 {$where} 
                 ORDER BY
                     CASE
-                        WHEN m.id_membresia IS NOT NULL THEN 0
-                        ELSE 1
+                        WHEN m.id_membresia IS NULL THEN 3
+                        WHEN m.fecha_fin >= CURDATE() THEN 1
+                        ELSE 2
+                    END ASC,
+                    CASE
+                        WHEN m.id_membresia IS NULL THEN '9999-12-31'
+                        ELSE m.fecha_fin
                     END ASC;
             SQL;
     }

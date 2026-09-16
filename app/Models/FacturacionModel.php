@@ -52,25 +52,31 @@ class FacturacionModel extends Model
 
         $this->db->beginTransaction();
         try {
-            // Insertar nueva membresía
-            $stmt = $this->db->prepare("INSERT INTO membresia (id_tipo, id_estado, fecha_inicio, fecha_fin, cedula_cliente) VALUES (?, 1, ?, ?, ?)");
+            // 1. Insertar nueva membresía
+            $stmt = $this->db->prepare(
+                "INSERT INTO membresia (id_tipo, id_estado, fecha_inicio, fecha_fin, cedula_cliente) 
+                 VALUES (?, 1, ?, ?, ?)"
+            );
             $stmt->execute([$tipoMembresiaId, $fechaPago, $nuevaFechaVencimiento, $cedulaCliente]);
             $nuevaId = $this->db->lastInsertId();
 
-            // Desactivar membresía anterior si existe
+            // 2. Desactivar membresía anterior si existe
             if ($membresiaActual && $membresiaActual['id_membresia']) {
                 $stmt = $this->db->prepare("UPDATE membresia SET id_estado = 2 WHERE id_membresia = ?");
                 $stmt->execute([$membresiaActual['id_membresia']]);
             }
 
-            // Obtener ID del método de pago
+            // 3. Obtener ID del método de pago
             $stmtMetodo = $this->db->prepare("SELECT id_metodo FROM metodo_pago WHERE nombre LIKE ? LIMIT 1");
             $stmtMetodo->execute(["%" . $metodoPago . "%"]);
             $idMetodo = $stmtMetodo->fetchColumn() ?: 1;
 
-            // Insertar pago
-            $stmt = $this->db->prepare("INSERT INTO pago (id_membresia, id_metodo, monto, estado, fecha_pago) VALUES (?, ?, ?, 'Pagado', ?)");
-            $stmt->execute([$nuevaId, $idMetodo, $monto, $fechaPago]);
+            // 4. Insertar pago (ahora usa cedula_cliente, ya no id_membresia)
+            $stmt = $this->db->prepare(
+                "INSERT INTO pago (id_metodo, cedula_cliente, monto, estado, fecha_pago) 
+                 VALUES (?, ?, ?, 'Pagado', ?)"
+            );
+            $stmt->execute([$idMetodo, $cedulaCliente, $monto, $fechaPago]);
             $idPago = $this->db->lastInsertId();
 
             $this->db->commit();
@@ -91,7 +97,7 @@ class FacturacionModel extends Model
     {
         $sql = "SELECT 
                     p.id_pago, 
-                    m.cedula_cliente, 
+                    p.cedula_cliente, 
                     CONCAT(per.nombre, ' ', per.apellido) AS nombre_cliente,
                     p.monto, 
                     mp.nombre AS metodo_pago, 
@@ -99,12 +105,18 @@ class FacturacionModel extends Model
                     p.fecha_pago, 
                     m.fecha_fin AS fecha_vencimiento,
                     fn_dias_restantes(m.fecha_fin) AS dias_restantes,
-                    fn_estado_membresia(m.fecha_fin, p.estado) as estado_cliente
+                    fn_estado_membresia(m.fecha_fin, p.estado) AS estado_cliente
                 FROM pago p
-                JOIN membresia m ON p.id_membresia = m.id_membresia
+                LEFT JOIN cliente c ON c.cedula = p.cedula_cliente
+                LEFT JOIN persona per ON per.cedula = c.cedula
                 LEFT JOIN metodo_pago mp ON p.id_metodo = mp.id_metodo
-                JOIN cliente c ON m.cedula_cliente = c.cedula
-                JOIN persona per ON c.cedula = per.cedula
+                LEFT JOIN membresia m ON m.id_membresia = (
+                    SELECT m2.id_membresia 
+                    FROM membresia m2 
+                    WHERE m2.cedula_cliente = p.cedula_cliente 
+                    ORDER BY m2.fecha_inicio DESC, m2.id_membresia DESC 
+                    LIMIT 1
+                )
                 ORDER BY p.id_pago DESC";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
@@ -117,7 +129,7 @@ class FacturacionModel extends Model
         $termino = "%{$termino}%";
         $sql = "SELECT 
                     p.id_pago, 
-                    m.cedula_cliente, 
+                    p.cedula_cliente, 
                     CONCAT(per.nombre, ' ', per.apellido) AS nombre_cliente,
                     p.monto, 
                     mp.nombre AS metodo_pago, 
@@ -125,14 +137,20 @@ class FacturacionModel extends Model
                     p.fecha_pago, 
                     m.fecha_fin AS fecha_vencimiento,
                     fn_dias_restantes(m.fecha_fin) AS dias_restantes,
-                    fn_estado_membresia(m.fecha_fin, p.estado) as estado_cliente
+                    fn_estado_membresia(m.fecha_fin, p.estado) AS estado_cliente
                 FROM pago p
-                JOIN membresia m ON p.id_membresia = m.id_membresia
+                LEFT JOIN cliente c ON c.cedula = p.cedula_cliente
+                LEFT JOIN persona per ON per.cedula = c.cedula
                 LEFT JOIN metodo_pago mp ON p.id_metodo = mp.id_metodo
-                JOIN cliente c ON m.cedula_cliente = c.cedula
-                JOIN persona per ON c.cedula = per.cedula
+                LEFT JOIN membresia m ON m.id_membresia = (
+                    SELECT m2.id_membresia 
+                    FROM membresia m2 
+                    WHERE m2.cedula_cliente = p.cedula_cliente 
+                    ORDER BY m2.fecha_inicio DESC, m2.id_membresia DESC 
+                    LIMIT 1
+                )
                 WHERE p.id_pago LIKE ? 
-                   OR m.cedula_cliente LIKE ? 
+                   OR p.cedula_cliente LIKE ? 
                    OR per.nombre LIKE ? 
                    OR per.apellido LIKE ?
                 ORDER BY p.id_pago DESC";
@@ -159,12 +177,26 @@ class FacturacionModel extends Model
         $res = $stmt->execute([$monto, $idMetodo, $estado, $fechaPago, $idPago]);
 
         if ($res) {
-            $stmtMem = $this->db->prepare("SELECT id_membresia FROM pago WHERE id_pago = ?");
-            $stmtMem->execute([$idPago]);
-            $idMembresia = $stmtMem->fetchColumn();
-            if ($idMembresia) {
-                $stmtUpdateMem = $this->db->prepare("UPDATE membresia SET fecha_fin = ? WHERE id_membresia = ?");
-                $stmtUpdateMem->execute([$fechaVencimiento, $idMembresia]);
+            // Obtener la cédula del cliente a partir del pago
+            $stmtCli = $this->db->prepare("SELECT cedula_cliente FROM pago WHERE id_pago = ?");
+            $stmtCli->execute([$idPago]);
+            $cedulaCliente = $stmtCli->fetchColumn();
+
+            // Si el pago está asociado a un cliente, actualizar la membresía más reciente
+            if ($cedulaCliente) {
+                $stmtMem = $this->db->prepare(
+                    "SELECT id_membresia FROM membresia 
+                     WHERE cedula_cliente = ? 
+                     ORDER BY fecha_inicio DESC, id_membresia DESC 
+                     LIMIT 1"
+                );
+                $stmtMem->execute([$cedulaCliente]);
+                $idMembresia = $stmtMem->fetchColumn();
+
+                if ($idMembresia) {
+                    $stmtUpdateMem = $this->db->prepare("UPDATE membresia SET fecha_fin = ? WHERE id_membresia = ?");
+                    $stmtUpdateMem->execute([$fechaVencimiento, $idMembresia]);
+                }
             }
         }
         return $res;
@@ -199,16 +231,21 @@ class FacturacionModel extends Model
     }
 
     // ===== INGRESOS DEL MES ACTUAL =====
+    /**
+     * Se consideran pagos "de membresía" aquellos con cedula_cliente no nulo
+     * y sin detalle en venta_producto.
+     */
     public function obtenerIngresosMesActual(): array
     {
         $sql = "SELECT 
                     COUNT(p.id_pago) AS total_vendidos,
-                    SUM(p.monto) AS total_ingresado
+                    COALESCE(SUM(p.monto), 0) AS total_ingresado
                 FROM pago p
-                JOIN membresia m ON p.id_membresia = m.id_membresia
                 WHERE p.estado = 'Pagado'
                     AND YEAR(p.fecha_pago) = YEAR(CURDATE())
-                    AND MONTH(p.fecha_pago) = MONTH(CURDATE())";
+                    AND MONTH(p.fecha_pago) = MONTH(CURDATE())
+                    AND p.cedula_cliente IS NOT NULL
+                    AND p.id_pago NOT IN (SELECT DISTINCT id_pago FROM venta_producto)";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
         return $stmt->fetch();
@@ -220,7 +257,9 @@ class FacturacionModel extends Model
         $stmt = $this->db->prepare("
             SELECT 
                 cedula AS cedula_cliente,
-                (SELECT id_membresia FROM membresia WHERE cedula_cliente = cliente.cedula ORDER BY id_membresia DESC LIMIT 1) AS id_membresia 
+                (SELECT id_membresia FROM membresia 
+                 WHERE cedula_cliente = cliente.cedula 
+                 ORDER BY id_membresia DESC LIMIT 1) AS id_membresia 
             FROM cliente 
             WHERE cedula = ?");
         $stmt->execute([$cedula]);
@@ -239,15 +278,15 @@ class FacturacionModel extends Model
     {
         $sql = "SELECT 
                     p.fecha_pago,
-                    m.cedula_cliente,
+                    p.cedula_cliente,
                     CONCAT(per.nombre, ' ', per.apellido) AS nombre_cliente,
                     mp.nombre AS metodo_pago,
                     p.monto
                 FROM pago p
-                INNER JOIN membresia m ON p.id_membresia = m.id_membresia
-                INNER JOIN cliente c ON m.cedula_cliente = c.cedula
-                INNER JOIN persona per ON c.cedula = per.cedula
+                LEFT JOIN cliente c ON c.cedula = p.cedula_cliente
+                LEFT JOIN persona per ON per.cedula = c.cedula
                 LEFT JOIN metodo_pago mp ON p.id_metodo = mp.id_metodo";
+
         $where = [];
         $params = [];
         if (!empty($anio)) {
@@ -311,17 +350,26 @@ class FacturacionModel extends Model
         return $stmt->fetchAll();
     }
 
+    /**
+     * Resumen financiero semanal.
+     * El total de ventas se calcula con cantidad_vendida * precio_venta
+     * (antes se leía venta_producto.monto_total, que ya no existe).
+     */
     public function obtenerResumenFinancieroSemanal(): array
     {
         $sqlPagos = "SELECT COALESCE(SUM(monto), 0) AS total_membresias
-                 FROM pago
-                 WHERE fecha_pago >= CURDATE() - INTERVAL 7 DAY";
+                     FROM pago
+                     WHERE fecha_pago >= CURDATE() - INTERVAL 7 DAY
+                       AND cedula_cliente IS NOT NULL
+                       AND id_pago NOT IN (SELECT DISTINCT id_pago FROM venta_producto)";
         $stmt = $this->db->query($sqlPagos);
         $totalMembresias = $stmt->fetchColumn();
 
-        $sqlVentas = "SELECT COALESCE(SUM(monto_total), 0) AS total_ventas
-                  FROM venta_producto
-                  WHERE fecha >= CURDATE() - INTERVAL 7 DAY";
+        $sqlVentas = "SELECT COALESCE(SUM(vp.cantidad_vendida * prod.precio_venta), 0) AS total_ventas
+                      FROM venta_producto vp
+                      INNER JOIN producto prod ON vp.codigo_producto = prod.codigo_producto
+                      INNER JOIN pago pg ON pg.id_pago = vp.id_pago
+                      WHERE pg.fecha_pago >= CURDATE() - INTERVAL 7 DAY";
         $stmt = $this->db->query($sqlVentas);
         $totalVentas = $stmt->fetchColumn();
 
