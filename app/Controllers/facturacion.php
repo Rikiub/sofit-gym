@@ -103,7 +103,7 @@ switch (Route::action()) {
         }
 
         Response::redirect(['page' => 'facturacion']);
-        break;
+        exit;
 
     case "editar":
         Route::protect("facturacion:editar");
@@ -145,7 +145,7 @@ switch (Route::action()) {
         }
 
         Response::redirect(['page' => 'facturacion']);
-        break;
+        exit;
 
     case "eliminar":
         Route::protect("facturacion:eliminar");
@@ -179,7 +179,7 @@ switch (Route::action()) {
         }
 
         Response::redirect(['page' => 'facturacion']);
-        break;
+        exit;
 
     case "buscar_ajax":
         Route::protect("facturacion:ver");
@@ -229,5 +229,5 @@ switch (Route::action()) {
 
         $nombreArchivo = 'reporte_financiero_' . ($mes ? $mes . '_' : '') . $anio . '.pdf';
         $pdf->Output('I', $nombreArchivo);
-        break;
+        exit;
 }

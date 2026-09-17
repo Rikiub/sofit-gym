@@ -37,7 +37,7 @@ switch (Route::action()) {
             'mensaje' => $mensaje,
             'tipoMensaje' => $tipoMensaje
         ]);
-        break;
+        exit;
 
     /**
      * Endpoint API AJAX para obtener clientes activos (útil para el POS)

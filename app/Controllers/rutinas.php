@@ -105,7 +105,7 @@ switch (Route::action()) {
         }
 
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Rutina creada correctamente.' : 'Error al registrar rutina en la base de datos.']);
-        break;
+        exit;
 
     /**
      * Editar una rutina existente (AJAX - POST)
@@ -165,7 +165,7 @@ switch (Route::action()) {
         }
 
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Rutina actualizada correctamente.' : 'No se realizaron cambios o error al actualizar.']);
-        break;
+        exit;
 
     /**
      * Eliminar una rutina (AJAX - POST)
@@ -204,7 +204,7 @@ switch (Route::action()) {
         }
 
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Rutina eliminada correctamente.' : 'Error al eliminar. Verifique que no esté asignada a un cliente.']);
-        break;
+        exit;
 
     // =========================================================================
     // CRUD AJAX: TABLA `rutina_asignada`
@@ -258,7 +258,7 @@ switch (Route::action()) {
         }
 
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Rutina asignada exitosamente.' : 'Error al realizar la asignación.']);
-        break;
+        exit;
 
     /**
      * Editar asignación de rutina (AJAX - POST)
@@ -315,7 +315,7 @@ switch (Route::action()) {
         }
 
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Asignación modificada correctamente.' : 'No se realizaron cambios o error de base de datos.']);
-        break;
+        exit;
 
     /**
      * Eliminar asignación de rutina (AJAX - POST)
@@ -354,7 +354,7 @@ switch (Route::action()) {
         }
 
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Asignación eliminada correctamente.' : 'Error al eliminar la asignación.']);
-        break;
+        exit;
 
     /**
      * Obtener asignaciones de un cliente específico en JSON (AJAX)

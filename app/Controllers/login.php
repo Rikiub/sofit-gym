@@ -12,7 +12,6 @@ use App\Core\Tools;
 use App\Models\UsuarioModel;
 use App\Models\BitacoraModel;
 use App\Models\Level;
-use PHPMailer\PHPMailer\PHPMailer;
 use DateTimeImmutable;
 
 $logger = new BitacoraModel();

@@ -62,7 +62,7 @@ switch (Route::action()) {
             'tipoMensaje' => $tipoMensaje,
             'termino' => $termino
         ]);
-        break;
+        exit;
 
     /**
      * Endpoint API AJAX para buscar productos dinámicamente
@@ -310,5 +310,5 @@ switch (Route::action()) {
         $pdf->SetAuthor('Sistema SOFIT GYM');
         $pdf->crearReporte($inventarioData);
         $pdf->Output('I', 'reporte_general_inventario.pdf');
-        break;
+        exit;
 }
