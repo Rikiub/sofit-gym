@@ -28,11 +28,9 @@ class VentasModel extends Database
                         vp.cantidad_vendida,
                         p.nombre AS nombre_producto,
                         p.precio_venta,
-                        (p.precio_venta * vp.cantidad_vendida) AS monto_total,
                         pg.id_metodo,
                         pg.cedula_cliente,
-                        pg.monto AS monto_pago,
-                        pg.monto AS monto,                 -- BC: alias viejo
+                        pg.monto AS monto_total,                 -- BC: alias viejo
                         pg.comprobante_url,
                         pg.estado,
                         pg.fecha_pago,
@@ -69,15 +67,13 @@ class VentasModel extends Database
                         vp.cantidad_vendida,
                         p.nombre AS nombre_producto,
                         p.precio_venta,
-                        (p.precio_venta * vp.cantidad_vendida) AS monto_total,
                         pg.id_metodo,
                         pg.cedula_cliente,
-                        pg.monto AS monto_pago,
-                        pg.monto AS monto,                 -- BC
+                        pg.monto AS monto_total,
                         pg.comprobante_url,
                         pg.estado,
                         pg.fecha_pago,
-                        pg.fecha_pago AS fecha,            -- BC
+                        pg.fecha_pago AS fecha,
                         per.nombre AS nombre_cliente,
                         per.apellido AS apellido_cliente,
                         mp.nombre AS nombre_metodo
