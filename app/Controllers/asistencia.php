@@ -43,30 +43,37 @@ switch (Route::action()) {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(['error' => 'Método no permitido']);
-            return;
+            exit;
         }
+
         $cedula = $_POST['cedula'] ?? '';
-        $hora = !empty($_POST['hora']) ? $_POST['hora'] : null;
+        $hora   = !empty($_POST['hora']) ? $_POST['hora'] : null;
+
         if (empty($cedula)) {
             echo json_encode(['success' => false, 'message' => 'Debe seleccionar un cliente.']);
-            return;
+            exit;
         }
 
         $resultado = $model->registrarEntrada($cedula, $hora);
-        if ($resultado['success']) {
-            $logger->log("Entrada registrada para cliente '{cedula}'", [
-                "modulo" => "asistencia",
-                "accion" => "registrar",
 
-                'cedula'        => $cedula,
-                'id_asistencia' => $resultado['id'] ?? null,
-                'fecha'         => $resultado['fecha'] ?? null,
-                'datos_nuevos'  => $resultado,
-            ]);
+        if (!empty($resultado['success'])) {
+            try {
+                $logger->log("Entrada registrada para cliente '{$cedula}'", [
+                    "modulo"        => "asistencia",
+                    "accion"        => "registrar",
+                    'cedula'        => $cedula,
+                    'id_asistencia' => $resultado['id']    ?? null,
+                    'fecha'         => $resultado['fecha'] ?? null,
+                    'datos_nuevos'  => $resultado,
+                ]);
+            } catch (\Throwable $e) {
+                // No debe romper la respuesta JSON
+            }
         }
 
-        echo json_encode($resultado);
-        break;
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($resultado, JSON_INVALID_UTF8_SUBSTITUTE);
+        exit;
 
     case "buscar_entradas_ajax":
         Route::protect("asistencia:ver");

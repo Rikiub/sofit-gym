@@ -469,6 +469,7 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
         }
 
         @media (max-width: 768px) {
+
             td:last-child,
             th:last-child {
                 width: auto;
