@@ -137,7 +137,7 @@ switch (Route::action()) {
             ]);
         }
         echo json_encode(['success' => $ok]);
-        break;
+        exit;
 
     case "eliminar":
         Route::protect("asistencia:eliminar");
@@ -163,9 +163,9 @@ switch (Route::action()) {
         }
 
         echo json_encode(['success' => $ok]);
-        break;
+        exit;
 
-    // Reportes
+        // Reportes
     case "vistaAsistencia":
         // Renderiza el formulario usando el motor Plates cargando tu nueva vista
         Route::protect("clientes:ver");
@@ -198,5 +198,5 @@ switch (Route::action()) {
 
         // Renderizar y forzar la visualización limpia en el navegador ('I')
         $pdf->Output('I', 'reporte_asistencias.pdf');
-        break;
+        exit;
 }
