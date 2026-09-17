@@ -32,18 +32,18 @@ class ClienteModel extends Database
 
                     -- Ganancias del mes actual por membresías de clientes con membresía activa
                     (SELECT COALESCE(SUM(p.monto), 0)
-                    FROM pago p
-                    WHERE YEAR(p.fecha_pago)  = YEAR(CURDATE())
-                    AND MONTH(p.fecha_pago) = MONTH(CURDATE())
-                    AND p.cedula_cliente IS NOT NULL
-                    AND p.id_pago NOT IN (SELECT id_pago FROM venta_producto)
-                    AND EXISTS (
-                        SELECT 1
-                        FROM membresia m
-                        WHERE m.cedula_cliente = p.cedula_cliente
-                            AND m.fecha_fin     >= CURDATE()
-                    )
-                ) AS ganancias_totales;
+                        FROM pago p
+                        WHERE YEAR(p.fecha_pago) = YEAR(CURDATE())
+                            AND MONTH(p.fecha_pago) = MONTH(CURDATE())
+                            AND p.cedula_cliente IS NOT NULL
+                            AND p.id_pago NOT IN (SELECT id_pago FROM venta_producto)
+                            AND EXISTS (
+                                SELECT 1
+                                FROM membresia m
+                                WHERE m.cedula_cliente = p.cedula_cliente
+                                    AND m.fecha_fin >= CURDATE()
+                            )
+                    ) AS ganancias_totales;
         SQL)->fetch();
 
         return $rows;

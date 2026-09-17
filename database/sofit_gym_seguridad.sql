@@ -114,7 +114,7 @@ CREATE TABLE `bitacora` (
   KEY `bitacora_modulo_FK` (`id_modulo`),
   CONSTRAINT `bitacora_modulo_FK` FOREIGN KEY (`id_modulo`) REFERENCES `modulo` (`id_modulo`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `bitacora_usuario_FK` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=355 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=365 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -345,7 +345,17 @@ INSERT INTO `bitacora` VALUES
 (351,2,44,'editar','Pago actualizado','info','{\"id_pago\":44}','{\"id_pago\":44,\"cedula_cliente\":\"V-29114059\",\"nombre_cliente\":\"Diego Torres\",\"monto\":\"6.00\",\"metodo_pago\":\"Efectivo\",\"estado_pago\":\"Pagado\",\"fecha_pago\":\"2026-09-16\",\"fecha_vencimiento\":\"2026-10-16\",\"dias_restantes\":30,\"estado_cliente\":\"Activo\"}','{\"id_pago\":44,\"cedula_cliente\":\"V-29114059\",\"nombre_cliente\":\"Diego Torres\",\"monto\":\"5.97\",\"metodo_pago\":\"Efectivo\",\"estado_pago\":\"Pagado\",\"fecha_pago\":\"2026-09-16\",\"fecha_vencimiento\":\"2026-10-16\",\"dias_restantes\":30,\"estado_cliente\":\"Activo\"}','2026-09-16 22:47:39'),
 (352,2,44,'editar','Pago actualizado','info','{\"id_pago\":44}','{\"id_pago\":44,\"cedula_cliente\":\"V-29114059\",\"nombre_cliente\":\"Diego Torres\",\"monto\":\"5.97\",\"metodo_pago\":\"Efectivo\",\"estado_pago\":\"Pagado\",\"fecha_pago\":\"2026-09-16\",\"fecha_vencimiento\":\"2026-10-16\",\"dias_restantes\":30,\"estado_cliente\":\"Activo\"}','{\"id_pago\":44,\"cedula_cliente\":\"V-29114059\",\"nombre_cliente\":\"Diego Torres\",\"monto\":\"5.97\",\"metodo_pago\":\"Efectivo\",\"estado_pago\":\"Pagado\",\"fecha_pago\":\"2026-09-16\",\"fecha_vencimiento\":\"2026-10-24\",\"dias_restantes\":38,\"estado_cliente\":\"Activo\"}','2026-09-16 22:47:47'),
 (353,2,44,'crear','Pago registrado','info','{\"cedula\":\"V-11029384\",\"id_pago\":\"45\",\"monto\":5,\"metodo\":\"Efectivo\",\"nueva_fecha_fin\":\"2026-10-16\"}',NULL,NULL,'2026-09-16 22:48:20'),
-(354,2,44,'eliminar','Pago eliminado','info','{\"id_pago\":45}','{\"id_pago\":45,\"cedula_cliente\":\"V-11029384\",\"nombre_cliente\":\"Gabriela L\\u00f3pez\",\"monto\":\"5.00\",\"metodo_pago\":\"Efectivo\",\"estado_pago\":\"Pagado\",\"fecha_pago\":\"2026-09-16\",\"fecha_vencimiento\":\"2026-10-16\",\"dias_restantes\":30,\"estado_cliente\":\"Activo\"}',NULL,'2026-09-16 22:48:26');
+(354,2,44,'eliminar','Pago eliminado','info','{\"id_pago\":45}','{\"id_pago\":45,\"cedula_cliente\":\"V-11029384\",\"nombre_cliente\":\"Gabriela L\\u00f3pez\",\"monto\":\"5.00\",\"metodo_pago\":\"Efectivo\",\"estado_pago\":\"Pagado\",\"fecha_pago\":\"2026-09-16\",\"fecha_vencimiento\":\"2026-10-16\",\"dias_restantes\":30,\"estado_cliente\":\"Activo\"}',NULL,'2026-09-16 22:48:26'),
+(355,2,44,'eliminar','Pago eliminado','info','{\"id_pago\":37}','{\"id_pago\":37,\"cedula_cliente\":null,\"nombre_cliente\":null,\"monto\":\"20.00\",\"metodo_pago\":\"Efectivo\",\"estado_pago\":\"Pagado\",\"fecha_pago\":\"2026-09-06\",\"fecha_vencimiento\":null,\"dias_restantes\":null,\"estado_cliente\":\"Sin membres\\u00eda\"}',NULL,'2026-09-16 22:50:24'),
+(356,2,44,'crear','Pago registrado','info','{\"cedula\":\"V-23991048\",\"id_pago\":\"39\",\"monto\":5,\"metodo\":\"Efectivo\",\"nueva_fecha_fin\":\"2026-09-23\"}',NULL,NULL,'2026-09-16 22:50:31'),
+(357,2,44,'eliminar','Pago eliminado','info','{\"id_pago\":35}','{\"id_pago\":35,\"cedula_cliente\":null,\"nombre_cliente\":null,\"monto\":\"1.00\",\"metodo_pago\":\"Efectivo\",\"estado_pago\":\"Pagado\",\"fecha_pago\":\"2026-09-06\",\"fecha_vencimiento\":null,\"dias_restantes\":null,\"estado_cliente\":\"Sin membres\\u00eda\"}',NULL,'2026-09-16 22:51:16'),
+(358,2,44,'eliminar','Pago eliminado','info','{\"id_pago\":34}','{\"id_pago\":34,\"cedula_cliente\":null,\"nombre_cliente\":null,\"monto\":\"2.00\",\"metodo_pago\":\"Efectivo\",\"estado_pago\":\"Pagado\",\"fecha_pago\":\"2026-09-06\",\"fecha_vencimiento\":null,\"dias_restantes\":null,\"estado_cliente\":\"Sin membres\\u00eda\"}',NULL,'2026-09-16 22:51:20'),
+(359,2,44,'eliminar','Pago eliminado','info','{\"id_pago\":33}','{\"id_pago\":33,\"cedula_cliente\":null,\"nombre_cliente\":null,\"monto\":\"5.00\",\"metodo_pago\":\"Efectivo\",\"estado_pago\":\"Pagado\",\"fecha_pago\":\"2026-09-06\",\"fecha_vencimiento\":null,\"dias_restantes\":null,\"estado_cliente\":\"Sin membres\\u00eda\"}',NULL,'2026-09-16 22:51:28'),
+(360,2,44,'eliminar','Pago eliminado','info','{\"id_pago\":32}','{\"id_pago\":32,\"cedula_cliente\":null,\"nombre_cliente\":null,\"monto\":\"10.55\",\"metodo_pago\":\"Efectivo\",\"estado_pago\":\"Pagado\",\"fecha_pago\":\"2026-09-06\",\"fecha_vencimiento\":null,\"dias_restantes\":null,\"estado_cliente\":\"Sin membres\\u00eda\"}',NULL,'2026-09-16 22:51:31'),
+(361,2,44,'eliminar','Pago eliminado','info','{\"id_pago\":31}','{\"id_pago\":31,\"cedula_cliente\":null,\"nombre_cliente\":null,\"monto\":\"30.85\",\"metodo_pago\":\"Efectivo\",\"estado_pago\":\"Pagado\",\"fecha_pago\":\"2026-09-04\",\"fecha_vencimiento\":null,\"dias_restantes\":null,\"estado_cliente\":\"Sin membres\\u00eda\"}',NULL,'2026-09-16 22:51:35'),
+(362,2,44,'eliminar','Pago eliminado','info','{\"id_pago\":29}','{\"id_pago\":29,\"cedula_cliente\":null,\"nombre_cliente\":null,\"monto\":\"30.00\",\"metodo_pago\":\"Efectivo\",\"estado_pago\":\"Pagado\",\"fecha_pago\":\"2026-09-04\",\"fecha_vencimiento\":null,\"dias_restantes\":null,\"estado_cliente\":\"Sin membres\\u00eda\"}',NULL,'2026-09-16 22:51:37'),
+(363,2,51,'registrar','Entrada registrada para cliente \'V-17334901\'','info','{\"cedula\":\"V-17334901\",\"id_asistencia\":146,\"fecha\":\"2026-09-16 23:05:25\"}',NULL,'{\"success\":true,\"id\":146,\"fecha\":\"2026-09-16 23:05:25\",\"cedula\":\"V-17334901\",\"nombre\":\"Elena Silva\"}','2026-09-16 23:05:25'),
+(364,2,421,'editar','Clase grupal \'Dia de pierna\' actualizada','info','{\"nombre\":\"Dia de pierna\",\"id_clase\":27}','{\"id_clase\":27,\"cedula_trabajador\":\"V-00000002\",\"clientes\":[{\"cedula\":\"V-33333333\",\"nombre\":\"Juan\",\"apellido\":\"Garcia\",\"asistio\":false}],\"nombre\":\"Dia de pierna\",\"descripcion\":\"hola\",\"capacidad_actual\":1,\"capacidad_maxima\":1,\"estado\":\"Programado\",\"fecha_inicio\":{\"date\":\"2026-09-15 20:10:00.000000\",\"timezone_type\":3,\"timezone\":\"America\\/Caracas\"},\"fecha_fin\":{\"date\":\"2026-09-16 20:11:00.000000\",\"timezone_type\":3,\"timezone\":\"America\\/Caracas\"}}','{\"id_clase\":27,\"cedula_trabajador\":\"V-00000002\",\"clientes\":[{\"cedula\":\"V-33333333\",\"nombre\":\"Juan\",\"apellido\":\"Garcia\",\"asistio\":false}],\"nombre\":\"Dia de pierna\",\"descripcion\":\"hola\",\"capacidad_actual\":1,\"capacidad_maxima\":1,\"estado\":\"Finalizado\",\"fecha_inicio\":{\"date\":\"2026-09-15 20:10:00.000000\",\"timezone_type\":3,\"timezone\":\"America\\/Caracas\"},\"fecha_fin\":{\"date\":\"2026-09-16 20:11:00.000000\",\"timezone_type\":3,\"timezone\":\"America\\/Caracas\"}}','2026-09-16 23:47:06');
 /*!40000 ALTER TABLE `bitacora` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -525,7 +535,7 @@ CREATE TABLE `modulo` (
   `nombre` varchar(100) NOT NULL,
   PRIMARY KEY (`id_modulo`),
   UNIQUE KEY `modulo_unique` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=629 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=639 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1044,4 +1054,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2026-09-16 22:49:26
+-- Dump completed on 2026-09-17  0:27:51

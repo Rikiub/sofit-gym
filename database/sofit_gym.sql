@@ -32,7 +32,7 @@ CREATE TABLE `asistencia_gimnasio` (
   KEY `cedula_cliente` (`cedula_persona`),
   KEY `idx_asistencias_fecha` (`fecha`),
   CONSTRAINT `asistencia_gimnasio_ibfk_1` FOREIGN KEY (`cedula_persona`) REFERENCES `cliente` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=146 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=147 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -160,9 +160,63 @@ INSERT INTO `asistencia_gimnasio` VALUES
 (140,'V-18943201','Entrada','2026-09-16 20:44:33'),
 (141,'V-18943201','Entrada','2026-09-16 20:46:49'),
 (142,'V-18943201','Entrada','2026-09-16 20:46:54'),
-(145,'V-27338194','Entrada','2026-09-16 20:51:26');
+(145,'V-27338194','Entrada','2026-09-16 20:51:26'),
+(146,'V-17334901','Entrada','2026-09-16 23:05:25');
 /*!40000 ALTER TABLE `asistencia_gimnasio` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER tg_validar_fecha_asistencia
+BEFORE INSERT ON asistencia_gimnasio
+FOR EACH ROW
+BEGIN
+    IF NEW.fecha > NOW() THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error: La fecha de asistencia no puede ser en el futuro.';
+    END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER tg_bloquear_asistencia_morosos
+BEFORE INSERT ON asistencia_gimnasio
+FOR EACH ROW
+BEGIN
+    DECLARE v_estado_membresia INT DEFAULT 0;
+    
+    SELECT id_estado INTO v_estado_membresia 
+    FROM membresia 
+    WHERE cedula_cliente = NEW.cedula_persona 
+    ORDER BY fecha_fin DESC LIMIT 1;
+    
+    IF v_estado_membresia = 3 THEN 
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error: El cliente es moroso y no puede registrar asistencia.';
+    END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `categoria_producto`
@@ -225,9 +279,37 @@ INSERT INTO `clase` VALUES
 (2,'V-00000002','Dia de pierna','¡Hora de fortalecer esas piernas!',15,'Programado','2026-05-26 12:00:00','2026-05-12 03:00:00'),
 (13,'V-00000002','Hola','Adios',20,'Programado','2026-05-29 11:00:00','2026-05-29 02:00:00'),
 (26,'V-00000002','assa','asf',2,'Programado','2026-06-30 00:35:00','2026-07-01 00:35:00'),
-(27,'V-00000002','Dia de pierna','hola',1,'Programado','2026-09-15 20:10:00','2026-09-16 20:11:00');
+(27,'V-00000002','Dia de pierna','hola',1,'Finalizado','2026-09-15 20:10:00','2026-09-16 20:11:00');
 /*!40000 ALTER TABLE `clase` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `tg_actualizar_estado_clase`
+BEFORE UPDATE ON `clase`
+FOR EACH ROW
+BEGIN
+    IF NEW.`estado` <> 'Cancelado' THEN
+        IF NOW() < NEW.`fecha_inicio` THEN
+            SET NEW.`estado` = 'Programado';
+        ELSEIF NOW() BETWEEN NEW.`fecha_inicio` AND NEW.`fecha_fin` THEN
+            SET NEW.`estado` = 'En curso';
+        ELSEIF NOW() > NEW.`fecha_fin` THEN
+            SET NEW.`estado` = 'Finalizado';
+        END IF;
+    END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `clase_cliente`
@@ -261,7 +343,7 @@ INSERT INTO `clase_cliente` VALUES
 (13,'V-11111111',0,'2026-06-20 19:45:42'),
 (13,'V-33333333',0,'2026-06-20 19:45:42'),
 (26,'V-27338194',0,'2026-07-08 15:54:33'),
-(27,'V-33333333',0,'2026-09-15 20:11:28');
+(27,'V-33333333',0,'2026-09-16 23:47:05');
 /*!40000 ALTER TABLE `clase_cliente` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -417,23 +499,11 @@ UNLOCK TABLES;
 /*!50003 SET character_set_results = utf8mb4 */ ;
 /*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `tg_delete_person` AFTER DELETE ON `cliente` FOR EACH ROW begin
-
-
-
-
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `tg_eliminar_persona` AFTER DELETE ON `cliente` FOR EACH ROW begin
 	delete from persona
-
-
-
-
 	where persona.cedula = old.cedula;
-
-
-
-
 end */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -553,6 +623,7 @@ CREATE TABLE `membresia` (
   KEY `id_tipo` (`id_tipo`),
   KEY `id_estado` (`id_estado`),
   KEY `membresia_cliente_FK` (`cedula_cliente`),
+  KEY `idx_membresia_cedula_cliente` (`cedula_cliente`,`id_estado`) USING BTREE,
   CONSTRAINT `membresia_cliente_FK` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `membresia_ibfk_1` FOREIGN KEY (`id_tipo`) REFERENCES `tipo_membresia` (`id_tipo`) ON UPDATE CASCADE,
   CONSTRAINT `membresia_ibfk_2` FOREIGN KEY (`id_estado`) REFERENCES `estado_membresia` (`id_estado`) ON UPDATE CASCADE
@@ -633,6 +704,7 @@ CREATE TABLE `pago` (
   PRIMARY KEY (`id_pago`),
   KEY `pago_metodo_pago_FK` (`id_metodo`),
   KEY `pago_cliente_FK` (`cedula_cliente`),
+  KEY `idx_pago_fecha_estado` (`fecha_pago`,`estado`),
   CONSTRAINT `pago_cliente_FK` FOREIGN KEY (`cedula_cliente`) REFERENCES `cliente` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `pago_metodo_pago_FK` FOREIGN KEY (`id_metodo`) REFERENCES `metodo_pago` (`id_metodo`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -653,6 +725,30 @@ INSERT INTO `pago` VALUES
 (44,1,'V-29114059',5.97,NULL,'Pagado','2026-09-16');
 /*!40000 ALTER TABLE `pago` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER tg_actualizar_membresia_pago
+AFTER INSERT ON pago
+FOR EACH ROW
+BEGIN
+    IF NEW.estado = 'Pagado' AND NEW.cedula_cliente IS NOT NULL THEN
+        UPDATE membresia 
+        SET id_estado = 1 
+        WHERE cedula_cliente = NEW.cedula_cliente AND id_estado != 1;
+    END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `persona`
@@ -672,7 +768,9 @@ CREATE TABLE `persona` (
   `fecha_nacimiento` date DEFAULT NULL,
   `fecha_creacion` datetime NOT NULL DEFAULT current_timestamp(),
   `activo` tinyint(1) NOT NULL DEFAULT 1,
-  PRIMARY KEY (`cedula`)
+  PRIMARY KEY (`cedula`),
+  KEY `idx_persona_nombre_apellido` (`nombre`,`apellido`) USING BTREE,
+  KEY `idx_persona_cedula` (`cedula`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -713,6 +811,33 @@ INSERT INTO `persona` VALUES
 ('V-33333333','Juan','Garcia','moroso@test.com','0412-4471891',NULL,NULL,'2026-05-15','2026-06-01 16:32:47',1);
 /*!40000 ALTER TABLE `persona` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER tg_evitar_correo_duplicado
+BEFORE INSERT ON persona
+FOR EACH ROW
+BEGIN
+    DECLARE v_count INT;
+    IF NEW.correo IS NOT NULL THEN
+        SELECT COUNT(*) INTO v_count FROM persona WHERE correo = NEW.correo;
+        IF v_count > 0 THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Error: El correo electrónico ya está registrado.';
+        END IF;
+    END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `producto`
@@ -1052,23 +1177,11 @@ UNLOCK TABLES;
 /*!50003 SET character_set_results = utf8mb4 */ ;
 /*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `tg_delete_trabajador` AFTER DELETE ON `trabajador` FOR EACH ROW begin
-
-
-
-
 	delete from persona
-
-
-
-
 	where cedula = old.cedula;
-
-
-
-
 end */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1233,10 +1346,211 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
+-- Temporary table structure for view `vw_cliente_resumen`
+--
+
+DROP TABLE IF EXISTS `vw_cliente_resumen`;
+/*!50001 DROP VIEW IF EXISTS `vw_cliente_resumen`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8mb4;
+/*!50001 CREATE VIEW `vw_cliente_resumen` AS SELECT
+ 1 AS `total_clientes`,
+  1 AS `membresias_activas`,
+  1 AS `ganancias_totales` */;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary table structure for view `vw_control_pagos`
+--
+
+DROP TABLE IF EXISTS `vw_control_pagos`;
+/*!50001 DROP VIEW IF EXISTS `vw_control_pagos`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8mb4;
+/*!50001 CREATE VIEW `vw_control_pagos` AS SELECT
+ 1 AS `id_pago`,
+  1 AS `cedula`,
+  1 AS `nombre`,
+  1 AS `apellido`,
+  1 AS `monto`,
+  1 AS `metodo_pago`,
+  1 AS `estado`,
+  1 AS `fecha_pago` */;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary table structure for view `vw_dashboard_estadisticas`
+--
+
+DROP TABLE IF EXISTS `vw_dashboard_estadisticas`;
+/*!50001 DROP VIEW IF EXISTS `vw_dashboard_estadisticas`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8mb4;
+/*!50001 CREATE VIEW `vw_dashboard_estadisticas` AS SELECT
+ 1 AS `total_clientes`,
+  1 AS `total_trabajadores`,
+  1 AS `personas_activas`,
+  1 AS `membresias_activas`,
+  1 AS `membresias_vencidas`,
+  1 AS `membresias_morosas`,
+  1 AS `asistencias_hoy`,
+  1 AS `clases_programadas`,
+  1 AS `clases_en_curso`,
+  1 AS `ingresos_hoy`,
+  1 AS `ingresos_mes`,
+  1 AS `equipos_operativos`,
+  1 AS `equipos_en_mantenimiento`,
+  1 AS `productos_bajo_stock`,
+  1 AS `pagos_pendientes` */;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary table structure for view `vw_equipos_resumen`
+--
+
+DROP TABLE IF EXISTS `vw_equipos_resumen`;
+/*!50001 DROP VIEW IF EXISTS `vw_equipos_resumen`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8mb4;
+/*!50001 CREATE VIEW `vw_equipos_resumen` AS SELECT
+ 1 AS `codigo_equipo`,
+  1 AS `nombre`,
+  1 AS `tipo`,
+  1 AS `estado`,
+  1 AS `ubicacion`,
+  1 AS `activo`,
+  1 AS `fecha_creacion`,
+  1 AS `total_mantenimientos`,
+  1 AS `ultimo_mantenimiento`,
+  1 AS `costo_total_mantenimiento` */;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary table structure for view `vw_lista_usuarios`
+--
+
+DROP TABLE IF EXISTS `vw_lista_usuarios`;
+/*!50001 DROP VIEW IF EXISTS `vw_lista_usuarios`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8mb4;
+/*!50001 CREATE VIEW `vw_lista_usuarios` AS SELECT
+ 1 AS `id_usuario`,
+  1 AS `nombre_usuario`,
+  1 AS `rol`,
+  1 AS `estado`,
+  1 AS `email`,
+  1 AS `fecha_creacion` */;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary table structure for view `vw_resumen_asistencia`
+--
+
+DROP TABLE IF EXISTS `vw_resumen_asistencia`;
+/*!50001 DROP VIEW IF EXISTS `vw_resumen_asistencia`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8mb4;
+/*!50001 CREATE VIEW `vw_resumen_asistencia` AS SELECT
+ 1 AS `id_asistencia`,
+  1 AS `cedula_persona`,
+  1 AS `nombre`,
+  1 AS `apellido`,
+  1 AS `tipo`,
+  1 AS `fecha` */;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary table structure for view `vw_trabajadores_resumen`
+--
+
+DROP TABLE IF EXISTS `vw_trabajadores_resumen`;
+/*!50001 DROP VIEW IF EXISTS `vw_trabajadores_resumen`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8mb4;
+/*!50001 CREATE VIEW `vw_trabajadores_resumen` AS SELECT
+ 1 AS `total_trabajadores`,
+  1 AS `salario_total_pagado` */;
+SET character_set_client = @saved_cs_client;
+
+--
 -- Dumping routines for database 'sofit_gym'
 --
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP FUNCTION IF EXISTS `fn_calcular_edad` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `fn_calcular_edad`(p_fecha_nacimiento DATE) RETURNS int(11)
+    READS SQL DATA
+BEGIN
+    IF p_fecha_nacimiento IS NULL THEN
+        RETURN NULL;
+    END IF;
+    RETURN TIMESTAMPDIFF(YEAR, p_fecha_nacimiento, CURDATE());
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP FUNCTION IF EXISTS `fn_calcular_imc` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `fn_calcular_imc`(p_peso_kg DECIMAL(5,2), p_altura_cm DECIMAL(5,2)) RETURNS decimal(5,2)
+    DETERMINISTIC
+BEGIN
+    DECLARE v_altura_m DECIMAL(5,2);
+    IF p_peso_kg IS NULL OR p_altura_cm IS NULL OR p_altura_cm = 0 THEN
+        RETURN NULL;
+    END IF;
+    SET v_altura_m = p_altura_cm / 100;
+    RETURN p_peso_kg / (v_altura_m * v_altura_m);
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP FUNCTION IF EXISTS `fn_cupos_disponibles` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `fn_cupos_disponibles`(p_id_clase INT) RETURNS int(11)
+    READS SQL DATA
+BEGIN
+    DECLARE v_capacidad_max INT;
+    DECLARE v_inscritos INT;
+    
+    SELECT capacidad_maxima INTO v_capacidad_max FROM clase WHERE id_clase = p_id_clase;
+    SELECT COUNT(*) INTO v_inscritos FROM clase_cliente WHERE id_clase = p_id_clase;
+    
+    RETURN (v_capacidad_max - v_inscritos);
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
 /*!50003 DROP FUNCTION IF EXISTS `fn_dias_restantes` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -1245,18 +1559,13 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
 /*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `fn_dias_restantes`(`p_fecha_fin` DATE) RETURNS int(11)
+CREATE DEFINER=`root`@`localhost` FUNCTION `fn_dias_restantes`(p_fecha_fin DATE) RETURNS int(11)
     READS SQL DATA
 BEGIN
-
     IF p_fecha_fin IS NULL THEN
-
         RETURN NULL;
-
     END IF;
-
     RETURN DATEDIFF(p_fecha_fin, CURDATE());
-
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1313,7 +1622,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
 /*!50003 DROP FUNCTION IF EXISTS `fn_estado_membresia` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -1322,32 +1631,68 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
 /*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `fn_estado_membresia`(`p_fecha_fin` DATE, `p_estado_pago` VARCHAR(20)) RETURNS varchar(20) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci
+CREATE DEFINER=`root`@`localhost` FUNCTION `fn_estado_membresia`(p_fecha_fin DATE, p_estado_pago VARCHAR(20)) RETURNS varchar(20) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci
     READS SQL DATA
 BEGIN
-
     IF p_fecha_fin IS NULL THEN
-
         RETURN 'Sin membresía';
-
     ELSEIF p_fecha_fin < CURDATE() THEN
-
         RETURN 'Vencido';
-
     ELSEIF p_estado_pago = 'Atrasado' THEN
-
         RETURN 'Moroso';
-
     ELSEIF DATEDIFF(p_fecha_fin, CURDATE()) <= 7 THEN
-
         RETURN 'Próximo a vencer';
-
     ELSE
-
         RETURN 'Activo';
-
     END IF;
-
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP FUNCTION IF EXISTS `fn_existe_usuario` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `fn_existe_usuario`(p_nombre_usuario VARCHAR(100)) RETURNS tinyint(1)
+    READS SQL DATA
+BEGIN
+    DECLARE v_count INT;
+    SELECT COUNT(*) INTO v_count
+    FROM sofit_gym_seguridad.usuario
+    WHERE nombre_usuario = p_nombre_usuario;
+    RETURN v_count > 0;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP FUNCTION IF EXISTS `fn_tiene_pagos_pendientes` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `fn_tiene_pagos_pendientes`(p_cedula VARCHAR(15)) RETURNS tinyint(1)
+    READS SQL DATA
+BEGIN
+    DECLARE v_count INT;
+    SELECT COUNT(*) INTO v_count
+    FROM pago
+    WHERE cedula_cliente = p_cedula AND estado IN ('Pendiente', 'Atrasado');
+    RETURN v_count > 0;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1435,7 +1780,217 @@ DELIMITER ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_auditar_acceso_usuario` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_auditar_acceso_usuario`(
+    IN p_nombre_usuario VARCHAR(100),
+    IN p_accion         VARCHAR(50),
+    IN p_descripcion    TEXT,
+    IN p_ip             VARCHAR(45)
+)
+BEGIN
+    INSERT INTO `bitacora` (`nombre_usuario`, `accion`, `descripcion`,
+                            `tabla_afectada`, `ip`, `fecha`)
+    VALUES (p_nombre_usuario, p_accion, p_descripcion, 'usuario', p_ip, NOW());
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_crear_cliente` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_crear_cliente`(
+    IN p_cedula            VARCHAR(15),
+    IN p_nombre            VARCHAR(50),
+    IN p_apellido          VARCHAR(50),
+    IN p_correo            VARCHAR(100),
+    IN p_telefono          VARCHAR(20),
+    IN p_direccion         TEXT,
+    IN p_fecha_nacimiento  DATE
+)
+BEGIN
+    DECLARE v_existe INT DEFAULT 0;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Error: No se pudo crear el cliente. Transacción cancelada.';
+    END;
+
+    START TRANSACTION;
+
+    SELECT COUNT(*) INTO v_existe FROM `persona` WHERE `cedula` = p_cedula;
+    IF v_existe > 0 THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Error: Ya existe una persona con esa cédula.';
+    END IF;
+
+    IF p_correo IS NOT NULL AND p_correo <> '' THEN
+        SELECT COUNT(*) INTO v_existe FROM `persona` WHERE `correo` = p_correo;
+        IF v_existe > 0 THEN
+            SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'Error: El correo ya está registrado.';
+        END IF;
+    END IF;
+
+    -- 1) persona
+    INSERT INTO `persona`
+        (`cedula`, `nombre`, `apellido`, `correo`, `telefono`,
+         `direccion`, `fecha_nacimiento`, `activo`)
+    VALUES
+        (p_cedula, p_nombre, p_apellido, p_correo, p_telefono,
+         p_direccion, p_fecha_nacimiento, 1);
+
+    -- 2) cliente
+    INSERT INTO `cliente` (`cedula`) VALUES (p_cedula);
+
+    -- 3) auditoría
+    INSERT INTO `bitacora` (`cedula_usuario`, `nombre_usuario`, `accion`,
+                            `descripcion`, `tabla_afectada`, `fecha`)
+    VALUES (p_cedula, CONCAT(p_nombre, ' ', p_apellido),
+            'CREAR_CLIENTE', CONCAT('Cliente creado: ', p_cedula),
+            'cliente', NOW());
+
+    COMMIT;
+
+    SELECT p_cedula AS `cedula_creada`, 'Cliente creado exitosamente.' AS `mensaje`;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_crear_usuario` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_crear_usuario`(
+    IN p_id_rol           INT,
+    IN p_nombre_usuario   VARCHAR(100),
+    IN p_contrasena_hash  VARCHAR(255),
+    IN p_email            VARCHAR(100)
+)
+BEGIN
+    DECLARE v_existe INT DEFAULT 0;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Error: No se pudo crear el usuario. Transacción cancelada.';
+    END;
+
+    START TRANSACTION;
+
+    SELECT COUNT(*) INTO v_existe
+      FROM `sofit_gym_seguridad`.`usuario`
+     WHERE `nombre_usuario` = p_nombre_usuario
+        OR `email`          = p_email;
+
+    IF v_existe > 0 THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Error: El nombre de usuario o email ya está registrado.';
+    END IF;
+
+    INSERT INTO `sofit_gym_seguridad`.`usuario`
+        (`id_rol`, `id_estado`, `nombre_usuario`, `contrasena_hash`, `email`, `fecha_creacion`)
+    VALUES
+        (p_id_rol, 1, p_nombre_usuario, p_contrasena_hash, p_email, CURDATE());
+
+    -- Auditoría
+    INSERT INTO `bitacora` (`nombre_usuario`, `accion`, `descripcion`,
+                            `tabla_afectada`, `fecha`)
+    VALUES (p_nombre_usuario, 'CREAR_USUARIO',
+            CONCAT('Usuario creado con rol ID: ', p_id_rol), 'usuario', NOW());
+
+    COMMIT;
+
+    SELECT LAST_INSERT_ID() AS `id_usuario_creado`,
+           'Usuario creado exitosamente.' AS `mensaje`;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_obtener_clientes_filtrados` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_obtener_clientes_filtrados`(
+    IN p_busqueda        VARCHAR(100),
+    IN p_estado_membresia INT
+)
+BEGIN
+    SELECT
+        p.`cedula`,
+        p.`nombre`,
+        p.`apellido`,
+        p.`correo`,
+        p.`telefono`,
+        fn_calcular_edad(p.`fecha_nacimiento`) AS `edad`,
+        (SELECT m.`fecha_fin`
+           FROM `membresia` m
+          WHERE m.`cedula_cliente` = p.`cedula`
+          ORDER BY m.`fecha_fin` DESC LIMIT 1) AS `fecha_fin_membresia`,
+        (SELECT em.`nombre`
+           FROM `membresia` m
+           JOIN `estado_membresia` em ON em.`id_estado` = m.`id_estado`
+          WHERE m.`cedula_cliente` = p.`cedula`
+          ORDER BY m.`fecha_fin` DESC LIMIT 1) AS `estado_membresia`,
+        (SELECT COUNT(*)
+           FROM `asistencia_gimnasio` a
+          WHERE a.`cedula_persona` = p.`cedula`
+            AND a.`tipo` = 'Entrada') AS `total_asistencias`
+    FROM `persona` p
+    JOIN `cliente` c ON c.`cedula` = p.`cedula`
+    WHERE (p_busqueda IS NULL OR p_busqueda = ''
+           OR p.`nombre`   LIKE CONCAT('%', p_busqueda, '%')
+           OR p.`apellido` LIKE CONCAT('%', p_busqueda, '%')
+           OR p.`cedula`   LIKE CONCAT('%', p_busqueda, '%'))
+      AND (p_estado_membresia IS NULL OR p_estado_membresia = 0
+           OR (SELECT m.`id_estado`
+                 FROM `membresia` m
+                WHERE m.`cedula_cliente` = p.`cedula`
+                ORDER BY m.`fecha_fin` DESC LIMIT 1) = p_estado_membresia)
+    ORDER BY p.`apellido`, p.`nombre`;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `sp_obtener_totales_asistencias_por_rango` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -1444,25 +1999,19 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
 /*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_obtener_totales_asistencias_por_rango`(IN `p_fecha_inicio` DATE, IN `p_fecha_fin` DATE)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_obtener_totales_asistencias_por_rango`(
+    IN p_fecha_inicio DATE, 
+    IN p_fecha_fin DATE
+)
 BEGIN
-
     SELECT 
-
         DATE(a.fecha) AS dia,
-
         COUNT(*) AS total_asistencias
-
     FROM asistencia_gimnasio a
-
     WHERE DATE(a.fecha) BETWEEN p_fecha_inicio AND p_fecha_fin
-
       AND a.tipo = 'Entrada'
-
     GROUP BY DATE(a.fecha)
-
     ORDER BY dia ASC;
-
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1470,7 +2019,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `sp_registrar_entrada_cliente` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -1479,12 +2028,18 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
 /*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_registrar_entrada_cliente`(IN `p_cedula` VARCHAR(15), IN `p_hora` TIME, OUT `p_success` BOOLEAN, OUT `p_message` VARCHAR(255), OUT `p_id_asistencia` INT, OUT `p_fecha_registro` DATETIME)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_registrar_entrada_cliente`(
+    IN p_cedula VARCHAR(15), 
+    IN p_hora TIME, 
+    OUT p_success BOOLEAN, 
+    OUT p_message VARCHAR(255), 
+    OUT p_id_asistencia INT, 
+    OUT p_fecha_registro DATETIME
+)
 BEGIN
     DECLARE v_cliente_nombre VARCHAR(101);
     DECLARE v_membresia_valida INT DEFAULT 0;
 
-    
     SELECT 
         CONCAT(p.nombre, ' ', p.apellido),
         COUNT(m.id_membresia)
@@ -1505,7 +2060,6 @@ BEGIN
         SET p_id_asistencia = NULL;
         SET p_fecha_registro = NULL;
     ELSE
-        
         IF p_hora IS NOT NULL THEN
             INSERT INTO asistencia_gimnasio (cedula_persona, fecha, tipo)
             VALUES (p_cedula, CONCAT(CURDATE(), ' ', p_hora), 'Entrada');
@@ -1519,6 +2073,56 @@ BEGIN
         SET p_success = TRUE;
         SET p_message = CONCAT('Entrada registrada para ', v_cliente_nombre);
     END IF;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_registrar_nuevo_pago` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_registrar_nuevo_pago`(
+    IN p_id_metodo INT,
+    IN p_cedula_cliente VARCHAR(15),
+    IN p_monto DECIMAL(10,2),
+    IN p_fecha_pago DATE
+)
+BEGIN
+    INSERT INTO pago (id_metodo, cedula_cliente, monto, estado, fecha_pago)
+    VALUES (p_id_metodo, p_cedula_cliente, p_monto, 'Pagado', p_fecha_pago);
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_registrar_usuario` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_registrar_usuario`(
+    IN p_id_rol INT,
+    IN p_nombre_usuario VARCHAR(100),
+    IN p_contrasena_hash VARCHAR(255),
+    IN p_email VARCHAR(100)
+)
+BEGIN
+    INSERT INTO sofit_gym_seguridad.usuario (id_rol, id_estado, nombre_usuario, contrasena_hash, email, fecha_creacion)
+    VALUES (p_id_rol, 1, p_nombre_usuario, p_contrasena_hash, p_email, CURDATE());
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1550,6 +2154,153 @@ SET v_monto_total = v_precio * p_cantidad;
  INSERT INTO venta_producto (id_metodo, codigo_producto, cedula_cliente, cantidad_vendida,
 monto_total)
 VALUES (p_id_metodo, p_codigo_producto, p_cedula_cliente, p_cantidad, v_monto_total);
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_reporte_facturacion` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_reporte_facturacion`(
+    IN p_fecha_inicio DATE,
+    IN p_fecha_fin DATE
+)
+BEGIN
+    SELECT 
+        id_pago,
+        cedula_cliente,
+        monto,
+        estado,
+        fecha_pago
+    FROM pago
+    WHERE fecha_pago BETWEEN p_fecha_inicio AND p_fecha_fin;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_tx_penalizacion_por_atraso` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_tx_penalizacion_por_atraso`(
+    IN p_cedula VARCHAR(15),
+    IN p_monto_mora DECIMAL(10,2)
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error en la transacción: No se pudo aplicar la penalización.';
+    END;
+
+    START TRANSACTION;
+
+    UPDATE membresia
+    SET id_estado = 3
+    WHERE cedula_cliente = p_cedula;
+
+    INSERT INTO pago (id_metodo, cedula_cliente, monto, estado, fecha_pago)
+    VALUES (1, p_cedula, p_monto_mora, 'Atrasado', CURDATE());
+
+    COMMIT;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_tx_registro_membresia_pago` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_tx_registro_membresia_pago`(
+    IN p_cedula VARCHAR(15),
+    IN p_id_tipo_membresia INT,
+    IN p_monto DECIMAL(10,2),
+    IN p_id_metodo INT
+)
+BEGIN
+    DECLARE v_duracion INT DEFAULT 30;
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error en la transacción: Registro de membresía cancelado.';
+    END;
+
+    START TRANSACTION;
+
+    SELECT duracion_dias INTO v_duracion FROM tipo_membresia WHERE id_tipo = p_id_tipo_membresia;
+
+    INSERT INTO pago (id_metodo, cedula_cliente, monto, estado, fecha_pago)
+    VALUES (p_id_metodo, p_cedula, p_monto, 'Pagado', CURDATE());
+
+    INSERT INTO membresia (id_tipo, id_estado, cedula_cliente, fecha_inicio, fecha_fin)
+    VALUES (p_id_tipo_membresia, 1, p_cedula, CURDATE(), DATE_ADD(CURDATE(), INTERVAL v_duracion DAY));
+
+    COMMIT;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_tx_reversion_de_pago` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_tx_reversion_de_pago`(
+    IN p_id_pago INT
+)
+BEGIN
+    DECLARE v_cedula VARCHAR(15);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error en la transacción: Reversión de pago fallida.';
+    END;
+
+    START TRANSACTION;
+
+    SELECT cedula_cliente INTO v_cedula FROM pago WHERE id_pago = p_id_pago;
+
+    DELETE FROM pago WHERE id_pago = p_id_pago;
+
+    IF v_cedula IS NOT NULL THEN
+        UPDATE membresia
+        SET id_estado = 3
+        WHERE cedula_cliente = v_cedula AND id_estado = 1;
+    END IF;
+
+    COMMIT;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1592,6 +2343,132 @@ DELIMITER ;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `vw_cliente_resumen`
+--
+
+/*!50001 DROP VIEW IF EXISTS `vw_cliente_resumen`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `vw_cliente_resumen` AS select (select count(0) from `cliente`) AS `total_clientes`,(select count(0) from `membresia` where `membresia`.`fecha_fin` >= curdate()) AS `membresias_activas`,(select coalesce(sum(`p`.`monto`),0) from `pago` `p` where year(`p`.`fecha_pago`) = year(curdate()) and month(`p`.`fecha_pago`) = month(curdate()) and `p`.`cedula_cliente` is not null and !(`p`.`id_pago` in (select `venta_producto`.`id_pago` from `venta_producto`)) and exists(select 1 from `membresia` `m` where `m`.`cedula_cliente` = `p`.`cedula_cliente` and `m`.`fecha_fin` >= curdate() limit 1)) AS `ganancias_totales` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `vw_control_pagos`
+--
+
+/*!50001 DROP VIEW IF EXISTS `vw_control_pagos`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `vw_control_pagos` AS select `p`.`id_pago` AS `id_pago`,`pe`.`cedula` AS `cedula`,`pe`.`nombre` AS `nombre`,`pe`.`apellido` AS `apellido`,`p`.`monto` AS `monto`,`mp`.`nombre` AS `metodo_pago`,`p`.`estado` AS `estado`,`p`.`fecha_pago` AS `fecha_pago` from (((`pago` `p` left join `cliente` `c` on(`p`.`cedula_cliente` = `c`.`cedula`)) left join `persona` `pe` on(`c`.`cedula` = `pe`.`cedula`)) join `metodo_pago` `mp` on(`p`.`id_metodo` = `mp`.`id_metodo`)) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `vw_dashboard_estadisticas`
+--
+
+/*!50001 DROP VIEW IF EXISTS `vw_dashboard_estadisticas`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `vw_dashboard_estadisticas` AS select (select count(0) from `cliente`) AS `total_clientes`,(select count(0) from `trabajador`) AS `total_trabajadores`,(select count(0) from `persona` where `persona`.`activo` = 1) AS `personas_activas`,(select count(0) from `membresia` where `membresia`.`id_estado` = 1 and `membresia`.`fecha_fin` >= curdate()) AS `membresias_activas`,(select count(0) from `membresia` where `membresia`.`fecha_fin` < curdate()) AS `membresias_vencidas`,(select count(0) from `membresia` where `membresia`.`id_estado` = 3) AS `membresias_morosas`,(select count(0) from `asistencia_gimnasio` where cast(`asistencia_gimnasio`.`fecha` as date) = curdate() and `asistencia_gimnasio`.`tipo` = 'Entrada') AS `asistencias_hoy`,(select count(0) from `clase` where `clase`.`estado` = 'Programado') AS `clases_programadas`,(select count(0) from `clase` where `clase`.`estado` = 'En curso') AS `clases_en_curso`,(select ifnull(sum(`pago`.`monto`),0) from `pago` where cast(`pago`.`fecha_pago` as date) = curdate() and `pago`.`estado` = 'Pagado') AS `ingresos_hoy`,(select ifnull(sum(`pago`.`monto`),0) from `pago` where month(`pago`.`fecha_pago`) = month(curdate()) and year(`pago`.`fecha_pago`) = year(curdate()) and `pago`.`estado` = 'Pagado') AS `ingresos_mes`,(select count(0) from `equipo` where `equipo`.`estado` = 'Operativo' and `equipo`.`activo` = 1) AS `equipos_operativos`,(select count(0) from `equipo` where `equipo`.`estado` = 'Mantenimiento') AS `equipos_en_mantenimiento`,(select count(0) from `producto` where `producto`.`stock_actual` <= `producto`.`stock_minimo` and `producto`.`activo` = 1) AS `productos_bajo_stock`,(select count(0) from `pago` where `pago`.`estado` in ('Pendiente','Atrasado')) AS `pagos_pendientes` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `vw_equipos_resumen`
+--
+
+/*!50001 DROP VIEW IF EXISTS `vw_equipos_resumen`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `vw_equipos_resumen` AS select `e`.`codigo_equipo` AS `codigo_equipo`,`e`.`nombre` AS `nombre`,`e`.`tipo` AS `tipo`,`e`.`estado` AS `estado`,`e`.`ubicacion` AS `ubicacion`,`e`.`activo` AS `activo`,`e`.`fecha_creacion` AS `fecha_creacion`,(select count(0) from `mantenimiento_equipo` `me` where `me`.`codigo_equipo` = `e`.`codigo_equipo`) AS `total_mantenimientos`,(select max(`me`.`fecha`) from `mantenimiento_equipo` `me` where `me`.`codigo_equipo` = `e`.`codigo_equipo`) AS `ultimo_mantenimiento`,(select ifnull(sum(`me`.`costo`),0) from `mantenimiento_equipo` `me` where `me`.`codigo_equipo` = `e`.`codigo_equipo`) AS `costo_total_mantenimiento` from `equipo` `e` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `vw_lista_usuarios`
+--
+
+/*!50001 DROP VIEW IF EXISTS `vw_lista_usuarios`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `vw_lista_usuarios` AS select `u`.`id_usuario` AS `id_usuario`,`u`.`nombre_usuario` AS `nombre_usuario`,`r`.`nombre` AS `rol`,`e`.`nombre` AS `estado`,`u`.`email` AS `email`,`u`.`fecha_creacion` AS `fecha_creacion` from ((`sofit_gym_seguridad`.`usuario` `u` join `sofit_gym_seguridad`.`rol` `r` on(`u`.`id_rol` = `r`.`id_rol`)) join `sofit_gym_seguridad`.`estado_usuario` `e` on(`u`.`id_estado` = `e`.`id_estado`)) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `vw_resumen_asistencia`
+--
+
+/*!50001 DROP VIEW IF EXISTS `vw_resumen_asistencia`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `vw_resumen_asistencia` AS select `a`.`id_asistencia` AS `id_asistencia`,`a`.`cedula_persona` AS `cedula_persona`,`pe`.`nombre` AS `nombre`,`pe`.`apellido` AS `apellido`,`a`.`tipo` AS `tipo`,`a`.`fecha` AS `fecha` from (`asistencia_gimnasio` `a` join `persona` `pe` on(`a`.`cedula_persona` = `pe`.`cedula`)) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `vw_trabajadores_resumen`
+--
+
+/*!50001 DROP VIEW IF EXISTS `vw_trabajadores_resumen`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `vw_trabajadores_resumen` AS select count(0) AS `total_trabajadores`,coalesce(sum(`trabajador`.`salario`),0) AS `salario_total_pagado` from `trabajador` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -1602,4 +2479,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2026-09-16 22:49:25
+-- Dump completed on 2026-09-17  0:27:50
