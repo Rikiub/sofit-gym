@@ -50,7 +50,13 @@ $this->layout('layout', ['title' => 'Trabajadores']);
 
                 <label class="col">
                     <span class="form-label">Salario</span>
-                    <input class="form-control" type="number" name="salario" step="any" required>
+                    <input
+                        class="form-control"
+                        type="number"
+                        name="salario"
+                        step="any"
+                        min="0"
+                        required>
                     <small class="text-danger" x-text="errors.salario"></small>
                 </label>
             </fieldset>
