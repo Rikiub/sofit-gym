@@ -47,7 +47,10 @@ $this->layout("layout", ["title" => "Facturacion"]);
                     <div class="form-group">
                         <label><i class="fas fa-dollar-sign"></i> Monto (USD)</label>
                         <!-- CAMBIADO A type="text" para validar correctamente -->
-                        <input class="form-control" type="text" id="monto_input" required placeholder="0.00">
+                        <input class="form-control" type="text" id="monto_input" required placeholder="0.00"
+                            x-data
+                            @keydown="if (['-','+','e','E'].includes($event.key)) $event.preventDefault()"
+                            @input="if ($el.value && parseFloat($el.value) < 0) $el.value = ''">
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-credit-card"></i> Método de pago</label>
@@ -169,7 +172,9 @@ $this->layout("layout", ["title" => "Facturacion"]);
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
-                            <tr><td colspan="9" class="text-center">No hay pagos registrados.</td></tr>
+                            <tr>
+                                <td colspan="9" class="text-center">No hay pagos registrados.</td>
+                            </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -192,7 +197,15 @@ $this->layout("layout", ["title" => "Facturacion"]);
                 <input type="text" id="searchClient" class="search-client form-control" placeholder="Buscar por cédula, nombre, correo o teléfono">
                 <div class="table-responsive">
                     <table class="table table-hover" id="clientesTabla">
-                        <thead><tr><th>Cédula</th><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Acción</th></tr></thead>
+                        <thead>
+                            <tr>
+                                <th>Cédula</th>
+                                <th>Nombre</th>
+                                <th>Correo</th>
+                                <th>Teléfono</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
                         <tbody>
                             <?php if (isset($clientes) && is_array($clientes) && count($clientes) > 0): ?>
                                 <?php foreach ($clientes as $c): ?>
@@ -205,7 +218,9 @@ $this->layout("layout", ["title" => "Facturacion"]);
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
-                                <tr><td colspan="5" class="text-center text-danger">⚠️ No hay clientes registrados.</td></tr>
+                                <tr>
+                                    <td colspan="5" class="text-center text-danger">⚠️ No hay clientes registrados.</td>
+                                </tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
@@ -272,10 +287,15 @@ $this->layout("layout", ["title" => "Facturacion"]);
                     <div class="mb-3"><label>Cliente</label><input type="text" class="form-control" id="edit_nombre" readonly></div>
                     <div class="mb-3"><label>Monto (USD)</label><input type="number" step="0.01" class="form-control" name="monto" id="edit_monto" required></div>
                     <div class="mb-3"><label>Método</label><select name="metodo_pago" id="edit_metodo" class="form-select">
-                            <option>Efectivo</option><option>Tarjeta crédito</option><option>Transferencia</option><option>Pago móvil</option>
+                            <option>Efectivo</option>
+                            <option>Tarjeta crédito</option>
+                            <option>Transferencia</option>
+                            <option>Pago móvil</option>
                         </select></div>
                     <div class="mb-3"><label>Estado</label><select name="estado" id="edit_estado" class="form-select">
-                            <option>Pagado</option><option>Pendiente</option><option>Atrasado</option>
+                            <option>Pagado</option>
+                            <option>Pendiente</option>
+                            <option>Atrasado</option>
                         </select></div>
                     <div class="mb-3"><label>Fecha pago</label><input type="date" class="form-control" name="fecha_pago" id="edit_fecha_pago" required></div>
                     <div class="mb-3"><label>Fecha vencimiento</label><input type="date" class="form-control" name="fecha_vencimiento" id="edit_fecha_vencimiento" required></div>
@@ -340,10 +360,12 @@ $this->layout("layout", ["title" => "Facturacion"]);
         border-color: #0d6efd !important;
         box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
     }
+
     .monto-invalid {
         border-color: #dc3545 !important;
         box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
     }
+
     /* resto de estilos (sin cambios) */
     .container {
         --bs-gutter-x: 0;
@@ -355,6 +377,7 @@ $this->layout("layout", ["title" => "Facturacion"]);
         overflow: hidden;
         padding: 1.5rem;
     }
+
     .header {
         background: #C62828;
         color: white;
@@ -366,11 +389,13 @@ $this->layout("layout", ["title" => "Facturacion"]);
         margin: -1.5rem -1.5rem 1.5rem -1.5rem;
         border-radius: 28px 28px 0 0;
     }
+
     .header h1 {
         font-size: 1.6rem;
         font-weight: 600;
         margin: 0;
     }
+
     .card {
         background: white;
         border-radius: 20px;
@@ -378,6 +403,7 @@ $this->layout("layout", ["title" => "Facturacion"]);
         margin-bottom: 1.5rem;
         overflow: hidden;
     }
+
     .card-header {
         background: #fafbfc;
         padding: 1rem 1.5rem;
@@ -386,19 +412,23 @@ $this->layout("layout", ["title" => "Facturacion"]);
         border-bottom: 1px solid #edf2f7;
         color: #1e2a3a;
     }
+
     .card-body {
         padding: 1.5rem;
     }
+
     .form-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 1.2rem;
     }
+
     .form-group {
         display: flex;
         flex-direction: column;
         gap: 0.4rem;
     }
+
     label {
         font-weight: 600;
         font-size: 0.75rem;
@@ -406,6 +436,7 @@ $this->layout("layout", ["title" => "Facturacion"]);
         letter-spacing: 0.5px;
         color: #5a6e7a;
     }
+
     .modal-select-btn {
         background: white;
         border: 1px solid #cfdfe8;
@@ -418,22 +449,29 @@ $this->layout("layout", ["title" => "Facturacion"]);
         cursor: pointer;
         transition: 0.2s;
     }
+
     .modal-select-btn:hover {
         border-color: #C62828;
         background: #fef2f2;
     }
-    input, select, button {
+
+    input,
+    select,
+    button {
         padding: 0.7rem 1rem;
         border-radius: 14px;
         border: 1px solid #cfdfe8;
         font-size: 0.9rem;
         transition: 0.2s;
     }
-    input:focus, select:focus {
+
+    input:focus,
+    select:focus {
         outline: none;
         border-color: #C62828;
         box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1);
     }
+
     button {
         background: #C62828;
         color: white;
@@ -441,50 +479,221 @@ $this->layout("layout", ["title" => "Facturacion"]);
         border: none;
         cursor: pointer;
     }
+
     button:hover {
         background: #b71c1c;
         transform: translateY(-1px);
     }
-    .btn-secondary { background: #6c757d; }
-    .btn-sm { padding: 0.1rem 0.3rem !important; font-size: 0.6rem !important; border-radius: 10px !important; }
-    .acciones-botones { display: flex; gap: 0.15rem; flex-wrap: nowrap; }
-    .table-responsive { overflow-x: auto; width: 100%; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.7rem; min-width: 850px; }
-    th, td { padding: 0.2rem 0.3rem; text-align: left; border-bottom: 1px solid #eef2f6; vertical-align: middle; white-space: nowrap; }
-    th { background: #f8fafc; font-weight: 600; color: #1e2a3a; }
-    .aviso-vencimiento { background-color: #ffeb3b; color: #c62828; font-weight: bold; padding: 0.15rem 0.25rem; border-radius: 20px; display: inline-block; font-size: 0.65rem; }
-    .alert { padding: 0.9rem 1.2rem; border-radius: 16px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.6rem; transition: opacity 0.5s ease; }
-    .alert-success { background: #e6f4ea; border-left: 5px solid #2e7d32; color: #1e4620; }
-    .alert-danger { background: #fce8e6; border-left: 5px solid #c62828; color: #8b1e1e; }
-    .alert-warning { background: #fff4e5; border-left: 5px solid #f57c00; color: #a85900; }
-    .badge-pagado, .badge-atrasado, .badge-pendiente, .estado-activo, .estado-proximo, .estado-vencido {
+
+    .btn-secondary {
+        background: #6c757d;
+    }
+
+    .btn-sm {
+        padding: 0.1rem 0.3rem !important;
+        font-size: 0.6rem !important;
+        border-radius: 10px !important;
+    }
+
+    .acciones-botones {
+        display: flex;
+        gap: 0.15rem;
+        flex-wrap: nowrap;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+        width: 100%;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.7rem;
+        min-width: 850px;
+    }
+
+    th,
+    td {
+        padding: 0.2rem 0.3rem;
+        text-align: left;
+        border-bottom: 1px solid #eef2f6;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    th {
+        background: #f8fafc;
+        font-weight: 600;
+        color: #1e2a3a;
+    }
+
+    .aviso-vencimiento {
+        background-color: #ffeb3b;
+        color: #c62828;
+        font-weight: bold;
+        padding: 0.15rem 0.25rem;
+        border-radius: 20px;
+        display: inline-block;
+        font-size: 0.65rem;
+    }
+
+    .alert {
+        padding: 0.9rem 1.2rem;
+        border-radius: 16px;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        transition: opacity 0.5s ease;
+    }
+
+    .alert-success {
+        background: #e6f4ea;
+        border-left: 5px solid #2e7d32;
+        color: #1e4620;
+    }
+
+    .alert-danger {
+        background: #fce8e6;
+        border-left: 5px solid #c62828;
+        color: #8b1e1e;
+    }
+
+    .alert-warning {
+        background: #fff4e5;
+        border-left: 5px solid #f57c00;
+        color: #a85900;
+    }
+
+    .badge-pagado,
+    .badge-atrasado,
+    .badge-pendiente,
+    .estado-activo,
+    .estado-proximo,
+    .estado-vencido {
         padding: 0.1rem 0.3rem;
         border-radius: 40px;
         font-size: 0.6rem;
         font-weight: 600;
         white-space: nowrap;
     }
-    .badge-pagado { background-color: #2ecc71; color: white; }
-    .badge-atrasado { background-color: #e74c3c; color: white; }
-    .badge-pendiente { background-color: #f39c12; color: white; }
-    .estado-activo { background-color: #2ecc71; color: white; }
-    .estado-proximo { background-color: #f39c12; color: white; }
-    .estado-vencido { background-color: #e74c3c; color: white; }
-    .modal-header { background: #C62828; color: white; border-bottom: none; }
-    .btn-close-white { filter: brightness(0) invert(1); }
-    .search-client { margin-bottom: 1rem; padding: 0.5rem; border-radius: 12px; border: 1px solid #cfdfe8; width: 100%; }
-    .btn-select-client { background: #6c757d !important; color: white !important; border: none !important; padding: 0.3rem 0.8rem !important; border-radius: 30px !important; font-size: 0.7rem !important; font-weight: 600 !important; cursor: pointer !important; display: inline-flex !important; align-items: center !important; gap: 0.2rem !important; transition: 0.2s !important; }
-    .btn-select-client:hover { background: #5a6268 !important; transform: scale(1.02) !important; }
-    .buscador-pagos { margin-bottom: 1rem; display: flex; gap: 0.5rem; align-items: center; }
-    .buscador-pagos input { flex: 1; padding: 0.5rem; border-radius: 20px; border: 1px solid #cfdfe8; }
-    .fade-out { opacity: 0; }
+
+    .badge-pagado {
+        background-color: #2ecc71;
+        color: white;
+    }
+
+    .badge-atrasado {
+        background-color: #e74c3c;
+        color: white;
+    }
+
+    .badge-pendiente {
+        background-color: #f39c12;
+        color: white;
+    }
+
+    .estado-activo {
+        background-color: #2ecc71;
+        color: white;
+    }
+
+    .estado-proximo {
+        background-color: #f39c12;
+        color: white;
+    }
+
+    .estado-vencido {
+        background-color: #e74c3c;
+        color: white;
+    }
+
+    .modal-header {
+        background: #C62828;
+        color: white;
+        border-bottom: none;
+    }
+
+    .btn-close-white {
+        filter: brightness(0) invert(1);
+    }
+
+    .search-client {
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+        border-radius: 12px;
+        border: 1px solid #cfdfe8;
+        width: 100%;
+    }
+
+    .btn-select-client {
+        background: #6c757d !important;
+        color: white !important;
+        border: none !important;
+        padding: 0.3rem 0.8rem !important;
+        border-radius: 30px !important;
+        font-size: 0.7rem !important;
+        font-weight: 600 !important;
+        cursor: pointer !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 0.2rem !important;
+        transition: 0.2s !important;
+    }
+
+    .btn-select-client:hover {
+        background: #5a6268 !important;
+        transform: scale(1.02) !important;
+    }
+
+    .buscador-pagos {
+        margin-bottom: 1rem;
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .buscador-pagos input {
+        flex: 1;
+        padding: 0.5rem;
+        border-radius: 20px;
+        border: 1px solid #cfdfe8;
+    }
+
+    .fade-out {
+        opacity: 0;
+    }
+
     @media (max-width: 768px) {
-        body { padding: 0.5rem; }
-        .container { padding: 1rem; }
-        .header { margin: -1rem -1rem 1rem -1rem; border-radius: 20px 20px 0 0; }
-        .tab-btn { padding: 0.6rem 1rem; }
-        td, th { white-space: normal; }
-        .acciones-botones { flex-wrap: wrap; }
-        .form-grid { grid-template-columns: 1fr; }
+        body {
+            padding: 0.5rem;
+        }
+
+        .container {
+            padding: 1rem;
+        }
+
+        .header {
+            margin: -1rem -1rem 1rem -1rem;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .tab-btn {
+            padding: 0.6rem 1rem;
+        }
+
+        td,
+        th {
+            white-space: normal;
+        }
+
+        .acciones-botones {
+            flex-wrap: wrap;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
