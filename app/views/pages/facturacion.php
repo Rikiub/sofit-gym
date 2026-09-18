@@ -47,7 +47,7 @@ $this->layout("layout", ["title" => "Facturacion"]);
                     <div class="form-group">
                         <label><i class="fas fa-dollar-sign"></i> Monto (USD)</label>
                         <!-- CAMBIADO A type="text" para validar correctamente -->
-                        <input class="form-control" type="text" id="monto_input" required placeholder="0.00"
+                        <input class="form-control" type="number" id="monto_input" required placeholder="0.00"
                             x-data
                             @keydown="if (['-','+','e','E'].includes($event.key)) $event.preventDefault()"
                             @input="if ($el.value && parseFloat($el.value) < 0) $el.value = ''">
