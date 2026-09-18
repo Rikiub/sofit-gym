@@ -7,7 +7,6 @@ use App\Models\AsistenciaModel;
 use App\Models\BitacoraModel;
 use App\Services\Reportes\ReporteAsistencia;
 
-$logger = new BitacoraModel();
 $model = new AsistenciaModel();
 
 switch (Route::action()) {
@@ -55,21 +54,6 @@ switch (Route::action()) {
         }
 
         $resultado = $model->registrarEntrada($cedula, $hora);
-
-        if (!empty($resultado['success'])) {
-            try {
-                $logger->log("Entrada registrada para cliente '{$cedula}'", [
-                    "modulo"        => "asistencia",
-                    "accion"        => "registrar",
-                    'cedula'        => $cedula,
-                    'id_asistencia' => $resultado['id']    ?? null,
-                    'fecha'         => $resultado['fecha'] ?? null,
-                    'datos_nuevos'  => $resultado,
-                ]);
-            } catch (\Throwable $e) {
-                // No debe romper la respuesta JSON
-            }
-        }
 
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($resultado, JSON_INVALID_UTF8_SUBSTITUTE);
@@ -127,14 +111,6 @@ switch (Route::action()) {
         if ($ok) {
             // Obtener datos nuevos después de la actualización
             $new = $model->findCliente($id);
-            $logger->log("Entrada '{id_asistencia}' actualizada", [
-                "modulo" => "asistencia",
-                "accion" => "editar",
-
-                'id_asistencia' => $id,
-                'datos_previos' => $old,
-                'datos_nuevos'  => $new,
-            ]);
         }
         echo json_encode(['success' => $ok]);
         exit;
@@ -150,17 +126,7 @@ switch (Route::action()) {
 
         $id = intval($_POST['id']);
         $old = $model->findCliente($id);
-
         $ok = $model->eliminarEntrada($id);
-        if ($ok) {
-            $logger->log("Entrada '{id_asistencia}' eliminada", [
-                "modulo" => "asistencia",
-                "accion" => "eliminar",
-
-                'id_asistencia' => $id,
-                'datos_previos' => $old,
-            ]);
-        }
 
         echo json_encode(['success' => $ok]);
         exit;

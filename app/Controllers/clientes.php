@@ -7,12 +7,10 @@ use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
 use App\Core\Tools;
-use App\Models\BitacoraModel;
 use App\Models\Clientes\Cliente;
 use App\Models\Clientes\ClienteModel;
 use App\Services\Reportes\ReporteClientes;
 
-$logger = new BitacoraModel();
 $clienteModelo = new ClienteModel();
 
 function notFound(): string
@@ -77,17 +75,6 @@ switch (Route::action()) {
         }
 
         $new = $clienteModelo->insert($new);
-        $logger->log(
-            "Cliente '{cedula}' creado",
-            [
-                "modulo" => "clientes",
-                "accion" => "crear",
-
-                "cedula" => $id,
-                "datos_nuevos" => $new,
-            ],
-        );
-
         return Response::json($new, Status::CREATED);
 
     case "update":
@@ -102,18 +89,6 @@ switch (Route::action()) {
         }
 
         $new = $clienteModelo->update($id, $new);
-        $logger->log(
-            "Cliente '{cedula}' actualizado",
-            [
-                "modulo" => "clientes",
-                "accion" => "editar",
-
-                "cedula" => $old->cedula,
-                "datos_previos" => $old,
-                "datos_nuevos" => $new,
-            ],
-        );
-
         return Response::json($new, Status::CREATED);
 
     case "delete":
@@ -125,15 +100,6 @@ switch (Route::action()) {
         }
 
         $clienteModelo->delete($id);
-        $logger->log(
-            "Cliente '{cedula}' eliminado",
-            [
-                "modulo" => "clientes",
-                "accion" => "eliminar",
-                "cedula" => $id
-            ]
-        );
-
         return Response::noContent();
 
         // REPORTES

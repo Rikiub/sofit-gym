@@ -7,6 +7,12 @@ use Exception;
 
 class FacturacionModel extends Database
 {
+    public function __construct(
+        private BitacoraModel $logger = new BitacoraModel(),
+    ) {
+        parent::__construct();
+    }
+
     // ===== REGISTRAR PAGO =====
     public function registrarPago(
         string $cedulaCliente,
@@ -81,6 +87,16 @@ class FacturacionModel extends Database
             $idPago = $this->pdo->lastInsertId();
 
             $this->pdo->commit();
+            $this->logger->log("Pago registrado", [
+                'modulo' => 'facturacion',
+                'accion' => 'crear',
+                'cedula' => $cedulaCliente,
+                'id_pago' => $res['id_pago'] ?? null,
+                'monto' => $monto,
+                'metodo' => $metodoPago,
+                'nueva_fecha_fin' => $res['nueva_fecha_vencimiento'] ?? null,
+            ]);
+
             return [
                 'exito' => true,
                 'nueva_fecha_vencimiento' => $nuevaFechaVencimiento,
@@ -200,6 +216,12 @@ class FacturacionModel extends Database
                 }
             }
         }
+
+        $this->logger->log("Pago actualizado", [
+            'modulo' => 'facturacion',
+            'accion' => 'editar',
+            'id_pago' => $idPago,
+        ]);
         return $res;
     }
 
@@ -207,7 +229,15 @@ class FacturacionModel extends Database
     public function eliminarPago(int $idPago): bool
     {
         $stmt = $this->pdo->prepare("DELETE FROM pago WHERE id_pago = ?");
-        return $stmt->execute([$idPago]);
+        $result = $stmt->execute([$idPago]);
+
+        $this->logger->log("Pago eliminado", [
+            'modulo' => 'facturacion',
+            'accion' => 'eliminar',
+            'id_pago' => $idPago,
+        ]);
+
+        return $result;
     }
 
     // ===== OBTENER CLIENTES SIMPLES =====

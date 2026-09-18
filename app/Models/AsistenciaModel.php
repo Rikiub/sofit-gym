@@ -6,6 +6,12 @@ use App\Models\Database;
 
 class AsistenciaModel extends Database
 {
+    public function __construct(
+        private BitacoraModel $logger = new BitacoraModel(),
+    ) {
+        parent::__construct();
+    }
+
     /**
      * Obtener una entrada de asistencia por su ID
      * @param int $id
@@ -81,6 +87,15 @@ class AsistenciaModel extends Database
             return ['success' => false, 'message' => 'Cliente no encontrado o membresía inactiva/vencida.'];
         }
 
+        $this->logger->log("Entrada registrada para cliente '{$cedula}'", [
+            "modulo"        => "asistencia",
+            "accion"        => "registrar",
+            'cedula'        => $cedula,
+            'id_asistencia' => $resultado['id']    ?? null,
+            'fecha'         => $resultado['fecha'] ?? null,
+            'datos_nuevos'  => $cliente,
+        ]);
+
         return [
             'success' => true,
             'id' => $asistencia["id"],
@@ -133,7 +148,17 @@ class AsistenciaModel extends Database
     {
         $fecha = date('Y-m-d') . ' ' . $nuevaHora;
         $stmt = $this->pdo->prepare("UPDATE asistencia_gimnasio SET fecha = ? WHERE id_asistencia = ?");
-        return $stmt->execute([$fecha, $id]);
+        $row = $stmt->execute([$fecha, $id]);
+
+        $this->logger->log("Entrada '{id_asistencia}' actualizada", [
+            "modulo" => "asistencia",
+            "accion" => "editar",
+
+            'id_asistencia' => $id,
+            'datos_nuevos'  => $row,
+        ]);
+
+        return $row;
     }
 
     /**
@@ -142,6 +167,12 @@ class AsistenciaModel extends Database
     public function eliminarEntrada(int $id): bool
     {
         $stmt = $this->pdo->prepare("DELETE FROM asistencia_gimnasio WHERE id_asistencia = ?");
+        $this->logger->log("Entrada '{id_asistencia}' eliminada", [
+            "modulo" => "asistencia",
+            "accion" => "eliminar",
+
+            'id_asistencia' => $id,
+        ]);
         return $stmt->execute([$id]);
     }
 

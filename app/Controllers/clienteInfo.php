@@ -7,14 +7,12 @@ use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Http\Status;
 use App\Core\Tools;
-use App\Models\BitacoraModel;
 use App\Models\Clientes\ClienteModel;
 use App\Models\Clientes\SeguimientoFisico;
 use App\Models\Clientes\SeguimientoNutricional;
 use App\Models\Clientes\SegumientoFisicoModel;
 use App\Models\Clientes\SegumientoNutricionalModel;
 
-$logger = new BitacoraModel();
 $clienteModel = new ClienteModel();
 $fisicoModel = new SegumientoFisicoModel();
 $nutricionalModel = new SegumientoNutricionalModel();
@@ -91,15 +89,6 @@ switch (Route::action()) {
         }
 
         $new = $fisicoModel->insert($cedula, $seguimiento);
-        $logger->log("Seguimiento físico para cliente '{cedula}' registrado", [
-            "modulo" => "cliente_info",
-            "accion" => "crear_seg_fisico",
-
-            'cedula'        => $cedula,
-            'id_seguimiento' => $new->id_seguimiento,
-            'datos_nuevos'  => $new,
-        ]);
-
         return Response::json($new, Status::CREATED);
 
     case "deleteFisico":
@@ -112,15 +101,6 @@ switch (Route::action()) {
         }
 
         $fisicoModel->delete($id);
-        $logger->log("Seguimiento físico '{id_seguimiento}' eliminado", [
-            "modulo" => "cliente_info",
-            "accion" => "eliminar_seg_fisico",
-
-            'id_seguimiento' => $id,
-            'cedula' => $old->cedula_cliente,
-            'datos_previos'  => $old,
-        ]);
-
         return Response::noContent();
 
         // SEGUMIENTO NUTRICIONAL
@@ -146,15 +126,6 @@ switch (Route::action()) {
         }
 
         $new = $nutricionalModel->insert($cedula, $seguimiento);
-        $logger->log("Seguimiento nutricional para cliente '{cedula}' registrado", [
-            "modulo" => "cliente_info",
-            "accion" => "crear_seg_nutricion",
-
-            'cedula' => $cedula,
-            'id_seguimiento' => $new->id_seguimiento,
-            'datos_nuevos' => $new,
-        ]);
-
         return Response::json($new, Status::CREATED);
 
     case "deleteNutricion":
@@ -167,14 +138,5 @@ switch (Route::action()) {
         }
 
         $nutricionalModel->delete($id);
-        $logger->log("Seguimiento nutricional '{id_seguimiento}' eliminado", [
-            "modulo" => "cliente_info",
-            "accion" => "eliminar_seg_nutricion",
-
-            'id_seguimiento' => $id,
-            'cedula'         => $old->cedula_cliente,
-            'datos_previos'  => $old,
-        ]);
-
         return Response::noContent();
 }

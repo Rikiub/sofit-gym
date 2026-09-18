@@ -4,11 +4,9 @@ namespace App\Controllers;
 
 use App\Core\Route;
 use App\Models\VentasModel;
-use App\Models\BitacoraModel;
 use App\Models\ProductoModel;
 use App\Services\Reportes\ReporteProductosMasVendidos;
 
-$logger = new BitacoraModel();
 $model = new VentasModel();
 
 switch (Route::action()) {
@@ -77,12 +75,6 @@ switch (Route::action()) {
 
         $exito = $model->crearVenta($datos);
 
-        $logger->log("Venta manual creada para el producto '{codigo}'", [
-            "modulo" => "ventas",
-            "accion" => "crear",
-            "codigo" => $datos['codigo_producto']
-        ]);
-
         header('Content-Type: application/json');
         if ($exito) {
             echo json_encode(['success' => true, 'message' => '✅ Registro de venta creado exitosamente.']);
@@ -118,12 +110,6 @@ switch (Route::action()) {
 
         $exito = $model->actualizarVenta($idVenta, $datosNuevos);
 
-        $logger->log("Venta ID '{id}' actualizada", [
-            "modulo" => "ventas",
-            "accion" => "editar",
-            "id" => $idVenta,
-        ]);
-
         header('Content-Type: application/json');
         if ($exito) {
             echo json_encode(['success' => true, 'message' => '✅ Venta actualizada exitosamente.']);
@@ -151,12 +137,6 @@ switch (Route::action()) {
         }
 
         $exito = $model->eliminarVenta($idVenta);
-
-        $logger->log("Venta ID '{id}' eliminada", [
-            "modulo" => "ventas",
-            "accion" => "eliminar",
-            "id" => $idVenta,
-        ]);
 
         header('Content-Type: application/json');
         if ($exito) {
@@ -193,16 +173,6 @@ switch (Route::action()) {
 
         // Procesar en el modelo bajo una sola transacción segura
         $resultado = $model->registrarVentaMultiplesProductos($cedulaCliente, $metodoPago, $items);
-
-        if ($resultado['success']) {
-            $logger->log("Transacción de venta múltiple registrada. Cliente '{cedula_cliente}'", [
-                "modulo" => "ventas",
-                "accion" => "registrar_venta_pos",
-                "cedula_cliente" => $cedulaCliente,
-                "metodoPago" => $metodoPago,
-                "cantidad_productos" => count($items),
-            ]);
-        }
 
         header('Content-Type: application/json');
         echo json_encode($resultado);

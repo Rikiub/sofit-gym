@@ -7,6 +7,12 @@ use PDO;
 
 class RutinaModel extends Database
 {
+    public function __construct(
+        private BitacoraModel $logger = new BitacoraModel(),
+    ) {
+        parent::__construct();
+    }
+
     // =========================================================================
     // CRUD: TABLA `rutina`
     // =========================================================================
@@ -76,6 +82,11 @@ class RutinaModel extends Database
                 'objetivo'         => $datos['objetivo'] ?? null,
                 'duracion_semanas' => $datos['duracion_semanas'] ?? null
             ]);
+            $this->logger->log("Rutina '{nombre}' creada", [
+                "modulo" => "rutinas",
+                "accion" => "crear",
+                'datos_nuevos' => $datos,
+            ]);
             return true;
         } catch (\PDOException) {
             return false;
@@ -91,6 +102,9 @@ class RutinaModel extends Database
     public function actualizarRutina(int $id, array $datos): bool
     {
         try {
+            $old = $this->obtenerRutinaPorId($id);
+            if (!$old) return false;
+
             $columnasAActualizar = [];
             if (isset($datos['id_dificultad'])) $columnasAActualizar['id_dificultad'] = $datos['id_dificultad'];
             if (isset($datos['nombre'])) $columnasAActualizar['nombre'] = $datos['nombre'];
@@ -101,6 +115,14 @@ class RutinaModel extends Database
             if (empty($columnasAActualizar)) return false;
 
             $this->dbUpdate('rutina', $columnasAActualizar, ['id_rutina' => $id]);
+            $this->logger->log("Rutina '{nombre}' actualizada", [
+                "modulo" => "rutinas",
+                "accion" => "editar",
+
+                'nombre' => $old['nombre'],
+                'id_rutina' => $id,
+                'datos_previos' => $old,
+            ]);
             return true;
         } catch (\PDOException $e) {
             return false;
@@ -116,6 +138,11 @@ class RutinaModel extends Database
     {
         try {
             $this->dbDelete('rutina', ['id_rutina' => $id]);
+            $this->logger->log("Rutina '{nombre}' eliminada", [
+                "modulo" => "rutinas",
+                "accion" => "eliminar",
+                'id_rutina' => $id,
+            ]);
             return true;
         } catch (\PDOException $e) {
             return false;
@@ -216,6 +243,15 @@ class RutinaModel extends Database
                 'estado'           => $datos['estado'] ?? 'Activa',
                 'progreso'         => $datos['progreso'] ?? 0.00
             ]);
+
+            $this->logger->log("Rutina asignada a cliente '{cedula}'", [
+                "modulo" => "rutinas",
+                "accion" => "asignar",
+
+                'cedula' => $datos['cedula_cliente'],
+                'id_rutina' => $datos['id_rutina'],
+                'datos_nuevos' => $datos,
+            ]);
             return true;
         } catch (\PDOException $e) {
             return false;
@@ -243,6 +279,11 @@ class RutinaModel extends Database
             if (empty($columnasAActualizar)) return false;
 
             $this->dbUpdate('rutina_asignada', $columnasAActualizar, ['id_asignacion' => $idAsignacion]);
+            $this->logger->log("Asignación de rutina '{id_asignacion}' actualizada", [
+                "modulo" => "rutinas",
+                "accion" => "editar",
+                'id_asignacion' => $idAsignacion,
+            ]);
             return true;
         } catch (\PDOException $e) {
             return false;
@@ -258,6 +299,12 @@ class RutinaModel extends Database
     {
         try {
             $this->dbDelete('rutina_asignada', ['id_asignacion' => $idAsignacion]);
+
+            $this->logger->log("Asignación de rutina '{id_asignacion}' eliminada", [
+                "modulo" => "rutinas",
+                "accion" => "eliminar",
+                'id_asignacion' => $idAsignacion,
+            ]);
             return true;
         } catch (\PDOException $e) {
             return false;
@@ -335,6 +382,13 @@ class RutinaModel extends Database
             $stmt->execute([$cedula_cliente]);
 
             $this->pdo->commit();
+
+            $this->logger->log("Rutinas canceladas por baja médica para cliente '{cedula}'", [
+                "modulo" => "rutinas",
+                "accion" => "cancelar_masivo",
+                'cedula' => $cedula_cliente
+            ]);
+
             return ['success' => true, 'message' => 'Rutinas canceladas exitosamente.'];
         } catch (\PDOException $e) {
             if ($this->pdo->inTransaction()) {

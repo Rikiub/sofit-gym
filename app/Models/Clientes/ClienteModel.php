@@ -3,6 +3,7 @@
 namespace App\Models\Clientes;
 
 use App\Core\Tools;
+use App\Models\BitacoraModel;
 use App\Models\Database;
 use App\Models\Personas\PersonaModel;
 
@@ -12,6 +13,7 @@ class ClienteModel extends Database
     public string $primaryKey = 'cedula';
 
     public function __construct(
+        private BitacoraModel $logger = new BitacoraModel(),
         private PersonaModel $personaModel = new PersonaModel(),
     ) {
         parent::__construct();
@@ -120,6 +122,13 @@ class ClienteModel extends Database
         );
 
         $rows = $this->dbQuery($sql, $params)->fetchAll();
+        $this->logger->log(
+            "Clientes listados",
+            [
+                "modulo" => "clientes",
+                "accion" => "listar",
+            ]
+        );
         return array_map(
             $this->mapToCliente(...),
             $rows
@@ -154,6 +163,18 @@ class ClienteModel extends Database
                 $this->table,
                 [$this->primaryKey => $cliente->cedula]
             );
+
+            $this->logger->log(
+                "Cliente '{cedula}' creado",
+                [
+                    "modulo" => "clientes",
+                    "accion" => "crear",
+
+                    "cedula" => $cliente->cedula,
+                    "datos_nuevos" => $cliente,
+                ],
+            );
+
             return $this->find($cliente->cedula);
         });
     }
@@ -161,12 +182,30 @@ class ClienteModel extends Database
     public function update(string $cedula, Cliente $cliente): Cliente
     {
         $this->personaModel->update($cedula, $cliente);
+        $this->logger->log(
+            "Cliente '{cedula}' actualizado",
+            [
+                "modulo" => "clientes",
+                "accion" => "editar",
+
+                "cedula" => $cliente->cedula,
+                "datos_nuevos" => $cliente,
+            ],
+        );
         return $this->find($cliente->cedula);
     }
 
     public function delete(string $cedula): void
     {
         $this->dbDelete($this->table, [$this->primaryKey => $cedula]);
+        $this->logger->log(
+            "Cliente '{cedula}' eliminado",
+            [
+                "modulo" => "clientes",
+                "accion" => "eliminar",
+                "cedula" => $cedula
+            ]
+        );
     }
 
     private function mapToCliente(array $row): Cliente

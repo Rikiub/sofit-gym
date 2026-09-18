@@ -3,6 +3,7 @@
 namespace App\Models\Clientes;
 
 use App\Core\Tools;
+use App\Models\BitacoraModel;
 use App\Models\Database;
 use DateTimeImmutable;
 use InvalidArgumentException;
@@ -13,6 +14,12 @@ class SegumientoFisicoModel extends Database
 {
     private string $table = 'seguimiento_fisico';
     private string $primaryKey = 'id_seguimiento';
+
+    public function __construct(
+        private $logger = new BitacoraModel()
+    ) {
+        parent::__construct();
+    }
 
     /**
      * Obtiene todos los seguimientos de un cliente.
@@ -27,6 +34,11 @@ class SegumientoFisicoModel extends Database
             SQL),
             [$cedula],
         )->fetchAll();
+
+        $this->logger->log("Listar seguimientos físicos", [
+            "modulo" => "cliente_info",
+            "accion" => "listar_seg_fisico",
+        ]);
 
         return array_map(
             fn($row) => Tools::map(SeguimientoFisico::class, $row),
@@ -65,7 +77,18 @@ class SegumientoFisicoModel extends Database
         );
 
         $id = (int) $this->pdo->lastInsertId();
-        return $this->find($id);
+        $seg = $this->find($id);
+
+        $this->logger->log("Seguimiento físico para cliente '{cedula}' registrado", [
+            "modulo" => "cliente_info",
+            "accion" => "crear_seg_fisico",
+
+            'cedula'        => $cedula_cliente,
+            'id_seguimiento' => $seg->id_seguimiento,
+            'datos_nuevos'  => $seg,
+        ]);
+
+        return $seg;
     }
 
     /**
@@ -89,6 +112,13 @@ class SegumientoFisicoModel extends Database
     public function delete(int $id): void
     {
         $this->dbDelete($this->table, [$this->primaryKey => $id]);
+        $this->logger->log("Seguimiento físico '{id_seguimiento}' eliminado", [
+            "modulo" => "cliente_info",
+            "accion" => "eliminar_seg_fisico",
+
+            'id_seguimiento' => $id,
+            'cedula' => $id,
+        ]);
     }
 
     private function sqlSelect(string $where = ""): string

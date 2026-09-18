@@ -6,7 +6,6 @@ use App\Core\Route;
 use App\Models\RutinaModel;
 use App\Models\BitacoraModel;
 
-$logger = new BitacoraModel();
 $model = new RutinaModel();
 
 switch (Route::action()) {
@@ -95,14 +94,6 @@ switch (Route::action()) {
         ];
 
         $ok = $model->crearRutina($datos);
-        if ($ok) {
-            $logger->log("Rutina '{nombre}' creada", [
-                "modulo" => "rutinas",
-                "accion" => "crear",
-                'nombre' => $nombre,
-                'datos_nuevos' => $datos,
-            ]);
-        }
 
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Rutina creada correctamente.' : 'Error al registrar rutina en la base de datos.']);
         exit;
@@ -150,19 +141,6 @@ switch (Route::action()) {
         }
 
         $ok = $model->actualizarRutina($id, $datos);
-        if ($ok) {
-            // Obtener los datos actualizados para tener el objeto completo
-            $new = $model->obtenerRutinaPorId($id);
-            $logger->log("Rutina '{nombre}' actualizada", [
-                "modulo" => "rutinas",
-                "accion" => "editar",
-
-                'nombre' => $old['nombre'],
-                'id_rutina' => $id,
-                'datos_previos' => $old,
-                'datos_nuevos' => $new,
-            ]);
-        }
 
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Rutina actualizada correctamente.' : 'No se realizaron cambios o error al actualizar.']);
         exit;
@@ -192,16 +170,6 @@ switch (Route::action()) {
         }
 
         $ok = $model->eliminarRutina($id);
-        if ($ok) {
-            $logger->log("Rutina '{nombre}' eliminada", [
-                "modulo" => "rutinas",
-                "accion" => "eliminar",
-
-                'nombre' => $old['nombre'],
-                'id_rutina' => $id,
-                'datos_previos' => $old,
-            ]);
-        }
 
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Rutina eliminada correctamente.' : 'Error al eliminar. Verifique que no esté asignada a un cliente.']);
         exit;
@@ -246,16 +214,6 @@ switch (Route::action()) {
         ];
 
         $ok = $model->asignarRutina($datos);
-        if ($ok) {
-            $logger->log("Rutina asignada a cliente '{cedula}'", [
-                "modulo" => "rutinas",
-                "accion" => "asignar",
-
-                'cedula' => $cedula,
-                'id_rutina' => $idRutina,
-                'datos_nuevos' => $datos,
-            ]);
-        }
 
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Rutina asignada exitosamente.' : 'Error al realizar la asignación.']);
         exit;
@@ -301,18 +259,6 @@ switch (Route::action()) {
             $datos['progreso'] = floatval($_POST['progreso']);
 
         $ok = $model->actualizarAsignacion($idAsignacion, $datos);
-        if ($ok) {
-            $new = $model->obtenerAsignacionPorId($idAsignacion);
-            $logger->log("Asignación de rutina '{id_asignacion}' actualizada", [
-                "modulo" => "rutinas",
-                "accion" => "editar",
-
-                'id_asignacion' => $idAsignacion,
-                'nombre_cliente' => $old['nombre_cliente'],
-                'datos_previos' => $old,
-                'datos_nuevos' => $new,
-            ]);
-        }
 
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Asignación modificada correctamente.' : 'No se realizaron cambios o error de base de datos.']);
         exit;
@@ -342,16 +288,6 @@ switch (Route::action()) {
         }
 
         $ok = $model->eliminarAsignacion($idAsignacion);
-        if ($ok) {
-            $logger->log("Asignación de rutina '{id_asignacion}' eliminada", [
-                "modulo" => "rutinas",
-                "accion" => "eliminar",
-
-                'id_asignacion' => $idAsignacion,
-                'nombre_cliente' => $old['nombre_cliente'],
-                'datos_previos' => $old,
-            ]);
-        }
 
         echo json_encode(['success' => $ok, 'message' => $ok ? 'Asignación eliminada correctamente.' : 'Error al eliminar la asignación.']);
         exit;
@@ -425,15 +361,6 @@ switch (Route::action()) {
 
         // Ejecutamos la transacción en el modelo
         $resultado = $model->cancelarRutinasCliente($cedula);
-
-        if ($resultado['success']) {
-            // Registramos la acción masiva en la bitácora
-            $logger->log("Rutinas canceladas por baja médica para cliente '{cedula}'", [
-                "modulo" => "rutinas",
-                "accion" => "cancelar_masivo",
-                'cedula' => $cedula
-            ]);
-        }
 
         header('Content-Type: application/json');
         echo json_encode($resultado);

@@ -10,6 +10,12 @@ class VentasModel extends Database
 {
     private string $tabla = 'venta_producto';
 
+    public function __construct(
+        private BitacoraModel $logger = new BitacoraModel(),
+    ) {
+        parent::__construct();
+    }
+
     // =========================================================
     // CRUD DE VENTAS
     // =========================================================
@@ -137,6 +143,11 @@ class VentasModel extends Database
             $limpio = array_intersect_key($datos, array_flip($permitidos));
 
             $this->dbInsert($this->tabla, $limpio);
+            $this->logger->log("Venta manual creada para el producto '{codigo}'", [
+                "modulo" => "ventas",
+                "accion" => "crear",
+            ]);
+
             return true;
         } catch (PDOException $e) {
             error_log("Error en VentasModel::crearVenta: " . $e->getMessage());
@@ -196,6 +207,12 @@ class VentasModel extends Database
                 $this->dbUpdate('pago', $pagoFields, ['id_pago' => $idPago]);
             }
 
+            $this->logger->log("Venta ID '{id}' actualizada", [
+                "modulo" => "ventas",
+                "accion" => "editar",
+                "id" => $idVenta,
+            ]);
+
             return true;
         } catch (PDOException $e) {
             error_log("Error en VentasModel::actualizarVenta: " . $e->getMessage());
@@ -231,6 +248,12 @@ class VentasModel extends Database
                     $this->dbDelete('pago', ['id_pago' => $idPago]);
                 }
             }
+
+            $this->logger->log("Venta ID '{id}' eliminada", [
+                "modulo" => "ventas",
+                "accion" => "eliminar",
+                "id" => $idVenta,
+            ]);
 
             return true;
         } catch (PDOException $e) {
@@ -375,6 +398,13 @@ class VentasModel extends Database
             }
 
             $this->pdo->commit();
+
+            $this->logger->log("Transacción de venta múltiple registrada. Cliente '{cedula_cliente}'", [
+                "modulo" => "ventas",
+                "accion" => "registrar_venta_pos",
+                "cedula_cliente" => $cedulaCliente,
+                "cantidad_productos" => count($items),
+            ]);
 
             return [
                 'success' => true,

@@ -5,11 +5,9 @@ namespace App\Controllers;
 use App\Core\Route;
 use App\Core\Http\Response;
 use App\Models\FacturacionModel;
-use App\Models\BitacoraModel;
 use App\Services\Reportes\ReporteFinanciero;
 use Exception;
 
-$logger = new BitacoraModel();
 $model = new FacturacionModel();
 
 function obtenerPagoPorId(int $idPago): ?array
@@ -87,16 +85,6 @@ switch (Route::action()) {
             $res = $model->registrarPago($cedula, $monto, $metodo, $planTipo);
             $_SESSION['mensaje'] = '✅ ' . $res['mensaje'];
             $_SESSION['tipo_mensaje'] = 'success';
-
-            $logger->log("Pago registrado", [
-                'modulo' => 'facturacion',
-                'accion' => 'crear',
-                'cedula' => $cedula,
-                'id_pago' => $res['id_pago'] ?? null,
-                'monto' => $monto,
-                'metodo' => $metodo,
-                'nueva_fecha_fin' => $res['nueva_fecha_vencimiento'] ?? null,
-            ]);
         } catch (Exception $e) {
             $_SESSION['mensaje'] = '❌ Error al registrar: ' . $e->getMessage();
             $_SESSION['tipo_mensaje'] = 'danger';
@@ -128,13 +116,6 @@ switch (Route::action()) {
                 $_SESSION['mensaje'] = '✅ Pago actualizado correctamente.';
                 $_SESSION['tipo_mensaje'] = 'success';
                 $new = obtenerPagoPorId($idPago);
-                $logger->log("Pago actualizado", [
-                    'modulo' => 'facturacion',
-                    'accion' => 'editar',
-                    'id_pago' => $idPago,
-                    'datos_previos' => $old,
-                    'datos_nuevos' => $new,
-                ]);
             } else {
                 $_SESSION['mensaje'] = '❌ No se pudo actualizar el pago.';
                 $_SESSION['tipo_mensaje'] = 'danger';
@@ -163,12 +144,6 @@ switch (Route::action()) {
             if ($success) {
                 $_SESSION['mensaje'] = '🗑️ Pago eliminado correctamente.';
                 $_SESSION['tipo_mensaje'] = 'warning';
-                $logger->log("Pago eliminado", [
-                    'modulo' => 'facturacion',
-                    'accion' => 'eliminar',
-                    'id_pago' => $idPago,
-                    'datos_previos' => $old,
-                ]);
             } else {
                 $_SESSION['mensaje'] = '❌ No se pudo eliminar el pago.';
                 $_SESSION['tipo_mensaje'] = 'danger';
