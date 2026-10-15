@@ -210,5 +210,6 @@ readonly class Trabajador extends Persona
     {
         parent::validateInsert();
         Validator::required($this->id_rol, "id_rol");
+        Validator::required($this->fecha_contratacion, "fecha_contratacion");
     }
 }

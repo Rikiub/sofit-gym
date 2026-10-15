@@ -3,6 +3,7 @@ from locust import HttpUser, between, events
 
 @events.request.add_listener
 def _(response=None, exception=None, **kw):
+    """Mostrar errores en la consola"""
     if exception:
         print(f"[ERR] {exception}")
     elif response and response.status_code >= 400:
