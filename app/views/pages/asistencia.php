@@ -23,7 +23,7 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
         <div class="card-header"><i class="fas fa-plus-circle"></i> Registrar nueva entrada</div>
         <div class="card-body">
             <form id="formRegistroEntrada" class="form-grid">
-                <div class="form-group">
+                <div class="form-group form-group-wide">
                     <label><i class="fas fa-user"></i> Cliente</label>
                     <div class="modal-select-btn" data-bs-toggle="modal" data-bs-target="#clienteModal">
                         <span id="cliente_selected_text">Seleccione cliente</span>
@@ -51,7 +51,10 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
         <div class="card-body">
             <div class="buscador-pagos">
                 <input type="text" id="searchInput" class="form-control" placeholder="🔍 Buscar por hora, cédula o nombre...">
-                <button id="btnBuscar" class="btn btn-secondary">Buscar</button>
+                <button id="btnBuscar" class="btn btn-secondary" type="button">Buscar</button>
+                <button type="button" id="btnHistorial" class="btn-estado" title="Ver historial de asistencias">
+                    <i class="fas fa-history"></i> Historial del cliente
+                </button>
             </div>
             <div class="table-responsive">
                 <table class="table table-striped" id="tablaEntradas">
@@ -89,9 +92,6 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
     </div>
 </div>
 
-<!-- ===== MODALES ===== -->
-
-<!-- Cliente Modal -->
 <div class="modal fade asistencia-scope" id="clienteModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
@@ -123,7 +123,6 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
     </div>
 </div>
 
-<!-- Editar Modal -->
 <div class="modal fade asistencia-scope" id="editarModal" tabindex="-1">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -154,7 +153,6 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
     </div>
 </div>
 
-<!-- ===== ELIMINAR MODAL (AJUSTADO: más compacto) ===== -->
 <div class="modal fade asistencia-scope" id="eliminarModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -175,6 +173,84 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
             <div class="modal-footer justify-content-center">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-danger" id="confirmarEliminar">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade asistencia-scope" id="historialModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-history"></i> Historial de asistencias
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="historial-resumen mb-3">
+                    <div class="resumen-item">
+                        <span class="resumen-label">Hoy</span>
+                        <span class="resumen-valor" id="hist_hoy">—</span>
+                    </div>
+                    <div class="resumen-item">
+                        <span class="resumen-label">Semana</span>
+                        <span class="resumen-valor" id="hist_semana">—</span>
+                    </div>
+                    <div class="resumen-item">
+                        <span class="resumen-label">Mes</span>
+                        <span class="resumen-valor" id="hist_mes">—</span>
+                    </div>
+                    <div class="resumen-item">
+                        <span class="resumen-label">Total</span>
+                        <span class="resumen-valor" id="hist_total">—</span>
+                    </div>
+                    <div class="resumen-item resumen-item-wide">
+                        <span class="resumen-label">Última visita</span>
+                        <span class="resumen-valor" id="hist_ultima">—</span>
+                    </div>
+                </div>
+
+                <div class="historial-filtros mb-3">
+                    <div class="filtro-group filtro-group-wide">
+                        <label>Buscar cliente</label>
+                        <input type="text" id="hist_termino" class="form-control" placeholder="Cédula o nombre...">
+                    </div>
+                    <div class="filtro-group">
+                        <label>Desde</label>
+                        <input type="date" id="hist_inicio" class="form-control">
+                    </div>
+                    <div class="filtro-group">
+                        <label>Hasta</label>
+                        <input type="date" id="hist_fin" class="form-control">
+                    </div>
+                    <button type="button" id="hist_btnFiltrar" class="btn btn-info">
+                        <i class="fas fa-filter"></i> Filtrar
+                    </button>
+                    <button type="button" id="hist_btnTodo" class="btn btn-secondary">
+                        <i class="fas fa-list"></i> Ver todo
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th style="width:60px;">#</th>
+                                <th>Cédula</th>
+                                <th>Cliente</th>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historialBody">
+                            <tr><td colspan="5" class="text-center">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
@@ -231,7 +307,7 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
 
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: 2fr 1fr 1fr 1fr;
             gap: 1rem;
             align-items: flex-end;
         }
@@ -240,6 +316,20 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
             display: flex;
             flex-direction: column;
             gap: 0.4rem;
+            min-width: 0;
+        }
+
+        .form-group-wide {
+            min-width: 0;
+        }
+
+        @media (max-width: 900px) {
+            .form-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .form-group-wide {
+                grid-column: 1 / -1;
+            }
         }
 
         .form-group .form-control,
@@ -380,10 +470,12 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
             display: flex;
             gap: 0.5rem;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .buscador-pagos input {
             flex: 1;
+            min-width: 200px;
             padding: 0.5rem 1rem;
             border-radius: 20px;
             border: 1px solid #cfdfe8;
@@ -394,6 +486,27 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
             outline: none;
             border-color: #C62828;
             box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1);
+        }
+
+        .btn-estado {
+            padding: 0.7rem 1.1rem;
+            border-radius: 14px;
+            border: none;
+            background: #17a2b8;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            white-space: nowrap;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-estado:hover {
+            background: #138496;
+            transform: translateY(-1px);
         }
 
         .modal-select-btn {
@@ -413,6 +526,12 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
         .modal-select-btn:hover {
             border-color: #C62828;
             background: #fef2f2;
+        }
+
+        .modal-select-btn span:first-child {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .btn-select-client {
@@ -460,12 +579,111 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
             background-color: #C62828 !important;
         }
 
-        .modal-header.bg-danger .btn-close-white {
+        .modal-header.bg-info {
+            background-color: #17a2b8 !important;
+        }
+
+        .modal-header.bg-danger .btn-close-white,
+        .modal-header.bg-info .btn-close-white {
             filter: brightness(0) invert(1);
         }
 
         .modal-body .bg-light {
             background-color: #f8f9fa !important;
+        }
+
+        .historial-resumen {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 0.6rem;
+        }
+
+        .resumen-item {
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 0.6rem 0.8rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .resumen-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #5a6e7a;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .resumen-valor {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #C62828;
+        }
+
+        .resumen-item-wide {
+            grid-column: span 2;
+        }
+
+        .historial-filtros {
+            display: flex;
+            gap: 0.6rem;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            padding: 0.8rem 1rem;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+
+        .historial-filtros .filtro-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            min-width: 140px;
+            flex: 1;
+        }
+
+        .historial-filtros .filtro-group-wide {
+            flex: 2;
+            min-width: 200px;
+        }
+
+        .historial-filtros label {
+            font-size: 0.7rem;
+        }
+
+        .historial-filtros .form-control {
+            padding: 0.5rem 0.7rem;
+            border-radius: 10px;
+            border: 1px solid #cfdfe8;
+            font-size: 0.85rem;
+        }
+
+        #hist_btnFiltrar,
+        #hist_btnTodo {
+            padding: 0.55rem 1rem;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            white-space: nowrap;
+            color: white;
+        }
+
+        #hist_btnFiltrar {
+            background: #17a2b8;
+        }
+        #hist_btnFiltrar:hover {
+            background: #138496;
+        }
+
+        #hist_btnTodo {
+            background: #6c757d;
+        }
+        #hist_btnTodo:hover {
+            background: #5a6268;
         }
 
         @media (max-width: 768px) {
@@ -484,8 +702,14 @@ $this->layout("layout", ["title" => "Control de asistencia"]);
                 flex: 1 1 100%;
             }
 
-            .buscador-pagos .btn-secondary {
+            .buscador-pagos .btn-secondary,
+            .buscador-pagos .btn-estado {
                 width: 100%;
+                justify-content: center;
+            }
+
+            .resumen-item-wide {
+                grid-column: 1 / -1;
             }
         }
     }
