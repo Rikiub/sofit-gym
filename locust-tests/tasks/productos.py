@@ -2,6 +2,7 @@ import random
 import string
 
 from locust import task
+
 from tasks.base import SofitGymUser
 
 

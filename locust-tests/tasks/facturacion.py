@@ -1,4 +1,5 @@
 from locust import task
+
 from tasks.base import SofitGymUser
 
 

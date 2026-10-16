@@ -2,6 +2,7 @@ import datetime
 import random
 
 from locust import task
+
 from tasks.base import SofitGymUser
 
 
@@ -46,11 +47,7 @@ class TrabajadoresUser(SofitGymUser):
         payload = make_payload()
 
         self.client.post(
-            "/",
-            params={
-                "page": self.page,
-                "action": "insert",
-            },
+            "/?page=trabajadores&action=insert",
             data=payload,
         )
 
