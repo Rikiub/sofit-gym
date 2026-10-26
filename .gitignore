@@ -2,3 +2,5 @@
 bootstrap/cache
 uploads/tmp
 database/backups
+
+.phpunit.result.cache
