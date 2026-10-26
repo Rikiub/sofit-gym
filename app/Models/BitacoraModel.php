@@ -7,8 +7,10 @@ use App\Core\Tools;
 use App\Services\Auth\UserSession;
 use DateTimeImmutable;
 
-class BitacoraModel extends Database
+class BitacoraModel
 {
+    use Database;
+
     private string $table = self::DB_SECURITY . ".bitacora";
     private string $primaryKey = 'id_bitacora';
 
@@ -120,7 +122,7 @@ class BitacoraModel extends Database
                 SQL,
                 [$bitacora->modulo],
             );
-            $idModulo = (int)$this->pdo->lastInsertId();
+            $idModulo = (int)$this->getConnection()->lastInsertId();
 
             // Insertar bitacora
             $this->dbInsert($this->table, [
@@ -128,7 +130,7 @@ class BitacoraModel extends Database
                 "id_modulo" => $idModulo,
             ]);
 
-            $id = (int)$this->pdo->lastInsertId();
+            $id = (int)$this->getConnection()->lastInsertId();
             return $this->find($id);
         });
     }

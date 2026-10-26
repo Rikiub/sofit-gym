@@ -8,8 +8,10 @@ use App\Core\Validator;
 use DateTimeImmutable;
 use PDO;
 
-class NotificacionModel extends Database
+class NotificacionModel
 {
+    use Database;
+
     private string $table = self::DB_SECURITY . ".notificacion";
 
     /**
@@ -78,7 +80,7 @@ class NotificacionModel extends Database
                 'titulo' => $notificacion->titulo,
                 'contenido' => $notificacion->contenido,
             ]);
-            $id_notificacion = (int) $this->pdo->lastInsertId();
+            $id_notificacion = (int) $this->getConnection()->lastInsertId();
 
             foreach ($id_usuarios as $id) {
                 $this->dbInsert(

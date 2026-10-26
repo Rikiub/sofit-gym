@@ -10,8 +10,9 @@ use function App\Core\toDbDate;
 /**
  * Base para realizar operaciones sobre la tabla `persona`.
  */
-class PersonaModel extends Database
+class PersonaModel
 {
+    use Database;
     public string $table = 'persona';
     public string $primaryKey = 'cedula';
 

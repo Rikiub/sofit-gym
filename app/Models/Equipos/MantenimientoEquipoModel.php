@@ -10,16 +10,15 @@ use InvalidArgumentException;
 
 use function App\Core\toDbDate;
 
-class MantenimientoEquipoModel extends Database
+class MantenimientoEquipoModel
 {
+    use Database;
     private string $table = 'mantenimiento_equipo';
     private string $primaryKey = 'id_mantenimiento';
 
     public function __construct(
         private EquipoModel $equipoModel = new EquipoModel(),
-    ) {
-        return parent::__construct();
-    }
+    ) {}
 
     /**
      * @return MantenimientoEquipo[]
@@ -44,7 +43,7 @@ class MantenimientoEquipoModel extends Database
             WHERE me.tipo = 'Preventivo'
               AND me.fecha BETWEEN CURDATE() + INTERVAL 1 DAY AND CURDATE() + INTERVAL ? DAY
               AND e.activo = 1";
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->getConnection()->prepare($sql);
         $stmt->execute([$dias]);
         return $stmt->fetchAll();
     }
@@ -70,7 +69,7 @@ class MantenimientoEquipoModel extends Database
             data: $this->mapToColumns($mantenimiento),
         );
 
-        $id = (int) $this->pdo->lastInsertId();
+        $id = (int) $this->getConnection()->lastInsertId();
         return $this->find($id);
     }
 

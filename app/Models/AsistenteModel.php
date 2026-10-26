@@ -9,8 +9,10 @@ use App\Models\Clientes\SegumientoFisicoModel;
 use App\Models\Clientes\SegumientoNutricionalModel;
 use DateTimeImmutable;
 
-class AsistenteModel extends Database
+class AsistenteModel
 {
+    use Database;
+
     public function __construct(
         private AsistenciaModel $asistenciaModel = new AsistenciaModel(),
         private RutinaModel $rutinaModel = new RutinaModel(),
@@ -18,9 +20,7 @@ class AsistenteModel extends Database
         private ClienteModel $clienteModel = new ClienteModel(),
         private SegumientoFisicoModel $segFisicoModel = new SegumientoFisicoModel(),
         private SegumientoNutricionalModel $segNutricionalModel = new SegumientoNutricionalModel(),
-    ) {
-        parent::__construct();
-    }
+    ) {}
 
     public function insertSesion(AsistenteSesion $sesion): AsistenteSesion
     {
@@ -31,7 +31,7 @@ class AsistenteModel extends Database
         unset($array["mensajes"]);
 
         $this->dbInsert($table, $array);
-        $id = (int) $this->pdo->lastInsertId();
+        $id = (int) $this->getConnection()->lastInsertId();
 
         return $this->findSesion($id);
     }

@@ -10,8 +10,10 @@ use InvalidArgumentException;
 
 use function App\Core\toDbDate;
 
-class ClaseGrupalModel extends Database
+class ClaseGrupalModel
 {
+    use Database;
+
     private string $table = 'clase';
     private string $primaryKey = 'id_clase';
 
@@ -49,7 +51,7 @@ class ClaseGrupalModel extends Database
                 $this->mapToColumns($clase)
             );
 
-            $id_clase = (int) $this->pdo->lastInsertId();
+            $id_clase = (int) $this->getConnection()->lastInsertId();
             $this->syncClientes($id_clase, $clase->clientes);
 
             return $this->find($id_clase);

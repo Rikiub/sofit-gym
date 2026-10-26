@@ -6,8 +6,10 @@ use App\Models\Database;
 use PDO;
 use Throwable;
 
-class FacturacionModel extends Database
+class FacturacionModel
 {
+    use Database;
+
     private ?int    $idPago           = null;
     private ?string $cedulaCliente    = null;
     private ?float  $monto            = null;
@@ -21,50 +23,113 @@ class FacturacionModel extends Database
     private ?int    $dias             = null;
     private ?string $termino          = null;
 
-    public function __construct()
+    public function getIdPago(): ?int
     {
-        parent::__construct();
-
-        if (property_exists($this, 'pdo') && !$this->pdo && method_exists($this, 'getConnect')) {
-            $this->pdo = $this->getConnect();
-        }
+        return $this->idPago;
+    }
+    public function setIdPago(?int $idPago): void
+    {
+        $this->idPago = $idPago;
     }
 
-    public function getIdPago(): ?int { return $this->idPago; }
-    public function setIdPago(?int $idPago): void { $this->idPago = $idPago; }
+    public function getCedulaCliente(): ?string
+    {
+        return $this->cedulaCliente;
+    }
+    public function setCedulaCliente(?string $cedulaCliente): void
+    {
+        $this->cedulaCliente = $cedulaCliente;
+    }
 
-    public function getCedulaCliente(): ?string { return $this->cedulaCliente; }
-    public function setCedulaCliente(?string $cedulaCliente): void { $this->cedulaCliente = $cedulaCliente; }
+    public function getMonto(): ?float
+    {
+        return $this->monto;
+    }
+    public function setMonto(?float $monto): void
+    {
+        $this->monto = $monto;
+    }
 
-    public function getMonto(): ?float { return $this->monto; }
-    public function setMonto(?float $monto): void { $this->monto = $monto; }
+    public function getMetodoPago(): ?string
+    {
+        return $this->metodoPago;
+    }
+    public function setMetodoPago(?string $metodoPago): void
+    {
+        $this->metodoPago = $metodoPago;
+    }
 
-    public function getMetodoPago(): ?string { return $this->metodoPago; }
-    public function setMetodoPago(?string $metodoPago): void { $this->metodoPago = $metodoPago; }
+    public function getPlanTipoId(): ?int
+    {
+        return $this->planTipoId;
+    }
+    public function setPlanTipoId(?int $planTipoId): void
+    {
+        $this->planTipoId = $planTipoId;
+    }
 
-    public function getPlanTipoId(): ?int { return $this->planTipoId; }
-    public function setPlanTipoId(?int $planTipoId): void { $this->planTipoId = $planTipoId; }
+    public function getEstado(): ?string
+    {
+        return $this->estado;
+    }
+    public function setEstado(?string $estado): void
+    {
+        $this->estado = $estado;
+    }
 
-    public function getEstado(): ?string { return $this->estado; }
-    public function setEstado(?string $estado): void { $this->estado = $estado; }
+    public function getFechaPago(): ?string
+    {
+        return $this->fechaPago;
+    }
+    public function setFechaPago(?string $fechaPago): void
+    {
+        $this->fechaPago = $fechaPago;
+    }
 
-    public function getFechaPago(): ?string { return $this->fechaPago; }
-    public function setFechaPago(?string $fechaPago): void { $this->fechaPago = $fechaPago; }
+    public function getFechaVencimiento(): ?string
+    {
+        return $this->fechaVencimiento;
+    }
+    public function setFechaVencimiento(?string $fechaVencimiento): void
+    {
+        $this->fechaVencimiento = $fechaVencimiento;
+    }
 
-    public function getFechaVencimiento(): ?string { return $this->fechaVencimiento; }
-    public function setFechaVencimiento(?string $fechaVencimiento): void { $this->fechaVencimiento = $fechaVencimiento; }
+    public function getMes(): ?string
+    {
+        return $this->mes;
+    }
+    public function setMes(?string $mes): void
+    {
+        $this->mes = $mes;
+    }
 
-    public function getMes(): ?string { return $this->mes; }
-    public function setMes(?string $mes): void { $this->mes = $mes; }
+    public function getAnio(): ?string
+    {
+        return $this->anio;
+    }
+    public function setAnio(?string $anio): void
+    {
+        $this->anio = $anio;
+    }
 
-    public function getAnio(): ?string { return $this->anio; }
-    public function setAnio(?string $anio): void { $this->anio = $anio; }
+    public function getDias(): ?int
+    {
+        return $this->dias;
+    }
+    public function setDias(?int $dias): void
+    {
+        $this->dias = $dias;
+    }
 
-    public function getDias(): ?int { return $this->dias; }
-    public function setDias(?int $dias): void { $this->dias = $dias; }
-
-    public function getTermino(): ?string { return $this->termino; }
-    public function setTermino(?string $termino): void { $this->termino = $termino; }
+    public function getTermino(): ?string
+    {
+        return $this->termino;
+    }
+    public function setTermino(?string $termino): void
+    {
+        $this->termino = $termino;
+    }
 
     public function registrarPago(
         string $cedulaCliente,
@@ -106,7 +171,7 @@ class FacturacionModel extends Database
             }
 
             // Obtener precio y duración del plan
-            $stmt = $this->pdo->prepare("SELECT monto, duracion_dias FROM tipo_membresia WHERE id_tipo = ?");
+            $stmt = $this->getConnection()->prepare("SELECT monto, duracion_dias FROM tipo_membresia WHERE id_tipo = ?");
             $stmt->execute([$tipoMembresiaId]);
             $planData = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
             $precioPlan   = (float) ($planData['monto'] ?? 0);
@@ -132,7 +197,7 @@ class FacturacionModel extends Database
                 }
             }
 
-            $this->pdo->beginTransaction();
+            $this->getConnection()->beginTransaction();
 
             if ($reutilizar) {
                 $idMembresia           = (int) $membresiaActual['id_membresia'];
@@ -142,30 +207,30 @@ class FacturacionModel extends Database
                 $nuevaFechaVencimiento = date('Y-m-d', strtotime("+{$duracionDias} days"));
                 $fechaInicioMembresia  = $fechaPago;
 
-                $stmt = $this->pdo->prepare(
+                $stmt = $this->getConnection()->prepare(
                     "INSERT INTO membresia (id_tipo, id_estado, fecha_inicio, fecha_fin, cedula_cliente)
                      VALUES (?, 1, ?, ?, ?)"
                 );
                 $stmt->execute([$tipoMembresiaId, $fechaPago, $nuevaFechaVencimiento, $this->getCedulaCliente()]);
-                $idMembresia = $this->pdo->lastInsertId();
+                $idMembresia = $this->getConnection()->lastInsertId();
 
                 if ($membresiaActual && !empty($membresiaActual['id_membresia'])) {
-                    $stmt = $this->pdo->prepare("UPDATE membresia SET id_estado = 2 WHERE id_membresia = ?");
+                    $stmt = $this->getConnection()->prepare("UPDATE membresia SET id_estado = 2 WHERE id_membresia = ?");
                     $stmt->execute([$membresiaActual['id_membresia']]);
                 }
             }
 
             // Insertar pago
             $idMetodo = $this->resolveMetodoPagoId();
-            $stmt = $this->pdo->prepare(
+            $stmt = $this->getConnection()->prepare(
                 "INSERT INTO pago (id_metodo, cedula_cliente, monto, estado, fecha_pago)
                  VALUES (?, ?, ?, 'Pagado', ?)"
             );
             $stmt->execute([$idMetodo, $this->getCedulaCliente(), $this->getMonto(), $fechaPago]);
-            $idPago = $this->pdo->lastInsertId();
+            $idPago = $this->getConnection()->lastInsertId();
 
             // Sumar TODOS los pagos desde que inició esta membresía
-            $stmt = $this->pdo->prepare(
+            $stmt = $this->getConnection()->prepare(
                 "SELECT COALESCE(SUM(monto), 0) FROM pago
                  WHERE cedula_cliente = ? AND fecha_pago >= ?"
             );
@@ -174,10 +239,10 @@ class FacturacionModel extends Database
 
             // Determinar estado final
             $estadoFinal = ($totalPagado >= $precioPlan) ? 1 : 3;
-            $stmt = $this->pdo->prepare("UPDATE membresia SET id_estado = ? WHERE id_membresia = ?");
+            $stmt = $this->getConnection()->prepare("UPDATE membresia SET id_estado = ? WHERE id_membresia = ?");
             $stmt->execute([$estadoFinal, $idMembresia]);
 
-            $this->pdo->commit();
+            $this->getConnection()->commit();
 
             $deuda = max(0, $precioPlan - $totalPagado);
             $mensaje = ($estadoFinal === 3)
@@ -196,8 +261,8 @@ class FacturacionModel extends Database
                 'mensaje'                 => $mensaje,
             ];
         } catch (Throwable $e) {
-            if ($this->pdo->inTransaction()) {
-                $this->pdo->rollBack();
+            if ($this->getConnection()->inTransaction()) {
+                $this->getConnection()->rollBack();
             }
             error_log(static::class . "::processRegistrarPago → " . $e->getMessage());
             throw new \RuntimeException("Error al registrar pago: " . $e->getMessage());
@@ -377,7 +442,7 @@ class FacturacionModel extends Database
         if ($cedula === '') return false;
 
         try {
-            $stmt = $this->pdo->prepare(
+            $stmt = $this->getConnection()->prepare(
                 "UPDATE membresia
                  SET id_estado = 3
                  WHERE id_membresia = (
@@ -401,7 +466,7 @@ class FacturacionModel extends Database
         if ($cedula === '') return false;
 
         try {
-            $stmt = $this->pdo->prepare(
+            $stmt = $this->getConnection()->prepare(
                 "UPDATE membresia
                  SET id_estado = 1
                  WHERE id_membresia = (
@@ -444,7 +509,7 @@ class FacturacionModel extends Database
         try {
             $idMetodo = $this->resolveMetodoPagoId();
 
-            $stmt = $this->pdo->prepare(
+            $stmt = $this->getConnection()->prepare(
                 "UPDATE pago SET monto = ?, id_metodo = ?, estado = ?, fecha_pago = ? WHERE id_pago = ?"
             );
             $res = $stmt->execute([
@@ -457,12 +522,12 @@ class FacturacionModel extends Database
 
             if (!$res) return false;
 
-            $stmtCli = $this->pdo->prepare("SELECT cedula_cliente FROM pago WHERE id_pago = ?");
+            $stmtCli = $this->getConnection()->prepare("SELECT cedula_cliente FROM pago WHERE id_pago = ?");
             $stmtCli->execute([$this->getIdPago()]);
             $cedulaCliente = $stmtCli->fetchColumn();
 
             if ($cedulaCliente) {
-                $stmtMem = $this->pdo->prepare(
+                $stmtMem = $this->getConnection()->prepare(
                     "SELECT id_membresia FROM membresia
                      WHERE cedula_cliente = ?
                      ORDER BY fecha_inicio DESC, id_membresia DESC LIMIT 1"
@@ -471,7 +536,7 @@ class FacturacionModel extends Database
                 $idMembresia = $stmtMem->fetchColumn();
 
                 if ($idMembresia) {
-                    $stmtUpd = $this->pdo->prepare("UPDATE membresia SET fecha_fin = ? WHERE id_membresia = ?");
+                    $stmtUpd = $this->getConnection()->prepare("UPDATE membresia SET fecha_fin = ? WHERE id_membresia = ?");
                     $stmtUpd->execute([$this->getFechaVencimiento(), $idMembresia]);
                 }
             }
@@ -494,7 +559,7 @@ class FacturacionModel extends Database
     private function deletePagoById(): bool
     {
         try {
-            $stmt = $this->pdo->prepare("DELETE FROM pago WHERE id_pago = ?");
+            $stmt = $this->getConnection()->prepare("DELETE FROM pago WHERE id_pago = ?");
             return $stmt->execute([$this->getIdPago()]);
         } catch (Throwable $e) {
             error_log(static::class . "::deletePagoById → " . $e->getMessage());
@@ -657,7 +722,7 @@ class FacturacionModel extends Database
     private function resolveMetodoPagoId(): int
     {
         try {
-            $stmt = $this->pdo->prepare("SELECT id_metodo FROM metodo_pago WHERE nombre LIKE ? LIMIT 1");
+            $stmt = $this->getConnection()->prepare("SELECT id_metodo FROM metodo_pago WHERE nombre LIKE ? LIMIT 1");
             $stmt->execute(["%" . $this->getMetodoPago() . "%"]);
             return (int) ($stmt->fetchColumn() ?: 1);
         } catch (Throwable $e) {
@@ -668,9 +733,9 @@ class FacturacionModel extends Database
 
     private function prepareOrFail(string $sql): \PDOStatement
     {
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->getConnection()->prepare($sql);
         if (!$stmt) {
-            $info = $this->pdo->errorInfo();
+            $info = $this->getConnection()->errorInfo();
             throw new \RuntimeException('Error al preparar la consulta: ' . ($info[2] ?? 'desconocido'));
         }
         return $stmt;

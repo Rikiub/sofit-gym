@@ -7,17 +7,16 @@ use App\Models\BitacoraModel;
 use App\Models\Database;
 use App\Models\Personas\PersonaModel;
 
-class ClienteModel extends Database
+class ClienteModel
 {
+    use Database;
     public string $table = 'cliente';
     public string $primaryKey = 'cedula';
 
     public function __construct(
         private BitacoraModel $logger = new BitacoraModel(),
         private PersonaModel $personaModel = new PersonaModel(),
-    ) {
-        parent::__construct();
-    }
+    ) {}
 
     /** Resumen estadisticos */
     public function getSummary(): array

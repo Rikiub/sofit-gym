@@ -6,8 +6,10 @@ use App\Models\Database;
 use PDO;
 use Throwable;
 
-class AsistenciaModel extends Database
+class AsistenciaModel
 {
+    use Database;
+
     private const MINUTOS_ANTI_DUPLICADO = 30;
     private const FETCH = PDO::FETCH_ASSOC;
 
@@ -20,38 +22,77 @@ class AsistenciaModel extends Database
     private ?string $fechaInicio   = null;
     private ?string $fechaFin      = null;
 
-    public function __construct()
+    public function getIdAsistencia(): ?int
     {
-        parent::__construct();
-
-        if (property_exists($this, 'pdo') && !$this->pdo && method_exists($this, 'getConnect')) {
-            $this->pdo = $this->getConnect();
-        }
+        return $this->idAsistencia;
+    }
+    public function setIdAsistencia(?int $idAsistencia): void
+    {
+        $this->idAsistencia = $idAsistencia;
     }
 
-    public function getIdAsistencia(): ?int { return $this->idAsistencia; }
-    public function setIdAsistencia(?int $idAsistencia): void { $this->idAsistencia = $idAsistencia; }
+    public function getCedulaPersona(): ?string
+    {
+        return $this->cedulaPersona;
+    }
+    public function setCedulaPersona(?string $cedulaPersona): void
+    {
+        $this->cedulaPersona = $cedulaPersona;
+    }
 
-    public function getCedulaPersona(): ?string { return $this->cedulaPersona; }
-    public function setCedulaPersona(?string $cedulaPersona): void { $this->cedulaPersona = $cedulaPersona; }
+    public function getFecha(): ?string
+    {
+        return $this->fecha;
+    }
+    public function setFecha(?string $fecha): void
+    {
+        $this->fecha = $fecha;
+    }
 
-    public function getFecha(): ?string { return $this->fecha; }
-    public function setFecha(?string $fecha): void { $this->fecha = $fecha; }
+    public function getHora(): ?string
+    {
+        return $this->hora;
+    }
+    public function setHora(?string $hora): void
+    {
+        $this->hora = $hora;
+    }
 
-    public function getHora(): ?string { return $this->hora; }
-    public function setHora(?string $hora): void { $this->hora = $hora; }
+    public function getTipo(): ?string
+    {
+        return $this->tipo;
+    }
+    public function setTipo(?string $tipo): void
+    {
+        $this->tipo = $tipo;
+    }
 
-    public function getTipo(): ?string { return $this->tipo; }
-    public function setTipo(?string $tipo): void { $this->tipo = $tipo; }
+    public function getTermino(): ?string
+    {
+        return $this->termino;
+    }
+    public function setTermino(?string $termino): void
+    {
+        $this->termino = $termino;
+    }
 
-    public function getTermino(): ?string { return $this->termino; }
-    public function setTermino(?string $termino): void { $this->termino = $termino; }
+    public function getFechaInicio(): ?string
+    {
+        return $this->fechaInicio;
+    }
+    public function setFechaInicio(?string $fechaInicio): void
+    {
+        $this->fechaInicio = $fechaInicio;
+    }
 
-    public function getFechaInicio(): ?string { return $this->fechaInicio; }
-    public function setFechaInicio(?string $fechaInicio): void { $this->fechaInicio = $fechaInicio; }
-
-    public function getFechaFin(): ?string { return $this->fechaFin; }
-    public function setFechaFin(?string $fechaFin): void { $this->fechaFin = $fechaFin; }
+    public function getFechaFin(): ?string
+    {
+        return $this->fechaFin;
+    }
+    public function setFechaFin(?string $fechaFin): void
+    {
+        $this->fechaFin = $fechaFin;
+    }
 
     public function findCliente(int $id): ?array
     {
@@ -345,7 +386,7 @@ class AsistenciaModel extends Database
             $stmt->execute([$cedula, $hora]);
             $stmt->closeCursor();
 
-            $res = $this->pdo->query(
+            $res = $this->getConnection()->query(
                 "SELECT @ok AS exito, @msg AS mensaje, @id AS id, @fecha AS fecha"
             );
             if (!$res) {
@@ -397,9 +438,9 @@ class AsistenciaModel extends Database
 
     private function prepareOrFail(string $sql): \PDOStatement
     {
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->getConnection()->prepare($sql);
         if (!$stmt) {
-            $info = $this->pdo->errorInfo();
+            $info = $this->getConnection()->errorInfo();
             throw new \RuntimeException('Error al preparar la consulta: ' . ($info[2] ?? 'desconocido'));
         }
         return $stmt;

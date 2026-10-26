@@ -9,45 +9,44 @@ use PDOStatement;
 use RuntimeException;
 use Throwable;
 
-class Database
+trait Database
 {
     protected const DB_DEFAULT = "sofit_gym";
     protected const DB_SECURITY = "sofit_gym_seguridad";
-    protected PDO $pdo;
+    private PDO $pdo;
 
-    public function __construct(
-        string $host = null,
-        string $database = null,
-        string $username = null,
-        string $password = null,
-    ) {
-        $host ??= Config::get("db.host");
-        $database ??= Config::get("db.database");
-        $username ??= Config::get("db.username");
-        $password ??= Config::get("db.password");
+    protected function getConnection(): PDO
+    {
+        if (!isset($this->pdo)) {
+            $host ??= Config::get("db.host");
+            $database ??= Config::get("db.database");
+            $username ??= Config::get("db.username");
+            $password ??= Config::get("db.password");
 
-        $charset = 'utf8mb4';
-        $options = [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES => false,
-            PDO::MYSQL_ATTR_INIT_COMMAND => sprintf(
-                "SET time_zone = '%s'",
-                Config::get("timezone.offset")
-            ),
-        ];
-        $dsn = "mysql:host={$host};dbname={$database};charset={$charset};";
+            $charset = 'utf8mb4';
+            $options = [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES => false,
+                PDO::MYSQL_ATTR_INIT_COMMAND => sprintf(
+                    "SET time_zone = '%s'",
+                    Config::get("timezone.offset")
+                ),
+            ];
+            $dsn = "mysql:host={$host};dbname={$database};charset={$charset};";
 
-        try {
-            $this->pdo = new PDO(
-                dsn: $dsn,
-                username: $username,
-                password: $password,
-                options: $options
-            );
-        } catch (PDOException $e) {
-            throw new RuntimeException('Failed database connection: ' . $e->getMessage());
+            try {
+                return new PDO(
+                    dsn: $dsn,
+                    username: $username,
+                    password: $password,
+                    options: $options
+                );
+            } catch (PDOException $e) {
+                throw new RuntimeException('Failed database connection: ' . $e->getMessage());
+            }
         }
+        return $this->getConnection();
     }
 
     protected function dbSecurity(string $table): string
@@ -60,7 +59,7 @@ class Database
      *
      * En pocas palabras, es un helper para evitar el repetitivo patron:
      * ```
-     * $stmt = $this->pdo->prepare($sql);
+     * $stmt = $this->getConnection()->prepare($sql);
      * $stmt->execute($params);
      * ```
      *
@@ -69,7 +68,7 @@ class Database
      */
     public function dbQuery(string $sql, array $params = []): PDOStatement
     {
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->getConnection()->prepare($sql);
         $stmt->execute($params);
         return $stmt;
     }
@@ -187,15 +186,15 @@ class Database
      */
     public function dbTransaction(callable $callback)
     {
-        $this->pdo->beginTransaction();
+        $this->getConnection()->beginTransaction();
 
         try {
             $result = $callback($this);
-            $this->pdo->commit();
+            $this->getConnection()->commit();
             return $result;
         } catch (Throwable $error) {
-            if ($this->pdo->inTransaction()) {
-                $this->pdo->rollBack();
+            if ($this->getConnection()->inTransaction()) {
+                $this->getConnection()->rollBack();
             }
             throw $error;
         }

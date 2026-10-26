@@ -11,16 +11,15 @@ use DateTimeImmutable;
 
 use function App\Core\toDbDate;
 
-class TrabajadorModel extends Database
+class TrabajadorModel
 {
+    use Database;
     private string $table = 'trabajador';
     private string $primaryKey = 'cedula';
 
     public function __construct(
         private PersonaModel $personaModel = new PersonaModel(),
-    ) {
-        parent::__construct();
-    }
+    ) {}
 
     /** Resumen estadisticos */
     public function getSummary(): array

@@ -10,16 +10,15 @@ use InvalidArgumentException;
 
 use function App\Core\toDbDate;
 
-class SegumientoNutricionalModel extends Database
+class SegumientoNutricionalModel
 {
+    use Database;
     private string $table = 'seguimiento_nutricional';
     private string $primaryKey = 'id_seguimiento';
 
     public function __construct(
         private $logger = new BitacoraModel()
-    ) {
-        parent::__construct();
-    }
+    ) {}
 
     /**
      * Obtiene todos los seguimientos de un cliente.
@@ -76,7 +75,7 @@ class SegumientoNutricionalModel extends Database
             ]
         );
 
-        $id = (int) $this->pdo->lastInsertId();
+        $id = (int) $this->getConnection()->lastInsertId();
         $seg = $this->find($id);
 
         $this->logger->log("Seguimiento nutricional para cliente '{cedula}' registrado", [
@@ -102,7 +101,7 @@ class SegumientoNutricionalModel extends Database
             [$this->primaryKey => $id]
         );
 
-        $id = (int) $this->pdo->lastInsertId();
+        $id = (int) $this->getConnection()->lastInsertId();
         return $this->find($id);
     }
 

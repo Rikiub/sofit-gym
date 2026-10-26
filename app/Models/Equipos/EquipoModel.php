@@ -7,8 +7,9 @@ use App\Core\Validator;
 use App\Models\Database;
 use DateTimeImmutable;
 
-class EquipoModel extends Database
+class EquipoModel
 {
+    use Database;
     private string $table = 'equipo';
     private string $primaryKey = 'codigo_equipo';
 
@@ -30,7 +31,7 @@ class EquipoModel extends Database
     public function getEquiposEnMantenimiento(): array
     {
         $sql = "SELECT * FROM equipo WHERE estado IN ('Mantenimiento', 'Fuera de Servicio') AND activo = 1";
-        $stmt = $this->pdo->query($sql);
+        $stmt = $this->getConnection()->query($sql);
         return $stmt->fetchAll();
     }
 

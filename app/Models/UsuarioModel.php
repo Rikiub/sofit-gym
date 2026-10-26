@@ -11,16 +11,15 @@ use Exception;
 
 use function App\Core\toDbDate;
 
-class UsuarioModel extends Database
+class UsuarioModel
 {
+    use Database;
     private string $table = self::DB_SECURITY . ".usuario";
     private string $primaryKey = "id_usuario";
 
     public function __construct(
         private ImageStorage $image = new ImageStorage(),
-    ) {
-        parent::__construct();
-    }
+    ) {}
 
     /**
      * @return Usuario[]
@@ -84,7 +83,7 @@ class UsuarioModel extends Database
                 $this->mapToColumns($usuario, insertMode: true),
             );
 
-            $id = (int) $this->pdo->lastInsertId();
+            $id = (int) $this->getConnection()->lastInsertId();
             $this->syncImage($id, $usuario->imagen_url);
 
             return $this->findById($id);

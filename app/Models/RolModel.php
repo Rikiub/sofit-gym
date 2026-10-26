@@ -5,8 +5,10 @@ namespace App\Models;
 use App\Models\Database;
 use App\Core\Tools;
 
-class RolModel extends Database
+class RolModel
 {
+    use Database;
+
     /**
      * @return Rol[]
      */
@@ -60,7 +62,7 @@ class RolModel extends Database
                 ["nombre" => $rol->nombre],
             );
 
-            $id = (int)$this->pdo->lastInsertId();
+            $id = (int)$this->getConnection()->lastInsertId();
             $this->syncPermisos($id, $rol->permisos);
 
             return $this->find($id);

@@ -5,8 +5,9 @@ namespace App\Models;
 use App\Models\Database;
 use PDO;
 
-class OpcionModel extends Database
+class OpcionModel
 {
+    use Database;
     private string $table = self::DB_SECURITY . ".opcion";
 
     public function query(): array
