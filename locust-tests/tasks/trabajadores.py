@@ -70,7 +70,7 @@ class TrabajadoresUser(SofitGymUser):
             data=payload,
         )
 
-    @task(0)
+    @task(1)
     def delete(self):
         if not self.ids:
             return
