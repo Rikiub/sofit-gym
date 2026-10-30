@@ -36,7 +36,7 @@ trait Database
             $dsn = "mysql:host={$host};dbname={$database};charset={$charset};";
 
             try {
-                return new PDO(
+                $this->pdo = new PDO(
                     dsn: $dsn,
                     username: $username,
                     password: $password,
@@ -46,7 +46,7 @@ trait Database
                 throw new RuntimeException('Failed database connection: ' . $e->getMessage());
             }
         }
-        return $this->getConnection();
+        return $this->pdo;
     }
 
     protected function dbSecurity(string $table): string
