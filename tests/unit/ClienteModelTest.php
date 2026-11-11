@@ -320,11 +320,10 @@ final class ClienteModelTest extends TestCase
 
     // insert
 
-    public function testInsertPersistsPersonaAndClienteAndLogs(): void
+    public function testInsertarPersona(): void
     {
         $cliente = new Cliente(cedula: 'V-12345678', nombre: 'Ana', apellido: 'Garcia');
 
-        // La transacción ejecuta el closure en línea
         $this->model->method('dbTransaction')
             ->willReturnCallback(fn(callable $fn) => $fn());
 
